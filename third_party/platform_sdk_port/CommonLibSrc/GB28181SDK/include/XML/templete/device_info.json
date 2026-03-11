@@ -1,0 +1,25 @@
+﻿{
+    "structs": 
+    [
+	  
+        {
+            "type": "device_info_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+				["string", "DeviceID"],
+                ["string", "Result"],
+                ["string", "DeviceName"],
+                ["string", "DeviceType"],
+                ["uint32_t", "Channel"],
+                ["string", "Manufacturer"],
+                ["string", "Model"],
+                ["string", "Firmware"]	     
+                          
+            ]
+        }
+    ]
+}
+

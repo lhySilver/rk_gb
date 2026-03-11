@@ -1,0 +1,24 @@
+{
+    "structs": 
+    [
+	  
+          {
+            "type": "ptz_info_t",
+            "members": 
+                [
+                ["uint32_t", "ControlPriority"]
+                ]
+            },
+          {
+            "type": "ptz_control_t",
+            "members": 
+            [
+                ["uint32_t", "SN"],
+                ["string", "CmdType"],
+		    ["string", "DeviceID"],
+                ["string", "PTZCmd"],
+                ["ptz_info_t", "Info"]				
+            ]
+        }
+    ]
+}

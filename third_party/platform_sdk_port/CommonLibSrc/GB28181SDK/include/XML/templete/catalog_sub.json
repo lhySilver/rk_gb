@@ -1,0 +1,22 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "catalog_sub_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["uint32_t", "StartAlarmPriority"],
+                ["uint32_t", "EndAlarmPriority"],
+                ["uint32_t", "AlarmMethod"],
+                ["string", "StartTime"],
+                ["string", "EndTime"]	     
+                          
+            ]
+        }
+    ]
+}

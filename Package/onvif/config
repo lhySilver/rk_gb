@@ -1,0 +1,14 @@
+#PLATFORM = HI3518
+#CROSS  = arm-hisiv100nptl-linux-
+
+#CROSS	= arm-arago-linux-gnueabi-#
+CC	= @echo " GCC	$@"; $(CROSS)gcc
+CPP	= @echo " G++	$@"; $(CROSS)g++
+LD	= @echo " LD	$@"; $(CROSS)ld
+AR	= @echo " AR	$@"; $(CROSS)ar
+RM	= @echo " RM	$@"; rm -f
+STRIP 	= @echo " STRIP $@"; $(CROSS)strip
+
+LDFLAGS += -L$(TOPDIR)Lib/$(PLATFORM) -lpthread
+LIBDIR = Lib/$(PLATFORM)/
+BINDIR = Bin/$(PLATFORM)/

@@ -1,0 +1,19 @@
+{
+    "structs": 
+    [
+	  
+      
+        {
+            "type": "broadcast_notify_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "SourceID"],
+                ["string", "TargetID"]
+                       
+            ]
+        }
+    ]
+}

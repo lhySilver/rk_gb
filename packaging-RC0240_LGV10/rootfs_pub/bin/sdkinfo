@@ -1,0 +1,3 @@
+#!/bin/sh
+echo Build Time:  2023-05-09-15:31:13
+echo SDK Version: rv1106_ipc_linux_v1.5.1_20230407.xml

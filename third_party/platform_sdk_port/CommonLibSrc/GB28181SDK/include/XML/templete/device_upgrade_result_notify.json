@@ -1,0 +1,18 @@
+{
+    "structs":
+    [
+        {
+            "type": "device_upgrade_result_notify_t",
+            "members":
+            [
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+                ["string", "DeviceID"],
+                ["string", "Result"],
+                ["string", "Firmware"],
+                ["string", "SessionID"],
+                ["string", "Description"]
+            ]
+        }
+    ]
+}

@@ -1,0 +1,52 @@
+{
+    "structs": 
+    [
+         
+        {
+            "type": "device_list_t",
+            "members": 
+            [
+               
+                ["string", "DeviceID"],
+                ["string", "Name"],
+                ["string", "Manufacturer"],
+                ["string", "Model"],
+                ["string", "Ower"],
+                ["string", "CivilCode"],
+                ["string", "Block"],
+                ["string", "Address"],
+                ["string", "Parental"],
+                ["string", "ParentID"],
+                ["string", "StreamNumberList"],
+                ["uint32_t", "SafetyWay"],
+		    ["uint32_t", "RegisterWay"],
+                ["string", "CertNum"],
+                ["uint32_t", "Certifiable"],
+		    ["uint32_t", "ErrCode"],
+                ["string", "EndTime"],
+                ["uint32_t", "Secrecy"],
+                ["uint32_t", "Port"],
+                 ["string", "IPAddress"],
+                ["string", "Password"],
+                ["string", "Status"],
+                ["double", "Longitude"],
+                ["double", "Latitude"],
+				["string","Event"]
+                          
+            ]
+         },
+	  
+        {
+            "type": "catalog_response_t",
+            "members": 
+            [
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		        ["string", "DeviceID"],
+                ["uint32_t", "SumNum"],
+                ["[device_list_t]", "DeviceList"]
+                          
+            ]
+        }
+    ]
+}

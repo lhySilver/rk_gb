@@ -1,0 +1,28 @@
+{
+    "structs":
+    [
+        {
+            "type": "device_upgrade_t",
+            "members":
+            [
+                ["string", "Firmware"],
+                ["string", "FileURL"],
+                ["string", "Manufacturer"],
+                ["string", "SessionID"],
+                ["uint32_t", "FileSize"],
+                ["string", "Checksum"],
+                ["uint32_t", "ForceUpgrade"]
+            ]
+        },
+        {
+            "type": "device_upgrade_control_t",
+            "members":
+            [
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+                ["string", "DeviceID"],
+                ["device_upgrade_t", "DeviceUpgrade"]
+            ]
+        }
+    ]
+}

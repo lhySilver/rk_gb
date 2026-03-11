@@ -1,0 +1,23 @@
+{
+    "structs": 
+    [
+	      {
+            "type": "preset_list_t",
+            "members": 
+                [
+                ["string", "PresetID"],
+                ["string", "PresetName"]
+               ]
+            },
+        {
+            "type": "preset_reponse_t",
+            "members": 
+            [
+                ["uint32_t", "SN"],
+                ["string", "CmdType"],
+		    ["string", "DeviceID"],
+                ["[preset_list_t]", "PresetList"]				
+            ]
+        }
+    ]
+}

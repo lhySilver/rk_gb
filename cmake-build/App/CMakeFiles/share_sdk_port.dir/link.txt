@@ -1,0 +1,2 @@
+/usr/bin/ar qc libshare_sdk_port.a  CMakeFiles/share_sdk_port.dir/Protocol/gb28181/sdk_port/ShareSdkShim.cpp.o
+/usr/bin/ranlib libshare_sdk_port.a

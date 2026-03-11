@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Target arch
+export RK_ARCH=arm
+
+# Target CHIP
+export RK_CHIP=rv1106
+
+# Target Toolchain Cross Compile
+export RK_TOOLCHAIN_CROSS=arm-rockchip830-linux-uclibcgnueabihf
+
+# Target boot medium: emmc/spi_nor/spi_nand
+export RK_BOOT_MEDIUM=spi_nor
+
+# Uboot defconfig
+export RK_UBOOT_DEFCONFIG=rv1106-spi-nor_defconfig
+
+# Uboot defconfig fragment
+export RK_UBOOT_DEFCONFIG_FRAGMENT=rk-sfc.config
+
+# Kernel defconfig
+export RK_KERNEL_DEFCONFIG=rv1106_defconfig
+
+# Kernel defconfig fragment
+export RK_KERNEL_DEFCONFIG_FRAGMENT=rv1106-ipc-rc0330v20.config
+
+# Kernel dts
+export RK_KERNEL_DTS=rv1106g-38x38-ipc-rc0330v20-v11.dts
+
+# Config sensor IQ files
+# RK_CAMERA_SENSOR_IQFILES format:
+#     "iqfile1 iqfile2 iqfile3 ..."
+# ./build.sh media and copy <SDK root dir>/output/out/media_out/isp_iqfiles/$RK_CAMERA_SENSOR_IQFILES
+#export RK_CAMERA_SENSOR_IQFILES="sc4336_OT01_40IRC_F16.bin sc3336_CMK-OT2119-PC1_30IRC-F16.bin sc530ai_CMK-OT2115-PC1_30IRC-F16.bin"
+export RK_CAMERA_SENSOR_IQFILES="gc2053_CMK-OT2274-V10_28IRC-F20.json gc2053_CMK-OT2274-V10_28IRC-F20.json"
+# Config sensor lens CAC calibrattion bin files
+#export RK_CAMERA_SENSOR_CAC_BIN="CAC_sc530ai_CMK-OT2115-PC1_30IRC-F16 CAC_sc4336_OT01_40IRC_F16"
+
+export RK_AVS_CALIB=rk_2_camera_result.xml
+# Config CMA size in environment
+export RK_BOOTARGS_CMA_SIZE="66M"
+
+# config partition in environment
+# RK_PARTITION_CMD_IN_ENV format:
+#     <partdef>[,<partdef>]
+#       <partdef> := <size>[@<offset>](part-name)
+# Note:
+#   If the first partition offset is not 0x0, it must be added. Otherwise, it needn't adding.
+#export RK_PARTITION_CMD_IN_ENV="64K(env),128K@64K(idblock),192K(uboot),2M(boot),1600K(rootfs),8M(oem),-(userdata)"
+export RK_PARTITION_CMD_IN_ENV="64K(env),128K@64K(idblock),256K(uboot),3M(boot),4M(rootfs),8M(oem),-(userdata)"
+# config partition's filesystem type (squashfs is readonly)
+# emmc:    squashfs/ext4
+# nand:    squashfs/ubifs
+# spi nor: squashfs/jffs2
+# RK_PARTITION_FS_TYPE_CFG format:
+#     AAAA:/BBBB/CCCC@ext4
+#         AAAA ----------> partition name
+#         /BBBB/CCCC ----> partition mount point
+#         ext4 ----------> partition filesystem type
+export RK_PARTITION_FS_TYPE_CFG=rootfs@IGNORE@squashfs,oem@/oem@squashfs,userdata@/userdata@jffs2
+
+# config filesystem compress (Just for squashfs or ubifs)
+# squashfs: lz4/lzo/lzma/xz/gzip, default xz
+# ubifs:    lzo/zlib, default lzo
+export RK_SQUASHFS_COMP=xz
+
+# app config
+export RK_APP_TYPE=RKIPC_RV1106_DUAL_IPC
+
+# build ipc web backend
+export RK_APP_IPCWEB_BACKEND=n
+
+# build ipc web backend
+export RK_BUILD_APP_TO_OEM_PARTITION=y
+
+# disable build gdb
+export RK_ENABLE_GDB=n
+
+# disable build adb
+export RK_ENABLE_ADBD=n
+
+# enable rockchip test
+export RK_ENABLE_ROCKCHIP_TEST=n
+
+export RK_ENABLE_WIFI=y
+export RK_ENABLE_WIFI_CHIP=RTL8188FTV
+
+export ENABLE_MOTOR=y
+
+export RK_PRE_BUILD_OEM_SCRIPT=rv1106-spi_nor-post.sh

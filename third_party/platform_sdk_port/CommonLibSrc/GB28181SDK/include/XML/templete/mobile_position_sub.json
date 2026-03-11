@@ -1,0 +1,19 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "mobile_position_sub_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["uint32_t", "Interval"]
+                
+                          
+            ]
+        }
+    ]
+}

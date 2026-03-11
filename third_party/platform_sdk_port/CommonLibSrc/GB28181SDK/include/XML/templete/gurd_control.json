@@ -1,0 +1,18 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "gurd_control_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+["string", "GurdCmd"]
+                          
+            ]
+        }
+    ]
+}

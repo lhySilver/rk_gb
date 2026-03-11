@@ -1,0 +1,22 @@
+file(REMOVE_RECURSE
+  "../../../Lib/Package/libOnvif.a"
+  "../../../Lib/Package/libOnvif.pdb"
+  "CMakeFiles/Onvif.dir/base64.c.o"
+  "CMakeFiles/Onvif.dir/commfun.c.o"
+  "CMakeFiles/Onvif.dir/hxml.c.o"
+  "CMakeFiles/Onvif.dir/main.c.o"
+  "CMakeFiles/Onvif.dir/onvif.c.o"
+  "CMakeFiles/Onvif.dir/onvif_discovery.c.o"
+  "CMakeFiles/Onvif.dir/onvif_error_respones.c.o"
+  "CMakeFiles/Onvif.dir/onvif_function.c.o"
+  "CMakeFiles/Onvif.dir/onvif_serve.c.o"
+  "CMakeFiles/Onvif.dir/onvif_threadpool.c.o"
+  "CMakeFiles/Onvif.dir/sha1.c.o"
+  "CMakeFiles/Onvif.dir/xml_get_data.c.o"
+  "CMakeFiles/Onvif.dir/xml_node.c.o"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/Onvif.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

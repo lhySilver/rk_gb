@@ -1,0 +1,650 @@
+﻿#include "GB28181RtpPsSender.h"
+
+#include <arpa/inet.h>
+#include <dlfcn.h>
+#include <errno.h>
+#include <map>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+
+extern "C"
+{
+#include "mpeg-ps.h"
+#include "rtp-payload.h"
+#include "rtp-profile.h"
+}
+
+namespace
+{
+
+static std::string ToLowerCopy(const std::string& text)
+{
+    std::string out = text;
+    for (size_t i = 0; i < out.size(); ++i) {
+        if (out[i] >= 'A' && out[i] <= 'Z') {
+            out[i] = static_cast<char>(out[i] - 'A' + 'a');
+        }
+    }
+    return out;
+}
+
+static uint32_t NowSeconds()
+{
+    return static_cast<uint32_t>(time(NULL));
+}
+
+static int SendAll(int sockfd, const void* data, size_t bytes)
+{
+    if (sockfd < 0 || data == NULL || bytes == 0) {
+        return -1;
+    }
+
+    const uint8_t* cursor = (const uint8_t*)data;
+    size_t sent = 0;
+    while (sent < bytes) {
+        const int n = send(sockfd, cursor + sent, bytes - sent, 0);
+        if (n <= 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            return -2;
+        }
+        sent += (size_t)n;
+    }
+
+    return 0;
+}
+
+static int LoadSymbol(void* handle, const char* name, void** outFn)
+{
+    if (handle == NULL || name == NULL || outFn == NULL) {
+        return -1;
+    }
+
+    *outFn = dlsym(handle, name);
+    if (*outFn == NULL) {
+        return -2;
+    }
+
+    return 0;
+}
+
+} 
+
+namespace protocol
+{
+
+struct GB28181RtpPsSender::RuntimeState
+{
+    typedef struct ps_muxer_t* (*PsMuxerCreateFn)(const struct ps_muxer_func_t* func, void* param);
+    typedef int (*PsMuxerDestroyFn)(struct ps_muxer_t* muxer);
+    typedef int (*PsMuxerAddStreamFn)(struct ps_muxer_t* muxer, int codecid, const void* extradata, size_t bytes);
+    typedef int (*PsMuxerInputFn)(struct ps_muxer_t* muxer,
+                                  int stream,
+                                  int flags,
+                                  int64_t pts,
+                                  int64_t dts,
+                                  const void* data,
+                                  size_t bytes);
+
+    typedef void* (*RtpEncodeCreateFn)(int payload,
+                                       const char* name,
+                                       uint16_t seq,
+                                       uint32_t ssrc,
+                                       struct rtp_payload_t* handler,
+                                       void* cbparam);
+    typedef void (*RtpEncodeDestroyFn)(void* encoder);
+    typedef int (*RtpEncodeInputFn)(void* encoder, const void* data, int bytes, uint32_t timestamp);
+    typedef void (*RtpEncodeGetInfoFn)(void* encoder, uint16_t* seq, uint32_t* timestamp);
+    typedef void (*RtpPacketSetSizeFn)(int bytes);
+
+    struct MediaServerApi
+    {
+        void* libmpeg;
+        void* librtp;
+
+        PsMuxerCreateFn ps_muxer_create;
+        PsMuxerDestroyFn ps_muxer_destroy;
+        PsMuxerAddStreamFn ps_muxer_add_stream;
+        PsMuxerInputFn ps_muxer_input;
+
+        RtpEncodeCreateFn rtp_payload_encode_create;
+        RtpEncodeDestroyFn rtp_payload_encode_destroy;
+        RtpEncodeInputFn rtp_payload_encode_input;
+        RtpEncodeGetInfoFn rtp_payload_encode_getinfo;
+        RtpPacketSetSizeFn rtp_packet_setsize;
+
+        MediaServerApi()
+            : libmpeg(NULL),
+              librtp(NULL),
+              ps_muxer_create(NULL),
+              ps_muxer_destroy(NULL),
+              ps_muxer_add_stream(NULL),
+              ps_muxer_input(NULL),
+              rtp_payload_encode_create(NULL),
+              rtp_payload_encode_destroy(NULL),
+              rtp_payload_encode_input(NULL),
+              rtp_payload_encode_getinfo(NULL),
+              rtp_packet_setsize(NULL)
+        {
+        }
+    } api;
+
+    int sockfd;
+    bool opened;
+
+    struct sockaddr_in remote_addr;
+
+    struct ps_muxer_t* ps_muxer;
+    void* rtp_encoder;
+
+    std::map<int, int> stream_map;
+
+    uint32_t current_timestamp90k;
+    uint16_t seq_seed;
+    uint32_t ssrc;
+
+    unsigned long long total_bytes;
+    unsigned int total_packets;
+    uint32_t last_log_sec;
+
+    RuntimeState()
+        : sockfd(-1),
+          opened(false),
+          ps_muxer(NULL),
+          rtp_encoder(NULL),
+          current_timestamp90k(0),
+          seq_seed(static_cast<uint16_t>(rand() & 0xFFFF)),
+          ssrc(0),
+          total_bytes(0),
+          total_packets(0),
+          last_log_sec(0)
+    {
+        memset(&remote_addr, 0, sizeof(remote_addr));
+    }
+};
+
+GB28181RtpPsSender::GB28181RtpPsSender()
+    : m_state(new RuntimeState()), m_inited(false)
+{
+}
+
+GB28181RtpPsSender::~GB28181RtpPsSender()
+{
+    CloseSession();
+
+    if (m_state != NULL) {
+        if (m_state->api.libmpeg != NULL) {
+            dlclose(m_state->api.libmpeg);
+            m_state->api.libmpeg = NULL;
+        }
+
+        if (m_state->api.librtp != NULL) {
+            dlclose(m_state->api.librtp);
+            m_state->api.librtp = NULL;
+        }
+
+        delete m_state;
+        m_state = NULL;
+    }
+}
+
+int GB28181RtpPsSender::Init(const GbLiveParam& param)
+{
+    m_param = param;
+    m_inited = true;
+    return 0;
+}
+
+int GB28181RtpPsSender::EnsureLibrariesLoaded()
+{
+    if (m_state == NULL) {
+        return -1;
+    }
+
+    if (m_state->api.ps_muxer_create != NULL && m_state->api.rtp_payload_encode_create != NULL) {
+        return 0;
+    }
+
+    const char* mpegCandidates[] = {
+        "libmpeg.so",
+        "libmpeg.so.0",
+        NULL,
+    };
+
+    const char* rtpCandidates[] = {
+        "librtp.so",
+        "librtp.so.0",
+        NULL,
+    };
+
+    for (int i = 0; mpegCandidates[i] != NULL && m_state->api.libmpeg == NULL; ++i) {
+        m_state->api.libmpeg = dlopen(mpegCandidates[i], RTLD_LAZY | RTLD_LOCAL);
+    }
+
+    for (int i = 0; rtpCandidates[i] != NULL && m_state->api.librtp == NULL; ++i) {
+        m_state->api.librtp = dlopen(rtpCandidates[i], RTLD_LAZY | RTLD_LOCAL);
+    }
+
+    if (m_state->api.libmpeg == NULL || m_state->api.librtp == NULL) {
+        printf("[GB28181][RtpPs] load media-server libs failed libmpeg=%p librtp=%p\n",
+               m_state->api.libmpeg,
+               m_state->api.librtp);
+        return -2;
+    }
+
+    if (0 != LoadSymbol(m_state->api.libmpeg, "ps_muxer_create", (void**)&m_state->api.ps_muxer_create) ||
+        0 != LoadSymbol(m_state->api.libmpeg, "ps_muxer_destroy", (void**)&m_state->api.ps_muxer_destroy) ||
+        0 != LoadSymbol(m_state->api.libmpeg, "ps_muxer_add_stream", (void**)&m_state->api.ps_muxer_add_stream) ||
+        0 != LoadSymbol(m_state->api.libmpeg, "ps_muxer_input", (void**)&m_state->api.ps_muxer_input) ||
+        0 != LoadSymbol(m_state->api.librtp, "rtp_payload_encode_create", (void**)&m_state->api.rtp_payload_encode_create) ||
+        0 != LoadSymbol(m_state->api.librtp, "rtp_payload_encode_destroy", (void**)&m_state->api.rtp_payload_encode_destroy) ||
+        0 != LoadSymbol(m_state->api.librtp, "rtp_payload_encode_input", (void**)&m_state->api.rtp_payload_encode_input) ||
+        0 != LoadSymbol(m_state->api.librtp, "rtp_payload_encode_getinfo", (void**)&m_state->api.rtp_payload_encode_getinfo)) {
+        printf("[GB28181][RtpPs] load media-server symbols failed\n");
+        return -3;
+    }
+
+    LoadSymbol(m_state->api.librtp, "rtp_packet_setsize", (void**)&m_state->api.rtp_packet_setsize);
+    return 0;
+}
+
+int GB28181RtpPsSender::OpenTransportSocket()
+{
+    if (m_state == NULL) {
+        return -1;
+    }
+
+    const std::string transport = ToLowerCopy(m_param.transport);
+    const bool isTcp = (transport == "tcp");
+    if (!isTcp && transport != "udp") {
+        printf("[GB28181][RtpPs] unsupported transport=%s\n", m_param.transport.c_str());
+        return -2;
+    }
+
+    if (m_param.target_ip.empty() || m_param.target_port <= 0) {
+        printf("[GB28181][RtpPs] invalid target endpoint %s:%d\n", m_param.target_ip.c_str(), m_param.target_port);
+        return -3;
+    }
+
+    if (m_state->sockfd >= 0) {
+        close(m_state->sockfd);
+        m_state->sockfd = -1;
+    }
+
+    const int sockType = isTcp ? SOCK_STREAM : SOCK_DGRAM;
+    m_state->sockfd = socket(AF_INET, sockType, 0);
+    if (m_state->sockfd < 0) {
+        printf("[GB28181][RtpPs] create %s socket failed errno=%d\n", isTcp ? "tcp" : "udp", errno);
+        return -4;
+    }
+
+    const int sendTimeoutMs = 50;
+    struct timeval sndTimeout;
+    sndTimeout.tv_sec = sendTimeoutMs / 1000;
+    sndTimeout.tv_usec = (sendTimeoutMs % 1000) * 1000;
+    if (setsockopt(m_state->sockfd, SOL_SOCKET, SO_SNDTIMEO, &sndTimeout, sizeof(sndTimeout)) != 0) {
+        printf("[GB28181][RtpPs] set SO_SNDTIMEO failed errno=%d\n", errno);
+    }
+
+    memset(&m_state->remote_addr, 0, sizeof(m_state->remote_addr));
+    m_state->remote_addr.sin_family = AF_INET;
+    m_state->remote_addr.sin_port = htons(static_cast<uint16_t>(m_param.target_port));
+    if (1 != inet_pton(AF_INET, m_param.target_ip.c_str(), &m_state->remote_addr.sin_addr)) {
+        printf("[GB28181][RtpPs] invalid target ip: %s\n", m_param.target_ip.c_str());
+        close(m_state->sockfd);
+        m_state->sockfd = -1;
+        return -5;
+    }
+
+    if (isTcp) {
+        if (connect(m_state->sockfd, (struct sockaddr*)&m_state->remote_addr, sizeof(m_state->remote_addr)) != 0) {
+            printf("[GB28181][RtpPs] tcp connect failed errno=%d target=%s:%d\n",
+                   errno,
+                   m_param.target_ip.c_str(),
+                   m_param.target_port);
+            close(m_state->sockfd);
+            m_state->sockfd = -1;
+            return -6;
+        }
+    }
+
+    return 0;
+}
+int GB28181RtpPsSender::OpenSession()
+{
+    if (!m_inited || m_state == NULL) {
+        return -1;
+    }
+
+    if (m_state->opened) {
+        return 0;
+    }
+
+    int ret = EnsureLibrariesLoaded();
+    if (ret != 0) {
+        return ret;
+    }
+
+    ret = OpenTransportSocket();
+    if (ret != 0) {
+        return ret;
+    }
+
+    m_state->seq_seed = static_cast<uint16_t>(rand() & 0xFFFF);
+    if (m_param.ssrc > 0) {
+        m_state->ssrc = static_cast<uint32_t>(m_param.ssrc);
+    } else {
+        m_state->ssrc = static_cast<uint32_t>((time(NULL) ^ getpid()) & 0x7FFFFFFF);
+    }
+
+    if (m_state->api.rtp_packet_setsize != NULL && m_param.mtu > 256) {
+        m_state->api.rtp_packet_setsize(m_param.mtu);
+    }
+
+    struct rtp_payload_t rtpHandler;
+    memset(&rtpHandler, 0, sizeof(rtpHandler));
+    rtpHandler.alloc = OnRtpAlloc;
+    rtpHandler.free = OnRtpFree;
+    rtpHandler.packet = OnRtpPacketWrite;
+
+    const int payloadType = (m_param.payload_type >= 0 && m_param.payload_type <= 127)
+                                ? m_param.payload_type
+                                : RTP_PAYLOAD_MP2P;
+
+    m_state->rtp_encoder = m_state->api.rtp_payload_encode_create(payloadType,
+                                                                  "MP2P",
+                                                                  m_state->seq_seed,
+                                                                  m_state->ssrc,
+                                                                  &rtpHandler,
+                                                                  this);
+    if (m_state->rtp_encoder == NULL) {
+        printf("[GB28181][RtpPs] create rtp encoder failed\n");
+        CloseSession();
+        return -6;
+    }
+
+    struct ps_muxer_func_t psHandler;
+    memset(&psHandler, 0, sizeof(psHandler));
+    psHandler.alloc = OnPsAlloc;
+    psHandler.free = OnPsFree;
+    psHandler.write = OnPsWrite;
+
+    m_state->ps_muxer = m_state->api.ps_muxer_create(&psHandler, this);
+    if (m_state->ps_muxer == NULL) {
+        printf("[GB28181][RtpPs] create ps muxer failed\n");
+        CloseSession();
+        return -7;
+    }
+
+    m_state->stream_map.clear();
+    m_state->total_bytes = 0;
+    m_state->total_packets = 0;
+    m_state->last_log_sec = 0;
+    m_state->opened = true;
+
+    printf("[GB28181][RtpPs] session opened target=%s:%d payload=%d mtu=%d ssrc=%u\n",
+           m_param.target_ip.c_str(),
+           m_param.target_port,
+           payloadType,
+           m_param.mtu,
+           m_state->ssrc);
+    return 0;
+}
+
+void GB28181RtpPsSender::CloseSession()
+{
+    if (m_state == NULL) {
+        return;
+    }
+
+    uint16_t seq = 0;
+    uint32_t timestamp = 0;
+    if (m_state->rtp_encoder != NULL && m_state->api.rtp_payload_encode_getinfo != NULL) {
+        m_state->api.rtp_payload_encode_getinfo(m_state->rtp_encoder, &seq, &timestamp);
+    }
+
+    if (m_state->ps_muxer != NULL && m_state->api.ps_muxer_destroy != NULL) {
+        m_state->api.ps_muxer_destroy(m_state->ps_muxer);
+        m_state->ps_muxer = NULL;
+    }
+
+    if (m_state->rtp_encoder != NULL && m_state->api.rtp_payload_encode_destroy != NULL) {
+        m_state->api.rtp_payload_encode_destroy(m_state->rtp_encoder);
+        m_state->rtp_encoder = NULL;
+    }
+
+    if (m_state->sockfd >= 0) {
+        close(m_state->sockfd);
+        m_state->sockfd = -1;
+    }
+
+    if (m_state->opened) {
+        printf("[GB28181][RtpPs] session closed packets=%u bytes=%llu seq=%hu ts=%u\n",
+               m_state->total_packets,
+               m_state->total_bytes,
+               seq,
+               timestamp);
+    }
+
+    m_state->stream_map.clear();
+    m_state->opened = false;
+}
+
+int GB28181RtpPsSender::ResolveVideoCodecId() const
+{
+    const std::string videoCodec = ToLowerCopy(m_param.video_codec);
+    if (videoCodec == "h265" || videoCodec == "hevc") {
+        return PSI_STREAM_H265;
+    }
+
+    return PSI_STREAM_H264;
+}
+
+int GB28181RtpPsSender::ResolveAudioCodecId() const
+{
+    const std::string audioCodec = ToLowerCopy(m_param.audio_codec);
+    if (audioCodec == "aac") {
+        return PSI_STREAM_AAC;
+    }
+
+    if (audioCodec == "g711u" || audioCodec == "pcmu") {
+        return PSI_STREAM_AUDIO_G711U;
+    }
+
+    if (audioCodec == "g722") {
+        return PSI_STREAM_AUDIO_G722;
+    }
+
+    return PSI_STREAM_AUDIO_G711A;
+}
+
+int GB28181RtpPsSender::EnsureStreamAdded(int codecId, int* streamId)
+{
+    if (m_state == NULL || m_state->ps_muxer == NULL || streamId == NULL) {
+        return -1;
+    }
+
+    std::map<int, int>::iterator it = m_state->stream_map.find(codecId);
+    if (it != m_state->stream_map.end()) {
+        *streamId = it->second;
+        return 0;
+    }
+
+    const int id = m_state->api.ps_muxer_add_stream(m_state->ps_muxer, codecId, NULL, 0);
+    if (id <= 0) {
+        printf("[GB28181][RtpPs] add ps stream failed codec=%d ret=%d\n", codecId, id);
+        return -2;
+    }
+
+    m_state->stream_map[codecId] = id;
+    *streamId = id;
+    return 0;
+}
+
+int GB28181RtpPsSender::SendEsFrameByCodec(int codecId,
+                                           const uint8_t* data,
+                                           size_t size,
+                                           uint64_t pts90k,
+                                           bool keyFrame)
+{
+    if (m_state == NULL || !m_state->opened) {
+        return -1;
+    }
+
+    if (data == NULL || size == 0) {
+        return -2;
+    }
+
+    int streamId = 0;
+    int ret = EnsureStreamAdded(codecId, &streamId);
+    if (ret != 0) {
+        return ret;
+    }
+
+    const int flags = keyFrame ? 0x0001 : 0;
+    m_state->current_timestamp90k = static_cast<uint32_t>(pts90k & 0xFFFFFFFFu);
+
+    ret = m_state->api.ps_muxer_input(m_state->ps_muxer,
+                                      streamId,
+                                      flags,
+                                      static_cast<int64_t>(pts90k),
+                                      static_cast<int64_t>(pts90k),
+                                      data,
+                                      size);
+    if (ret != 0) {
+        printf("[GB28181][RtpPs] ps muxer input failed ret=%d size=%lu codec=%d\n",
+               ret,
+               static_cast<unsigned long>(size),
+               codecId);
+        return -3;
+    }
+
+    return 0;
+}
+
+int GB28181RtpPsSender::SendVideoFrame(const uint8_t* data, size_t size, uint64_t pts90k, bool keyFrame)
+{
+    return SendEsFrameByCodec(ResolveVideoCodecId(), data, size, pts90k, keyFrame);
+}
+
+int GB28181RtpPsSender::SendAudioFrame(const uint8_t* data, size_t size, uint64_t pts90k)
+{
+    return SendEsFrameByCodec(ResolveAudioCodecId(), data, size, pts90k, false);
+}
+
+bool GB28181RtpPsSender::IsOpened() const
+{
+    return m_state != NULL && m_state->opened;
+}
+
+int GB28181RtpPsSender::OnPsPacket(int stream, void* packet, size_t bytes)
+{
+    (void)stream;
+
+    if (m_state == NULL || m_state->rtp_encoder == NULL || packet == NULL || bytes == 0) {
+        return -1;
+    }
+
+    return m_state->api.rtp_payload_encode_input(m_state->rtp_encoder,
+                                                  packet,
+                                                  static_cast<int>(bytes),
+                                                  m_state->current_timestamp90k);
+}
+
+int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t timestamp, int flags)
+{
+    (void)timestamp;
+    (void)flags;
+
+    if (m_state == NULL || m_state->sockfd < 0 || packet == NULL || bytes <= 0) {
+        return -1;
+    }
+
+    const int n = sendto(m_state->sockfd,
+                         packet,
+                         bytes,
+                         0,
+                         (struct sockaddr*)&m_state->remote_addr,
+                         sizeof(m_state->remote_addr));
+    if (n != bytes) {
+        printf("[GB28181][RtpPs] udp send failed n=%d expect=%d errno=%d\n", n, bytes, errno);
+        return -2;
+    }
+
+    m_state->total_packets += 1;
+    m_state->total_bytes += static_cast<unsigned long long>(bytes);
+
+    const uint32_t now = NowSeconds();
+    if (now != m_state->last_log_sec) {
+        m_state->last_log_sec = now;
+        printf("[GB28181][RtpPs] tx packets=%u bytes=%llu target=%s:%d\n",
+               m_state->total_packets,
+               m_state->total_bytes,
+               m_param.target_ip.c_str(),
+               m_param.target_port);
+    }
+
+    return 0;
+}
+
+void* GB28181RtpPsSender::OnPsAlloc(void* param, size_t bytes)
+{
+    (void)param;
+    return malloc(bytes);
+}
+
+void GB28181RtpPsSender::OnPsFree(void* param, void* packet)
+{
+    (void)param;
+    free(packet);
+}
+
+int GB28181RtpPsSender::OnPsWrite(void* param, int stream, void* packet, size_t bytes)
+{
+    GB28181RtpPsSender* self = (GB28181RtpPsSender*)param;
+    if (self == NULL) {
+        return -1;
+    }
+
+    return self->OnPsPacket(stream, packet, bytes);
+}
+
+void* GB28181RtpPsSender::OnRtpAlloc(void* param, int bytes)
+{
+    (void)param;
+    if (bytes <= 0) {
+        return NULL;
+    }
+
+    return malloc(static_cast<size_t>(bytes));
+}
+
+void GB28181RtpPsSender::OnRtpFree(void* param, void* packet)
+{
+    (void)param;
+    free(packet);
+}
+
+int GB28181RtpPsSender::OnRtpPacketWrite(void* param,
+                                         const void* packet,
+                                         int bytes,
+                                         uint32_t timestamp,
+                                         int flags)
+{
+    GB28181RtpPsSender* self = (GB28181RtpPsSender*)param;
+    if (self == NULL) {
+        return -1;
+    }
+
+    return self->OnRtpPacket(packet, bytes, timestamp, flags);
+}
+
+}
+
+

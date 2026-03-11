@@ -1,0 +1,21 @@
+{
+    "structs": 
+    [
+        {
+            "type": "device_status_response_t",
+            "members": 
+            [
+                ["uint32_t", "SN"],
+                ["string", "CmdType","DeviceStatus"],
+		        ["string", "DeviceID"],
+                ["string", "Status"],
+				["string", "Result"],
+                ["string", "Online"],
+                ["string", "Reason"],
+                ["string", "Encode"],
+                ["string", "Record"],
+                ["string", "DeviceTime"]		
+            ]
+        }
+    ]
+}

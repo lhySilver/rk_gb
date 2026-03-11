@@ -1,0 +1,19 @@
+{
+    "structs": 
+    [
+	  
+      
+        {
+            "type": "media_status_notify_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		        ["string", "DeviceID"],
+                ["uint32_t", "NotifyType"]
+                       
+            ]
+        }
+    ]
+}

@@ -1,0 +1,121 @@
+#include "Infra/AutoBuffer.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+CAutoBuffer::CAutoBuffer()
+{
+	m_buff = NULL;
+	m_datalen = 0;
+}
+
+CAutoBuffer::~CAutoBuffer(void)
+{
+	if (m_buff != NULL)
+	{
+		delete m_buff;
+		m_buff = NULL;
+	}
+	
+	m_datalen = 0;
+}
+
+CAutoBuffer * CAutoBuffer::CreateBuffer(char * aBuffer,  int nSize, bool isbackup )
+{
+	CAutoBuffer * _instance = NULL;
+
+	if (nSize > 0)
+	{
+		_instance = new CAutoBuffer;
+		if (_instance == NULL)
+		{
+			return NULL;
+		}
+
+		bool bSuccess = true;
+		if ( isbackup )
+		{
+			bSuccess = _instance->CopyBuf(nSize, (const char *)aBuffer);
+		}
+		else
+		{
+			bSuccess = _instance->SetBuf(nSize, aBuffer);
+		}
+
+		if (!bSuccess)
+		{
+			delete _instance;
+			return NULL;
+		}
+	}
+
+	return _instance;
+}
+
+//以下二方法将接管外部缓存区
+bool CAutoBuffer::SetBuf( int nSize, char * aBuffer )
+{
+	if (m_buff != NULL)
+	{
+		delete m_buff;
+		m_buff = NULL;
+	}
+
+	m_datalen = nSize;
+
+	if (aBuffer != NULL)
+	{
+		m_buff = aBuffer;
+	}
+	else
+	{
+		m_buff = new char[nSize];
+		if (m_buff == 0)
+		{
+			m_datalen = 0;
+			return false;
+		}
+
+		memset(m_buff, 0, nSize);
+	}
+
+	return true;
+}
+
+//以下方法将自创缓存内容
+bool CAutoBuffer::CopyBuf( int nSize, const char * aBuffer )
+{
+	if (m_buff != NULL)
+	{
+		delete m_buff;
+		m_buff = NULL;
+	}
+
+	m_datalen = nSize;
+
+	if (aBuffer != NULL)
+	{
+		m_buff = new char [m_datalen + 1];
+		if (m_buff == NULL)
+		{
+			m_datalen = 0;
+			return false;
+		}
+
+		memcpy(m_buff, aBuffer, m_datalen);
+		m_buff[m_datalen] = 0;
+	}
+
+	return true;
+}
+
+char * CAutoBuffer::GetBuf()
+{
+	return m_buff;
+}
+
+unsigned   CAutoBuffer::BufferSize()
+{
+	return m_datalen;
+}
+

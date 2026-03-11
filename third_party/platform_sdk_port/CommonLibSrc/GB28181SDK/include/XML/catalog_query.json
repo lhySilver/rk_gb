@@ -1,0 +1,20 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "catalog_query_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["string", "StartTime"],
+                ["string", "EndTime"]
+               			     
+                          
+            ]
+        }
+    ]
+}

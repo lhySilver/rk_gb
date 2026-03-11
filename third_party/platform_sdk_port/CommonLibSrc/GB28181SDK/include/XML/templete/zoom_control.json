@@ -1,0 +1,31 @@
+{
+    "structs": 
+    [
+	  
+          {
+            "type": "drag_t",
+            "members": 
+                [
+                ["int32_t", "Length"],
+                ["int32_t", "Width"],
+                ["int32_t", "MidPointX"],
+                ["int32_t", "MidPointY"],
+                ["int32_t", "LengthX"],
+                ["int32_t", "LengthY"]
+
+                ]
+            },
+          {
+            "type": "zoom_control_t",
+            "members": 
+            [
+                ["uint32_t", "SN"],
+                ["string", "CmdType"],
+		    ["string", "DeviceID"],
+                ["drag_t", "DragZoomIn"],
+                ["drag_t", "DragZoomOut"]
+                				
+            ]
+        }
+    ]
+}

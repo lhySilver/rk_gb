@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../../Lib/Package/libDG_crypto.a  CMakeFiles/DG_crypto.dir/Source/aes.c.o CMakeFiles/DG_crypto.dir/Source/crypto.c.o
+/usr/bin/ranlib ../../../Lib/Package/libDG_crypto.a

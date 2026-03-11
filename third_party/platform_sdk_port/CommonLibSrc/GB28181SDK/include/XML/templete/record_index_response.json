@@ -1,0 +1,39 @@
+{
+    "structs": 
+    [
+         
+        {
+            "type": "record_list_t",
+            "members": 
+            [
+               
+                ["string", "DeviceID"],
+                ["string", "StartTime"],
+                ["string", "EndTime"],
+                 ["string", "FilePath"],
+                ["string", "Address"],
+                ["uint32_t", "Secrecy"],
+                 ["string", "Type"],
+                ["string", "RecorderID"],
+                ["string", "Name"]
+                        
+                          
+            ]
+         },
+	  
+        {
+            "type": "record_index_response_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		   ["string", "DeviceID"],
+                ["string", "Name"],
+                ["uint32_t", "SumNum"],
+                ["[record_list_t]", "RecordList"]
+                          
+            ]
+        }
+    ]
+}

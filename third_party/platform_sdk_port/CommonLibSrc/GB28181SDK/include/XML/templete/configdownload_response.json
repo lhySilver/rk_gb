@@ -1,0 +1,138 @@
+﻿{
+    "structs": 
+    [
+         
+        {
+            "type": "basic_param_t",
+            "members": 
+            [
+               
+                ["string", "Name"],
+                ["string", "Expiration"],
+                ["uint32_t", "HeartBeatInterval"],
+                ["uint32_t", "HeartBeatCount"],
+                ["uint32_t", "PositionCapability"],
+                ["double", "Longitude"],
+                ["double", "Latitude"]
+                
+            ]
+         },
+	 {
+            "type": "video_param_opt_t",
+            "members": 
+            [
+               
+                ["string", "DownloadSpeed"],
+                ["string", "Resolution"],
+                ["string", "ImageFlip"]
+                
+            ]
+         }, 
+          
+         {
+            "type": "svc_param_t",
+            "members": 
+            [
+               
+                ["uint32_t", "SVCSpaceDomainMode"],
+                ["uint32_t", "SVCTimeDomainMode"],
+                ["uint32_t", "SVCSpaceSupportMode"],
+                ["uint32_t", "SVCTimeSupportMode"]
+                
+            ]
+         }, 
+          
+
+         {
+            "type": "surveillance_encode_t",
+            "members": 
+            [
+               
+                ["uint32_t", "TimeFlag"],
+                ["uint32_t", "EventFlag"],
+                ["uint32_t", "AlertFlag"]
+               
+            ]
+         }, 
+
+          {
+            "type": "audio_param_t",
+            "members": 
+            [
+               
+                ["uint32_t", "AudioRecognitionFlag"]
+             
+            ]
+         }, 
+         {
+		    "type": "roi_area_description_list_t",
+			"members":
+			[
+				["uint32_t","ROISeq"],
+				["uint32_t","TopLeft"],
+				["uint32_t","BottomRight"],
+				["uint32_t","ROIQP"]
+			]
+		 },
+         {
+            "type": "roi_param_t",
+            "members": 
+            [
+               
+                ["uint32_t", "ROIFlag"],
+                ["uint32_t", "ROINumber"],
+				["[roi_area_description_list_t]", "ROIAreaDescriptionList"],
+                ["uint32_t", "BackGroundQP"],
+                ["uint32_t", "BackGroundSkipFlag"]
+            ]
+         }, 		 
+           {
+            "type": "surveillance_decode_t",
+            "members": 
+            [
+               
+                ["uint32_t", "TimeShowFlag"],
+                ["uint32_t", "EventShowFlag"],
+                ["uint32_t", "AlerShowFlag"]
+                     
+            ]
+         }, 
+          {
+            "type": "svac_decode_config_t",
+            "members": 
+            [
+                ["surveillance_decode_t","SurveillanceParam"],
+                ["svc_param_t","SVCParam"]
+            ]
+         }, 
+          {
+            "type": "svac_encode_config_t",
+            "members": 
+            [
+               
+                ["roi_param_t", "ROIParam"],
+                ["surveillance_encode_t","SurveillanceParam"],
+                ["svc_param_t","SVCParam"],
+                ["audio_param_t","AudioParam"]
+                     
+            ]
+         }, 
+        {
+            "type": "configdownload_response_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+				["string", "DeviceID"],
+                ["string", "Result"],
+                ["basic_param_t", "BasicParam"],
+                ["video_param_opt_t","VideoParamOpt"],
+                ["svac_encode_config_t", "SVACEncodeConfig"],
+                ["svac_decode_config_t", "SVACDecodeConfig"]
+                          
+            ]
+        }
+    ]
+}
+

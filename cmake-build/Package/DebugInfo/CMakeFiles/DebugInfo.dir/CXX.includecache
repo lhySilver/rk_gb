@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/DebugInfo/Source/debuginfo.cpp
+debuginfo.h
+/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/DebugInfo/Source/debuginfo.h
+
+/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/DebugInfo/Source/debuginfo.h
+stdio.h
+-
+string.h
+-
+stdarg.h
+-
+time.h
+-
+sys/time.h
+-
+errno.h
+-
+

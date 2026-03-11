@@ -1,0 +1,486 @@
+﻿#ifndef __PROTOCOL_MANAGER_H__
+
+#define __PROTOCOL_MANAGER_H__
+
+
+
+#include <memory>
+
+#include <mutex>
+
+#include <stddef.h>
+
+#include <stdint.h>
+
+#include <string>
+
+#include <thread>
+
+#include <atomic>
+
+
+
+#include "ProtocolService.h"
+
+#include "HttpConfigProvider.h"
+
+#include "GB28181BroadcastBridge.h"
+
+#include "GB28181ListenBridge.h"
+
+#include "GB28181RtpPsSender.h"
+
+#include "GB28181ClientReceiverAdapter.h"
+
+#include "Storage_api.h"
+
+
+
+class GB28181ClientSDK;
+
+namespace protocol
+{
+
+class GAT1400ClientService;
+
+class ProtocolManager : public ProtocolService
+
+{
+
+public:
+
+    typedef int (*GbMediaPlayInfoResponder)(StreamHandle handle, const MediaInfo* info, void* userData);
+
+
+
+    ProtocolManager();
+
+    ~ProtocolManager();
+
+
+
+    virtual int Init(const std::string& configEndpoint);
+
+    virtual void UnInit();
+
+
+
+    virtual int Start();
+
+    virtual void Stop();
+
+
+
+    virtual int ReloadExternalConfig();
+
+    const ProtocolExternalConfig& GetConfig() const;
+
+
+
+    int PushLiveVideoEsFrame(const uint8_t* data, size_t size, uint64_t pts90k, bool keyFrame);
+
+    int PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint64_t pts90k);
+
+    int PushListenAudioFrame(const uint8_t* data, size_t size, uint64_t timestamp);
+
+
+
+    int ApplyGbBroadcastSdpOffer(const std::string& sdp, const std::string& remoteIpHint);
+
+    int ApplyGbBroadcastTransportHint(const std::string& remoteIp,
+
+                                      int remotePort,
+
+                                      int payloadType,
+
+                                      const std::string& codec,
+
+                                      int transportType);
+
+    std::string BuildGbBroadcastAnswerSdp(const std::string& localIp) const;
+
+    int BuildGbBroadcastMediaInfo(const std::string& localIp,
+
+                                  const std::string& deviceId,
+
+                                  MediaInfo& out,
+
+                                  RtpMap& outMap) const;
+
+
+
+    int HandleGbAudioStreamRequest(StreamHandle handle, const char* gbCode, const MediaInfo* input);
+
+    int HandleGbLiveStreamRequest(StreamHandle handle, const char* gbCode, const MediaInfo* input);
+
+    int HandleGbPlaybackRequest(StreamHandle handle, const char* gbCode, const MediaInfo* input);
+
+    int HandleGbDownloadRequest(StreamHandle handle, const char* gbCode, const MediaInfo* input);
+
+    int HandleGbStreamAck(StreamHandle handle);
+
+    int HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd* cmd);
+
+    int HandleGbDeviceControl(ResponseHandle handle, const DevControlCmd* cmd);
+
+    int HandleGbSubscribe(SubscribeHandle handle, SubscribeType type, const char* gbCode, void* info);
+
+    int HandleGbQueryRequest(ResponseHandle handle, const QueryParam* param);
+
+    int NotifyGbCatalog(const char* gbCode);
+
+    int NotifyGbAlarm(const AlarmNotifyInfo* info);
+
+    int NotifyGbMobilePosition(const MobilePositionInfo* info);
+
+    void HandleGbStopStreamRequest(StreamHandle handle, const char* gbCode);
+
+
+
+    void SetGbMediaPlayInfoResponder(GbMediaPlayInfoResponder responder, void* userData);
+
+    void SetGbBroadcastPcmCallback(GB28181BroadcastBridge::PcmFrameCallback cb, void* userData);
+
+
+
+    void BindGbClientSdk(GB28181ClientSDK* sdk);
+
+    void UnbindGbClientSdk();
+
+    GAT1400ClientService* GetGatClientService();
+
+    const GAT1400ClientService* GetGatClientService() const;
+
+
+
+    GB28181ClientReceiverAdapter* GetGbClientReceiver();
+
+    const GB28181ClientReceiverAdapter* GetGbClientReceiver() const;
+
+
+
+private:
+
+    struct GbReplaySession
+
+    {
+
+        bool active;
+
+        bool download;
+
+        StreamHandle stream_handle;
+
+        int storage_handle;
+
+        std::string gb_code;
+
+        uint64_t start_time;
+
+        uint64_t end_time;
+
+        uint64_t last_pts90k;
+
+        bool acked;
+
+        uint32_t sent_video_frames;
+
+        uint32_t sent_audio_frames;
+
+
+
+        GbReplaySession()
+
+            : active(false),
+
+              download(false),
+
+              stream_handle(NULL),
+
+              storage_handle(-1),
+
+              start_time(0),
+
+              end_time(0),
+
+              last_pts90k(0),
+
+              acked(false),
+
+              sent_video_frames(0),
+
+              sent_audio_frames(0)
+
+        {
+
+        }
+
+    };
+
+
+
+    struct GbLiveSession
+
+    {
+
+        bool active;
+
+        StreamHandle stream_handle;
+
+        std::string gb_code;
+
+        bool audio_requested;
+
+        bool audio_enabled;
+
+        bool prefer_sub_stream;
+
+        bool acked;
+
+        uint32_t sent_video_frames;
+
+        uint32_t sent_audio_frames;
+
+
+
+        GbLiveSession()
+
+            : active(false),
+
+              stream_handle(NULL),
+
+              audio_requested(false),
+
+              audio_enabled(false),
+
+              prefer_sub_stream(false),
+
+              acked(false),
+
+              sent_video_frames(0),
+
+              sent_audio_frames(0)
+
+        {
+
+        }
+
+    };
+
+
+
+    static int OnGbMediaPlayInfoRespond(StreamHandle handle, const MediaInfo* info, void* userData);
+
+    static void OnGbReplayStorageFrame(unsigned char* data, int size, Mp4DemuxerFrameInfo_s* frameInfo, void* userData);
+
+    static int OnGbLiveCapture(int media_chn,
+
+                                  int media_type,
+
+                                  int media_subtype,
+
+                                  unsigned long long frame_pts,
+
+                                  unsigned char* frame_data,
+
+                                  int frame_len,
+
+                                  int frame_end_flag);
+
+
+
+    int StartGbReplaySession(StreamHandle handle, const char* gbCode, const MediaInfo* input, bool download);
+
+    int ReconfigureGbLiveSender(const MediaInfo* input, const char* gbCode, StreamRequestType requestType);
+
+    int RespondGbMediaPlayInfo(StreamHandle handle, const char* gbCode, StreamRequestType requestType, const MediaInfo* input);
+
+    int BuildGbResponseMediaInfo(const char* gbCode,
+
+                                 StreamRequestType requestType,
+
+                                 const MediaInfo* input,
+
+                                 MediaInfo& out,
+
+                                 RtpMap& outMap) const;
+
+    int StartGbClientLifecycle();
+
+    void StopGbClientLifecycle();
+
+    int RegisterGbClient(bool force);
+
+    int SendGbHeartbeatOnce();
+
+    void GbHeartbeatLoop();
+
+    int HandleGbPtzControl(const DevControlCmd* cmd);
+
+    int HandleGbGuardControl(const DevControlCmd* cmd);
+
+    int HandleGbAlarmResetControl(const DevControlCmd* cmd);
+
+    int HandleGbConfigControl(const DevControlCmd* cmd);
+
+    int HandleGbHomePositionControl(const DevControlCmd* cmd);
+
+    int HandleGbTeleBootControl(const DevControlCmd* cmd);
+
+    int HandleGbDeviceUpgradeControl(const DevControlCmd* cmd);
+
+    int NotifyGbUpgradeResult(const char* gbCode,
+                              const char* sessionId,
+                              const char* firmware,
+                              bool result,
+                              const char* description);
+
+    int PersistGbUpgradePendingState(const char* gbCode,
+                                     const char* sessionId,
+                                     const char* firmware,
+                                     const char* description,
+                                     bool pending);
+
+    int ReportPendingGbUpgradeResult();
+
+    int NotifyGbCatalogInternal(const char* gbCode);
+
+    int ResponseGbQueryDeviceInfo(ResponseHandle handle, const QueryParam* param);
+
+    int ResponseGbQueryDeviceStatus(ResponseHandle handle, const QueryParam* param);
+
+    int ResponseGbQueryCatalog(ResponseHandle handle, const QueryParam* param);
+
+    int ResponseGbQueryRecord(ResponseHandle handle, const QueryParam* param);
+
+    int ResponseGbQueryConfig(ResponseHandle handle, const QueryParam* param);
+
+    int ResponseGbQueryPreset(ResponseHandle handle, const QueryParam* param);
+
+    void HandleGbReplayStorageFrame(unsigned char* data, int size, Mp4DemuxerFrameInfo_s* frameInfo);
+
+    int HandleGbLiveCaptureInternal(int media_chn,
+
+                                       int media_type,
+
+                                       int media_subtype,
+
+                                       unsigned long long frame_pts,
+
+                                       unsigned char* frame_data,
+
+                                       int frame_len,
+
+                                       int frame_end_flag);
+
+    int StartGbLiveCapture();
+
+    void StopGbLiveCapture();
+
+    void ClearGbReplaySessionState();
+
+    int NotifyGbMediaStatus(StreamHandle handle, const std::string& gbCode, int notifyType, const char* reason);
+
+
+
+private:
+
+    std::shared_ptr<IExternalConfigProvider> m_provider;
+
+    ProtocolExternalConfig m_cfg;
+
+    std::string m_gb_device_name;
+    bool m_gb_osd_time_enabled;
+    bool m_gb_osd_event_enabled;
+    bool m_gb_osd_alert_enabled;
+
+    GB28181BroadcastBridge m_broadcast;
+
+    GB28181ListenBridge m_listen;
+
+    GB28181RtpPsSender m_rtp_ps_sender;
+
+    GB28181ClientReceiverAdapter m_gb_receiver;
+
+    std::unique_ptr<GAT1400ClientService> m_gat_client;
+
+
+
+    GB28181ClientSDK* m_gb_client_sdk;
+
+    GbMediaPlayInfoResponder m_gb_media_responder;
+
+    void* m_gb_media_responder_user;
+
+    std::mutex m_gb_lifecycle_mutex;
+
+    std::thread m_gb_heartbeat_thread;
+
+    std::atomic<bool> m_gb_heartbeat_running;
+
+    bool m_gb_client_started;
+
+    bool m_gb_client_registered;
+
+    std::mutex m_gb_subscribe_mutex;
+
+    SubscribeHandle m_gb_catalog_subscribe_handle;
+
+    SubscribeHandle m_gb_alarm_subscribe_handle;
+
+    SubscribeHandle m_gb_mobile_position_subscribe_handle;
+
+    std::mutex m_gb_replay_mutex;
+
+    GbReplaySession m_gb_replay_session;
+
+    std::mutex m_gb_live_mutex;
+
+    GbLiveSession m_gb_live_session;
+
+    bool m_gb_live_capture_started;
+
+
+
+    bool m_started;
+
+};
+
+
+
+}
+
+
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

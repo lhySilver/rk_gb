@@ -1,0 +1,1 @@
+cmd_/home/ale/workspace/Rockchip/RV1106_RV1103/Project/RC0240/rc0240/driver/pir/driver/Module.symvers := sed 's/\.ko$$/\.o/' /home/ale/workspace/Rockchip/RV1106_RV1103/Project/RC0240/rc0240/driver/pir/driver/modules.order | scripts/mod/modpost     -o /home/ale/workspace/Rockchip/RV1106_RV1103/Project/RC0240/rc0240/driver/pir/driver/Module.symvers -e -i Module.symvers   -T -

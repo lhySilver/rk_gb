@@ -1,0 +1,194 @@
+#include "SipClientImpl.h"
+#include "common/SipEventManager.h"
+#include "common/ClientInfoManager.h"
+
+CSipClientImpl::CSipClientImpl()
+{
+    m_sip_server_handler  = new SipServerHandlerImpl();
+    m_event_manager = new CSipEventManager();
+    m_client_info       =  new ClientInfo;
+}
+
+CSipClientImpl::~CSipClientImpl()
+{
+    if(m_sip_server_handler) {
+         delete m_sip_server_handler;
+        m_sip_server_handler = NULL;
+    }
+
+    if( m_event_manager ) {
+        delete m_event_manager;
+        m_event_manager = NULL;
+    }
+
+    if( m_client_info ) {
+        delete m_client_info;
+        m_client_info = NULL;
+    }
+
+}
+
+int   CSipClientImpl::Start(SipTransportType type , const NetAddress* local, const char*local_name)
+{
+    m_client_info->LocalIp  = local->ip;
+    m_client_info->LocalPort =  local->port;
+    m_client_info->local_name = local_name;
+    return m_event_manager->StartSipListen(type,local,local_name);
+}
+
+void CSipClientImpl::Stop()
+{
+    m_event_manager->Stop();
+}
+
+void CSipClientImpl::SetHandler(const SipClientHandler* handler)
+{
+     m_sip_server_handler->client_handler = (SipClientHandler*)handler;
+     m_event_manager->SetSipHandler(m_sip_server_handler);
+}
+
+void CSipClientImpl::FreeSipResult(SipData* data)
+{
+    FreeSipData(data);
+}
+
+void CSipClientImpl::FreeSipBuffer(char** buf)
+{
+	FreeSipBuf(buf);
+}
+
+// Sip register
+int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectParam* info, int timeout , SipData** result )
+{
+    if(message->auth_flag) {
+        m_client_info->auth_flag = true;
+    }
+
+    m_client_info->Username = message->user_name;
+    m_client_info->Password = message->password;
+    m_client_info->Expire = message->expires;
+    m_client_info->RemoteIp = info->ip;
+    m_client_info->RemotePort= info->port;
+    m_client_info->RemoteSipSrvName = info->sip_code;
+    m_client_info->new_reg = message->new_reg;
+    m_client_info->SetFromeAndTo();
+
+    return  m_event_manager->Register(m_client_info, timeout, result );
+}
+
+int   CSipClientImpl::UnRegister()
+{
+    m_client_info->Expire = 0;
+    return  m_event_manager->Register(m_client_info, 0, NULL );
+}
+
+//  sip call
+int   CSipClientImpl::Invite(const SipMessage* message, int timeout,  SipData** result )
+{
+       return  m_event_manager->SendSipResquest(
+                                                                         kSipInviteMethod,
+                                                                         timeout,
+                                                                         m_client_info,
+                                                                         NULL,
+                                                                         message,
+                                                                         result
+                                                                       );
+}
+
+int   CSipClientImpl::Info(const  SipDialogKey* key ,const SipMessage* message,  int timeout,   SipData** result)
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipInfoMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      key,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+int   CSipClientImpl::Ack( const  SipDialogKey* key ,const SipMessage* message, int timeout,   SipData** result )
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipAckMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      key,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+int   CSipClientImpl::Bye( const  SipDialogKey* key ,const SipMessage* message, int timeout,   SipData** result )
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipByeMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      key,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+
+// sip subcribe
+int   CSipClientImpl::Subcribe(const SipMessage* message, int timeout,  SipData** result )
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipSubscribeMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      NULL,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+int   CSipClientImpl::Notify(const  SipDialogKey* key ,const SipMessage* message, int timeout,  SipData** result )
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipNotifyMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      key,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+
+// sip message
+int   CSipClientImpl::Message(const SipMessage* message, int timeout,  SipData** result)
+{
+    return  m_event_manager->SendSipResquest(
+                                                                      kSipMessageMethod,
+                                                                      timeout,
+                                                                      m_client_info,
+                                                                      NULL,
+                                                                      message,
+                                                                      result
+                                                                    );
+}
+
+int CSipClientImpl::MessageToStr(const SipMessage* message, char** buf, size_t* buf_len)
+{
+	return m_event_manager->MessageToStr(kSipMessageMethod,m_client_info,message,buf,buf_len);
+}
+
+int   CSipClientImpl::Response( const  SipDialogKey* key, const SipMessage* message)
+{
+    return  m_event_manager->SendSipResponse(m_client_info, key, message);
+}
+
+int   CSipClientImpl::RequestWithCall(const  SipDialogKey* key, const SipMessage* message, int timeout, SipData** result)
+{
+	return  m_event_manager->SendSipResquest(
+		kSipMessageWithCallMethod,
+		timeout,
+		m_client_info,
+		key,
+		message,
+		result
+	);
+}

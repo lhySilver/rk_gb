@@ -1,0 +1,24 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "mobile_position_notify_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["string", "Time"],
+                     
+                 ["double", "Longitude"],
+		     ["double", "Latitude"],
+                 ["double", "Speed"],
+                 ["double", "Direction"],
+                 ["double", "Altitude"]
+                          
+            ]
+        }
+    ]
+}

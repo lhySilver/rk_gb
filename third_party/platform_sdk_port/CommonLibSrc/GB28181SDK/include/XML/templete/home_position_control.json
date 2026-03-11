@@ -1,0 +1,28 @@
+{
+    "structs": 
+    [
+        {
+            "type": "home_position_t",
+            "members": 
+            [
+               
+                ["uint32_t", "Enabled"],
+                ["uint32_t", "ResetTime"],
+		    ["uint32_t", "PresetIndex"]
+                          
+            ]
+         },
+	  
+        {
+            "type": "home_position_control_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["home_position_t", "HomePosition"]
+            ]
+        }
+    ]
+}

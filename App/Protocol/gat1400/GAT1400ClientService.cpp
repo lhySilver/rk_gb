@@ -1,0 +1,1604 @@
+﻿#include "GAT1400ClientService.h"
+
+#include <algorithm>
+#include <arpa/inet.h>
+#include <cerrno>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <functional>
+#include <iterator>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sstream>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+#include "GAT1400Json.h"
+#include "http_auth.h"
+
+namespace protocol
+{
+namespace
+{
+
+static const int kHttpTimeoutMs = 5000;
+static const int kAcceptWaitMs = 500;
+static const char* kJsonContentType = "application/VIID+json;charset=UTF-8";
+
+std::string ToLowerCopy(const std::string& input)
+{
+    std::string output(input);
+    std::transform(output.begin(), output.end(), output.begin(),
+                   [](unsigned char ch) { return static_cast<char>(std::tolower(ch)); });
+    return output;
+}
+
+std::string TrimCopy(const std::string& input)
+{
+    size_t begin = 0;
+    while (begin < input.size() && std::isspace(static_cast<unsigned char>(input[begin]))) {
+        ++begin;
+    }
+    size_t end = input.size();
+    while (end > begin && std::isspace(static_cast<unsigned char>(input[end - 1]))) {
+        --end;
+    }
+    return input.substr(begin, end - begin);
+}
+
+void CopyToArray(char* dst, size_t dstSize, const std::string& value)
+{
+    if (dst == NULL || dstSize == 0) {
+        return;
+    }
+    memset(dst, 0, dstSize);
+    if (!value.empty()) {
+        strncpy(dst, value.c_str(), dstSize - 1);
+    }
+}
+
+std::string FormatCurrentTime()
+{
+    char buffer[32] = {0};
+    time_t now = time(NULL);
+    struct tm tmNow;
+    localtime_r(&now, &tmNow);
+    strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &tmNow);
+    return std::string(buffer);
+}
+
+bool ParseCompactTime(const char* text, time_t& out)
+{
+    if (text == NULL || strlen(text) != 14) {
+        return false;
+    }
+    struct tm tmValue;
+    memset(&tmValue, 0, sizeof(tmValue));
+    char buffer[5] = {0};
+    memcpy(buffer, text, 4);
+    tmValue.tm_year = atoi(buffer) - 1900;
+    memcpy(buffer, text + 4, 2);
+    buffer[2] = 0;
+    tmValue.tm_mon = atoi(buffer) - 1;
+    memcpy(buffer, text + 6, 2);
+    tmValue.tm_mday = atoi(buffer);
+    memcpy(buffer, text + 8, 2);
+    tmValue.tm_hour = atoi(buffer);
+    memcpy(buffer, text + 10, 2);
+    tmValue.tm_min = atoi(buffer);
+    memcpy(buffer, text + 12, 2);
+    tmValue.tm_sec = atoi(buffer);
+    tmValue.tm_isdst = -1;
+    out = mktime(&tmValue);
+    return out != static_cast<time_t>(-1);
+}
+
+int EvaluateSubscribeStatus(const GAT_1400_Subscribe& subscribe)
+{
+    if (subscribe.OperateType != 0) {
+        return SUBSCRIBE_CANCEL;
+    }
+
+    time_t beginTime = 0;
+    time_t endTime = 0;
+    if (!ParseCompactTime(subscribe.BeginTime, beginTime) || !ParseCompactTime(subscribe.EndTime, endTime)) {
+        return subscribe.SubscribeStatus;
+    }
+
+    const time_t now = time(NULL);
+    if (now > endTime) {
+        return SUBSCRIBE_EXPIRATION;
+    }
+    if (now >= beginTime && now <= endTime) {
+        return SUBSCRIBE_ING;
+    }
+    return SUBSCRIBE_NONE;
+}
+
+std::string UrlDecode(const std::string& input)
+{
+    std::string output;
+    output.reserve(input.size());
+    for (size_t i = 0; i < input.size(); ++i) {
+        if (input[i] == '%' && i + 2 < input.size()) {
+            const char hi = input[i + 1];
+            const char lo = input[i + 2];
+            if (std::isxdigit(static_cast<unsigned char>(hi)) && std::isxdigit(static_cast<unsigned char>(lo))) {
+                char hex[3] = {hi, lo, 0};
+                output.push_back(static_cast<char>(strtol(hex, NULL, 16)));
+                i += 2;
+                continue;
+            }
+        }
+        output.push_back(input[i] == '+' ? ' ' : input[i]);
+    }
+    return output;
+}
+
+std::map<std::string, std::string> ParseQueryString(const std::string& query)
+{
+    std::map<std::string, std::string> result;
+    std::stringstream ss(query);
+    std::string item;
+    while (std::getline(ss, item, '&')) {
+        if (item.empty()) {
+            continue;
+        }
+        const std::string::size_type pos = item.find('=');
+        if (pos == std::string::npos) {
+            result[UrlDecode(item)] = "";
+        } else {
+            result[UrlDecode(item.substr(0, pos))] = UrlDecode(item.substr(pos + 1));
+        }
+    }
+    return result;
+}
+
+std::string GetSubscribeFieldValue(const GAT_1400_Subscribe& subscribe, const std::string& key)
+{
+    if (key == "SubscribeID") return subscribe.SubscribeID;
+    if (key == "Title") return subscribe.Title;
+    if (key == "SubscribeDetail") return subscribe.SubscribeDetail;
+    if (key == "ResourceURI") return subscribe.ResourceURI;
+    if (key == "ApplicantName") return subscribe.ApplicantName;
+    if (key == "ApplicantOrg") return subscribe.ApplicantOrg;
+    if (key == "BeginTime") return subscribe.BeginTime;
+    if (key == "EndTime") return subscribe.EndTime;
+    if (key == "ReceiveAddr") return subscribe.ReceiveAddr;
+    if (key == "Reason") return subscribe.Reason;
+    if (key == "SubscribeCancelOrg") return subscribe.SubscribeCancelOrg;
+    if (key == "SubscribeCancelPerson") return subscribe.SubscribeCancelPerson;
+    if (key == "CancelTime") return subscribe.CancelTime;
+    if (key == "CancelReason") return subscribe.CancelReason;
+
+    char buffer[32] = {0};
+    if (key == "ReportInterval") {
+        snprintf(buffer, sizeof(buffer), "%d", subscribe.ReportInterval);
+        return buffer;
+    }
+    if (key == "OperateType") {
+        snprintf(buffer, sizeof(buffer), "%d", subscribe.OperateType);
+        return buffer;
+    }
+    if (key == "SubscribeStatus") {
+        snprintf(buffer, sizeof(buffer), "%d", subscribe.SubscribeStatus);
+        return buffer;
+    }
+    return "";
+}
+
+bool MatchSubscribeCondition(const GAT_1400_Subscribe& subscribe, const std::map<std::string, std::string>& condition)
+{
+    for (std::map<std::string, std::string>::const_iterator it = condition.begin(); it != condition.end(); ++it) {
+        if (GetSubscribeFieldValue(subscribe, it->first) != it->second) {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<int> ParseRetryPolicy(const std::string& policy)
+{
+    std::vector<int> delays;
+    std::stringstream ss(policy);
+    std::string item;
+    while (std::getline(ss, item, ',')) {
+        item = TrimCopy(item);
+        if (item.empty()) {
+            continue;
+        }
+        const int delay = atoi(item.c_str());
+        if (delay >= 0) {
+            delays.push_back(delay);
+        }
+    }
+    return delays;
+}
+
+bool ParseHttpUrl(const std::string& url, std::string& host, int& port, std::string& path)
+{
+    const std::string prefix("http://");
+    if (url.compare(0, prefix.size(), prefix) != 0) {
+        return false;
+    }
+
+    std::string remain = url.substr(prefix.size());
+    std::string::size_type slash = remain.find('/');
+    std::string hostPort = remain.substr(0, slash);
+    path = (slash == std::string::npos) ? "/" : remain.substr(slash);
+
+    std::string::size_type colon = hostPort.find(':');
+    if (colon == std::string::npos) {
+        host = hostPort;
+        port = 80;
+    } else {
+        host = hostPort.substr(0, colon);
+        port = atoi(hostPort.substr(colon + 1).c_str());
+    }
+    return !host.empty() && port > 0;
+}
+
+int ConnectTcp(const std::string& host, int port, int timeoutMs)
+{
+    char portText[16] = {0};
+    snprintf(portText, sizeof(portText), "%d", port);
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    struct addrinfo* result = NULL;
+    if (getaddrinfo(host.c_str(), portText, &hints, &result) != 0) {
+        return -1;
+    }
+
+    int fd = -1;
+    for (struct addrinfo* it = result; it != NULL; it = it->ai_next) {
+        fd = socket(it->ai_family, it->ai_socktype, it->ai_protocol);
+        if (fd < 0) {
+            continue;
+        }
+
+        struct timeval tv;
+        tv.tv_sec = timeoutMs / 1000;
+        tv.tv_usec = static_cast<suseconds_t>((timeoutMs % 1000) * 1000);
+        setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+        setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+        if (connect(fd, it->ai_addr, it->ai_addrlen) == 0) {
+            break;
+        }
+
+        close(fd);
+        fd = -1;
+    }
+
+    freeaddrinfo(result);
+    return fd;
+}
+
+bool SendAll(int fd, const std::string& data)
+{
+    size_t total = 0;
+    while (total < data.size()) {
+        const ssize_t sent = send(fd, data.data() + total, data.size() - total, 0);
+        if (sent < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            return false;
+        }
+        if (sent == 0) {
+            return false;
+        }
+        total += static_cast<size_t>(sent);
+    }
+    return true;
+}
+
+bool RecvAll(int fd, std::string& out)
+{
+    char buffer[4096];
+    while (true) {
+        const ssize_t len = recv(fd, buffer, sizeof(buffer), 0);
+        if (len > 0) {
+            out.append(buffer, static_cast<size_t>(len));
+            continue;
+        }
+        if (len == 0) {
+            return true;
+        }
+        if (errno == EINTR) {
+            continue;
+        }
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            return true;
+        }
+        return false;
+    }
+}
+
+bool DecodeChunkedBody(const std::string& input, std::string& output)
+{
+    output.clear();
+    size_t pos = 0;
+    while (pos < input.size()) {
+        const size_t lineEnd = input.find("\r\n", pos);
+        if (lineEnd == std::string::npos) {
+            return false;
+        }
+        const std::string sizeText = input.substr(pos, lineEnd - pos);
+        const unsigned long chunkSize = strtoul(sizeText.c_str(), NULL, 16);
+        pos = lineEnd + 2;
+        if (chunkSize == 0) {
+            return true;
+        }
+        if (pos + chunkSize + 2 > input.size()) {
+            return false;
+        }
+        output.append(input, pos, chunkSize);
+        pos += chunkSize + 2;
+    }
+    return true;
+}
+
+bool ParseHttpResponseText(const std::string& raw, GAT1400ClientService::HttpResponse& response)
+{
+    const size_t headerEnd = raw.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        return false;
+    }
+
+    std::stringstream headerStream(raw.substr(0, headerEnd));
+    std::string line;
+    if (!std::getline(headerStream, line)) {
+        return false;
+    }
+    if (!line.empty() && line[line.size() - 1] == '\r') {
+        line.erase(line.size() - 1);
+    }
+
+    std::stringstream statusLine(line);
+    std::string httpVersion;
+    statusLine >> httpVersion >> response.status_code;
+    if (response.status_code <= 0) {
+        return false;
+    }
+
+    response.headers.clear();
+    while (std::getline(headerStream, line)) {
+        if (!line.empty() && line[line.size() - 1] == '\r') {
+            line.erase(line.size() - 1);
+        }
+        if (line.empty()) {
+            continue;
+        }
+        const std::string::size_type pos = line.find(':');
+        if (pos == std::string::npos) {
+            continue;
+        }
+        const std::string key = ToLowerCopy(TrimCopy(line.substr(0, pos)));
+        const std::string value = TrimCopy(line.substr(pos + 1));
+        response.headers[key] = value;
+    }
+
+    response.body = raw.substr(headerEnd + 4);
+    std::map<std::string, std::string>::const_iterator it = response.headers.find("transfer-encoding");
+    if (it != response.headers.end() && ToLowerCopy(it->second).find("chunked") != std::string::npos) {
+        std::string decoded;
+        if (!DecodeChunkedBody(response.body, decoded)) {
+            return false;
+        }
+        response.body.swap(decoded);
+    } else {
+        it = response.headers.find("content-length");
+        if (it != response.headers.end()) {
+            const long expected = atol(it->second.c_str());
+            if (expected >= 0 && static_cast<long>(response.body.size()) > expected) {
+                response.body.resize(static_cast<size_t>(expected));
+            }
+        }
+    }
+
+    return true;
+}
+
+std::string BuildHttpResponse(int status, const std::string& body)
+{
+    std::ostringstream oss;
+    const char* reason = "OK";
+    if (status == 400) {
+        reason = "Bad Request";
+    } else if (status == 404) {
+        reason = "Not Found";
+    } else if (status == 500) {
+        reason = "Internal Server Error";
+    }
+
+    oss << "HTTP/1.1 " << status << ' ' << reason << "\r\n";
+    oss << "Content-Type: " << kJsonContentType << "\r\n";
+    oss << "Content-Length: " << body.size() << "\r\n";
+    oss << "Connection: close\r\n\r\n";
+    oss << body;
+    return oss.str();
+}
+
+template <typename T>
+std::list<T> SliceBatch(typename std::list<T>::const_iterator& begin,
+                        const typename std::list<T>::const_iterator& end,
+                        int batchSize)
+{
+    std::list<T> batch;
+    int count = 0;
+    while (begin != end && count < batchSize) {
+        batch.push_back(*begin);
+        ++begin;
+        ++count;
+    }
+    return batch;
+}
+
+}  // namespace
+
+GAT1400ClientService::GAT1400ClientService()
+    : m_started(false),
+      m_registered(false),
+      m_regist_state(EM_REGIST_OFF),
+      m_listen_fd(-1),
+      m_server_running(false),
+      m_heartbeat_running(false)
+{
+}
+
+GAT1400ClientService::~GAT1400ClientService()
+{
+    Stop();
+}
+
+int GAT1400ClientService::SnapshotConfig(ProtocolExternalConfig& cfg,
+                                         GbRegisterParam& gbRegister,
+                                         std::string& deviceId) const
+{
+    std::lock_guard<std::mutex> lock(m_state_mutex);
+    if (!m_started && !m_registered) {
+        return -1;
+    }
+    cfg = m_cfg;
+    gbRegister = m_gb_register;
+    deviceId = m_device_id;
+    return 0;
+}
+
+bool GAT1400ClientService::IsStarted() const
+{
+    std::lock_guard<std::mutex> lock(m_state_mutex);
+    return m_started;
+}
+
+void GAT1400ClientService::UpdateRegistState(regist_state state)
+{
+    std::vector<CLower1400RegistStatusObserver*> observers;
+    {
+        std::lock_guard<std::mutex> stateLock(m_state_mutex);
+        if (m_regist_state == state) {
+            return;
+        }
+        m_regist_state = state;
+    }
+    {
+        std::lock_guard<std::mutex> observerLock(m_observer_mutex);
+        observers = m_regist_observers;
+    }
+    for (size_t i = 0; i < observers.size(); ++i) {
+        if (observers[i] != NULL) {
+            observers[i]->UpdateRegistStatus(state);
+        }
+    }
+}
+
+void GAT1400ClientService::AddSubscribeObserver(CLower1400SubscribeObserver* observer)
+{
+    if (observer == NULL) {
+        return;
+    }
+
+    std::list<GAT_1400_Subscribe> subscriptions;
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        if (std::find(m_subscribe_observers.begin(), m_subscribe_observers.end(), observer) == m_subscribe_observers.end()) {
+            m_subscribe_observers.push_back(observer);
+        }
+    }
+    subscriptions = GetSubscriptions();
+    for (std::list<GAT_1400_Subscribe>::const_iterator it = subscriptions.begin(); it != subscriptions.end(); ++it) {
+        if (it->OperateType == 0 && it->SubscribeStatus != SUBSCRIBE_CANCEL) {
+            observer->AddSubscribe(*it);
+        }
+    }
+}
+
+void GAT1400ClientService::RemoveSubscribeObserver(CLower1400SubscribeObserver* observer)
+{
+    if (observer == NULL) {
+        return;
+    }
+
+    std::list<GAT_1400_Subscribe> subscriptions = GetSubscriptions();
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        m_subscribe_observers.erase(std::remove(m_subscribe_observers.begin(), m_subscribe_observers.end(), observer),
+                                    m_subscribe_observers.end());
+    }
+    for (std::list<GAT_1400_Subscribe>::const_iterator it = subscriptions.begin(); it != subscriptions.end(); ++it) {
+        observer->DelSubscribe(it->SubscribeID);
+    }
+}
+
+void GAT1400ClientService::AddRegistStatusObserver(CLower1400RegistStatusObserver* observer)
+{
+    if (observer == NULL) {
+        return;
+    }
+
+    regist_state state;
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        if (std::find(m_regist_observers.begin(), m_regist_observers.end(), observer) == m_regist_observers.end()) {
+            m_regist_observers.push_back(observer);
+        }
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        state = m_regist_state;
+    }
+    observer->UpdateRegistStatus(state);
+}
+
+void GAT1400ClientService::RemoveRegistStatusObserver(CLower1400RegistStatusObserver* observer)
+{
+    if (observer == NULL) {
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(m_observer_mutex);
+    m_regist_observers.erase(std::remove(m_regist_observers.begin(), m_regist_observers.end(), observer),
+                             m_regist_observers.end());
+}
+
+void GAT1400ClientService::DispatchSubscribeAdd(const GAT_1400_Subscribe& subscribe)
+{
+    std::vector<CLower1400SubscribeObserver*> observers;
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        observers = m_subscribe_observers;
+    }
+    for (size_t i = 0; i < observers.size(); ++i) {
+        if (observers[i] != NULL) {
+            observers[i]->AddSubscribe(subscribe);
+        }
+    }
+}
+
+void GAT1400ClientService::DispatchSubscribeUpdate(const GAT_1400_Subscribe& subscribe)
+{
+    std::vector<CLower1400SubscribeObserver*> observers;
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        observers = m_subscribe_observers;
+    }
+    for (size_t i = 0; i < observers.size(); ++i) {
+        if (observers[i] != NULL) {
+            observers[i]->UpdateSubscribe(subscribe);
+        }
+    }
+}
+
+void GAT1400ClientService::DispatchSubscribeDelete(const std::string& subscribeId)
+{
+    std::vector<CLower1400SubscribeObserver*> observers;
+    {
+        std::lock_guard<std::mutex> lock(m_observer_mutex);
+        observers = m_subscribe_observers;
+    }
+    for (size_t i = 0; i < observers.size(); ++i) {
+        if (observers[i] != NULL) {
+            observers[i]->DelSubscribe(subscribeId);
+        }
+    }
+}
+
+std::list<GAT_1400_Subscribe> GAT1400ClientService::GetSubscriptions() const
+{
+    std::list<GAT_1400_Subscribe> result;
+    std::lock_guard<std::mutex> lock(m_subscribe_mutex);
+    for (std::map<std::string, GAT_1400_Subscribe>::const_iterator it = m_subscriptions.begin(); it != m_subscriptions.end(); ++it) {
+        GAT_1400_Subscribe subscribe = it->second;
+        subscribe.SubscribeStatus = EvaluateSubscribeStatus(subscribe);
+        result.push_back(subscribe);
+    }
+    return result;
+}
+
+int GAT1400ClientService::StartServerLocked()
+{
+    if (m_listen_fd >= 0) {
+        return 0;
+    }
+
+    const int fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        return -1;
+    }
+
+    int reuse = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = htons(static_cast<uint16_t>(m_cfg.gat_register.listen_port));
+
+    if (bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) != 0) {
+        close(fd);
+        return -2;
+    }
+    if (listen(fd, 8) != 0) {
+        close(fd);
+        return -3;
+    }
+
+    m_listen_fd = fd;
+    m_server_running.store(true);
+    m_server_thread = std::thread(&GAT1400ClientService::ServerLoop, this);
+    return 0;
+}
+
+void GAT1400ClientService::StopServerLocked()
+{
+    m_server_running.store(false);
+    if (m_listen_fd >= 0) {
+        shutdown(m_listen_fd, SHUT_RDWR);
+        close(m_listen_fd);
+        m_listen_fd = -1;
+    }
+    if (m_server_thread.joinable()) {
+        m_server_thread.join();
+    }
+}
+
+void GAT1400ClientService::ServerLoop()
+{
+    while (m_server_running.load()) {
+        int listenFd = -1;
+        {
+            std::lock_guard<std::mutex> lock(m_state_mutex);
+            listenFd = m_listen_fd;
+        }
+        if (listenFd < 0) {
+            break;
+        }
+
+        fd_set rfds;
+        FD_ZERO(&rfds);
+        FD_SET(listenFd, &rfds);
+        struct timeval tv;
+        tv.tv_sec = kAcceptWaitMs / 1000;
+        tv.tv_usec = static_cast<suseconds_t>((kAcceptWaitMs % 1000) * 1000);
+        const int ready = select(listenFd + 1, &rfds, NULL, NULL, &tv);
+        if (ready <= 0) {
+            continue;
+        }
+
+        const int clientFd = accept(listenFd, NULL, NULL);
+        if (clientFd < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            if (!m_server_running.load()) {
+                break;
+            }
+            continue;
+        }
+
+        HandleServerConnection(clientFd);
+        close(clientFd);
+    }
+}
+
+void GAT1400ClientService::HandleServerConnection(int clientFd)
+{
+    struct timeval tv;
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+    setsockopt(clientFd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    setsockopt(clientFd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+    std::string rawRequest;
+    if (!RecvAll(clientFd, rawRequest)) {
+        return;
+    }
+
+    const size_t headerEnd = rawRequest.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        return;
+    }
+
+    const std::string headerText = rawRequest.substr(0, headerEnd);
+    std::string body = rawRequest.substr(headerEnd + 4);
+    std::stringstream headerStream(headerText);
+    std::string requestLine;
+    if (!std::getline(headerStream, requestLine)) {
+        return;
+    }
+    if (!requestLine.empty() && requestLine[requestLine.size() - 1] == '\r') {
+        requestLine.erase(requestLine.size() - 1);
+    }
+
+    std::stringstream requestLineStream(requestLine);
+    std::string method;
+    std::string requestTarget;
+    std::string httpVersion;
+    requestLineStream >> method >> requestTarget >> httpVersion;
+    if (method.empty() || requestTarget.empty()) {
+        return;
+    }
+
+    std::map<std::string, std::string> headers;
+    std::string line;
+    while (std::getline(headerStream, line)) {
+        if (!line.empty() && line[line.size() - 1] == '\r') {
+            line.erase(line.size() - 1);
+        }
+        const std::string::size_type pos = line.find(':');
+        if (pos == std::string::npos) {
+            continue;
+        }
+        headers[ToLowerCopy(TrimCopy(line.substr(0, pos)))] = TrimCopy(line.substr(pos + 1));
+    }
+
+    std::map<std::string, std::string>::const_iterator lengthIt = headers.find("content-length");
+    if (lengthIt != headers.end()) {
+        const size_t contentLength = static_cast<size_t>(strtoul(lengthIt->second.c_str(), NULL, 10));
+        if (body.size() > contentLength) {
+            body.resize(contentLength);
+        }
+    }
+
+    std::string path = requestTarget;
+    std::string query;
+    const std::string::size_type pos = requestTarget.find('?');
+    if (pos != std::string::npos) {
+        path = requestTarget.substr(0, pos);
+        query = requestTarget.substr(pos + 1);
+    }
+
+    int responseStatus = 404;
+    std::string responseBody;
+    HandleSubscribeHttp(method, path, query, body, responseStatus, responseBody);
+    const std::string response = BuildHttpResponse(responseStatus, responseBody);
+    SendAll(clientFd, response);
+}
+
+int GAT1400ClientService::HandleSubscribeHttp(const std::string& method,
+                                              const std::string& path,
+                                              const std::string& query,
+                                              const std::string& body,
+                                              int& outStatus,
+                                              std::string& outBody)
+{
+    std::string normalized = path;
+    if (!normalized.empty() && normalized[normalized.size() - 1] == '/' && normalized.size() > 1) {
+        normalized.erase(normalized.size() - 1);
+    }
+
+    if (normalized == "/VIID/Subscribes") {
+        if (method == "GET") {
+            const std::map<std::string, std::string> condition = ParseQueryString(query);
+            std::list<GAT_1400_Subscribe> result;
+            {
+                std::lock_guard<std::mutex> lock(m_subscribe_mutex);
+                for (std::map<std::string, GAT_1400_Subscribe>::const_iterator it = m_subscriptions.begin(); it != m_subscriptions.end(); ++it) {
+                    GAT_1400_Subscribe subscribe = it->second;
+                    subscribe.SubscribeStatus = EvaluateSubscribeStatus(subscribe);
+                    if (condition.empty() || MatchSubscribeCondition(subscribe, condition)) {
+                        result.push_back(subscribe);
+                    }
+                }
+            }
+            outStatus = 200;
+            outBody = GAT1400Json::PackSubscribeListJson(result);
+            return 0;
+        }
+
+        if (method == "POST" || method == "PUT") {
+            std::list<GAT_1400_Subscribe> subscribeList;
+            std::list<GAT1400_RESPONSESTATUS_ST> responseList;
+            const int parseRet = GAT1400Json::UnPackSubscribeList(body, subscribeList);
+            if (parseRet != 0) {
+                GAT1400_RESPONSESTATUS_ST responseStatus;
+                memset(&responseStatus, 0, sizeof(responseStatus));
+                CopyToArray(responseStatus.ReqeustURL, sizeof(responseStatus.ReqeustURL), normalized);
+                CopyToArray(responseStatus.LocalTime, sizeof(responseStatus.LocalTime), FormatCurrentTime());
+                responseStatus.StatusCode = INVALID_JSON_FORMAT;
+                responseList.push_back(responseStatus);
+                outStatus = 400;
+                outBody = GAT1400Json::PackResponseStatusList(responseList);
+                return parseRet;
+            }
+
+            for (std::list<GAT_1400_Subscribe>::iterator it = subscribeList.begin(); it != subscribeList.end(); ++it) {
+                it->SubscribeStatus = EvaluateSubscribeStatus(*it);
+                GAT1400_RESPONSESTATUS_ST responseStatus;
+                memset(&responseStatus, 0, sizeof(responseStatus));
+                CopyToArray(responseStatus.ReqeustURL, sizeof(responseStatus.ReqeustURL), normalized);
+                CopyToArray(responseStatus.ID, sizeof(responseStatus.ID), it->SubscribeID);
+                CopyToArray(responseStatus.LocalTime, sizeof(responseStatus.LocalTime), FormatCurrentTime());
+                responseStatus.StatusCode = OK;
+                responseList.push_back(responseStatus);
+
+                {
+                    std::lock_guard<std::mutex> lock(m_subscribe_mutex);
+                    m_subscriptions[it->SubscribeID] = *it;
+                }
+                if (method == "POST") {
+                    DispatchSubscribeAdd(*it);
+                } else {
+                    DispatchSubscribeUpdate(*it);
+                }
+            }
+
+            outStatus = 200;
+            outBody = GAT1400Json::PackResponseStatusList(responseList);
+            return 0;
+        }
+
+        if (method == "DELETE") {
+            std::list<GAT1400_RESPONSESTATUS_ST> responseList;
+            const std::map<std::string, std::string> condition = ParseQueryString(query);
+            std::map<std::string, std::string>::const_iterator idListIt = condition.find("IDList");
+            if (idListIt == condition.end()) {
+                GAT1400_RESPONSESTATUS_ST responseStatus;
+                memset(&responseStatus, 0, sizeof(responseStatus));
+                CopyToArray(responseStatus.ReqeustURL, sizeof(responseStatus.ReqeustURL), normalized);
+                CopyToArray(responseStatus.LocalTime, sizeof(responseStatus.LocalTime), FormatCurrentTime());
+                responseStatus.StatusCode = INVALID_OPERATION;
+                responseList.push_back(responseStatus);
+                outStatus = 400;
+                outBody = GAT1400Json::PackResponseStatusList(responseList);
+                return -1;
+            }
+
+            std::stringstream ss(idListIt->second);
+            std::string item;
+            while (std::getline(ss, item, ',')) {
+                item = TrimCopy(item);
+                if (item.empty()) {
+                    continue;
+                }
+                {
+                    std::lock_guard<std::mutex> lock(m_subscribe_mutex);
+                    m_subscriptions.erase(item);
+                }
+                DispatchSubscribeDelete(item);
+
+                GAT1400_RESPONSESTATUS_ST responseStatus;
+                memset(&responseStatus, 0, sizeof(responseStatus));
+                CopyToArray(responseStatus.ReqeustURL, sizeof(responseStatus.ReqeustURL), normalized);
+                CopyToArray(responseStatus.ID, sizeof(responseStatus.ID), item);
+                CopyToArray(responseStatus.LocalTime, sizeof(responseStatus.LocalTime), FormatCurrentTime());
+                responseStatus.StatusCode = OK;
+                responseList.push_back(responseStatus);
+            }
+
+            outStatus = 200;
+            outBody = GAT1400Json::PackResponseStatusList(responseList);
+            return 0;
+        }
+    }
+
+    const std::string prefix("/VIID/Subscribes/");
+    if (normalized.compare(0, prefix.size(), prefix) == 0 && method == "PUT") {
+        GAT_1400_Subscribe subscribe;
+        GAT1400_RESPONSESTATUS_ST responseStatus;
+        memset(&responseStatus, 0, sizeof(responseStatus));
+        CopyToArray(responseStatus.ReqeustURL, sizeof(responseStatus.ReqeustURL), normalized);
+        CopyToArray(responseStatus.LocalTime, sizeof(responseStatus.LocalTime), FormatCurrentTime());
+
+        const int parseRet = GAT1400Json::UnPackSubscribe(body, subscribe);
+        if (parseRet != 0) {
+            responseStatus.StatusCode = INVALID_JSON_FORMAT;
+            outStatus = 400;
+            outBody = GAT1400Json::PackResponseStatus(responseStatus);
+            return parseRet;
+        }
+
+        const std::string subscribeId = normalized.substr(prefix.size());
+        CopyToArray(subscribe.SubscribeID, sizeof(subscribe.SubscribeID), subscribeId);
+        subscribe.OperateType = 1;
+        subscribe.SubscribeStatus = SUBSCRIBE_CANCEL;
+        {
+            std::lock_guard<std::mutex> lock(m_subscribe_mutex);
+            std::map<std::string, GAT_1400_Subscribe>::iterator it = m_subscriptions.find(subscribeId);
+            if (it != m_subscriptions.end()) {
+                GAT_1400_Subscribe& current = it->second;
+                current.OperateType = subscribe.OperateType;
+                current.SubscribeStatus = subscribe.SubscribeStatus;
+                memcpy(current.SubscribeCancelOrg, subscribe.SubscribeCancelOrg, sizeof(current.SubscribeCancelOrg));
+                memcpy(current.SubscribeCancelPerson, subscribe.SubscribeCancelPerson, sizeof(current.SubscribeCancelPerson));
+                memcpy(current.CancelTime, subscribe.CancelTime, sizeof(current.CancelTime));
+                memcpy(current.CancelReason, subscribe.CancelReason, sizeof(current.CancelReason));
+            }
+        }
+        DispatchSubscribeDelete(subscribeId);
+        CopyToArray(responseStatus.ID, sizeof(responseStatus.ID), subscribeId);
+        responseStatus.StatusCode = OK;
+        outStatus = 200;
+        outBody = GAT1400Json::PackResponseStatus(responseStatus);
+        return 0;
+    }
+
+    outStatus = 404;
+    outBody = "{}";
+    return -1;
+}
+
+int GAT1400ClientService::ExecuteRequest(const ProtocolExternalConfig& cfg,
+                                         const std::string& deviceId,
+                                         const std::string& method,
+                                         const std::string& path,
+                                         const std::string& body,
+                                         HttpResponse& response,
+                                         const std::string* overrideUrl) const
+{
+    std::string host = cfg.gat_register.server_ip;
+    int port = cfg.gat_register.server_port;
+    std::string requestPath = path;
+    if (overrideUrl != NULL && !overrideUrl->empty()) {
+        if (!ParseHttpUrl(*overrideUrl, host, port, requestPath)) {
+            return -1;
+        }
+    }
+
+    const auto doRequest = [&](const std::string* authHeader) -> int {
+        const int fd = ConnectTcp(host, port, kHttpTimeoutMs);
+        if (fd < 0) {
+            return -2;
+        }
+
+        std::ostringstream request;
+        request << method << ' ' << requestPath << " HTTP/1.1\r\n";
+        request << "Host: " << host << ':' << port << "\r\n";
+        request << "User-Identify:" << deviceId << "\r\n";
+        request << "Content-Type: " << kJsonContentType << "\r\n";
+        request << "Connection: close\r\n";
+        if (authHeader != NULL && !authHeader->empty()) {
+            request << *authHeader << "\r\n";
+        }
+        request << "Content-Length: " << body.size() << "\r\n\r\n";
+
+        std::string rawRequest = request.str();
+        rawRequest.append(body);
+
+        std::string rawResponse;
+        const bool sendOk = SendAll(fd, rawRequest);
+        const bool recvOk = sendOk && RecvAll(fd, rawResponse);
+        close(fd);
+        if (!recvOk) {
+            return -3;
+        }
+        if (!ParseHttpResponseText(rawResponse, response)) {
+            return -4;
+        }
+        return 0;
+    };
+
+    int ret = doRequest(NULL);
+    if (ret != 0) {
+        return ret;
+    }
+
+    if (response.status_code == 401 && !cfg.gat_register.username.empty()) {
+        std::map<std::string, std::string>::const_iterator authIt = response.headers.find("www-authenticate");
+        if (authIt != response.headers.end()) {
+            std::ostringstream url;
+            url << "http://" << host << ':' << port << requestPath;
+            CHttpAuth auth(url.str(), method, cfg.gat_register.username, cfg.gat_register.password);
+            std::string authHeader;
+            auth.HttpAuthParse(authIt->second, authHeader);
+            response = HttpResponse();
+            ret = doRequest(&authHeader);
+            if (ret != 0) {
+                return ret;
+            }
+        }
+    }
+
+    return 0;
+}
+
+int GAT1400ClientService::PostJsonWithResponseList(const char* action, const char* path, const std::string& body)
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        return -1;
+    }
+
+    const std::vector<int> retryPolicy = ParseRetryPolicy(cfg.gat_upload.retry_policy);
+    for (size_t attempt = 0;; ++attempt) {
+        HttpResponse response;
+        const int reqRet = ExecuteRequest(cfg, deviceId, "POST", path, body, response, NULL);
+        if (reqRet == 0) {
+            std::list<GAT1400_RESPONSESTATUS_ST> responseList;
+            if (GAT1400Json::UnPackResponseStatusList(response.body, responseList) == 0) {
+                bool allOk = true;
+                int firstError = 0;
+                for (std::list<GAT1400_RESPONSESTATUS_ST>::const_iterator it = responseList.begin(); it != responseList.end(); ++it) {
+                    if (it->StatusCode != OK) {
+                        allOk = false;
+                        firstError = it->StatusCode;
+                        break;
+                    }
+                }
+                if (allOk) {
+                    printf("[GAT1400] module=gat1400 event=%s trace=client error=0 path=%s count=%zu\n",
+                           action != NULL ? action : "post",
+                           path != NULL ? path : "",
+                           responseList.size());
+                    return 0;
+                }
+                if (attempt >= retryPolicy.size()) {
+                    return firstError == 0 ? -2 : firstError;
+                }
+            } else if (attempt >= retryPolicy.size()) {
+                return -3;
+            }
+        } else if (attempt >= retryPolicy.size()) {
+            return reqRet;
+        }
+
+        sleep(static_cast<unsigned int>(retryPolicy[attempt]));
+    }
+}
+
+int GAT1400ClientService::PostJsonWithResponseStatus(const char* action,
+                                                     const char* path,
+                                                     const std::string& body,
+                                                     const std::string* overrideUrl)
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        return -1;
+    }
+
+    const std::vector<int> retryPolicy = ParseRetryPolicy(cfg.gat_upload.retry_policy);
+    for (size_t attempt = 0;; ++attempt) {
+        HttpResponse response;
+        const int reqRet = ExecuteRequest(cfg, deviceId, "POST", path, body, response, overrideUrl);
+        if (reqRet == 0) {
+            GAT1400_RESPONSESTATUS_ST responseStatus;
+            if (GAT1400Json::UnPackResponseStatus(response.body, responseStatus) == 0 && responseStatus.StatusCode == OK) {
+                printf("[GAT1400] module=gat1400 event=%s trace=client error=0 path=%s\n",
+                       action != NULL ? action : "post",
+                       path != NULL ? path : "");
+                return 0;
+            }
+            if (attempt >= retryPolicy.size()) {
+                return -2;
+            }
+        } else if (attempt >= retryPolicy.size()) {
+            return reqRet;
+        }
+
+        sleep(static_cast<unsigned int>(retryPolicy[attempt]));
+    }
+}
+
+int GAT1400ClientService::PostBinaryData(const char* action, const std::string& path, const std::string& data)
+{
+    return PostJsonWithResponseStatus(action, path.c_str(), data, NULL);
+}
+
+int GAT1400ClientService::RegisterNow()
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        return -1;
+    }
+
+    HttpResponse response;
+    const int reqRet = ExecuteRequest(cfg,
+                                      deviceId,
+                                      "POST",
+                                      "/VIID/System/Register",
+                                      GAT1400Json::PackRegisterJson(deviceId.c_str()),
+                                      response,
+                                      NULL);
+    if (reqRet != 0) {
+        UpdateRegistState(EM_REGIST_OFF);
+        return reqRet;
+    }
+
+    GAT1400_RESPONSESTATUS_ST responseStatus;
+    if (GAT1400Json::UnPackResponseStatus(response.body, responseStatus) != 0 || responseStatus.StatusCode != OK) {
+        UpdateRegistState(EM_REGIST_OFF);
+        return -2;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        m_registered = true;
+    }
+    UpdateRegistState(EM_REGIST_ON);
+    printf("[GAT1400] module=gat1400 event=register trace=client error=0 endpoint=%s:%d device=%s listen=%d\n",
+           cfg.gat_register.server_ip.c_str(),
+           cfg.gat_register.server_port,
+           deviceId.c_str(),
+           cfg.gat_register.listen_port);
+    return 0;
+}
+
+int GAT1400ClientService::UnregisterNow()
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        cfg = m_cfg;
+        gbRegister = m_gb_register;
+        deviceId = m_device_id;
+    }
+    if (deviceId.empty()) {
+        return 0;
+    }
+
+    HttpResponse response;
+    const int reqRet = ExecuteRequest(cfg,
+                                      deviceId,
+                                      "POST",
+                                      "/VIID/System/UnRegister",
+                                      GAT1400Json::PackUnRegisterJson(deviceId.c_str()),
+                                      response,
+                                      NULL);
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        m_registered = false;
+    }
+    UpdateRegistState(EM_REGIST_OFF);
+    if (reqRet != 0) {
+        return reqRet;
+    }
+
+    GAT1400_RESPONSESTATUS_ST responseStatus;
+    if (GAT1400Json::UnPackResponseStatus(response.body, responseStatus) != 0 || responseStatus.StatusCode != OK) {
+        return -2;
+    }
+    printf("[GAT1400] module=gat1400 event=unregister trace=client error=0 device=%s\n", deviceId.c_str());
+    return 0;
+}
+
+int GAT1400ClientService::SendKeepaliveNow()
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        return -1;
+    }
+
+    HttpResponse response;
+    const int reqRet = ExecuteRequest(cfg,
+                                      deviceId,
+                                      "POST",
+                                      "/VIID/System/Keepalive",
+                                      GAT1400Json::PackKeepAliveJson(deviceId.c_str()),
+                                      response,
+                                      NULL);
+    if (reqRet != 0) {
+        return reqRet;
+    }
+
+    GAT1400_RESPONSESTATUS_ST responseStatus;
+    if (GAT1400Json::UnPackResponseStatus(response.body, responseStatus) != 0 || responseStatus.StatusCode != OK) {
+        return -2;
+    }
+    return 0;
+}
+
+int GAT1400ClientService::GetTime(std::string& outTime)
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        return -1;
+    }
+
+    HttpResponse response;
+    const int reqRet = ExecuteRequest(cfg, deviceId, "GET", "/VIID/System/Time", "", response, NULL);
+    if (reqRet != 0) {
+        return reqRet;
+    }
+
+    GAT1400_SYSTEMTIME_ST timeInfo;
+    if (GAT1400Json::UnPackSystemTime(response.body, timeInfo) != 0) {
+        return -2;
+    }
+    outTime = timeInfo.LocalTime;
+    return 0;
+}
+
+void GAT1400ClientService::HeartbeatLoop()
+{
+    while (m_heartbeat_running.load()) {
+        ProtocolExternalConfig cfg;
+        GbRegisterParam gbRegister;
+        std::string deviceId;
+        if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+            break;
+        }
+
+        const int interval = std::max(1, cfg.gat_register.keepalive_interval_sec);
+        for (int i = 0; i < interval && m_heartbeat_running.load(); ++i) {
+            sleep(1);
+        }
+        if (!m_heartbeat_running.load()) {
+            break;
+        }
+
+        const int maxRetry = std::max(1, cfg.gat_register.max_retry);
+        int ret = 0;
+        int retry = 0;
+        do {
+            ret = SendKeepaliveNow();
+            if (ret == 0) {
+                break;
+            }
+            ++retry;
+        } while (retry < maxRetry && m_heartbeat_running.load());
+
+        if (ret == 0) {
+            continue;
+        }
+
+        printf("[GAT1400] module=gat1400 event=keepalive trace=client error=%d retry=%d\n", ret, retry);
+        UpdateRegistState(EM_REGIST_OFF);
+        while (m_heartbeat_running.load()) {
+            if (RegisterNow() == 0) {
+                break;
+            }
+            sleep(5);
+        }
+    }
+}
+
+int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegisterParam& gbRegister)
+{
+    Stop();
+
+    const std::string deviceId = !cfg.gat_register.device_id.empty() ? cfg.gat_register.device_id :
+                                 (!gbRegister.device_id.empty() ? gbRegister.device_id : gbRegister.username);
+    if (cfg.gat_register.server_ip.empty() || cfg.gat_register.server_port <= 0 ||
+        cfg.gat_register.listen_port <= 0 || deviceId.empty()) {
+        return -1;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        m_cfg = cfg;
+        m_gb_register = gbRegister;
+        m_device_id = deviceId;
+        m_started = true;
+        m_registered = false;
+        m_regist_state = EM_REGIST_OFF;
+        if (StartServerLocked() != 0) {
+            m_started = false;
+            m_device_id.clear();
+            return -2;
+        }
+    }
+
+    const int regRet = RegisterNow();
+    if (regRet != 0) {
+        printf("[GAT1400] module=gat1400 event=register trace=client error=%d device=%s note=defer_retry\n",
+               regRet,
+               deviceId.c_str());
+        UpdateRegistState(EM_REGIST_OFF);
+    }
+
+    std::string remoteTime;
+    const int timeRet = (regRet == 0) ? GetTime(remoteTime) : regRet;
+    printf("[GAT1400] module=gat1400 event=get_time trace=client error=%d device=%s time=%s\n",
+           timeRet,
+           deviceId.c_str(),
+           remoteTime.c_str());
+
+    m_heartbeat_running.store(true);
+    m_heartbeat_thread = std::thread(&GAT1400ClientService::HeartbeatLoop, this);
+    return 0;
+}
+
+void GAT1400ClientService::Stop()
+{
+    ProtocolExternalConfig cfg;
+    GbRegisterParam gbRegister;
+    std::string deviceId;
+    bool shouldStop = false;
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        shouldStop = m_started || m_registered || m_server_running.load();
+        cfg = m_cfg;
+        gbRegister = m_gb_register;
+        deviceId = m_device_id;
+        m_started = false;
+        m_heartbeat_running.store(false);
+    }
+
+    if (m_heartbeat_thread.joinable()) {
+        m_heartbeat_thread.join();
+    }
+
+    if (!deviceId.empty()) {
+        UnregisterNow();
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        StopServerLocked();
+        m_registered = false;
+        if (shouldStop) {
+            m_device_id.clear();
+        }
+    }
+
+    UpdateRegistState(EM_REGIST_OFF);
+}
+
+int GAT1400ClientService::Reload(const ProtocolExternalConfig& cfg, const GbRegisterParam& gbRegister)
+{
+    const std::string nextDeviceId = !cfg.gat_register.device_id.empty() ? cfg.gat_register.device_id :
+                                     (!gbRegister.device_id.empty() ? gbRegister.device_id : gbRegister.username);
+    bool started = false;
+    bool restartRequired = false;
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        started = m_started;
+        restartRequired = (m_cfg.gat_register.server_ip != cfg.gat_register.server_ip) ||
+                          (m_cfg.gat_register.server_port != cfg.gat_register.server_port) ||
+                          (m_cfg.gat_register.listen_port != cfg.gat_register.listen_port) ||
+                          (m_cfg.gat_register.username != cfg.gat_register.username) ||
+                          (m_cfg.gat_register.password != cfg.gat_register.password) ||
+                          (m_device_id != nextDeviceId);
+        if (!started) {
+            m_cfg = cfg;
+            m_gb_register = gbRegister;
+            m_device_id = nextDeviceId;
+            return 0;
+        }
+    }
+
+    if (restartRequired) {
+        Stop();
+        return Start(cfg, gbRegister);
+    }
+
+    std::lock_guard<std::mutex> lock(m_state_mutex);
+    m_cfg = cfg;
+    m_gb_register = gbRegister;
+    m_device_id = nextDeviceId;
+    return 0;
+}
+
+template <typename T, typename PackFn>
+int PostBatched(const std::list<T>& input,
+                int batchSize,
+                const char* action,
+                const char* path,
+                const PackFn& pack,
+                GAT1400ClientService* service)
+{
+    if (input.empty()) {
+        return 0;
+    }
+
+    typename std::list<T>::const_iterator it = input.begin();
+    while (it != input.end()) {
+        std::list<T> batch = SliceBatch<T>(it, input.end(), batchSize);
+        const int ret = service->PostJsonWithResponseList(action, path, pack(batch));
+        if (ret != 0) {
+            return ret;
+        }
+    }
+    return 0;
+}
+
+int GAT1400ClientService::PostFaces(const std::list<GAT_1400_Face>& faceList)
+{
+    return PostBatched<GAT_1400_Face>(faceList, std::max(1, m_cfg.gat_upload.batch_size), "post_faces", "/VIID/Faces",
+                                      [](const std::list<GAT_1400_Face>& batch) { return GAT1400Json::PackFaceListJson(batch); },
+                                      this);
+}
+
+int GAT1400ClientService::PostPersons(const std::list<GAT_1400_Person>& personList)
+{
+    return PostBatched<GAT_1400_Person>(personList, std::max(1, m_cfg.gat_upload.batch_size), "post_persons", "/VIID/Persons",
+                                        [](const std::list<GAT_1400_Person>& batch) { return GAT1400Json::PackPersonListJson(batch); },
+                                        this);
+}
+
+int GAT1400ClientService::PostMotorVehicles(const std::list<GAT_1400_Motor>& motorList)
+{
+    return PostBatched<GAT_1400_Motor>(motorList, std::max(1, m_cfg.gat_upload.batch_size), "post_motor", "/VIID/MotorVehicles",
+                                       [](const std::list<GAT_1400_Motor>& batch) { return GAT1400Json::PackMotorVehicleListJson(batch); },
+                                       this);
+}
+
+int GAT1400ClientService::PostNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList)
+{
+    return PostBatched<GAT_1400_NonMotor>(nonMotorList, std::max(1, m_cfg.gat_upload.batch_size), "post_non_motor", "/VIID/NonMotorVehicles",
+                                          [](const std::list<GAT_1400_NonMotor>& batch) { return GAT1400Json::PackNonmotorVehicleListJson(batch); },
+                                          this);
+}
+
+int GAT1400ClientService::PostThings(const std::list<GAT_1400_Thing>& thingList)
+{
+    return PostBatched<GAT_1400_Thing>(thingList, std::max(1, m_cfg.gat_upload.batch_size), "post_things", "/VIID/Things",
+                                       [](const std::list<GAT_1400_Thing>& batch) { return GAT1400Json::PackThingListJson(batch); },
+                                       this);
+}
+
+int GAT1400ClientService::PostScenes(const std::list<GAT_1400_Scene>& sceneList)
+{
+    return PostBatched<GAT_1400_Scene>(sceneList, std::max(1, m_cfg.gat_upload.batch_size), "post_scenes", "/VIID/Scenes",
+                                       [](const std::list<GAT_1400_Scene>& batch) { return GAT1400Json::PackSceneListJson(batch); },
+                                       this);
+}
+
+int GAT1400ClientService::PostAnalysisRules(const std::list<GAT_1400_AnalysisRule>& ruleList)
+{
+    return PostBatched<GAT_1400_AnalysisRule>(ruleList, std::max(1, m_cfg.gat_upload.batch_size), "post_analysis_rules", "/VIID/AnalysisRules",
+                                              [](const std::list<GAT_1400_AnalysisRule>& batch) { return GAT1400Json::PackAnalysisRuleListJson(batch); },
+                                              this);
+}
+
+int GAT1400ClientService::PostVideoLabels(const std::list<GAT_1400_VideoLabel>& labelList)
+{
+    return PostBatched<GAT_1400_VideoLabel>(labelList, std::max(1, m_cfg.gat_upload.batch_size), "post_video_labels", "/VIID/VideoLabels",
+                                            [](const std::list<GAT_1400_VideoLabel>& batch) { return GAT1400Json::PackVideoLabelListJson(batch); },
+                                            this);
+}
+
+int GAT1400ClientService::PostDispositions(const std::list<GAT_1400_Disposition>& dispositionList)
+{
+    return PostBatched<GAT_1400_Disposition>(dispositionList, std::max(1, m_cfg.gat_upload.batch_size), "post_dispositions", "/VIID/Dispositions",
+                                             [](const std::list<GAT_1400_Disposition>& batch) { return GAT1400Json::PackDispositionListJson(batch); },
+                                             this);
+}
+
+int GAT1400ClientService::PostDispositionNotifications(const std::list<GAT_1400_Disposition_Notification>& notificationList)
+{
+    return PostBatched<GAT_1400_Disposition_Notification>(notificationList, std::max(1, m_cfg.gat_upload.batch_size), "post_disposition_notifications", "/VIID/DispositionNotifications",
+                                                          [](const std::list<GAT_1400_Disposition_Notification>& batch) { return GAT1400Json::PackDispositionNotificationListJson(batch); },
+                                                          this);
+}
+
+int GAT1400ClientService::PostSubscribes(const std::list<GAT_1400_Subscribe>& subscribeList)
+{
+    return PostBatched<GAT_1400_Subscribe>(subscribeList, std::max(1, m_cfg.gat_upload.batch_size), "post_subscribes", "/VIID/Subscribes",
+                                           [](const std::list<GAT_1400_Subscribe>& batch) { return GAT1400Json::PackSubscribeListJson(batch); },
+                                           this);
+}
+
+int GAT1400ClientService::PostSubscribeNotifications(const std::list<GAT_1400_Subscribe_Notification>& notificationList,
+                                                     const std::string& url)
+{
+    if (notificationList.empty() || url.empty()) {
+        return 0;
+    }
+    return PostJsonWithResponseStatus("post_subscribe_notifications", "", GAT1400Json::PackSubscribeNotificationListJson(notificationList), &url);
+}
+
+int GAT1400ClientService::PostApes(const std::list<GAT_1400_Ape>& apeList)
+{
+    return PostBatched<GAT_1400_Ape>(apeList, std::max(1, m_cfg.gat_upload.batch_size), "post_apes", "/VIID/APEs",
+                                     [](const std::list<GAT_1400_Ape>& batch) { return GAT1400Json::PackApeListJson(batch); },
+                                     this);
+}
+
+int GAT1400ClientService::PostVideoSlices(const std::list<GAT_1400_VideoSliceSet>& videoSliceList)
+{
+    if (videoSliceList.empty()) {
+        return 0;
+    }
+
+    const int batchSize = std::max(1, m_cfg.gat_upload.batch_size);
+    std::list<GAT_1400_VideoSliceSet>::const_iterator it = videoSliceList.begin();
+    while (it != videoSliceList.end()) {
+        std::list<GAT_1400_VideoSliceSet> batch = SliceBatch<GAT_1400_VideoSliceSet>(it, videoSliceList.end(), batchSize);
+        int ret = PostJsonWithResponseList("post_video_slices", "/VIID/VideoSlices", GAT1400Json::PackVideoSliceListJson(batch));
+        if (ret != 0) {
+            return ret;
+        }
+        for (std::list<GAT_1400_VideoSliceSet>::const_iterator item = batch.begin(); item != batch.end(); ++item) {
+            if (!item->Data.empty()) {
+                std::string path = std::string("/VIID/VideoSlices/") + item->VideoSliceInfo.VideoID + "/Data";
+                ret = PostBinaryData("post_video_slice_data", path, item->Data);
+                if (ret != 0) {
+                    return ret;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int GAT1400ClientService::PostImages(const std::list<GAT_1400_ImageSet>& imageList)
+{
+    if (imageList.empty()) {
+        return 0;
+    }
+
+    const int batchSize = std::max(1, m_cfg.gat_upload.batch_size);
+    std::list<GAT_1400_ImageSet>::const_iterator it = imageList.begin();
+    while (it != imageList.end()) {
+        std::list<GAT_1400_ImageSet> batch = SliceBatch<GAT_1400_ImageSet>(it, imageList.end(), batchSize);
+        int ret = PostJsonWithResponseList("post_images", "/VIID/Images", GAT1400Json::PackImageListJson(batch));
+        if (ret != 0) {
+            return ret;
+        }
+        for (std::list<GAT_1400_ImageSet>::const_iterator item = batch.begin(); item != batch.end(); ++item) {
+            if (!item->Data.empty()) {
+                std::string path = std::string("/VIID/Images/") + item->ImageInfo.ImageID + "/Data";
+                ret = PostBinaryData("post_image_data", path, item->Data);
+                if (ret != 0) {
+                    return ret;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int GAT1400ClientService::PostFiles(const std::list<GAT_1400_FileSet>& fileList)
+{
+    if (fileList.empty()) {
+        return 0;
+    }
+
+    const int batchSize = std::max(1, m_cfg.gat_upload.batch_size);
+    std::list<GAT_1400_FileSet>::const_iterator it = fileList.begin();
+    while (it != fileList.end()) {
+        std::list<GAT_1400_FileSet> batch = SliceBatch<GAT_1400_FileSet>(it, fileList.end(), batchSize);
+        int ret = PostJsonWithResponseList("post_files", "/VIID/Files", GAT1400Json::PackFileListJson(batch));
+        if (ret != 0) {
+            return ret;
+        }
+        for (std::list<GAT_1400_FileSet>::const_iterator item = batch.begin(); item != batch.end(); ++item) {
+            if (!item->Data.empty()) {
+                std::string path = std::string("/VIID/Files/") + item->FileInfo.FileID + "/Data";
+                ret = PostBinaryData("post_file_data", path, item->Data);
+                if (ret != 0) {
+                    return ret;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+}  // namespace protocol
+
+

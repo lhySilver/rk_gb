@@ -1,0 +1,17 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "base_proco_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"]
+                          
+            ]
+        }
+    ]
+}

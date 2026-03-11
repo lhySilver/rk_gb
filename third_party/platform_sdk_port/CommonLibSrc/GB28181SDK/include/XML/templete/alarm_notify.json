@@ -1,0 +1,35 @@
+{
+    "structs": 
+    [
+	  
+
+        {
+            "type": "alarm_Info_t",
+            "members": 
+            [
+
+				["uint32_t","AlarmType"],
+				["string","AlarmTypeParam"]
+            ]
+        },
+
+        {
+            "type": "alarm_notify_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		        ["string", "DeviceID"],
+                ["uint32_t", "AlarmPriority"],
+                ["uint32_t", "AlarmMethod"],
+                ["string", "AlarmTime"],
+                ["double", "Longitude"],
+                ["double", "Latitude"],
+				["string","AlarmDescription"],
+                ["alarm_Info_t","Info"],
+				["uint32_t", "AlarmState"]
+            ]
+        }
+    ]
+}

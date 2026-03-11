@@ -1,0 +1,31 @@
+{
+    "structs": 
+    [
+	  
+         {
+            "type": "alarm_info_t",
+            "members": 
+            [
+               
+                ["string", "AlarmType"],
+                ["string", "AlarmMethod"]
+                          
+            ]
+        },
+
+        {
+            "type": "alarm_reset_control_t",
+            "members": 
+            [
+               
+                ["string", "CmdType"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["string", "AlarmCmd"],
+                ["alarm_info_t", "Info"]
+               
+                          
+            ]
+        }
+    ]
+}

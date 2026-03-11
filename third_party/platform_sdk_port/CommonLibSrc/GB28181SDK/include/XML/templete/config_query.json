@@ -1,0 +1,19 @@
+{
+    "structs": 
+    [
+	  
+        {
+            "type": "config_query_t",
+            "members": 
+            [
+               
+                ["string", "CmdType","ConfigDownload"],
+                ["uint32_t", "SN"],
+		    ["string", "DeviceID"],
+                ["string", "ConfigType"]
+               			     
+                          
+            ]
+        }
+    ]
+}

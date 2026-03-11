@@ -1,0 +1,23 @@
+{
+    "structs": 
+    [
+	      {
+            "type": "info_t",
+            "members": 
+                [
+                ["[string]", "DeviceID"]
+               ]
+            },
+        {
+            "type": "keepalive_t",
+            "members": 
+            [
+                ["uint32_t", "SN"],
+                ["string", "CmdType"],
+		    ["string", "DeviceID"],
+                ["string", "Status"],
+                ["info_t", "Info"]				
+            ]
+        }
+    ]
+}
