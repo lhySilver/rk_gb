@@ -264,7 +264,24 @@ bool CSofia::start()
 		// 定时检查复位按钮
 		m_timerCheckButton.Start(CTimer::Proc(&CSofia::OnCheckButton, this), 0, 50);
 		// 启动网络管理模块
-		g_NetConfigHook.Init();
+		//g_NetConfigHook.Init();
+		g_NetWifi.Init();
+	
+		g_NetWifi.SetWifi("TP-LINK_5G_EDDB", "DGIOT0202", "192.168.1.188", "192.168.1.1", "255.255.255.0");
+		while (0 == g_NetWifi.GetWifiConnetStatus())
+		{
+			AppInfo("wait=========================>>>network...\n");
+			sleep(1);
+		}
+		
+		// ???????
+		g_Camera;
+		// 初始化onvif server
+		g_OnvifHandle.Init();
+
+
+		// 启动tuya
+		//g_TuyaHandle.start();
 		// Start protocol manager (GB28181/GAT1400/broadcast/listen)
 		if (0 != m_protocolManager.Init(PROTOCOL_CONFIG_ENDPOINT))
 		{
@@ -291,12 +308,6 @@ bool CSofia::start()
 #endif
 			}
 		}
-		// ???????
-		g_Camera;
-		// 初始化onvif server
-		g_OnvifHandle.Init();
-		// 启动tuya
-		//g_TuyaHandle.start();
 
 		if(access(NO_VOICE_PROMPT_FLAG, F_OK) != 0)
 		{
