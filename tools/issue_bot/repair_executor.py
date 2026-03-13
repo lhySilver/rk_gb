@@ -38,6 +38,9 @@ class NoPendingIssue(RuntimeError):
     pass
 
 
+GENERATED_OUTPUT_PATHS = ("Bin", "Lib", "Middleware/Lib")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Repair GitHub issues from ha-candidate queue")
     parser.add_argument("--issue-number", type=int, help="Specific issue number to repair")
@@ -136,6 +139,25 @@ def run_build_verify(worktree_dir: Path, state_dir: Path) -> None:
     env = os.environ.copy()
     env["ISSUE_BOT_BUILD_ROOT"] = str(state_dir / "build")
     run_checked(["bash", str(SCRIPT_DIR / "build_verify.sh"), str(worktree_dir)], env=env)
+
+
+def restore_generated_outputs(worktree_dir: Path) -> None:
+    # build_verify writes tracked binaries into the repo output folders; keep them out of commits.
+    run_checked(
+        [
+            "git",
+            "-C",
+            str(worktree_dir),
+            "restore",
+            "--source=HEAD",
+            "--staged",
+            "--worktree",
+            "--",
+            *GENERATED_OUTPUT_PATHS,
+        ],
+        capture_output=True,
+    )
+    run_checked(["git", "-C", str(worktree_dir), "clean", "-fd", "--", *GENERATED_OUTPUT_PATHS], capture_output=True)
 
 
 def commit_changes(worktree_dir: Path, issue: dict) -> bool:
@@ -291,6 +313,7 @@ def main() -> int:
         run_fix_command(args.repair_command, worktree_dir, issue_dir, issue, branch_name)
         if not args.skip_build_verify:
             run_build_verify(worktree_dir, issue_dir)
+        restore_generated_outputs(worktree_dir)
 
         if not commit_changes(worktree_dir, issue):
             raise RuntimeError("修复器执行完成，但仓库中没有检测到任何改动")
