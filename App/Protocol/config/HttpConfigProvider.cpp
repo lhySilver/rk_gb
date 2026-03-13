@@ -179,12 +179,12 @@ void HttpConfigProvider::InitDefaultConfig()
 {
     m_cached_cfg.version = "v1-default";
 
-    m_cached_cfg.gb_register.server_ip = "127.0.0.1";
-    m_cached_cfg.gb_register.server_port = 5060;
-    m_cached_cfg.gb_register.device_id = "34020000001320000001";
+    m_cached_cfg.gb_register.server_ip = "183.252.186.165";
+    m_cached_cfg.gb_register.server_port = 15566;
+    m_cached_cfg.gb_register.device_id = "35010101001320124879";
     m_cached_cfg.gb_register.device_name = "IPC";
-    m_cached_cfg.gb_register.username = "34020000001320000001";
-    m_cached_cfg.gb_register.password = "123456";
+    m_cached_cfg.gb_register.username = "35010000002000000001";
+    m_cached_cfg.gb_register.password = "CG939Xvv";
 
     m_cached_cfg.gb_live.transport = "udp";
     m_cached_cfg.gb_live.target_ip = "127.0.0.1";
