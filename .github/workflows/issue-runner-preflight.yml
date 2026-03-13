@@ -22,7 +22,46 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      runner_ready: ${{ steps.evaluate.outputs.runner_ready }}
+      reason: ${{ steps.evaluate.outputs.reason }}
+    env:
+      ISSUE_BOT_RUNNER_READY: ${{ vars.ISSUE_BOT_RUNNER_READY }}
+      ISSUE_FIX_COMMAND: ${{ vars.ISSUE_FIX_COMMAND }}
+    steps:
+      - id: evaluate
+        run: |
+          set -euo pipefail
+          runner_ready=false
+          reason="ISSUE_BOT_RUNNER_READY is not set to true"
+          if [ "${ISSUE_BOT_RUNNER_READY:-}" = "true" ]; then
+            if [ -n "${ISSUE_FIX_COMMAND:-}" ]; then
+              runner_ready=true
+              reason="runner gate passed"
+            else
+              reason="ISSUE_FIX_COMMAND repo variable is empty"
+            fi
+          fi
+          {
+            printf 'runner_ready=%s\n' "$runner_ready"
+            printf 'reason=%s\n' "$reason"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Append gate summary
+        run: |
+          set -euo pipefail
+          {
+            printf '# Runner Preflight Gate\n\n'
+            printf -- '- runner_ready: %s\n' '${{ steps.evaluate.outputs.runner_ready }}'
+            printf -- '- reason: %s\n' '${{ steps.evaluate.outputs.reason }}'
+            printf -- '- next_step: set repo variable ISSUE_BOT_RUNNER_READY=true after the self-hosted runner and ISSUE_FIX_COMMAND are ready\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   preflight:
+    needs: gate
+    if: ${{ needs.gate.outputs.runner_ready == 'true' }}
     runs-on:
       - self-hosted
       - linux
