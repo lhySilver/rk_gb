@@ -43,13 +43,20 @@ mkdir -p "$state_root"
 triage_state="$state_root/triage"
 preflight_state="$state_root/preflight"
 triage_mock="$state_root/triage-issues.json"
+repo_parent="$(cd "$repo_dir/.." && pwd)"
+default_toolchain_bin="$repo_parent/RK/arm-rockchip830-linux-uclibcgnueabihf/bin"
 
-if [ -z "${RK_TOOLCHAIN_BIN:-}" ] && [ -d "/home/jerry/silver/RK/arm-rockchip830-linux-uclibcgnueabihf/bin" ]; then
-    export RK_TOOLCHAIN_BIN="/home/jerry/silver/RK/arm-rockchip830-linux-uclibcgnueabihf/bin"
+if [ -z "${RK_TOOLCHAIN_BIN:-}" ] && [ -d "$default_toolchain_bin" ]; then
+    export RK_TOOLCHAIN_BIN="$default_toolchain_bin"
 fi
 
-if [ -z "${CMAKE_BIN:-}" ] && [ -x "/home/jerry/silver/.tools/cmake-4.2.3-linux-x86_64/bin/cmake" ]; then
-    export CMAKE_BIN="/home/jerry/silver/.tools/cmake-4.2.3-linux-x86_64/bin/cmake"
+if [ -z "${CMAKE_BIN:-}" ]; then
+    for candidate in "$repo_parent"/.tools/cmake-*/bin/cmake; do
+        if [ -x "$candidate" ]; then
+            export CMAKE_BIN="$candidate"
+            break
+        fi
+    done
 fi
 
 if [ -z "${ISSUE_FIX_COMMAND:-}" ]; then

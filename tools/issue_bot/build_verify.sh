@@ -7,6 +7,41 @@ if [ -z "${REPO_DIR}" ]; then
     exit 2
 fi
 
+resolve_repo_sibling_dir() {
+    local name="$1"
+    local repo_parent
+    repo_parent="$(cd "${REPO_DIR}/.." && pwd)"
+    printf '%s/%s' "$repo_parent" "$name"
+}
+
+discover_cmake() {
+    local tools_dir candidate
+    tools_dir="$(resolve_repo_sibling_dir ".tools")"
+    for candidate in "$tools_dir"/cmake-*/bin/cmake; do
+        if [ -x "$candidate" ]; then
+            printf '%s' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+discover_toolchain_bin() {
+    local toolchain_bin
+    toolchain_bin="$(resolve_repo_sibling_dir "RK/arm-rockchip830-linux-uclibcgnueabihf/bin")"
+    if [ -d "$toolchain_bin" ]; then
+        printf '%s' "$toolchain_bin"
+        return 0
+    fi
+    return 1
+}
+
+if [ -z "${RK_TOOLCHAIN_BIN:-}" ]; then
+    if detected_toolchain="$(discover_toolchain_bin)"; then
+        export RK_TOOLCHAIN_BIN="$detected_toolchain"
+    fi
+fi
+
 if [ -z "${RK_TOOLCHAIN_BIN:-}" ] || [ ! -d "${RK_TOOLCHAIN_BIN}" ]; then
     echo "[issue-bot] RK_TOOLCHAIN_BIN is not configured or does not exist" >&2
     exit 3
@@ -14,6 +49,8 @@ fi
 
 if [ -n "${CMAKE_BIN:-}" ]; then
     CMAKE="${CMAKE_BIN}"
+elif detected_cmake="$(discover_cmake)"; then
+    CMAKE="${detected_cmake}"
 elif command -v cmake >/dev/null 2>&1; then
     CMAKE="$(command -v cmake)"
 else

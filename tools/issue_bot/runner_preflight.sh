@@ -8,6 +8,35 @@ run_build_verify=0
 state_dir="${ISSUE_BOT_STATE_DIR:-${TMPDIR:-/tmp}/rk_gb-issue-bot-preflight}"
 cmake_path=""
 
+resolve_repo_sibling_dir() {
+    local name="$1"
+    local repo_parent
+    repo_parent="$(cd "${repo_dir}/.." && pwd)"
+    printf '%s/%s' "$repo_parent" "$name"
+}
+
+discover_cmake() {
+    local tools_dir candidate
+    tools_dir="$(resolve_repo_sibling_dir ".tools")"
+    for candidate in "$tools_dir"/cmake-*/bin/cmake; do
+        if [ -x "$candidate" ]; then
+            printf '%s' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+discover_toolchain_bin() {
+    local toolchain_bin
+    toolchain_bin="$(resolve_repo_sibling_dir "RK/arm-rockchip830-linux-uclibcgnueabihf/bin")"
+    if [ -d "$toolchain_bin" ]; then
+        printf '%s' "$toolchain_bin"
+        return 0
+    fi
+    return 1
+}
+
 write_status() {
     local status="$1"
     local message="$2"
@@ -131,9 +160,19 @@ assert_file "$script_dir/build_verify.sh"
 assert_file "$script_dir/local_smoke_test.sh"
 assert_file "$script_dir/repair_executor.py"
 
+if [ -z "${RK_TOOLCHAIN_BIN:-}" ]; then
+    if detected_toolchain="$(discover_toolchain_bin)"; then
+        export RK_TOOLCHAIN_BIN="$detected_toolchain"
+    fi
+fi
+
 if [ -n "${CMAKE_BIN:-}" ]; then
     assert_exec "${CMAKE_BIN}"
     cmake_path="${CMAKE_BIN}"
+elif detected_cmake="$(discover_cmake)"; then
+    assert_exec "${detected_cmake}"
+    cmake_path="${detected_cmake}"
+    export CMAKE_BIN="${detected_cmake}"
 elif command -v cmake >/dev/null 2>&1; then
     cmake_path="$(command -v cmake)"
     echo "[issue-bot] ok command: cmake -> ${cmake_path}"
