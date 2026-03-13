@@ -8,7 +8,7 @@
 #endif
 
 #if PROTOCOL_HAS_GB28181_CLIENT_SDK
-#include "Protocol/gb28181/GB28181ClientSDK.h"
+#include "GB28181ClientSDK.h"
 #endif
 
 
