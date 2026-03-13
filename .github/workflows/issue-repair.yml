@@ -14,6 +14,11 @@ on:
         required: false
         default: true
         type: boolean
+      allow_manual_issue:
+        description: Allow a manually specified ha-manual issue to bypass auto-fix triage checks
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -25,7 +30,51 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.evaluate.outputs.should_run }}
+      reason: ${{ steps.evaluate.outputs.reason }}
+    env:
+      ISSUE_BOT_RUNNER_READY: ${{ vars.ISSUE_BOT_RUNNER_READY }}
+      ISSUE_BOT_REPAIR_ENABLED: ${{ vars.ISSUE_BOT_REPAIR_ENABLED }}
+      ISSUE_FIX_COMMAND: ${{ vars.ISSUE_FIX_COMMAND }}
+    steps:
+      - id: evaluate
+        run: |
+          set -euo pipefail
+          should_run=false
+          reason="ISSUE_BOT_RUNNER_READY is not set to true"
+          if [ "${ISSUE_BOT_RUNNER_READY:-}" = "true" ]; then
+            if [ -z "${ISSUE_FIX_COMMAND:-}" ]; then
+              reason="ISSUE_FIX_COMMAND repo variable is empty"
+            elif [ "${{ github.event_name }}" = "schedule" ] && [ "${ISSUE_BOT_REPAIR_ENABLED:-}" != "true" ]; then
+              reason="ISSUE_BOT_REPAIR_ENABLED is not set to true"
+            else
+              should_run=true
+              reason="repair gate passed"
+            fi
+          fi
+          {
+            printf 'should_run=%s\n' "$should_run"
+            printf 'reason=%s\n' "$reason"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Append gate summary
+        run: |
+          set -euo pipefail
+          {
+            printf '# Issue Repair Gate\n\n'
+            printf -- '- should_run: %s\n' '${{ steps.evaluate.outputs.should_run }}'
+            printf -- '- reason: %s\n' '${{ steps.evaluate.outputs.reason }}'
+            printf -- '- event: %s\n' '${{ github.event_name }}'
+            printf -- '- next_step: set ISSUE_BOT_RUNNER_READY=true after the self-hosted runner and ISSUE_FIX_COMMAND are ready\n'
+            printf -- '- schedule_note: set ISSUE_BOT_REPAIR_ENABLED=true only after you want the schedule to start consuming issues\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   repair:
+    needs: gate
+    if: ${{ needs.gate.outputs.should_run == 'true' }}
     runs-on:
       - self-hosted
       - linux
@@ -73,6 +122,9 @@ jobs:
             args+=(--issue-number "${{ inputs.issue_number }}")
           else
             args+=(--pick-next)
+          fi
+          if [ "${{ inputs.allow_manual_issue }}" = "true" ]; then
+            args+=(--allow-manual)
           fi
           python3 tools/issue_bot/repair_executor.py "${args[@]}"
 

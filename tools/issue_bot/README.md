@@ -26,6 +26,8 @@
 ## Runner 前提
 
 - 必须运行在专用 self-hosted runner 上，不与人工开发共用工作目录。
+- 建议先把 GitHub repo variable `ISSUE_BOT_RUNNER_READY` 保持为空或 `false`；待 runner 和 `ISSUE_FIX_COMMAND` 都就绪后，再切换为 `true`。
+- 如需启用定时自动修复，再额外设置 GitHub repo variable `ISSUE_BOT_REPAIR_ENABLED=true`；未启用前，定时 repair workflow 会在 GitHub 托管机上快速跳过并写明原因，不再长时间排队。
 - `issue-repair.yml` 的定时任务会直接拾取 `ha-candidate` 队列；手工触发才会读取 `workflow_dispatch` 输入，避免在 `schedule` 事件中错误引用 `inputs` 上下文。
 - runner 需要预装:
   - `git`
@@ -77,6 +79,10 @@ bash tools/issue_bot/runner_preflight.sh \
   runner 上的修复命令。命令会在独立 worktree 中执行。
 - `ISSUE_BOT_STATE_DIR`
   可选，指定 issue bot 的临时状态目录。
+- `ISSUE_BOT_RUNNER_READY`
+  GitHub repo variable。设置为 `true` 后，`issue-runner-preflight.yml` 和 `issue-repair.yml` 才会进入 self-hosted runner 作业。
+- `ISSUE_BOT_REPAIR_ENABLED`
+  GitHub repo variable。仅对 `issue-repair.yml` 的定时任务生效；设置为 `true` 后，schedule 才会开始消费 `ha-candidate` 队列。
 
 ## 修复器契约
 
@@ -105,7 +111,9 @@ bash tools/issue_bot/runner_preflight.sh \
 - `runner_preflight.sh` 会在 `ISSUE_BOT_STATE_DIR/preflight.json` 和 `preflight-summary.md` 中落盘预检结果。
 - 若 preflight 同时触发 `--with-local-smoke`，smoke repair 的结果会落在 `ISSUE_BOT_STATE_DIR/smoke-test/` 下，并同步进入 preflight workflow 的 step summary。
 - 定时 repair 在没有 `ha-candidate` 候选时会正常退出并打印日志，这属于空队列空转，不应视为故障。
+- 在 runner 未就绪、`ISSUE_FIX_COMMAND` 未配置或 schedule 尚未显式启用时，workflow 会在 gate job 中直接结束并给出原因，避免 self-hosted 队列长时间 pending。
 - 自动修复失败后，issue 会被标记为 `ha-failed` 并移出 `ha-candidate` 队列；需要人工复核后再重新添加 `ha-candidate` 才会再次参与自动修复。
+- 对于默认会被 triage 归类为 `ha-manual` 的协议类问题（如 `gb28181` / `gat1400`），可以在 `workflow_dispatch` 时填写 `issue_number` 并把 `allow_manual_issue=true`，让 repair 流程按人工指定 issue 执行。
 
 ## 本地 smoke test
 

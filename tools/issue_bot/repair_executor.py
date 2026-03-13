@@ -49,6 +49,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-branch", help="Base branch to branch from")
     parser.add_argument("--dry-run", action="store_true", help="Do not push branches or create PRs")
     parser.add_argument("--skip-build-verify", action="store_true", help="Skip build_verify.sh during local smoke tests")
+    parser.add_argument(
+        "--allow-manual",
+        action="store_true",
+        help="Allow a manually specified issue to bypass the auto-fixable triage check",
+    )
     return parser.parse_args()
 
 
@@ -184,6 +189,7 @@ def write_run_status(
     dry_run: bool = False,
     pr_url: str = "",
     skipped_build_verify: bool = False,
+    manual_override: bool = False,
 ) -> None:
     payload = {
         "status": status,
@@ -195,6 +201,7 @@ def write_run_status(
         "dry_run": dry_run,
         "pr_url": pr_url,
         "skipped_build_verify": skipped_build_verify,
+        "manual_override": manual_override,
     }
     if issue:
         payload["issue_state_dir"] = str(state_root / f"issue-{issue['number']}")
@@ -208,6 +215,7 @@ def write_run_status(
         f"- message: {message}",
         f"- dry_run: {'true' if dry_run else 'false'}",
         f"- skipped_build_verify: {'true' if skipped_build_verify else 'false'}",
+        f"- manual_override: {'true' if manual_override else 'false'}",
     ]
     if issue:
         issue_state_dir = state_root / f"issue-{issue['number']}"
@@ -231,6 +239,7 @@ def main() -> int:
     repo_dir = Path(args.repo_dir).resolve()
     state_root = ensure_dir(Path(args.state_dir).resolve())
     pr_url = ""
+    manual_override = False
     try:
         if args.mock_issue_json:
             client = LocalDryRunClient()
@@ -245,20 +254,29 @@ def main() -> int:
             message=str(exc),
             dry_run=args.dry_run,
             skipped_build_verify=args.skip_build_verify,
+            manual_override=args.allow_manual,
         )
         print(f"[issue-bot] {exc}")
         return 0
     decision = classify_issue(issue)
     if not decision.auto_fixable:
-        write_run_status(
-            state_root,
-            status="rejected",
-            message=decision.reason,
-            issue=issue,
-            dry_run=args.dry_run,
-            skipped_build_verify=args.skip_build_verify,
-        )
-        raise RuntimeError(f"Issue #{issue['number']} is no longer auto-fixable: {decision.reason}")
+        manual_override = args.allow_manual and args.issue_number is not None
+        if manual_override:
+            print(
+                f"[issue-bot] manual override enabled for issue #{issue['number']}: {decision.reason}",
+                file=sys.stderr,
+            )
+        else:
+            write_run_status(
+                state_root,
+                status="rejected",
+                message=decision.reason,
+                issue=issue,
+                dry_run=args.dry_run,
+                skipped_build_verify=args.skip_build_verify,
+                manual_override=False,
+            )
+            raise RuntimeError(f"Issue #{issue['number']} is no longer auto-fixable: {decision.reason}")
 
     issue_dir = ensure_dir(state_root / f"issue-{issue['number']}")
     branch_name = f"ha/issue-{issue['number']}-{slugify(issue.get('title', 'issue'))}"
@@ -317,6 +335,7 @@ def main() -> int:
             dry_run=args.dry_run,
             pr_url=pr_url,
             skipped_build_verify=args.skip_build_verify,
+            manual_override=manual_override,
         )
     except Exception as exc:
         client.add_labels(issue["number"], [FAILED_LABEL])
@@ -341,6 +360,7 @@ def main() -> int:
             base_branch=base_branch,
             dry_run=args.dry_run,
             skipped_build_verify=args.skip_build_verify,
+            manual_override=manual_override,
         )
         raise
     finally:
