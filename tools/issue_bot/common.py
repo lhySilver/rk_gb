@@ -246,15 +246,3 @@ class GitHubClient:
             f"/repos/{self.context.owner}/{self.context.repo}/pulls",
             query=query,
         )
-
-    def is_branch_protected(self, branch: str) -> bool:
-        try:
-            self._request(
-                "GET",
-                f"/repos/{self.context.owner}/{self.context.repo}/branches/{branch}/protection",
-            )
-            return True
-        except RuntimeError as exc:
-            if "404" in str(exc):
-                return False
-            raise
