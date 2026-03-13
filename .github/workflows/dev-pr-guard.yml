@@ -1,0 +1,113 @@
+name: dev-pr-guard
+
+on:
+  pull_request:
+    branches:
+      - dev
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: dev-pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect build environment sensitive changes
+        id: detect
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import os
+          import subprocess
+          import sys
+          from pathlib import PurePosixPath
+
+          base_sha = os.environ["BASE_SHA"]
+          head_sha = os.environ["HEAD_SHA"]
+          output_path = os.environ["GITHUB_OUTPUT"]
+          summary_path = os.environ["GITHUB_STEP_SUMMARY"]
+
+          completed = subprocess.run(
+              ["git", "diff", "--name-only", base_sha, head_sha],
+              check=True,
+              text=True,
+              capture_output=True,
+          )
+          changed_files = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
+
+          patterns = [
+              ".github/workflows/**",
+              ".github/actions/**",
+              "tools/issue_bot/**",
+              "build.sh",
+              "envsetup.sh",
+              "CMakeLists.txt",
+              "cmake/**",
+              "*.cmake",
+              "Middleware/CMakeLists.txt",
+              "Middleware/**/CMakeLists.txt",
+              "Middleware/cmake-build/**",
+              "cmake-build/**",
+              "RK/**",
+          ]
+
+          matched = []
+          for path in changed_files:
+              pure_path = PurePosixPath(path)
+              if any(pure_path.match(pattern) for pattern in patterns):
+                  matched.append(path)
+
+          with open(output_path, "a", encoding="utf-8") as fh:
+              fh.write(f"sensitive_count={len(matched)}\n")
+              if matched:
+                  fh.write("matched_files<<__EOF__\n")
+                  fh.write("\n".join(matched) + "\n")
+                  fh.write("__EOF__\n")
+
+          with open(summary_path, "a", encoding="utf-8") as fh:
+              fh.write("# Dev PR Guard\n\n")
+              fh.write(f"- changed_files: {len(changed_files)}\n")
+              fh.write(f"- sensitive_count: {len(matched)}\n")
+              if matched:
+                  fh.write("- result: blocked for manual review and isolated verification\n\n")
+                  fh.write("Sensitive files:\n")
+                  for item in matched:
+                      fh.write(f"- `{item}`\n")
+                  fh.write("\n")
+                  fh.write("Required follow-up:\n")
+                  fh.write("- review the PR manually before merging into `dev`\n")
+                  fh.write("- verify in an isolated `/tmp` worktree or source snapshot\n")
+                  fh.write("- do not change the local shared toolchain or local `.tools` installation directly\n")
+              else:
+                  fh.write("- result: no build environment sensitive files detected\n")
+
+          for item in matched:
+              print(f"::error file={item}::build environment sensitive file changed; require manual review before merging into dev")
+
+          if matched:
+              sys.exit(1)
+          PY
+
+      - name: Guard passed
+        if: ${{ steps.detect.outputs.sensitive_count == '0' }}
+        run: |
+          set -euo pipefail
+          printf 'No build environment sensitive files changed.\n'
