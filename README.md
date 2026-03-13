@@ -19,6 +19,10 @@
 2.  xxxx
 3.  xxxx
 
+#### 调试文档
+
+1.  [RK830 IPC coredump 调试说明](doc/coredump_debug_guide.md)
+
 #### 参与贡献
 
 1.  Fork 本仓库
