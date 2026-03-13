@@ -13,7 +13,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from common import GitHubClient, RepoContext, detect_base_branch, ensure_dir, run_checked, write_json, write_text
+from common import GitHubClient, RepoContext, detect_base_branch, ensure_dir, run_checked, slugify, write_json, write_text
 
 
 @dataclass
@@ -71,11 +71,7 @@ def load_issue_numbers(args: argparse.Namespace, client: GitHubClient) -> list[i
 
 
 def list_pull_requests(client: GitHubClient, *, state: str) -> list[dict]:
-    return client._request(
-        "GET",
-        f"/repos/{client.context.owner}/{client.context.repo}/pulls",
-        query={"state": state, "per_page": 100, "sort": "updated", "direction": "desc"},
-    )
+    return client.list_pull_requests(state=state)
 
 
 def pr_matches_issue(pr: dict, issue_number: int) -> bool:
@@ -120,16 +116,20 @@ def checkout_target_branch(repo_dir: Path, target_branch: str, base_branch: str)
     return f"origin/{source_branch}"
 
 
+def checkout_sync_branch(repo_dir: Path, sync_branch: str, target_branch: str) -> None:
+    run_checked(["git", "-C", str(repo_dir), "checkout", "-B", sync_branch, f"origin/{target_branch}"])
+
+
 def commit_already_contains(repo_dir: Path, target_branch: str, source_ref: str) -> bool:
     completed = subprocess.run(
-        ["git", "-C", str(repo_dir), "merge-base", "--is-ancestor", source_ref, target_branch],
+        ["git", "-C", str(repo_dir), "merge-base", "--is-ancestor", source_ref, f"origin/{target_branch}"],
         text=True,
     )
     return completed.returncode == 0
 
 
-def merge_ref(repo_dir: Path, target_branch: str, source_ref: str, issue_number: int, pr_number: int) -> tuple[str, str]:
-    run_checked(["git", "-C", str(repo_dir), "checkout", target_branch])
+def merge_ref(repo_dir: Path, sync_branch: str, target_branch: str, source_ref: str, issue_number: int, pr_number: int) -> tuple[str, str]:
+    run_checked(["git", "-C", str(repo_dir), "checkout", sync_branch])
     if source_ref.startswith("origin/"):
         run_checked(["git", "-C", str(repo_dir), "fetch", "origin", source_ref.removeprefix("origin/")])
 
@@ -159,6 +159,11 @@ def merge_ref(repo_dir: Path, target_branch: str, source_ref: str, issue_number:
     return "merged", message
 
 
+def build_sync_branch_name(issue_numbers: list[int], target_branch: str) -> str:
+    joined = "-".join(str(number) for number in issue_numbers[:6]) if issue_numbers else "recent"
+    return f"automation/issue-sync-{slugify(target_branch, 24)}-{slugify(joined, 24)}"
+
+
 def resolve_pr_source(pr: dict) -> tuple[str | None, str]:
     state = (pr.get("state") or "").lower()
     merged_at = pr.get("merged_at")
@@ -174,16 +179,68 @@ def resolve_pr_source(pr: dict) -> tuple[str | None, str]:
     return None, ""
 
 
-def push_target(repo_dir: Path, target_branch: str) -> None:
-    run_checked(["git", "-C", str(repo_dir), "push", "origin", target_branch])
+def push_sync_branch(repo_dir: Path, sync_branch: str) -> None:
+    run_checked(["git", "-C", str(repo_dir), "push", "--force-with-lease", "-u", "origin", sync_branch])
 
 
-def write_summary(state_dir: Path, target_branch: str, issue_numbers: list[int], results: list[SyncResult], base_source: str) -> None:
+def push_sync_branch_to_target(repo_dir: Path, sync_branch: str, target_branch: str) -> None:
+    run_checked(["git", "-C", str(repo_dir), "push", "origin", f"{sync_branch}:{target_branch}"])
+
+
+def ensure_sync_pull_request(
+    client: GitHubClient,
+    *,
+    sync_branch: str,
+    target_branch: str,
+    issue_numbers: list[int],
+    results: list[SyncResult],
+) -> dict:
+    repo_head = f"{client.context.owner}:{sync_branch}"
+    existing = client.list_pull_requests(state="open", base=target_branch, head=repo_head)
+    if existing:
+        return existing[0]
+
+    issue_refs = ", ".join(f"#{number}" for number in issue_numbers) if issue_numbers else "recent closed issues"
+    merged_items = [item for item in results if item.status == "merged"]
+    summary_lines = [
+        f"## Summary",
+        f"- sync closed issue fixes into `{target_branch}` for {issue_refs}",
+    ]
+    for item in merged_items:
+        summary_lines.append(f"- merge PR #{item.pr_number} source `{item.source_ref}`")
+    summary_lines.extend(
+        [
+            "",
+            "## Notes",
+            "- created by `issue-close-sync-dev` because the target branch is protected or requires pull-request based integration",
+        ]
+    )
+    title_suffix = issue_refs if len(issue_refs) <= 60 else issue_refs[:57] + "..."
+    return client.create_pull_request(
+        title=f"chore: sync closed issues into {target_branch} ({title_suffix})",
+        head=sync_branch,
+        base=target_branch,
+        body="\n".join(summary_lines),
+    )
+
+
+def write_summary(
+    state_dir: Path,
+    target_branch: str,
+    issue_numbers: list[int],
+    results: list[SyncResult],
+    base_source: str,
+    *,
+    sync_branch: str = "",
+    sync_pr_url: str = "",
+) -> None:
     summary_lines = [
         "# Closed Issue Sync Summary",
         "",
         f"- target_branch: `{target_branch}`",
         f"- base_source: `{base_source}`",
+        f"- sync_branch: `{sync_branch or 'n/a'}`",
+        f"- sync_pr: {sync_pr_url or 'n/a'}",
         f"- requested_issues: `{','.join(str(number) for number in issue_numbers) if issue_numbers else 'none'}`",
         "",
         "| issue | pr | source | status | message |",
@@ -203,13 +260,15 @@ def write_summary(state_dir: Path, target_branch: str, issue_numbers: list[int],
         {
             "target_branch": target_branch,
             "base_source": base_source,
+            "sync_branch": sync_branch,
+            "sync_pr_url": sync_pr_url,
             "issue_numbers": issue_numbers,
             "results": [item.__dict__ for item in results],
         },
     )
 
 
-def comment_results(client: GitHubClient, target_branch: str, results: list[SyncResult]) -> None:
+def comment_results(client: GitHubClient, target_branch: str, results: list[SyncResult], sync_pr_url: str = "") -> None:
     by_issue: dict[int, list[SyncResult]] = {}
     for item in results:
         by_issue.setdefault(item.issue_number, []).append(item)
@@ -219,6 +278,8 @@ def comment_results(client: GitHubClient, target_branch: str, results: list[Sync
             f"Closed-issue sync attempted for `{target_branch}`.",
             "",
         ]
+        if sync_pr_url:
+            lines.append(f"- sync PR: {sync_pr_url}")
         for item in items:
             source_label = item.source_ref or "-"
             if item.pr_number > 0:
@@ -240,6 +301,8 @@ def main() -> int:
     run_checked(["git", "-C", str(repo_dir), "fetch", "origin", "--prune"])
     ensure_git_identity(repo_dir)
     base_source = checkout_target_branch(repo_dir, args.target_branch, args.base_branch)
+    sync_branch = build_sync_branch_name(issue_numbers, args.target_branch)
+    checkout_sync_branch(repo_dir, sync_branch, args.target_branch)
 
     open_prs = list_pull_requests(client, state="open")
     closed_prs = list_pull_requests(client, state="closed")
@@ -262,17 +325,40 @@ def main() -> int:
                 results.append(SyncResult(issue_number, pr_number, "", "failed", "missing merge source"))
                 continue
 
-            status, message = merge_ref(repo_dir, args.target_branch, source_ref, issue_number, pr_number)
+            status, message = merge_ref(repo_dir, sync_branch, args.target_branch, source_ref, issue_number, pr_number)
             if status == "merged":
                 merged_any = True
             results.append(SyncResult(issue_number, pr_number, source_label, status, message))
 
+    sync_pr_url = ""
     if merged_any:
-        push_target(repo_dir, args.target_branch)
+        if client.is_branch_protected(args.target_branch):
+            push_sync_branch(repo_dir, sync_branch)
+            sync_pr = ensure_sync_pull_request(
+                client,
+                sync_branch=sync_branch,
+                target_branch=args.target_branch,
+                issue_numbers=issue_numbers,
+                results=results,
+            )
+            sync_pr_url = sync_pr.get("html_url", "")
+            for item in results:
+                if item.status == "merged":
+                    item.message = f"{item.message}; sync PR: {sync_pr_url or 'created'}"
+        else:
+            push_sync_branch_to_target(repo_dir, sync_branch, args.target_branch)
 
-    write_summary(state_dir, args.target_branch, issue_numbers, results, base_source)
+    write_summary(
+        state_dir,
+        args.target_branch,
+        issue_numbers,
+        results,
+        base_source,
+        sync_branch=sync_branch if merged_any else "",
+        sync_pr_url=sync_pr_url,
+    )
     if args.write_comments and results:
-        comment_results(client, args.target_branch, results)
+        comment_results(client, args.target_branch, results, sync_pr_url=sync_pr_url)
 
     failures = [item for item in results if item.status == "failed"]
     return 1 if failures else 0
