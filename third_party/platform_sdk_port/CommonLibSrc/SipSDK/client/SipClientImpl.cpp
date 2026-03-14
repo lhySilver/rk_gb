@@ -60,9 +60,7 @@ void CSipClientImpl::FreeSipBuffer(char** buf)
 // Sip register
 int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectParam* info, int timeout , SipData** result )
 {
-    if(message->auth_flag) {
-        m_client_info->auth_flag = true;
-    }
+    m_client_info->auth_flag = message->auth_flag;
 
     m_client_info->Username = message->user_name;
     m_client_info->Password = message->password;
@@ -72,6 +70,17 @@ int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectPa
     m_client_info->RemoteSipSrvName = info->sip_code;
     m_client_info->new_reg = message->new_reg;
     m_client_info->SetFromeAndTo();
+
+    TVT_LOG_INFO("sip client register prepare"
+                 << " new_reg=" << (m_client_info->new_reg ? 1 : 0)
+                 << " auth=" << (m_client_info->auth_flag ? 1 : 0)
+                 << " user=" << m_client_info->Username
+                 << " local_name=" << m_client_info->local_name
+                 << " local=" << m_client_info->LocalIp << ":" << m_client_info->LocalPort
+                 << " remote=" << m_client_info->RemoteIp << ":" << m_client_info->RemotePort
+                 << " remote_name=" << m_client_info->RemoteSipSrvName
+                 << " expire=" << m_client_info->Expire
+                 << " pwd_set=" << (!m_client_info->Password.empty() ? 1 : 0));
 
     return  m_event_manager->Register(m_client_info, timeout, result );
 }
