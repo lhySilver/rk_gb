@@ -1622,7 +1622,7 @@ int CSdpMedia::GetRecvSendFlag()
 //////////////////////////////////////////////////////////////////////////
 CSdpOrigin::CSdpOrigin()
 {
-    m_Username = "TVT";
+    m_Username = "DGIOT";
     m_SessionID = CSdpUtility::GenerateSessionID();
     m_SessionVersion = CSdpUtility::GenerateSessionID();
     m_NetType = "IN";
@@ -1741,7 +1741,7 @@ CSdpMessage::CSdpMessage()
     SetOrigin(o);
 
     // s
-    m_pSdp->s_name = osip_strdup("TVT");
+    m_pSdp->s_name = osip_strdup("DGIOT");
 
     // t
     CSdpTimeDescr t("0", "0");

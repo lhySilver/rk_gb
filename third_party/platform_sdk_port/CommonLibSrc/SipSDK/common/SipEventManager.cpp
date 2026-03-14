@@ -199,7 +199,7 @@ int CSipEventManager::StartSipListen(  SipTransportType type , const NetAddress*
         return kSipInitFail;
     }
     int proco =  ( type == kSipOverTCP ) ? IPPROTO_TCP : IPPROTO_UDP ;
-    eXosip_set_user_agent(m_sip_context,"TVT");
+    eXosip_set_user_agent(m_sip_context,"DGIOT");
      result = eXosip_listen_addr(m_sip_context, proco, NULL , local->port , AF_INET, 0);
     if ( result != 0) {
         eXosip_quit(m_sip_context);
