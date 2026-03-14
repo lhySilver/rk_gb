@@ -2181,7 +2181,7 @@ int ProtocolManager::Init(const std::string& configEndpoint)
 
 {
 
-    m_provider.reset(new HttpConfigProvider(configEndpoint));
+    m_provider.reset(new LocalConfigProvider(configEndpoint));
 
     return ReloadExternalConfig();
 
@@ -2511,22 +2511,22 @@ int ProtocolManager::ReloadExternalConfig()
 
            m_started ? 1 : 0);
 
-    if (applyMediaConfig) {
-        ApplyRkVideoStreamConfig("main",
-                                 0,
-                                 m_cfg.gb_video.main_codec,
-                                 m_cfg.gb_video.main_resolution,
-                                 m_cfg.gb_video.main_fps,
-                                 m_cfg.gb_video.main_bitrate_kbps);
-        ApplyRkVideoStreamConfig("sub",
-                                 1,
-                                 m_cfg.gb_video.sub_codec,
-                                 m_cfg.gb_video.sub_resolution,
-                                 m_cfg.gb_video.sub_fps,
-                                 m_cfg.gb_video.sub_bitrate_kbps);
-        ApplyRkImageFlipConfig(m_cfg.gb_image.flip_mode);
-        ApplyRkOsdConfig(m_cfg.gb_osd);
-    }
+    // if (applyMediaConfig) {
+    //     ApplyRkVideoStreamConfig("main",
+    //                              0,
+    //                              m_cfg.gb_video.main_codec,
+    //                              m_cfg.gb_video.main_resolution,
+    //                              m_cfg.gb_video.main_fps,
+    //                              m_cfg.gb_video.main_bitrate_kbps);
+    //     ApplyRkVideoStreamConfig("sub",
+    //                              1,
+    //                              m_cfg.gb_video.sub_codec,
+    //                              m_cfg.gb_video.sub_resolution,
+    //                              m_cfg.gb_video.sub_fps,
+    //                              m_cfg.gb_video.sub_bitrate_kbps);
+    //     ApplyRkImageFlipConfig(m_cfg.gb_image.flip_mode);
+    //     ApplyRkOsdConfig(m_cfg.gb_osd);
+    // }
 
 
 
