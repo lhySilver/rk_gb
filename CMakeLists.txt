@@ -1,23 +1,12 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-
-# Select the default RK830 cross toolchain before project() so CMake compiler
-# detection and generated rules stay consistent across 3.16.x and newer.
-set(CMAKE_SYSTEM_NAME Linux)
-
-if(NOT DEFINED CMAKE_C_COMPILER)
-    set(CMAKE_C_COMPILER "arm-rockchip830-linux-uclibcgnueabihf-gcc" CACHE FILEPATH "Default RK830 C compiler")
-endif()
-
-if(NOT DEFINED CMAKE_CXX_COMPILER)
-    set(CMAKE_CXX_COMPILER "arm-rockchip830-linux-uclibcgnueabihf-g++" CACHE FILEPATH "Default RK830 CXX compiler")
-endif()
-
 project(dgiot)
 
 #add_definitions(-Werror)
 #add_definitions(-Wno-error=deprecated-declarations)
-# Keep compiler options out of add_definitions so newer CMake versions pass them through correctly.
-add_compile_options(-O3 -w -Wno-psabi)
+add_definitions(-o3)
+
+#add_definitions(-Wall -o3)
+add_definitions(-w -Wno-psabi)
 option(release "compile for release" ON)
 option(debug "compile for debug" OFF)
 
@@ -26,18 +15,14 @@ option(ATBM6012B "compile for ATBM6012B" OFF)
 option(ATBM6132 "compile for ATBM6132" OFF)
 option(AIC8800DL "compile for AIC8800DL" OFF)
 
-get_filename_component(RK_GB_C_COMPILER_NAME "${CMAKE_C_COMPILER}" NAME)
-get_filename_component(RK_GB_CXX_COMPILER_NAME "${CMAKE_CXX_COMPILER}" NAME)
+#系统
+SET(CMAKE_SYSTEM_NAME Linux)
 
-if(NOT RK_GB_C_COMPILER_NAME STREQUAL "arm-rockchip830-linux-uclibcgnueabihf-gcc"
-   OR NOT RK_GB_CXX_COMPILER_NAME STREQUAL "arm-rockchip830-linux-uclibcgnueabihf-g++")
-    message(FATAL_ERROR
-        "Unexpected compiler selection:\n"
-        "  C   = ${CMAKE_C_COMPILER}\n"
-        "  CXX = ${CMAKE_CXX_COMPILER}\n"
-        "This project expects the RK830 cross toolchain. "
-        "Use a fresh build directory, or pass the desired compiler paths on the first CMake configure.")
-endif()
+#指定编译器
+#c编译
+SET(CMAKE_C_COMPILER "arm-rockchip830-linux-uclibcgnueabihf-gcc")
+#c++编译
+SET(CMAKE_CXX_COMPILER "arm-rockchip830-linux-uclibcgnueabihf-g++")
 
 # 添加子目录
 

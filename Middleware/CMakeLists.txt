@@ -3,8 +3,10 @@ project(dgiot)
 
 #add_definitions(-Werror)
 #add_definitions(-Wno-error=deprecated-declarations)
-# Keep compiler options out of add_definitions so newer CMake versions pass them through correctly.
-add_compile_options(-O3 -w -Wno-psabi)
+add_definitions(-o3)
+
+#add_definitions(-Wall -o3)
+add_definitions(-w -Wno-psabi)
 option(release "compile for release" ON)
 option(debug "compile for debug" OFF)
 
@@ -35,4 +37,5 @@ SET(CMAKE_CXX_COMPILER "arm-rockchip830-linux-uclibcgnueabihf-g++")
 
 # 添加子目录
 add_subdirectory(libmpp)
+
 
