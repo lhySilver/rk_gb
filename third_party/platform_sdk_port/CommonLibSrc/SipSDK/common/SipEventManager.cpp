@@ -796,16 +796,41 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
 {
        osip_message_t *pMsg = NULL;
 
+       TVT_LOG_INFO("sip register enter"
+                    << " new_reg=" << (client_info->new_reg ? 1 : 0)
+                    << " auth=" << (client_info->auth_flag ? 1 : 0)
+                    << " regid=" << client_info->RegId
+                    << " user=" << client_info->Username
+                    << " from=" << client_info->from
+                    << " route=" << client_info->route
+                    << " contact=" << client_info->contact
+                    << " expire=" << client_info->Expire);
+
        if( client_info->auth_flag) {
+           if (client_info->Username.empty() || client_info->Password.empty()) {
+               TVT_LOG_ERROR("sip register auth info invalid"
+                             << " user_empty=" << (client_info->Username.empty() ? 1 : 0)
+                             << " pwd_empty=" << (client_info->Password.empty() ? 1 : 0));
+               return kSipBuildRegisterFailed;
+           }
 
            eXosip_lock(m_sip_context);
-           eXosip_add_authentication_info( m_sip_context,
+           const int authRet = eXosip_add_authentication_info( m_sip_context,
                                                              client_info->Username.c_str(),
-                                                             client_info->local_name.c_str(),
+                                                             client_info->Username.c_str(),
                                                              client_info->Password.c_str(),
-                                                             "md5",
-                                                              NULL  );
+                                                             NULL,
+                                                             NULL  );
           eXosip_unlock(m_sip_context);
+          TVT_LOG_INFO("sip register add auth"
+                       << " ret=" << authRet
+                       << " user=" << client_info->Username);
+          if (authRet != OSIP_SUCCESS) {
+              TVT_LOG_ERROR("sip register add auth failed"
+                            << " ret=" << authRet
+                            << " user=" << client_info->Username);
+              return kSipBuildRegisterFailed;
+          }
        }
 
        if(  client_info->new_reg  ) {
@@ -822,9 +847,15 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
             eXosip_unlock(m_sip_context);
 
             if( regid < 1 ) {
+                TVT_LOG_ERROR("sip build initial register failed"
+                              << " regid=" << regid
+                              << " from=" << client_info->from
+                              << " route=" << client_info->route);
                 return kSipBuildRegisterFailed;
             }
                 client_info->RegId = regid;
+                TVT_LOG_INFO("sip build initial register ok"
+                             << " regid=" << client_info->RegId);
        }
        else{
 
@@ -832,8 +863,15 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
            int res = eXosip_register_build_register(m_sip_context, client_info->RegId, client_info->Expire, &pMsg);
            eXosip_unlock(m_sip_context);
            if( res !=  OSIP_SUCCESS ) {
+               TVT_LOG_ERROR("sip build register failed"
+                             << " res=" << res
+                             << " regid=" << client_info->RegId
+                             << " expire=" << client_info->Expire);
                return kSipBuildRegisterFailed;
            }
+           TVT_LOG_INFO("sip build register ok"
+                        << " regid=" << client_info->RegId
+                        << " expire=" << client_info->Expire);
        }
 
         CResponseWaiter *pCond = NULL;
@@ -849,11 +887,18 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
         eXosip_lock(m_sip_context);
         int res = eXosip_register_send_register(m_sip_context , client_info->RegId, pMsg );
         eXosip_unlock(m_sip_context);
+        TVT_LOG_INFO("sip send register"
+                     << " regid=" << client_info->RegId
+                     << " res=" << res
+                     << " wait_response=" << (pCond != NULL ? 1 : 0));
 
         m_client_manager->InsertClientSession(   client_info  );
 
         if ( res ) {
             m_waiter_manager->CancleWaitResponse(pCond);
+            TVT_LOG_ERROR("sip send register failed"
+                          << " regid=" << client_info->RegId
+                          << " res=" << res);
             return kSipMessageSendFailed;
         }
 
@@ -863,6 +908,10 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
              output = (SipData*)malloc(sizeof(SipData));
 			 memset(output,0,sizeof(SipData));
              code = m_waiter_manager->WaitResponse(pCond, timeout, output );
+             TVT_LOG_INFO("sip wait register response"
+                          << " code=" << code
+                          << " sip_code=" << (output ? output->messgae.code : -1)
+                          << " regid=" << client_info->RegId);
          }
 
          if(code == kSipSuccess){
@@ -871,6 +920,11 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
               if(output)
                   free(output);
          }
+        if (code != kSipSuccess) {
+            TVT_LOG_ERROR("sip register wait failed"
+                          << " code=" << code
+                          << " regid=" << client_info->RegId);
+        }
         return code;
 }
 
