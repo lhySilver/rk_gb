@@ -2290,6 +2290,10 @@ ProtocolManager::ProtocolManager()
 
       m_gb_media_responder_user(NULL),
 
+      m_gb_time_sync_hook(NULL),
+
+      m_gb_time_sync_user(NULL),
+
       m_gb_heartbeat_running(false),
 
       m_gb_client_started(false),
@@ -3261,11 +3265,28 @@ int ProtocolManager::PrepareGbRegisterTimeSync(const std::string& rawDate)
     FormatEpochIsoTime(epochSec, true, utcTime, sizeof(utcTime));
     FormatEpochIsoTime(epochSec, false, localTime, sizeof(localTime));
 
+    GbTimeSyncInfo info;
+    info.raw_date = rawDate;
+    info.utc_time = utcTime;
+    info.local_time = localTime;
+    info.epoch_sec = static_cast<int64_t>(epochSec);
+    info.dry_run = true;
+
     printf("[ProtocolManager] gb register time sync prepared raw=%s utc=%s local=%s epoch=%lld action=settimeofday dry_run=1\n",
            rawDate.c_str(),
            utcTime,
            localTime,
            (long long)epochSec);
+
+    if (m_gb_time_sync_hook != NULL) {
+        const int hookRet = m_gb_time_sync_hook(info, m_gb_time_sync_user);
+        printf("[ProtocolManager] gb register time sync hook ret=%d dry_run=%d\n",
+               hookRet,
+               info.dry_run ? 1 : 0);
+    } else {
+        printf("[ProtocolManager] gb register time sync hook not_set dry_run=%d\n",
+               info.dry_run ? 1 : 0);
+    }
     return 0;
 }
 
@@ -8017,6 +8038,16 @@ void ProtocolManager::SetGbMediaPlayInfoResponder(GbMediaPlayInfoResponder respo
     m_gb_media_responder = responder;
 
     m_gb_media_responder_user = userData;
+
+}
+
+void ProtocolManager::SetGbTimeSyncHook(GbTimeSyncHook hook, void* userData)
+
+{
+
+    m_gb_time_sync_hook = hook;
+
+    m_gb_time_sync_user = userData;
 
 }
 

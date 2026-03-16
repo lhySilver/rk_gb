@@ -51,6 +51,23 @@ public:
 
     typedef int (*GbMediaPlayInfoResponder)(StreamHandle handle, const MediaInfo* info, void* userData);
 
+    struct GbTimeSyncInfo
+    {
+        std::string raw_date;
+        std::string utc_time;
+        std::string local_time;
+        int64_t epoch_sec;
+        bool dry_run;
+
+        GbTimeSyncInfo()
+            : epoch_sec(0),
+              dry_run(true)
+        {
+        }
+    };
+
+    typedef int (*GbTimeSyncHook)(const GbTimeSyncInfo& info, void* userData);
+
 
 
     ProtocolManager();
@@ -138,6 +155,8 @@ public:
 
 
     void SetGbMediaPlayInfoResponder(GbMediaPlayInfoResponder responder, void* userData);
+
+    void SetGbTimeSyncHook(GbTimeSyncHook hook, void* userData);
 
     void SetGbBroadcastPcmCallback(GB28181BroadcastBridge::PcmFrameCallback cb, void* userData);
 
@@ -427,6 +446,10 @@ private:
     GbMediaPlayInfoResponder m_gb_media_responder;
 
     void* m_gb_media_responder_user;
+
+    GbTimeSyncHook m_gb_time_sync_hook;
+
+    void* m_gb_time_sync_user;
 
     std::mutex m_gb_lifecycle_mutex;
 
