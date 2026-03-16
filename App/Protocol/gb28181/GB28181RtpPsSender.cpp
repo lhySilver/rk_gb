@@ -203,8 +203,14 @@ struct GB28181RtpPsSender::RuntimeState
     uint16_t seq_seed;
     uint32_t ssrc;
 
+    unsigned int es_video_frames;
+    unsigned int es_audio_frames;
+    unsigned int ps_packets;
+    unsigned long long ps_bytes;
     unsigned long long total_bytes;
     unsigned int total_packets;
+    uint32_t last_es_log_sec;
+    uint32_t last_ps_log_sec;
     uint32_t last_log_sec;
 
     RuntimeState()
@@ -215,8 +221,14 @@ struct GB28181RtpPsSender::RuntimeState
           current_timestamp90k(0),
           seq_seed(static_cast<uint16_t>(rand() & 0xFFFF)),
           ssrc(0),
+          es_video_frames(0),
+          es_audio_frames(0),
+          ps_packets(0),
+          ps_bytes(0),
           total_bytes(0),
           total_packets(0),
+          last_es_log_sec(0),
+          last_ps_log_sec(0),
           last_log_sec(0)
     {
         memset(&remote_addr, 0, sizeof(remote_addr));
@@ -397,8 +409,14 @@ int GB28181RtpPsSender::OpenSession()
     }
 
     m_state->stream_map.clear();
+    m_state->es_video_frames = 0;
+    m_state->es_audio_frames = 0;
+    m_state->ps_packets = 0;
+    m_state->ps_bytes = 0;
     m_state->total_bytes = 0;
     m_state->total_packets = 0;
+    m_state->last_es_log_sec = 0;
+    m_state->last_ps_log_sec = 0;
     m_state->last_log_sec = 0;
     m_state->opened = true;
 
@@ -439,7 +457,11 @@ void GB28181RtpPsSender::CloseSession()
     }
 
     if (m_state->opened) {
-        printf("[GB28181][RtpPs] session closed packets=%u bytes=%llu seq=%hu ts=%u\n",
+        printf("[GB28181][RtpPs] session closed es_video=%u es_audio=%u ps_packets=%u ps_bytes=%llu rtp_packets=%u rtp_bytes=%llu seq=%hu ts=%u\n",
+               m_state->es_video_frames,
+               m_state->es_audio_frames,
+               m_state->ps_packets,
+               m_state->ps_bytes,
                m_state->total_packets,
                m_state->total_bytes,
                seq,
@@ -524,6 +546,27 @@ int GB28181RtpPsSender::SendEsFrameByCodec(int codecId,
     const int flags = keyFrame ? 0x0001 : 0;
     m_state->current_timestamp90k = static_cast<uint32_t>(pts90k & 0xFFFFFFFFu);
 
+    const bool isVideo = (codecId == PSI_STREAM_H264 || codecId == PSI_STREAM_H265);
+    if (isVideo) {
+        ++m_state->es_video_frames;
+    } else {
+        ++m_state->es_audio_frames;
+    }
+
+    const uint32_t now = NowSeconds();
+    if ((isVideo && m_state->es_video_frames == 1) ||
+        (!isVideo && m_state->es_audio_frames == 1) ||
+        now != m_state->last_es_log_sec) {
+        m_state->last_es_log_sec = now;
+        printf("[GB28181][RtpPs] es input media=%s frames=%u size=%lu pts90k=%llu key=%d codec=%d\n",
+               isVideo ? "video" : "audio",
+               isVideo ? m_state->es_video_frames : m_state->es_audio_frames,
+               static_cast<unsigned long>(size),
+               static_cast<unsigned long long>(pts90k),
+               keyFrame ? 1 : 0,
+               codecId);
+    }
+
     ret = m_state->api.ps_muxer_input(m_state->ps_muxer,
                                       streamId,
                                       flags,
@@ -565,10 +608,30 @@ int GB28181RtpPsSender::OnPsPacket(int stream, void* packet, size_t bytes)
         return -1;
     }
 
-    return m_state->api.rtp_payload_encode_input(m_state->rtp_encoder,
-                                                  packet,
-                                                  static_cast<int>(bytes),
-                                                  m_state->current_timestamp90k);
+    ++m_state->ps_packets;
+    m_state->ps_bytes += static_cast<unsigned long long>(bytes);
+
+    const uint32_t now = NowSeconds();
+    if (m_state->ps_packets == 1 || now != m_state->last_ps_log_sec) {
+        m_state->last_ps_log_sec = now;
+        printf("[GB28181][RtpPs] ps output packets=%u bytes=%llu current_ps=%lu ts90k=%u\n",
+               m_state->ps_packets,
+               m_state->ps_bytes,
+               static_cast<unsigned long>(bytes),
+               m_state->current_timestamp90k);
+    }
+
+    const int ret = m_state->api.rtp_payload_encode_input(m_state->rtp_encoder,
+                                                           packet,
+                                                           static_cast<int>(bytes),
+                                                           m_state->current_timestamp90k);
+    if (ret != 0) {
+        printf("[GB28181][RtpPs] rtp payload encode failed ret=%d ps_bytes=%lu ts90k=%u\n",
+               ret,
+               static_cast<unsigned long>(bytes),
+               m_state->current_timestamp90k);
+    }
+    return ret;
 }
 
 int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t timestamp, int flags)
@@ -587,7 +650,11 @@ int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t time
                          (struct sockaddr*)&m_state->remote_addr,
                          sizeof(m_state->remote_addr));
     if (n != bytes) {
-        printf("[GB28181][RtpPs] udp send failed n=%d expect=%d errno=%d\n", n, bytes, errno);
+        printf("[GB28181][RtpPs] transport send failed n=%d expect=%d errno=%d transport=%s\n",
+               n,
+               bytes,
+               errno,
+               m_param.transport.c_str());
         return -2;
     }
 

@@ -237,9 +237,15 @@ private:
 
         bool acked;
 
+        uint32_t recv_video_frames;
+
+        uint32_t recv_audio_frames;
+
         uint32_t sent_video_frames;
 
         uint32_t sent_audio_frames;
+
+        uint64_t last_capture_log_ms;
 
 
 
@@ -257,9 +263,15 @@ private:
 
               acked(false),
 
+              recv_video_frames(0),
+
+              recv_audio_frames(0),
+
               sent_video_frames(0),
 
-              sent_audio_frames(0)
+              sent_audio_frames(0),
+
+              last_capture_log_ms(0)
 
         {
 
@@ -310,6 +322,10 @@ private:
     void StopGbClientLifecycle();
 
     int RegisterGbClient(bool force);
+
+    int QueryGbRegisterDate(std::string& outDate) const;
+
+    int PrepareGbRegisterTimeSync(const std::string& rawDate);
 
     int SendGbHeartbeatOnce();
 

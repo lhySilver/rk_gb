@@ -39,9 +39,10 @@ char* GB28181ClientSDK::GetTime()
 	if (m_client_Impl->m_dateStr.empty()) {
 		return NULL;
 	}
-	char* buf = new char[m_client_Impl->m_dateStr.length()];
-	memset(buf,0,m_client_Impl->m_dateStr.length());
-	memcpy(buf,m_client_Impl->m_dateStr.c_str(),m_client_Impl->m_dateStr.length());
+	const size_t len = m_client_Impl->m_dateStr.length();
+	char* buf = new char[len + 1];
+	memset(buf,0,len + 1);
+	memcpy(buf,m_client_Impl->m_dateStr.c_str(),len);
 	return buf;
 }
 

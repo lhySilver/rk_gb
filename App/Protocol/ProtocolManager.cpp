@@ -2151,6 +2151,67 @@ static void FillGbTimeString(char* dst, size_t dstSize)
 
 }
 
+static void FormatEpochIsoTime(time_t epochSec, bool utc, char* dst, size_t dstSize)
+{
+    if (dst == NULL || dstSize == 0) {
+        return;
+    }
+
+    dst[0] = '\0';
+    if (epochSec <= 0) {
+        return;
+    }
+
+    struct tm tmValue;
+    memset(&tmValue, 0, sizeof(tmValue));
+#if defined(_WIN32)
+    if (utc) {
+        gmtime_s(&tmValue, &epochSec);
+    } else {
+        localtime_s(&tmValue, &epochSec);
+    }
+#else
+    if (utc) {
+        gmtime_r(&epochSec, &tmValue);
+    } else {
+        localtime_r(&epochSec, &tmValue);
+    }
+#endif
+
+    snprintf(dst,
+             dstSize,
+             "%04d-%02d-%02dT%02d:%02d:%02d",
+             tmValue.tm_year + 1900,
+             tmValue.tm_mon + 1,
+             tmValue.tm_mday,
+             tmValue.tm_hour,
+             tmValue.tm_min,
+             tmValue.tm_sec);
+}
+
+static bool ParseGbHttpDate(const std::string& rawDate, time_t* outEpochSec)
+{
+    if (outEpochSec == NULL || rawDate.empty()) {
+        return false;
+    }
+
+    struct tm tmValue;
+    memset(&tmValue, 0, sizeof(tmValue));
+    char* end = strptime(rawDate.c_str(), "%a, %d %b %Y %H:%M:%S GMT", &tmValue);
+    if (end == NULL || *end != '\0') {
+        return false;
+    }
+
+    tmValue.tm_isdst = 0;
+    const time_t epochSec = timegm(&tmValue);
+    if (epochSec <= 0) {
+        return false;
+    }
+
+    *outEpochSec = epochSec;
+    return true;
+}
+
 
 
 static const char* GbSubscribeTypeToString(SubscribeType type)
@@ -3136,6 +3197,15 @@ int ProtocolManager::RegisterGbClient(bool force)
                               ? (registerParam.expires - ResolveGbRegisterRefreshLeadSec(registerParam.expires))
                               : 1U) * 1000ULL));
 
+    std::string registerDate;
+    const int dateRet = QueryGbRegisterDate(registerDate);
+    printf("[ProtocolManager] gb register date header ret=%d raw=%s\n",
+           dateRet,
+           (dateRet == 0) ? registerDate.c_str() : "");
+    if (dateRet == 0) {
+        PrepareGbRegisterTimeSync(registerDate);
+    }
+
     return 0;
 
 #else
@@ -3146,6 +3216,57 @@ int ProtocolManager::RegisterGbClient(bool force)
 
 #endif
 
+}
+
+int ProtocolManager::QueryGbRegisterDate(std::string& outDate) const
+{
+    outDate.clear();
+
+#if PROTOCOL_HAS_GB28181_CLIENT_SDK
+    if (m_gb_client_sdk == NULL || !m_gb_client_started) {
+        return -1;
+    }
+
+    char* rawDate = m_gb_client_sdk->GetTime();
+    if (rawDate == NULL) {
+        return -2;
+    }
+
+    outDate.assign(rawDate);
+    delete[] rawDate;
+    rawDate = NULL;
+
+    return outDate.empty() ? -3 : 0;
+#else
+    return -4;
+#endif
+}
+
+int ProtocolManager::PrepareGbRegisterTimeSync(const std::string& rawDate)
+{
+    if (rawDate.empty()) {
+        printf("[ProtocolManager] gb register time sync skip reason=empty_date_header dry_run=1\n");
+        return -1;
+    }
+
+    time_t epochSec = 0;
+    if (!ParseGbHttpDate(rawDate, &epochSec)) {
+        printf("[ProtocolManager] gb register time sync parse failed raw=%s dry_run=1\n",
+               rawDate.c_str());
+        return -2;
+    }
+
+    char utcTime[32] = {0};
+    char localTime[32] = {0};
+    FormatEpochIsoTime(epochSec, true, utcTime, sizeof(utcTime));
+    FormatEpochIsoTime(epochSec, false, localTime, sizeof(localTime));
+
+    printf("[ProtocolManager] gb register time sync prepared raw=%s utc=%s local=%s epoch=%lld action=settimeofday dry_run=1\n",
+           rawDate.c_str(),
+           utcTime,
+           localTime,
+           (long long)epochSec);
+    return 0;
 }
 
 
@@ -3335,16 +3456,53 @@ int ProtocolManager::PushLiveVideoEsFrame(const uint8_t* data, size_t size, uint
 
 
 
+    bool active = false;
+    bool acked = false;
+    bool logFrame = false;
+    StreamHandle handle = NULL;
+    uint32_t recvVideo = 0;
+    uint32_t recvAudio = 0;
+    uint32_t sentVideo = 0;
+    uint32_t sentAudio = 0;
+    const uint64_t nowMs = GetNowMs();
+
     {
 
         std::lock_guard<std::mutex> lock(m_gb_live_mutex);
 
-        if (!m_gb_live_session.active || !m_gb_live_session.acked) {
-
-            return 0;
-
+        if (m_gb_live_session.active) {
+            active = true;
+            acked = m_gb_live_session.acked;
+            handle = m_gb_live_session.stream_handle;
+            ++m_gb_live_session.recv_video_frames;
+            recvVideo = m_gb_live_session.recv_video_frames;
+            recvAudio = m_gb_live_session.recv_audio_frames;
+            sentVideo = m_gb_live_session.sent_video_frames;
+            sentAudio = m_gb_live_session.sent_audio_frames;
+            if (m_gb_live_session.last_capture_log_ms == 0 ||
+                nowMs >= m_gb_live_session.last_capture_log_ms + 1000ULL) {
+                m_gb_live_session.last_capture_log_ms = nowMs;
+                logFrame = true;
+            }
         }
 
+    }
+
+    if (logFrame) {
+        printf("[ProtocolManager] gb live video es handle=%p acked=%d recv_video=%u recv_audio=%u sent_video=%u sent_audio=%u size=%lu key=%d pts90k=%llu\n",
+               handle,
+               acked ? 1 : 0,
+               recvVideo,
+               recvAudio,
+               sentVideo,
+               sentAudio,
+               (unsigned long)size,
+               keyFrame ? 1 : 0,
+               (unsigned long long)pts90k);
+    }
+
+    if (!active || !acked) {
+        return 0;
     }
 
 
@@ -3381,16 +3539,52 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
 
 
 
+    bool active = false;
+    bool acked = false;
+    bool logFrame = false;
+    StreamHandle handle = NULL;
+    uint32_t recvVideo = 0;
+    uint32_t recvAudio = 0;
+    uint32_t sentVideo = 0;
+    uint32_t sentAudio = 0;
+    const uint64_t nowMs = GetNowMs();
+
     {
 
         std::lock_guard<std::mutex> lock(m_gb_live_mutex);
 
-        if (!m_gb_live_session.active || !m_gb_live_session.acked) {
-
-            return 0;
-
+        if (m_gb_live_session.active) {
+            active = true;
+            acked = m_gb_live_session.acked;
+            handle = m_gb_live_session.stream_handle;
+            ++m_gb_live_session.recv_audio_frames;
+            recvVideo = m_gb_live_session.recv_video_frames;
+            recvAudio = m_gb_live_session.recv_audio_frames;
+            sentVideo = m_gb_live_session.sent_video_frames;
+            sentAudio = m_gb_live_session.sent_audio_frames;
+            if (m_gb_live_session.last_capture_log_ms == 0 ||
+                nowMs >= m_gb_live_session.last_capture_log_ms + 1000ULL) {
+                m_gb_live_session.last_capture_log_ms = nowMs;
+                logFrame = true;
+            }
         }
 
+    }
+
+    if (logFrame) {
+        printf("[ProtocolManager] gb live audio es handle=%p acked=%d recv_video=%u recv_audio=%u sent_video=%u sent_audio=%u size=%lu pts90k=%llu\n",
+               handle,
+               acked ? 1 : 0,
+               recvVideo,
+               recvAudio,
+               sentVideo,
+               sentAudio,
+               (unsigned long)size,
+               (unsigned long long)pts90k);
+    }
+
+    if (!active || !acked) {
+        return 0;
     }
 
 
