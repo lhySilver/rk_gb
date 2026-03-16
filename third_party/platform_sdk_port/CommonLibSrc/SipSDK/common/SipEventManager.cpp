@@ -15,6 +15,8 @@
 #define WAITTIME		50				     //SIP事件监听时间间隔
 #define LIVETIME		(90 * 1000)		//保活时间
 #define MAX_LENGTH_TR    1024
+static const int kRegisterAutomaticActionSettleUs = 200 * 1000;
+
 static void custom_osip_trace(const char *fi, int li, osip_trace_level_t level, const char *chfr, va_list ap)
 {
 	if (!fi || !chfr) {
@@ -194,6 +196,7 @@ CSipEventManager::CSipEventManager()
 {
        m_stop_flag.SetValue(1);
        m_listen_flag.SetValue(0);
+       m_register_guard_count.SetValue(0);
        m_sip_context  = NULL;
        m_listen_thread_id = NULL;
        m_sip_log_handler = NULL;
@@ -211,6 +214,7 @@ CSipEventManager::~CSipEventManager()
 void CSipEventManager::Stop()
 {
 	m_stop_flag.SetValue(0);
+    m_register_guard_count.SetValue(0);
     if (m_listen_flag && m_sip_context ) {
         eXosip_quit(  m_sip_context  );
 		m_listen_flag.SetValue(0);
@@ -695,9 +699,11 @@ void CSipEventManager::SipEventProcess()
         
         pEvent = eXosip_event_wait( m_sip_context, 0, 50 );
 
-		eXosip_lock(m_sip_context); 
-		eXosip_automatic_action(m_sip_context);
-		eXosip_unlock(m_sip_context);
+        if (m_register_guard_count == 0) {
+		    eXosip_lock(m_sip_context); 
+		    eXosip_automatic_action(m_sip_context);
+		    eXosip_unlock(m_sip_context);
+        }
 
         if (pEvent == NULL) {
 			continue;
@@ -843,6 +849,10 @@ void CSipEventManager::SipEventProcess()
 int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData** result )
 {
        osip_message_t *pMsg = NULL;
+       const bool guardAutomaticAction = (result != NULL);
+       if (guardAutomaticAction) {
+           m_register_guard_count.Increment();
+       }
 
        if (NeedResolveLocalSipIp(client_info->LocalIp.c_str())) {
            std::string resolved_local_ip;
@@ -878,6 +888,9 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                TVT_LOG_ERROR("sip register auth info invalid"
                              << " user_empty=" << (client_info->Username.empty() ? 1 : 0)
                              << " pwd_empty=" << (client_info->Password.empty() ? 1 : 0));
+               if (guardAutomaticAction) {
+                   m_register_guard_count.Decrement();
+               }
                return kSipBuildRegisterFailed;
            }
 
@@ -896,6 +909,9 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
               TVT_LOG_ERROR("sip register add auth failed"
                             << " ret=" << authRet
                             << " user=" << client_info->Username);
+              if (guardAutomaticAction) {
+                  m_register_guard_count.Decrement();
+              }
               return kSipBuildRegisterFailed;
           }
        }
@@ -918,6 +934,9 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                               << " regid=" << regid
                               << " from=" << client_info->from
                               << " route=" << client_info->route);
+                if (guardAutomaticAction) {
+                    m_register_guard_count.Decrement();
+                }
                 return kSipBuildRegisterFailed;
             }
                 client_info->RegId = regid;
@@ -946,6 +965,9 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                              << " regid=" << client_info->RegId
                              << " expire=" << client_info->Expire
                              << " attempts=" << attempt);
+               if (guardAutomaticAction) {
+                   m_register_guard_count.Decrement();
+               }
                return kSipBuildRegisterFailed;
            }
            TVT_LOG_INFO("sip build register ok"
@@ -959,6 +981,9 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
 
             pCond = m_waiter_manager->CreateResponseWaiter(pMsg, kSipRegisterMethod );
             if( pCond==NULL ) {
+                if (guardAutomaticAction) {
+                    m_register_guard_count.Decrement();
+                }
                 return kSipBuildRegisterFailed;
             }
 
@@ -976,13 +1001,16 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
 
         if ( res ) {
             m_waiter_manager->CancleWaitResponse(pCond);
+            if (guardAutomaticAction) {
+                m_register_guard_count.Decrement();
+            }
             TVT_LOG_ERROR("sip send register failed"
                           << " regid=" << client_info->RegId
                           << " res=" << res);
             return kSipMessageSendFailed;
         }
 
-        int code;
+        int code = kSipSuccess;
         SipData* output = NULL;
         if( pCond ) {
              output = (SipData*)malloc(sizeof(SipData));
@@ -994,7 +1022,12 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                           << " regid=" << client_info->RegId);
          }
 
-         if(code == kSipSuccess){
+         if (guardAutomaticAction) {
+             usleep(kRegisterAutomaticActionSettleUs);
+             m_register_guard_count.Decrement();
+         }
+
+         if(code == kSipSuccess && result != NULL){
              *result = output;
          }else{
               if(output)

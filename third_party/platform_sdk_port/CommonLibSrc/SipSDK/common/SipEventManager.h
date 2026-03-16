@@ -90,6 +90,7 @@ private:
 private:
     Interlocked                   m_stop_flag;
     Interlocked                   m_listen_flag;
+    Interlocked                   m_register_guard_count;
     eXosip_t*                     m_sip_context;
     SipServerHandler*         m_sip_handler;
     CWaiterManager*          m_waiter_manager;
