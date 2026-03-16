@@ -2198,14 +2198,87 @@ static bool ParseGbHttpDate(const std::string& rawDate, time_t* outEpochSec)
     struct tm tmValue;
     memset(&tmValue, 0, sizeof(tmValue));
     char* end = strptime(rawDate.c_str(), "%a, %d %b %Y %H:%M:%S GMT", &tmValue);
-    if (end == NULL || *end != '\0') {
+    if (end != NULL && *end == '\0') {
+        tmValue.tm_isdst = 0;
+        const time_t epochSec = timegm(&tmValue);
+        if (epochSec <= 0) {
+            return false;
+        }
+
+        *outEpochSec = epochSec;
+        return true;
+    }
+
+    memset(&tmValue, 0, sizeof(tmValue));
+    end = strptime(rawDate.c_str(), "%Y-%m-%dT%H:%M:%S", &tmValue);
+    if (end == NULL) {
+        return false;
+    }
+
+    if (*end == '.') {
+        ++end;
+        while (*end >= '0' && *end <= '9') {
+            ++end;
+        }
+    }
+
+    bool useUtc = false;
+    int tzOffsetSec = 0;
+    if (*end == '\0') {
+        tmValue.tm_isdst = -1;
+        const time_t epochSec = mktime(&tmValue);
+        if (epochSec <= 0) {
+            return false;
+        }
+
+        *outEpochSec = epochSec;
+        return true;
+    }
+
+    if (*end == 'Z') {
+        useUtc = true;
+        ++end;
+    } else if (*end == '+' || *end == '-') {
+        const int sign = (*end == '-') ? -1 : 1;
+        ++end;
+
+        if (end[0] < '0' || end[0] > '9' || end[1] < '0' || end[1] > '9') {
+            return false;
+        }
+
+        const int tzHour = (end[0] - '0') * 10 + (end[1] - '0');
+        end += 2;
+
+        int tzMinute = 0;
+        if (*end == ':') {
+            ++end;
+        }
+
+        if (*end != '\0') {
+            if (end[0] < '0' || end[0] > '9' || end[1] < '0' || end[1] > '9') {
+                return false;
+            }
+
+            tzMinute = (end[0] - '0') * 10 + (end[1] - '0');
+            end += 2;
+        }
+
+        tzOffsetSec = sign * (tzHour * 3600 + tzMinute * 60);
+        useUtc = true;
+    }
+
+    if (*end != '\0') {
         return false;
     }
 
     tmValue.tm_isdst = 0;
-    const time_t epochSec = timegm(&tmValue);
+    time_t epochSec = useUtc ? timegm(&tmValue) : mktime(&tmValue);
     if (epochSec <= 0) {
         return false;
+    }
+
+    if (useUtc && tzOffsetSec != 0) {
+        epochSec -= tzOffsetSec;
     }
 
     *outEpochSec = epochSec;
