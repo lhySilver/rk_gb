@@ -710,12 +710,6 @@ void CSipEventManager::SipEventProcess()
         
         pEvent = eXosip_event_wait( m_sip_context, 0, 50 );
 
-        if (m_register_guard_count == 0) {
-		    eXosip_lock(m_sip_context); 
-		    eXosip_automatic_action(m_sip_context);
-		    eXosip_unlock(m_sip_context);
-        }
-
         if (pEvent == NULL) {
 			continue;
 		}

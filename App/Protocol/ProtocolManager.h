@@ -421,6 +421,8 @@ private:
     bool m_gb_client_started;
 
     bool m_gb_client_registered;
+    uint64_t m_gb_register_success_ms;
+    uint32_t m_gb_register_expires_sec;
 
     std::mutex m_gb_subscribe_mutex;
 

@@ -901,6 +901,36 @@ static uint64_t GetNowMs()
 
 }
 
+static bool IsLoopbackIp(const std::string& ip)
+{
+    const std::string normalized = ToLowerCopy(ip);
+    return normalized == "127.0.0.1" || normalized == "localhost";
+}
+
+static bool ShouldAutoStartGbListen(const protocol::GbListenParam& param)
+{
+    if (param.target_ip.empty() || param.target_port <= 0) {
+        return false;
+    }
+
+    return !IsLoopbackIp(param.target_ip);
+}
+
+static uint64_t GetSteadyNowMs()
+{
+    return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+}
+
+static uint32_t ResolveGbRegisterRefreshLeadSec(uint32_t expiresSec)
+{
+    if (expiresSec <= 120U) {
+        return expiresSec > 10U ? (expiresSec / 2U) : 5U;
+    }
+
+    return 60U;
+}
+
 
 
 static bool IsAudioMimeType(const std::string& mime)
@@ -2204,6 +2234,8 @@ ProtocolManager::ProtocolManager()
       m_gb_client_started(false),
 
       m_gb_client_registered(false),
+      m_gb_register_success_ms(0),
+      m_gb_register_expires_sec(0),
 
       m_gb_catalog_subscribe_handle(NULL),
 
@@ -2315,18 +2347,24 @@ int ProtocolManager::Start()
 
 
 
-    ret = m_listen.StartSession(m_cfg.gb_listen);
+    if (ShouldAutoStartGbListen(m_cfg.gb_listen)) {
+        ret = m_listen.StartSession(m_cfg.gb_listen);
 
-    if (ret != 0) {
+        if (ret != 0) {
 
-        printf("[ProtocolManager] start listen session failed: %d\n", ret);
+            printf("[ProtocolManager] start listen session failed: %d\n", ret);
 
-        m_broadcast.StopSession();
+            m_broadcast.StopSession();
 
-        m_rtp_ps_sender.CloseSession();
+            m_rtp_ps_sender.CloseSession();
 
-        return ret;
+            return ret;
 
+        }
+    } else {
+        printf("[ProtocolManager] skip listen session auto start target=%s:%d\n",
+               m_cfg.gb_listen.target_ip.c_str(),
+               m_cfg.gb_listen.target_port);
     }
 
 
@@ -2621,25 +2659,31 @@ int ProtocolManager::ReloadExternalConfig()
 
         if (restartListen) {
 
-            const int listenRet = m_listen.StartSession(m_cfg.gb_listen);
+            if (ShouldAutoStartGbListen(m_cfg.gb_listen)) {
+                const int listenRet = m_listen.StartSession(m_cfg.gb_listen);
 
-            if (listenRet != 0) {
+                if (listenRet != 0) {
 
-                printf("[ProtocolManager] module=config event=config_apply_fail trace=manager error=%d stage=gb_listen_restart version=%s\n",
+                    printf("[ProtocolManager] module=config event=config_apply_fail trace=manager error=%d stage=gb_listen_restart version=%s\n",
 
-                       listenRet,
+                           listenRet,
+
+                           m_cfg.version.c_str());
+
+                    return listenRet;
+
+                }
+
+                printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_listen_restart version=%s\n",
 
                        m_cfg.version.c_str());
-
-                return listenRet;
-
+            } else {
+                m_listen.StopSession();
+                printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_listen_skip version=%s target=%s:%d\n",
+                       m_cfg.version.c_str(),
+                       m_cfg.gb_listen.target_ip.c_str(),
+                       m_cfg.gb_listen.target_port);
             }
-
-
-
-            printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_listen_restart version=%s\n",
-
-                   m_cfg.version.c_str());
 
         }
 
@@ -2864,6 +2908,8 @@ void ProtocolManager::StopGbClientLifecycle()
         m_gb_client_started = false;
 
         m_gb_client_registered = false;
+        m_gb_register_success_ms = 0;
+        m_gb_register_expires_sec = 0;
 
         return;
 
@@ -2902,6 +2948,8 @@ void ProtocolManager::StopGbClientLifecycle()
     m_gb_client_started = false;
 
     m_gb_client_registered = false;
+    m_gb_register_success_ms = 0;
+    m_gb_register_expires_sec = 0;
 
 #else
 
@@ -2910,6 +2958,8 @@ void ProtocolManager::StopGbClientLifecycle()
     m_gb_client_started = false;
 
     m_gb_client_registered = false;
+    m_gb_register_success_ms = 0;
+    m_gb_register_expires_sec = 0;
 
 #endif
 
@@ -3032,6 +3082,8 @@ int ProtocolManager::RegisterGbClient(bool force)
     if (!IsGbSdkSuccess(regRet)) {
 
         m_gb_client_registered = false;
+        m_gb_register_success_ms = 0;
+        m_gb_register_expires_sec = 0;
 
         printf("[ProtocolManager] gb register failed ret=%d local=%s server=%s:%u connectGb=%s user=%s pass=%s\n",
 
@@ -3056,6 +3108,8 @@ int ProtocolManager::RegisterGbClient(bool force)
 
 
     m_gb_client_registered = true;
+    m_gb_register_success_ms = GetSteadyNowMs();
+    m_gb_register_expires_sec = registerParam.expires;
 
     const int pendingUpgradeRet = ReportPendingGbUpgradeResult();
     if (pendingUpgradeRet != 0) {
@@ -3064,7 +3118,7 @@ int ProtocolManager::RegisterGbClient(bool force)
                localGbCode.c_str());
     }
 
-    printf("[ProtocolManager] gb register ok local=%s server=%s:%u connectGb=%s expires=%u user=%s\n",
+    printf("[ProtocolManager] gb register ok local=%s server=%s:%u connectGb=%s expires=%u user=%s refresh_at_ms=%llu\n",
 
            localGbCode.c_str(),
 
@@ -3076,7 +3130,11 @@ int ProtocolManager::RegisterGbClient(bool force)
 
            (unsigned int)registerParam.expires,
 
-           authUser.c_str());
+           authUser.c_str(),
+           (unsigned long long)(m_gb_register_success_ms +
+               (uint64_t)((registerParam.expires > ResolveGbRegisterRefreshLeadSec(registerParam.expires))
+                              ? (registerParam.expires - ResolveGbRegisterRefreshLeadSec(registerParam.expires))
+                              : 1U) * 1000ULL));
 
     return 0;
 
@@ -3169,24 +3227,39 @@ void ProtocolManager::GbHeartbeatLoop()
 
 
     int failedCount = 0;
+    int elapsedSec = 0;
 
     while (m_gb_heartbeat_running.load()) {
 
-        for (int i = 0; i < intervalSec && m_gb_heartbeat_running.load(); ++i) {
-
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        }
-
-
-
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         if (!m_gb_heartbeat_running.load()) {
-
             break;
-
         }
 
+        ++elapsedSec;
 
+        if (m_gb_client_registered && m_gb_register_success_ms > 0 && m_gb_register_expires_sec > 0) {
+            const uint32_t leadSec = ResolveGbRegisterRefreshLeadSec(m_gb_register_expires_sec);
+            const uint32_t refreshAfterSec = (m_gb_register_expires_sec > leadSec) ?
+                                             (m_gb_register_expires_sec - leadSec) : 1U;
+            const uint64_t nextRefreshMs = m_gb_register_success_ms + (uint64_t)refreshAfterSec * 1000ULL;
+            if (GetSteadyNowMs() >= nextRefreshMs) {
+                const int refreshRet = RegisterGbClient(true);
+                if (refreshRet == 0) {
+                    printf("[ProtocolManager] gb register refresh ok expires=%u lead=%u\n",
+                           m_gb_register_expires_sec,
+                           leadSec);
+                } else {
+                    printf("[ProtocolManager] gb register refresh failed ret=%d\n", refreshRet);
+                }
+            }
+        }
+
+        if (elapsedSec < intervalSec) {
+            continue;
+        }
+
+        elapsedSec = 0;
 
         const int hbRet = SendGbHeartbeatOnce();
 
