@@ -6765,6 +6765,18 @@ int ProtocolManager::RespondGbMediaPlayInfo(StreamHandle handle,
 
     }
 
+    printf("[ProtocolManager] gb media response prepared gb=%s type=%s handle=%p answer_transport=%s answer_ip=%s answer_port=%u answer_ssrc=%s req_transport=%s req_ip=%s req_port=%u\n",
+           gbCode != NULL ? gbCode : "",
+           StreamRequestTypeName(requestType),
+           handle,
+           GbNetTransportName(answer.RtpType),
+           answer.IP,
+           answer.Port,
+           answer.Ssrc,
+           input != NULL ? GbNetTransportName(input->RtpType) : "null",
+           input != NULL ? input->IP : "",
+           input != NULL ? input->Port : 0U);
+
 
 
     ret = m_gb_media_responder(handle, &answer, m_gb_media_responder_user);

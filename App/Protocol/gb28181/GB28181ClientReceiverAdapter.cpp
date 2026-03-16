@@ -118,13 +118,28 @@ bool GB28181ClientReceiverAdapter::OnStreamRequest(StreamHandle handle,
                                                    const MediaInfo* input)
 {
     if (m_manager == NULL) {
+        printf("[GB28181][ReceiverAdapter] stream request dropped no_manager device=%s handle=%p type=%d\n",
+               gb_code != NULL ? gb_code : "",
+               handle,
+               (int)type);
         return false;
     }
 
     if (type == kStopStream) {
+        printf("[GB28181][ReceiverAdapter] stream stop request device=%s handle=%p\n",
+               gb_code != NULL ? gb_code : "",
+               handle);
         m_manager->HandleGbStopStreamRequest(handle, gb_code);
         return true;
     }
+
+    printf("[GB28181][ReceiverAdapter] stream request device=%s handle=%p type=%d transport=%d remote=%s:%u\n",
+           gb_code != NULL ? gb_code : "",
+           handle,
+           (int)type,
+           input != NULL ? (int)input->RtpType : -1,
+           input != NULL ? input->IP : "",
+           input != NULL ? input->Port : 0U);
 
     int ret = 0;
     switch (type) {
@@ -144,6 +159,11 @@ bool GB28181ClientReceiverAdapter::OnStreamRequest(StreamHandle handle,
         return true;
     }
 
+    printf("[GB28181][ReceiverAdapter] stream request result device=%s handle=%p type=%d ret=%d\n",
+           gb_code != NULL ? gb_code : "",
+           handle,
+           (int)type,
+           ret);
     return (ret == 0);
 }
 
@@ -153,6 +173,7 @@ bool GB28181ClientReceiverAdapter::OnStreamAck(StreamHandle handle)
         return false;
     }
 
+    printf("[GB28181][ReceiverAdapter] stream ack handle=%p\n", handle);
     return (m_manager->HandleGbStreamAck(handle) == 0);
 }
 
