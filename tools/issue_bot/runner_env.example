@@ -12,6 +12,7 @@ ISSUE_BOT_LOCK_FILE=/var/tmp/rk-gb-issue-bot/issue-bot.lock
 ISSUE_BOT_WRITE=1
 ISSUE_BOT_SKIP_BUILD_VERIFY=0
 CODEX_BIN=codex
+GH_BIN=gh
 
 # Optional for local cron/self-hosted execution outside GitHub Actions.
 # GITHUB_REPOSITORY=zidate/rk_gb

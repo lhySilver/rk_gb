@@ -43,6 +43,20 @@ require_cmd() {
     fi
 }
 
+resolve_executable() {
+    local configured="$1"
+    local fallback="$2"
+    if [ -n "$configured" ] && [ -x "$configured" ]; then
+        printf '%s' "$configured"
+        return 0
+    fi
+    if command -v "$fallback" >/dev/null 2>&1; then
+        command -v "$fallback"
+        return 0
+    fi
+    return 1
+}
+
 resolve_repo_slug_from_remote() {
     local remote_url="$1"
     local slug="${remote_url}"
@@ -62,19 +76,50 @@ ensure_github_context() {
         GITHUB_REPOSITORY="$(resolve_repo_slug_from_remote "$remote_url")"
     fi
 
-    if [ -z "${GITHUB_TOKEN:-}" ] && command -v gh >/dev/null 2>&1; then
-        export GITHUB_TOKEN
-        GITHUB_TOKEN="$(gh auth token)"
+    if [ -z "${GITHUB_TOKEN:-}" ]; then
+        local gh_bin
+        gh_bin="$(resolve_executable "${GH_BIN:-}" gh || true)"
+        if [ -n "$gh_bin" ]; then
+            export GH_BIN="$gh_bin"
+            export GITHUB_TOKEN
+            GITHUB_TOKEN="$("$gh_bin" auth token)"
+        fi
     fi
 
-    if [ -z "${GITHUB_REPOSITORY:-}" ]; then
-        printf '[issue-bot][local-cycle] GITHUB_REPOSITORY is not configured\n' >&2
-        exit 11
+    if [ -n "${CODEX_BIN:-}" ]; then
+        if [ ! -x "${CODEX_BIN}" ]; then
+            printf '[issue-bot][local-cycle] CODEX_BIN is not executable: %s\n' "${CODEX_BIN}" >&2
+            exit 13
+        fi
+    else
+        local codex_bin
+        codex_bin="$(resolve_executable "" codex || true)"
+        if [ -z "$codex_bin" ]; then
+            printf '[issue-bot][local-cycle] codex executable not found\n' >&2
+            exit 14
+        fi
+        export CODEX_BIN="$codex_bin"
     fi
 
     if [ -z "${GITHUB_TOKEN:-}" ]; then
         printf '[issue-bot][local-cycle] GITHUB_TOKEN is not configured and gh auth token is unavailable\n' >&2
         exit 12
+    fi
+    if [ -z "${GITHUB_REPOSITORY:-}" ]; then
+        printf '[issue-bot][local-cycle] GITHUB_REPOSITORY is not configured\n' >&2
+        exit 11
+    fi
+}
+
+ensure_runtime_paths() {
+    if [ -n "${GH_BIN:-}" ] && [ ! -x "${GH_BIN}" ]; then
+        printf '[issue-bot][local-cycle] GH_BIN is not executable: %s\n' "${GH_BIN}" >&2
+        exit 15
+    fi
+
+    if [ -n "${CODEX_BIN:-}" ] && [ ! -x "${CODEX_BIN}" ]; then
+        printf '[issue-bot][local-cycle] CODEX_BIN is not executable: %s\n' "${CODEX_BIN}" >&2
+        exit 16
     fi
 }
 
@@ -205,6 +250,7 @@ if [ -z "${ISSUE_FIX_COMMAND:-}" ]; then
     exit 4
 fi
 
+ensure_runtime_paths
 ensure_github_context
 mkdir -p "$state_root"
 

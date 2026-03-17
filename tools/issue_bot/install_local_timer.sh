@@ -11,6 +11,15 @@ state_dir="${ISSUE_BOT_STATE_DIR:-${TMPDIR:-/tmp}/rk_gb-issue-bot-local}"
 base_branch="${ISSUE_BOT_BASE_BRANCH:-silver}"
 apply_changes=0
 
+detect_executable() {
+    local name="$1"
+    if command -v "$name" >/dev/null 2>&1; then
+        command -v "$name"
+        return 0
+    fi
+    return 1
+}
+
 usage() {
     cat <<'EOF'
 Usage: bash tools/issue_bot/install_local_timer.sh [options]
@@ -103,6 +112,50 @@ for key, value in desired.items():
 
 env_path.write_text("\n".join(updated).rstrip() + "\n", encoding="utf-8")
 PY
+
+if codex_bin="$(detect_executable codex)"; then
+    if grep -q '^CODEX_BIN=' "$env_file"; then
+        python3 - "$env_file" "$codex_bin" <<'PY'
+from pathlib import Path
+import sys
+
+env_path = Path(sys.argv[1])
+codex_bin = sys.argv[2]
+lines = env_path.read_text(encoding="utf-8").splitlines()
+out = []
+for line in lines:
+    if line.startswith("CODEX_BIN="):
+        out.append(f"CODEX_BIN={codex_bin}")
+    else:
+        out.append(line)
+env_path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+PY
+    else
+        printf 'CODEX_BIN=%s\n' "$codex_bin" >> "$env_file"
+    fi
+fi
+
+if gh_bin="$(detect_executable gh)"; then
+    if grep -q '^GH_BIN=' "$env_file"; then
+        python3 - "$env_file" "$gh_bin" <<'PY'
+from pathlib import Path
+import sys
+
+env_path = Path(sys.argv[1])
+gh_bin = sys.argv[2]
+lines = env_path.read_text(encoding="utf-8").splitlines()
+out = []
+for line in lines:
+    if line.startswith("GH_BIN="):
+        out.append(f"GH_BIN={gh_bin}")
+    else:
+        out.append(line)
+env_path.write_text("\n".join(out).rstrip() + "\n", encoding="utf-8")
+PY
+    else
+        printf 'GH_BIN=%s\n' "$gh_bin" >> "$env_file"
+    fi
+fi
 
 cron_tag="# rk_gb issue bot"
 cron_cmd="${schedule} /bin/bash -lc 'set -a; source \"${env_file}\"; set +a; bash \"${script_dir}/local_cycle.sh\" >> \"${state_dir}/cron.log\" 2>&1' ${cron_tag}"

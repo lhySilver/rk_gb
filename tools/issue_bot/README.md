@@ -200,6 +200,7 @@ bash tools/issue_bot/local_cycle.sh --dry-run
 
 - 真正执行自动修复前，仍然必须提供 `ISSUE_FIX_COMMAND`。仓库只负责调度，不内置具体“AI 修复器”实现。
 - 仓库已自带 `tools/issue_bot/codex_fix_issue.sh`，`install_local_timer.sh` 会默认把 `ISSUE_FIX_COMMAND` 写成这个脚本。
+- `install_local_timer.sh` 会尽量把当前机器上的 `CODEX_BIN` / `GH_BIN` 解析成绝对路径写入 env 文件，避免 cron 环境下找不到可执行文件。
 - `local_cycle.sh` 会优先读取环境里的 `GITHUB_TOKEN`；如果未设置且机器上已登录 `gh`，会自动回退到 `gh auth token`。
 - 隔离仓库位于独立目录，不会复用你手工开发中的工作区。
 
