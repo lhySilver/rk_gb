@@ -1,5 +1,6 @@
 ﻿#include "ProtocolManager.h"
 #include "gat1400/GAT1400ClientService.h"
+#include "ProtocolLog.h"
 
 
 
@@ -79,6 +80,8 @@ int rk_osd_set_display_text(int id, const char *value);
 extern void NormalRestart();
 
 extern bool CreateDetachedThread(char *threadName, void *(*route)(void*), void *param, bool scope);
+
+#define printf protocol::ProtocolPrintf
 
 
 
@@ -4001,6 +4004,29 @@ int ProtocolManager::PushLiveVideoEsFrame(const uint8_t* data,
 
         }
 
+    } else {
+
+        GbLiveSession session;
+        bool needStop = false;
+
+        {
+            std::lock_guard<std::mutex> lock(m_gb_live_mutex);
+            if (m_gb_live_session.active) {
+                session = m_gb_live_session;
+                needStop = true;
+            }
+        }
+
+        if (needStop) {
+            printf("[ProtocolManager] gb live send failed ret=%d media=video gb=%s handle=%p size=%lu pts90k=%llu, stop session\n",
+                   ret,
+                   session.gb_code.c_str(),
+                   session.stream_handle,
+                   static_cast<unsigned long>(size),
+                   static_cast<unsigned long long>(pts90k));
+            HandleGbStopStreamRequest(session.stream_handle, session.gb_code.c_str());
+        }
+
     }
 
     return ret;
@@ -4016,7 +4042,6 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
     if (!m_started) {
 
         return -1;
-
     }
 
 
@@ -4054,6 +4079,29 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
 
             ++m_gb_live_session.sent_audio_frames;
 
+        }
+
+    } else {
+
+        GbLiveSession session;
+        bool needStop = false;
+
+        {
+            std::lock_guard<std::mutex> lock(m_gb_live_mutex);
+            if (m_gb_live_session.active) {
+                session = m_gb_live_session;
+                needStop = true;
+            }
+        }
+
+        if (needStop) {
+            printf("[ProtocolManager] gb live send failed ret=%d media=audio gb=%s handle=%p size=%lu pts90k=%llu, stop session\n",
+                   ret,
+                   session.gb_code.c_str(),
+                   session.stream_handle,
+                   static_cast<unsigned long>(size),
+                   static_cast<unsigned long long>(pts90k));
+            HandleGbStopStreamRequest(session.stream_handle, session.gb_code.c_str());
         }
 
     }

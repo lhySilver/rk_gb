@@ -1,8 +1,11 @@
 ﻿#include "GB28181ClientReceiverAdapter.h"
+#include "ProtocolLog.h"
 
 #include <stdio.h>
 
 #include "ProtocolManager.h"
+
+#define printf protocol::ProtocolPrintf
 
 namespace protocol
 {

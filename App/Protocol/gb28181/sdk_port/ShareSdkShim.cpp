@@ -1,4 +1,5 @@
 #include "ShareSDK.h"
+#include "ProtocolLog.h"
 
 #include <pthread.h>
 #include <unistd.h>
@@ -123,7 +124,12 @@ void ShimLog(const char* level, const char* message, const char* file, tuint32 l
     if (file == NULL) {
         file = "";
     }
-    fprintf(stderr, "[GBSDK][%s] %s (%s:%u)\n", level, message, file, static_cast<unsigned>(line));
+    protocol::ProtocolFprintf(stderr,
+                              "[GBSDK][%s] %s (%s:%u)\n",
+                              level,
+                              message,
+                              file,
+                              static_cast<unsigned>(line));
 }
 
 void TimerThreadMain(std::shared_ptr<TimerState> state) {

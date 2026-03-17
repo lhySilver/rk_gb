@@ -1,4 +1,5 @@
 ﻿#include "GAT1400ClientService.h"
+#include "ProtocolLog.h"
 
 #include <algorithm>
 #include <arpa/inet.h>
@@ -20,6 +21,8 @@
 
 #include "GAT1400Json.h"
 #include "http_auth.h"
+
+#define printf protocol::ProtocolPrintf
 
 namespace protocol
 {

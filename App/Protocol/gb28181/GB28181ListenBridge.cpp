@@ -1,4 +1,5 @@
 #include "GB28181ListenBridge.h"
+#include "ProtocolLog.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -19,6 +20,8 @@ extern "C"
 #include "PAL/Capture.h"
 #include "PAL/Audio_coder.h"
 }
+
+#define printf protocol::ProtocolPrintf
 
 namespace protocol
 {

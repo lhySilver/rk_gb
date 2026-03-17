@@ -1,4 +1,5 @@
 ﻿#include "GB28181RtpPsSender.h"
+#include "ProtocolLog.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -27,6 +28,8 @@ extern "C"
 #include "MediaServerCompat.h"
 #endif
 }
+
+#define printf protocol::ProtocolPrintf
 
 namespace
 {
@@ -671,9 +674,14 @@ int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t time
         framed[1] = static_cast<uint8_t>(bytes & 0xFF);
         memcpy(&framed[2], packet, static_cast<size_t>(bytes));
         if (SendAll(m_state->sockfd, &framed[0], framed.size()) != 0) {
+            const int savedErrno = errno;
+            if (savedErrno == EPIPE || savedErrno == ECONNRESET || savedErrno == ENOTCONN) {
+                close(m_state->sockfd);
+                m_state->sockfd = -1;
+            }
             printf("[GB28181][RtpPs] tcp framed send failed bytes=%d errno=%d transport=%s\n",
                    bytes,
-                   errno,
+                   savedErrno,
                    m_param.transport.c_str());
             return -2;
         }
@@ -685,10 +693,15 @@ int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t time
                              (struct sockaddr*)&m_state->remote_addr,
                              sizeof(m_state->remote_addr));
         if (n != bytes) {
+            const int savedErrno = errno;
+            if (savedErrno == EPIPE || savedErrno == ECONNRESET || savedErrno == ENOTCONN) {
+                close(m_state->sockfd);
+                m_state->sockfd = -1;
+            }
             printf("[GB28181][RtpPs] transport send failed n=%d expect=%d errno=%d transport=%s\n",
                    n,
                    bytes,
-                   errno,
+                   savedErrno,
                    m_param.transport.c_str());
             return -2;
         }
