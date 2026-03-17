@@ -1223,6 +1223,32 @@ static bool IsPsMuxMimeType(const std::string& mime)
 
 }
 
+static std::string NormalizeGbLiveVideoCodec(const std::string& codecIn)
+
+{
+
+    const std::string codec = ToLowerCopy(codecIn);
+
+    if (codec == "h264" || codec == "h.264" || codec == "avc") {
+
+        return "h264";
+
+    }
+
+
+
+    if (codec == "h265" || codec == "h.265" || codec == "hevc") {
+
+        return "h265";
+
+    }
+
+
+
+    return codec;
+
+}
+
 
 
 static bool IsLiveAudioRequested(const MediaInfo* input)
@@ -1294,6 +1320,22 @@ static bool HasLivePsMuxOffer(const MediaInfo* input)
 
 
     return false;
+
+}
+
+static bool ShouldForceGbLiveAudio(const protocol::ProtocolExternalConfig& cfg)
+
+{
+
+    const std::string codec = NormalizeCodec(cfg.gb_live.audio_codec);
+
+    return codec == "g711a" ||
+
+           codec == "g711u" ||
+
+           codec == "aac" ||
+
+           codec == "g722";
 
 }
 
@@ -4313,7 +4355,9 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
     const bool psMuxOffer = HasLivePsMuxOffer(input);
 
-    const bool audioEnabled = audioRequested || psMuxOffer;
+    const bool forceAudio = ShouldForceGbLiveAudio(m_cfg);
+
+    const bool audioEnabled = audioRequested || psMuxOffer || forceAudio;
 
     const int requestedStreamNum = ResolveGbStreamNumber(input, m_cfg);
 
@@ -4321,7 +4365,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
 
 
-    printf("[ProtocolManager] gb live request enter gb=%s handle=%p offered_transport=%s remote=%s:%d stream_num=%d audio_requested=%d ps_mux_offer=%d audio_enabled=%d\n",
+    printf("[ProtocolManager] gb live request enter gb=%s handle=%p offered_transport=%s remote=%s:%d stream_num=%d audio_requested=%d ps_mux_offer=%d force_audio=%d audio_enabled=%d\n",
 
            gbCode != NULL ? gbCode : "",
 
@@ -4338,6 +4382,8 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
            audioRequested ? 1 : 0,
 
            psMuxOffer ? 1 : 0,
+
+           forceAudio ? 1 : 0,
 
            audioEnabled ? 1 : 0);
 
@@ -4373,7 +4419,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
         m_gb_live_session.acked = false;
 
-        printf("[ProtocolManager] gb live request gb=%s handle=%p stream_num=%d stream=%s audio_requested=%d audio_enabled=%d\n",
+        printf("[ProtocolManager] gb live request gb=%s handle=%p stream_num=%d stream=%s audio_requested=%d force_audio=%d audio_enabled=%d\n",
 
                m_gb_live_session.gb_code.c_str(),
 
@@ -4384,6 +4430,8 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
                preferSubStream ? "sub" : "main",
 
                audioRequested ? 1 : 0,
+
+               forceAudio ? 1 : 0,
 
                audioEnabled ? 1 : 0);
 
@@ -4433,7 +4481,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
 
 
-    printf("[ProtocolManager] gb live stream accepted gb=%s handle=%p stream=%s audio_requested=%d ps_mux_offer=%d audio_enabled=%d audio_codec=%s\n",
+    printf("[ProtocolManager] gb live stream accepted gb=%s handle=%p stream=%s audio_requested=%d ps_mux_offer=%d force_audio=%d audio_enabled=%d audio_codec=%s\n",
 
            gbCode != NULL ? gbCode : "",
 
@@ -4444,6 +4492,8 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
            audioRequested ? 1 : 0,
 
            psMuxOffer ? 1 : 0,
+
+           forceAudio ? 1 : 0,
 
            audioEnabled ? 1 : 0,
 
@@ -7139,12 +7189,15 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
 
+    const int requestedStreamNum = ResolveGbStreamNumber(input, m_cfg);
+
     GbLiveParam runtimeParam = m_cfg.gb_live;
 
     runtimeParam.target_ip = remoteIp;
 
     runtimeParam.target_port = remotePort;
     runtimeParam.local_port = 0;
+    runtimeParam.video_stream_id = (requestedStreamNum > 0) ? "sub" : "main";
 
     runtimeParam.transport = (input->RtpType == kRtpOverUdp) ? "udp" : "tcp";
     if (runtimeParam.transport == "tcp" && m_cfg.gb_live.local_port > 0) {
@@ -7153,6 +7206,24 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
     runtimeParam.ssrc = (m_cfg.gb_live.ssrc > 0)
                             ? m_cfg.gb_live.ssrc
                             : static_cast<int>(GenerateGbMediaSsrc(remotePort));
+
+    std::string runtimeVideoCodec;
+    if (ReadRkVideoOutputTypeString(requestedStreamNum, runtimeVideoCodec)) {
+        const std::string normalizedRuntimeCodec = NormalizeGbLiveVideoCodec(runtimeVideoCodec);
+        if (!normalizedRuntimeCodec.empty()) {
+            runtimeParam.video_codec = normalizedRuntimeCodec;
+        }
+    } else {
+        runtimeParam.video_codec = NormalizeGbLiveVideoCodec(runtimeParam.video_codec);
+    }
+
+    printf("[ProtocolManager] gb %s stream runtime codec stream=%s codec=%s remote=%s:%d\n",
+           StreamRequestTypeName(requestType),
+           runtimeParam.video_stream_id.c_str(),
+           runtimeParam.video_codec.c_str(),
+           runtimeParam.target_ip.c_str(),
+           runtimeParam.target_port);
+
     m_gb_current_media_ssrc = static_cast<uint32_t>(runtimeParam.ssrc);
     m_gb_current_media_port = 0;
 
