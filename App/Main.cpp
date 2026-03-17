@@ -443,22 +443,10 @@ void CSofia::onAppEvent(std::string code, int index, appEventAction action, cons
 	}
 }
 
-static void test_HandleSig(int signo)		
-{
-	printf("test_HandleSig!\n");
-	signal(SIGPIPE, SIG_IGN);
-
-	if (SIGPIPE == signo)
-	{
-		printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ catch SIGPIPE exception! @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-	}
-
-}
-
 int main(int argc, char **argv)
 {
 	// tuya SDK报警推送时触发SIGPIPE导致应用退出，然后涂鸦让加的，并且表示这么加就行，不会有其他影响，推送失败会有重连
-	signal(SIGPIPE, test_HandleSig);
+	signal(SIGPIPE, SIG_IGN);
 	AVSetLogLevel(0);
 	DEBUG_SETLEVEL(LEVEL_ERROR);
 	DEBUG_SETMODELNAME((char*)"DGIOT");

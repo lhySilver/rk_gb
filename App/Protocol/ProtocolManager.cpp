@@ -4023,13 +4023,7 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
 
     bool active = false;
     bool acked = false;
-    bool logFrame = false;
     StreamHandle handle = NULL;
-    uint32_t recvVideo = 0;
-    uint32_t recvAudio = 0;
-    uint32_t sentVideo = 0;
-    uint32_t sentAudio = 0;
-    const uint64_t nowMs = GetNowMs();
 
     {
 
@@ -4040,29 +4034,8 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
             acked = m_gb_live_session.acked;
             handle = m_gb_live_session.stream_handle;
             ++m_gb_live_session.recv_audio_frames;
-            recvVideo = m_gb_live_session.recv_video_frames;
-            recvAudio = m_gb_live_session.recv_audio_frames;
-            sentVideo = m_gb_live_session.sent_video_frames;
-            sentAudio = m_gb_live_session.sent_audio_frames;
-            if (m_gb_live_session.last_capture_log_ms == 0 ||
-                nowMs >= m_gb_live_session.last_capture_log_ms + 1000ULL) {
-                m_gb_live_session.last_capture_log_ms = nowMs;
-                logFrame = true;
-            }
         }
 
-    }
-
-    if (logFrame) {
-        printf("[ProtocolManager] gb live audio es handle=%p acked=%d recv_video=%u recv_audio=%u sent_video=%u sent_audio=%u size=%lu pts90k=%llu\n",
-               handle,
-               acked ? 1 : 0,
-               recvVideo,
-               recvAudio,
-               sentVideo,
-               sentAudio,
-               (unsigned long)size,
-               (unsigned long long)pts90k);
     }
 
     if (!active || !acked) {

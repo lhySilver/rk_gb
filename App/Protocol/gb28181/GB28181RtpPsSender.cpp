@@ -589,20 +589,6 @@ int GB28181RtpPsSender::SendEsFrameByCodec(int codecId,
         ++m_state->es_audio_frames;
     }
 
-    const uint32_t now = NowSeconds();
-    if ((isVideo && m_state->es_video_frames == 1) ||
-        (!isVideo && m_state->es_audio_frames == 1) ||
-        now != m_state->last_es_log_sec) {
-        m_state->last_es_log_sec = now;
-        printf("[GB28181][RtpPs] es input media=%s frames=%u size=%lu pts90k=%llu key=%d codec=%d\n",
-               isVideo ? "video" : "audio",
-               isVideo ? m_state->es_video_frames : m_state->es_audio_frames,
-               static_cast<unsigned long>(size),
-               static_cast<unsigned long long>(pts90k),
-               keyFrame ? 1 : 0,
-               codecId);
-    }
-
     ret = m_state->api.ps_muxer_input(m_state->ps_muxer,
                                       streamId,
                                       flags,
@@ -655,16 +641,6 @@ int GB28181RtpPsSender::OnPsPacket(int stream, void* packet, size_t bytes)
 
     ++m_state->ps_packets;
     m_state->ps_bytes += static_cast<unsigned long long>(bytes);
-
-    const uint32_t now = NowSeconds();
-    if (m_state->ps_packets == 1 || now != m_state->last_ps_log_sec) {
-        m_state->last_ps_log_sec = now;
-        printf("[GB28181][RtpPs] ps output packets=%u bytes=%llu current_ps=%lu ts90k=%u\n",
-               m_state->ps_packets,
-               m_state->ps_bytes,
-               static_cast<unsigned long>(bytes),
-               m_state->current_timestamp90k);
-    }
 
     const int ret = m_state->api.rtp_payload_encode_input(m_state->rtp_encoder,
                                                            packet,
@@ -720,16 +696,6 @@ int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t time
 
     m_state->total_packets += 1;
     m_state->total_bytes += static_cast<unsigned long long>(isTcp ? (bytes + 2) : bytes);
-
-    const uint32_t now = NowSeconds();
-    if (now != m_state->last_log_sec) {
-        m_state->last_log_sec = now;
-        printf("[GB28181][RtpPs] tx packets=%u bytes=%llu target=%s:%d\n",
-               m_state->total_packets,
-               m_state->total_bytes,
-               m_param.target_ip.c_str(),
-               m_param.target_port);
-    }
 
     return 0;
 }

@@ -12,3 +12,4 @@
 
 ### 优化
 - 优化 issue bot 本机定时任务的可执行文件发现逻辑，自动写入 `CODEX_BIN` / `GH_BIN` 绝对路径，降低 cron 环境缺少 PATH 时的失败率。
+- 静默忽略 `SIGPIPE`，并移除 GB live 音频 ES、PS 输出、RTP 发送统计的周期性刷屏日志。
