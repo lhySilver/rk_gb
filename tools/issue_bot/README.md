@@ -76,7 +76,7 @@ bash tools/issue_bot/runner_preflight.sh \
 - `CMAKE_BIN`
   可选，指定 cmake 可执行文件。
 - `ISSUE_FIX_COMMAND`
-  runner 上的修复命令。命令会在独立 worktree 中执行。
+  runner 上的修复命令。命令会在独立 worktree 中执行。仓库内已提供 `tools/issue_bot/codex_fix_issue.sh`，可直接作为默认值。
 - `ISSUE_BOT_STATE_DIR`
   可选，指定 issue bot 的临时状态目录。
 - `ISSUE_BOT_BASE_BRANCH`
@@ -89,6 +89,8 @@ bash tools/issue_bot/runner_preflight.sh \
   本机定时任务的互斥锁文件，避免并发巡检互相踩环境。
 - `ISSUE_BOT_WRITE`
   设为 `1` 时允许 triage / repair 回写 GitHub；设为 `0` 时按 dry-run 演练。
+- `CODEX_BIN`
+  可选，指定 `codex` 可执行文件路径；默认直接使用 `codex`。
 - `ISSUE_BOT_RUNNER_READY`
   GitHub repo variable。设置为 `true` 后，`issue-runner-preflight.yml` 和 `issue-repair.yml` 才会进入 self-hosted runner 作业。
 - `ISSUE_BOT_REPAIR_ENABLED`
@@ -197,6 +199,7 @@ bash tools/issue_bot/local_cycle.sh --dry-run
 注意:
 
 - 真正执行自动修复前，仍然必须提供 `ISSUE_FIX_COMMAND`。仓库只负责调度，不内置具体“AI 修复器”实现。
+- 仓库已自带 `tools/issue_bot/codex_fix_issue.sh`，`install_local_timer.sh` 会默认把 `ISSUE_FIX_COMMAND` 写成这个脚本。
 - `local_cycle.sh` 会优先读取环境里的 `GITHUB_TOKEN`；如果未设置且机器上已登录 `gh`，会自动回退到 `gh auth token`。
 - 隔离仓库位于独立目录，不会复用你手工开发中的工作区。
 

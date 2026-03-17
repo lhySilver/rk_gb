@@ -77,9 +77,11 @@ env_path = Path(sys.argv[1])
 repo_dir = sys.argv[2]
 state_dir = sys.argv[3]
 base_branch = sys.argv[4]
+issue_fix_command = str(Path(repo_dir) / "tools/issue_bot/codex_fix_issue.sh")
 
 lines = env_path.read_text(encoding="utf-8").splitlines()
 desired = {
+    "ISSUE_FIX_COMMAND": issue_fix_command,
     "ISSUE_BOT_AUTOFIX_REPO_DIR": repo_dir,
     "ISSUE_BOT_STATE_DIR": state_dir,
     "ISSUE_BOT_BASE_BRANCH": base_branch,

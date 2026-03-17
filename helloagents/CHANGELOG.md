@@ -8,4 +8,4 @@
 - 修正 GB28181 实时流在 TCP 协商场景下的 SIP/媒体建立时序。
 
 ### 新增
-- 增加 issue bot 本机定时巡检脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
+- 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
