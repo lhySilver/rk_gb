@@ -90,6 +90,9 @@ bool CRecordManager::Start()
 	struct RecordConfig &config = m_cCfgRecord.vRecordConfigAll[0];
 	g_configManager.getConfig(getConfigName(CFG_RECORD),tableRecord);
 	TExchangeAL<RecordConfigAll>::getConfigV2(tableRecord, m_cCfgRecord, 1);
+
+	config.bRecordEnable = true;
+	config.iRecordMode = RECORD_MODE_FULLTIME;
 	
 	printf("config.iRecordMode		= %d\n", config.iRecordMode);
 
