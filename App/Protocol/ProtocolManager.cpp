@@ -8286,6 +8286,18 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
 
 
 
+    printf("[ProtocolManager] gb %s request enter gb=%s handle=%p offered_transport=%s remote=%s:%d range=[%llu,%llu], stop existing sessions first\n",
+           download ? "download" : "playback",
+           gbCode != NULL ? gbCode : "",
+           handle,
+           GbNetTransportName(input->RtpType),
+           input->IP,
+           input->Port,
+           (unsigned long long)input->StartTime,
+           (unsigned long long)input->EndTime);
+
+    HandleGbStopStreamRequest(NULL, gbCode);
+
     int ret = ReconfigureGbLiveSender(input, gbCode, download ? kDownload : kPlayback);
 
     if (ret != 0) {
@@ -8293,13 +8305,6 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
         return ret;
 
     }
-
-
-
-    HandleGbStopStreamRequest(NULL, gbCode);
-
-
-
     const int startSec = (int)input->StartTime;
 
     const int endSec = (int)input->EndTime;
