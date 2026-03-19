@@ -15,6 +15,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <string.h>
+#include <algorithm>
 
 
 #pragma pack(1)
@@ -3661,17 +3662,18 @@ Int32 CStorageManager::SearchRecord(Int32 iStartTime, Int32 iEndTime, TRecordFil
 					if (0 == listRecordTimeInfo.size())
 					{
 						record_file_time_s stRecordTime;
-						memcpy(&stRecordTime, &s_astSchRcdFileInfo2[i], sizeof(record_file_time_s));
+						memcpy(&stRecordTime, &s_astSchRcdFileInfo2[n], sizeof(record_file_time_s));
 						listRecordTimeInfo.push_back(stRecordTime);
 					}
 					else
 					{
 						TRecordFileTimeList::iterator it = listRecordTimeInfo.end();
 						it--;
-						if (1 == it->iRecType ||  1 == s_astSchRcdFileInfo2[i].iRecType || s_astSchRcdFileInfo2[n].iStartTime > (it->iEndTime+1) )
+						if (1 == it->iRecType || 1 == s_astSchRcdFileInfo2[n].iRecType ||
+							s_astSchRcdFileInfo2[n].iStartTime > (it->iEndTime + 1))
 						{
 							record_file_time_s stRecordTime;
-							memcpy(&stRecordTime, &s_astSchRcdFileInfo2[i], sizeof(record_file_time_s));
+							memcpy(&stRecordTime, &s_astSchRcdFileInfo2[n], sizeof(record_file_time_s));
 							listRecordTimeInfo.push_back(stRecordTime);
 						}
 						else
@@ -3846,11 +3848,6 @@ void CStorageManager::PlaybackProc(int index)
 	
 	CMp4Demuxer mp4_demuxer;
 	Mp4DemuxerFrameInfo_s stMp4DemuxerFrameInfo;
-	unsigned int sessionFileCount = 0;
-	unsigned int sessionVideoFrames = 0;
-	unsigned int sessionAudioFrames = 0;
-	bool loggedFirstVideoFrame = false;
-	bool loggedFirstAudioFrame = false;
 	
 //	pBuffer = new unsigned char[STORAGE_MAX_FRAME_SIZE];
 	pBuffer = playback_buffer_g;
@@ -3871,27 +3868,12 @@ void CStorageManager::PlaybackProc(int index)
 		}
 
 		pPlayManager->bIdel = false;
-		sessionFileCount = 0;
-		sessionVideoFrames = 0;
-		sessionAudioFrames = 0;
-		loggedFirstVideoFrame = false;
-		loggedFirstAudioFrame = false;
 
-		AppInfo("playback request index=%d start=%d end=%d seek_flag=%d seek_time=%d speed=%.2f pause=%d\n",
-				index,
-				pPlayManager->iStartTime,
-				pPlayManager->iEndTime,
-				pPlayManager->bSeekFlag,
-				pPlayManager->iSeekTime,
-				pPlayManager->fSpeed,
-				pPlayManager->bPause);
+		printf("playback start time : %d, end time : %d, bSeekFlag[%d], seek time : %d\n", 
+				pPlayManager->iStartTime, pPlayManager->iEndTime, pPlayManager->bSeekFlag, pPlayManager->iSeekTime);
 
 		if( pPlayManager->iStartTime > pPlayManager->iEndTime )
 		{
-			AppErr("playback invalid range index=%d start=%d end=%d\n",
-				   index,
-				   pPlayManager->iStartTime,
-				   pPlayManager->iEndTime);
 			pthread_mutex_lock(&m_mutexPlaybackManager);
 			pPlayManager->bEnablePlay = false;
 			pthread_mutex_unlock(&m_mutexPlaybackManager);
@@ -3920,14 +3902,14 @@ void CStorageManager::PlaybackProc(int index)
 		int index_file_size = 0;
 		int rec_file_num = 0;
 		record_file_info_s *pastPbRcdInfo = NULL;
-		int firstValidPos = 0;
-		char strIndexPath[128] = "";
 		//先把文件内容读出来再处理
 		{
 			CGuard guard(m_mutex);
-			snprintf(strIndexPath, sizeof(strIndexPath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/index",
+			char strPath[128];
+			snprintf(strPath, sizeof(strPath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/index", 
 				tm_start.tm_year+1900, tm_start.tm_mon+1, tm_start.tm_mday);
-			int fd_index = open(strIndexPath, O_RDONLY);
+			//printf("file: %s\n", strPath);
+			int fd_index = open(strPath, O_RDONLY);
 			if (-1 != fd_index)
 			{
 				index_file_size = disk_read_file(fd_index, (char *)s_astPbRcdFileInfo, sizeof(s_astPbRcdFileInfo));
@@ -3937,30 +3919,43 @@ void CStorageManager::PlaybackProc(int index)
 		}
 		if (index_file_size > 0)
 		{
-			rec_file_num = index_file_size / sizeof(record_file_info_s);
+			const int raw_file_num = index_file_size / (int)sizeof(record_file_info_s);
+			int valid_file_num = 0;
+			for (int file_index = 0; file_index < raw_file_num; ++file_index)
+			{
+				if (s_astPbRcdFileInfo[file_index].iStartTime <= 0 || s_astPbRcdFileInfo[file_index].iEndTime <= 0)
+					continue;
+
+				s_astPbRcdFileInfo[valid_file_num++] = s_astPbRcdFileInfo[file_index];
+			}
+			std::sort(s_astPbRcdFileInfo, s_astPbRcdFileInfo + valid_file_num,
+				[](const record_file_info_s& lhs, const record_file_info_s& rhs) {
+					if (lhs.iStartTime != rhs.iStartTime)
+						return lhs.iStartTime < rhs.iStartTime;
+					if (lhs.iEndTime != rhs.iEndTime)
+						return lhs.iEndTime < rhs.iEndTime;
+					return lhs.iRecType < rhs.iRecType;
+				});
+			rec_file_num = valid_file_num;
 			AppInfo("rec_file_num: %d\n", rec_file_num);
-			while(firstValidPos < rec_file_num && 0 == s_astPbRcdFileInfo[firstValidPos].iStartTime)
-				firstValidPos++;
-			AppInfo("pos: %d\n", firstValidPos);
-			if (firstValidPos < rec_file_num)
-				pastPbRcdInfo = &s_astPbRcdFileInfo[firstValidPos];
-			rec_file_num -= firstValidPos;
+			AppInfo("pos: %d\n", 0);
+			if (rec_file_num > 0)
+				pastPbRcdInfo = &s_astPbRcdFileInfo[0];
+			printf("playback index loaded path=%s raw_count=%d first_valid_pos=%d valid_count=%d start=%d end=%d\n",
+			       strPath,
+			       raw_file_num,
+			       0,
+			       rec_file_num,
+			       pPlayManager->iStartTime,
+			       pPlayManager->iEndTime);
 		}
-		AppInfo("playback index loaded path=%s raw_count=%d first_valid_pos=%d valid_count=%d start=%d end=%d\n",
-				strIndexPath,
-				index_file_size > 0 ? (index_file_size / (int)sizeof(record_file_info_s)) : 0,
-				firstValidPos,
-				rec_file_num,
-				pPlayManager->iStartTime,
-				pPlayManager->iEndTime);
+		else
+		{
+			printf("playback read index failed path=%s ret=%d\n", strPath, index_file_size);
+		}
 		if (rec_file_num <= 0 || !pastPbRcdInfo)
 		{
-			AppErr("playback no candidate file matched start=%d end=%d current_index=%d rec_file_num=%d path=%s\n",
-				   pPlayManager->iStartTime,
-				   pPlayManager->iEndTime,
-				   firstValidPos,
-				   rec_file_num,
-				   strIndexPath);
+			AppErr("rec_file_num: %d, pastPbRcdInfo: %p\n", rec_file_num, pastPbRcdInfo);
 			pthread_mutex_lock(&m_mutexPlaybackManager);
 			pPlayManager->bEnablePlay = false;
 			pthread_mutex_unlock(&m_mutexPlaybackManager);
@@ -3974,14 +3969,16 @@ void CStorageManager::PlaybackProc(int index)
 			//第一个文件
 			if( true == bPlaybackFirtFile )
 			{
-				//printf("pastPbRcdInfo[%d].iEndTime = %d, pPlayManager->iStartTime = %d\n", i, pastPbRcdInfo[i].iEndTime, pPlayManager->iStartTime);
-				if( pastPbRcdInfo[i].iEndTime <= pPlayManager->iStartTime )
+				while (i < rec_file_num)
 				{
-					i++;
-					if( i >= rec_file_num )
+					const bool overlap = !(pastPbRcdInfo[i].iEndTime < pPlayManager->iStartTime ||
+					                       pastPbRcdInfo[i].iStartTime > pPlayManager->iEndTime);
+					if (overlap || pastPbRcdInfo[i].iStartTime > pPlayManager->iStartTime)
 						break;
-					continue;
+					i++;
 				}
+				if( i >= rec_file_num )
+					break;
 			}
 
 			i64LastFrameTimestamp_ms = 0;
@@ -4037,14 +4034,16 @@ void CStorageManager::PlaybackProc(int index)
 			
 			if( i == rec_file_num) 	//自动播放到结尾,不退出循环,再次拖动进度条可以继续播放
 			{
+				printf("playback no candidate file matched start=%d end=%d current_index=%d rec_file_num=%d\n",
+				       pPlayManager->iStartTime,
+				       pPlayManager->iEndTime,
+				       i,
+				       rec_file_num);
 				usleep(200000); 		//200ms
 				continue;
 			}
 			
 			stRecordFileInfo = pastPbRcdInfo[i];
-			++sessionFileCount;
-			unsigned int fileVideoFrames = 0;
-			unsigned int fileAudioFrames = 0;
 
 			
 			//获取目录
@@ -4064,22 +4063,21 @@ void CStorageManager::PlaybackProc(int index)
 													tmEnd.tm_year+1900, tmEnd.tm_mon+1, tmEnd.tm_mday, tmEnd.tm_hour, tmEnd.tm_min, tmEnd.tm_sec);
 				}
 				else
-				{
-					snprintf(strRecordFilePath, sizeof(strRecordFilePath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/%04d%02d%02d%02d%02d%02d-%04d%02d%02d%02d%02d%02d_ALARM.mp4", 
+					{
+						snprintf(strRecordFilePath, sizeof(strRecordFilePath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/%04d%02d%02d%02d%02d%02d-%04d%02d%02d%02d%02d%02d_ALARM.mp4",
 													tmStart.tm_year+1900, tmStart.tm_mon+1, tmStart.tm_mday, 
 													tmStart.tm_year+1900, tmStart.tm_mon+1, tmStart.tm_mday, tmStart.tm_hour, tmStart.tm_min, tmStart.tm_sec, 
 													tmEnd.tm_year+1900, tmEnd.tm_mon+1, tmEnd.tm_mday, tmEnd.tm_hour, tmEnd.tm_min, tmEnd.tm_sec);
+					}
+					printf("playback candidate file index=%d/%d file_start=%d file_end=%d rec_type=%d path=%s\n",
+					       i,
+					       rec_file_num,
+					       stRecordFileInfo.iStartTime,
+					       stRecordFileInfo.iEndTime,
+					       stRecordFileInfo.iRecType,
+					       strRecordFilePath);
+					AppErr("[record playback] open %s\n", strRecordFilePath);
 				}
-				AppInfo("playback candidate file index=%d/%d request=[%d,%d] file=[%d,%d] type=%d path=%s\n",
-						i,
-						rec_file_num,
-						pPlayManager->iStartTime,
-						pPlayManager->iEndTime,
-						stRecordFileInfo.iStartTime,
-						stRecordFileInfo.iEndTime,
-						stRecordFileInfo.iRecType,
-						strRecordFilePath);
-			}
 
 			{//for debug
 				gettimeofday(&tv, NULL);
@@ -4092,14 +4090,7 @@ void CStorageManager::PlaybackProc(int index)
 			{//for debug
 				gettimeofday(&tv, NULL);
 				i64WaitTime_ms = ((unsigned long long)tv.tv_sec * 1000 + tv.tv_usec / 1000) - i64CurSysTime_ms;
-				if (0 == ret)
-				{
-					AppInfo("playback open ok path=%s cost_ms=%lld\n", strRecordFilePath, i64WaitTime_ms);
-				}
-				else
-				{
-					AppErr("playback open failed path=%s ret=%d cost_ms=%lld\n", strRecordFilePath, ret, i64WaitTime_ms);
-				}
+				printf("open mp4 file take %lld ms\n", i64WaitTime_ms);
 			}
 
 
@@ -4117,12 +4108,7 @@ void CStorageManager::PlaybackProc(int index)
 						float fPercent = (pPlayManager->iStartTime - stRecordFileInfo.iStartTime) * 100 / (stRecordFileInfo.iEndTime - stRecordFileInfo.iStartTime);
 						mp4_demuxer.Seek(fPercent);
 						#else
-						ret = mp4_demuxer.Seek((Int64)((pPlayManager->iStartTime - stRecordFileInfo.iStartTime)*1000000));
-						AppInfo("playback initial seek path=%s target=%d file_start=%d ret=%d\n",
-								strRecordFilePath,
-								pPlayManager->iStartTime,
-								stRecordFileInfo.iStartTime,
-								ret);
+						mp4_demuxer.Seek((Int64)((pPlayManager->iStartTime - stRecordFileInfo.iStartTime)*1000000));
 						#endif
 					}
 				}
@@ -4133,12 +4119,7 @@ void CStorageManager::PlaybackProc(int index)
 					bSeekToAnotherFile = false;
 					if( pPlayManager->iSeekTime > stRecordFileInfo.iStartTime )
 					{
-						ret = mp4_demuxer.Seek((Int64)((pPlayManager->iSeekTime - stRecordFileInfo.iStartTime)*1000000));
-						AppInfo("playback cross-file seek path=%s target=%d file_start=%d ret=%d\n",
-								strRecordFilePath,
-								pPlayManager->iSeekTime,
-								stRecordFileInfo.iStartTime,
-								ret);
+						mp4_demuxer.Seek((Int64)((pPlayManager->iSeekTime - stRecordFileInfo.iStartTime)*1000000));
 					}
 				}
 				
@@ -4158,12 +4139,7 @@ void CStorageManager::PlaybackProc(int index)
 						
 							/////////////////////注意时间/////////////////////////
 							ret = mp4_demuxer.Seek((long long)(pPlayManager->iSeekTime - stRecordFileInfo.iStartTime) * 1000000);	/////////////seek
-							AppInfo("playback in-file seek path=%s target=%d file=[%d,%d] ret=%d\n",
-									strRecordFilePath,
-									pPlayManager->iSeekTime,
-									stRecordFileInfo.iStartTime,
-									stRecordFileInfo.iEndTime,
-									ret);
+							printf("playback seek ret : %d\n", ret);
 						}
 						else 		//seek到其他文件
 						{
@@ -4180,13 +4156,13 @@ void CStorageManager::PlaybackProc(int index)
 					ret = mp4_demuxer.Read(pBuffer, STORAGE_MAX_FRAME_SIZE, &stMp4DemuxerFrameInfo);
 					if( ret <= 0 )
 					{
-						AppInfo("playback read stop path=%s ret=%d file=[%d,%d] video=%u audio=%u\n",
-								strRecordFilePath,
-								ret,
-								stRecordFileInfo.iStartTime,
-								stRecordFileInfo.iEndTime,
-								fileVideoFrames,
-								fileAudioFrames);
+						printf("playback read stop path=%s ret=%d seek_flag=%d pause=%d start=%d end=%d\n",
+						       strRecordFilePath,
+						       ret,
+						       pPlayManager->bSeekFlag ? 1 : 0,
+						       pPlayManager->bPause ? 1 : 0,
+						       pPlayManager->iStartTime,
+						       pPlayManager->iEndTime);
 						break;
 					}
 
@@ -4233,46 +4209,16 @@ void CStorageManager::PlaybackProc(int index)
 					//转换为录制时的真实时间
 					stMp4DemuxerFrameInfo.ullTimestamp += (unsigned long long)stRecordFileInfo.iStartTime * 1000;
 
-					if( 1 == stMp4DemuxerFrameInfo.iStreamType )
-					{
-						++fileVideoFrames;
-						++sessionVideoFrames;
-						if( false == loggedFirstVideoFrame )
-						{
-							loggedFirstVideoFrame = true;
-							AppInfo("playback first video frame path=%s size=%d ts_ms=%llu frame_type=%d\n",
-									strRecordFilePath,
-									ret,
-									stMp4DemuxerFrameInfo.ullTimestamp,
-									stMp4DemuxerFrameInfo.iFrameType);
-						}
-					}
-					else if( 2 == stMp4DemuxerFrameInfo.iStreamType )
-					{
-						++fileAudioFrames;
-						++sessionAudioFrames;
-						if( false == loggedFirstAudioFrame )
-						{
-							loggedFirstAudioFrame = true;
-							AppInfo("playback first audio frame path=%s size=%d ts_ms=%llu\n",
-									strRecordFilePath,
-									ret,
-									stMp4DemuxerFrameInfo.ullTimestamp);
-						}
-					}
-
 //						printf("stRecordFileInfo.iStartTime : %d\n", stRecordFileInfo.iStartTime);
 //						printf("stMp4DemuxerFrameInfo.ullTimestamp : %llu\n", stMp4DemuxerFrameInfo.ullTimestamp);
 					pPlayManager->PlaybackProc(pBuffer, ret, &stMp4DemuxerFrameInfo, pPlayManager->pParam);
 				}
 			}
+			else
+			{
+				printf("playback open failed path=%s ret=%d\n", strRecordFilePath, ret);
+			}
 			mp4_demuxer.Close();
-			AppInfo("playback file done path=%s video=%u audio=%u enable=%d seek_flag=%d\n",
-					strRecordFilePath,
-					fileVideoFrames,
-					fileAudioFrames,
-					pPlayManager->bEnablePlay,
-					pPlayManager->bSeekFlag);
 			
 			i++;
 		}
@@ -4284,13 +4230,6 @@ void CStorageManager::PlaybackProc(int index)
 			pthread_mutex_unlock(&m_mutexPlaybackManager);
 		
 			pPlayManager->PlaybackProc(NULL, 0, NULL, pPlayManager->pParam);			
-			AppInfo("playback session finished index=%d files=%u video=%u audio=%u start=%d end=%d\n",
-					index,
-					sessionFileCount,
-					sessionVideoFrames,
-					sessionAudioFrames,
-					pPlayManager->iStartTime,
-					pPlayManager->iEndTime);
 		}				
 		
 	}
@@ -4309,12 +4248,6 @@ Int32 CStorageManager::StartPlayback(Int32 iStartTime, Int32 iEndTime, StoragePl
 {
 	if( ( iStartTime < 0 ) || (iStartTime > iEndTime) )
 		return -1;
-
-	AppInfo("playback start request start=%d end=%d proc=%p param=%p\n",
-			iStartTime,
-			iEndTime,
-			proc,
-			param);
 	
 	int i;
 	int ret = -1;
@@ -4368,7 +4301,6 @@ Int32 CStorageManager::StartPlayback(Int32 iStartTime, Int32 iEndTime, StoragePl
 		ret = -2;
 	
 	pthread_mutex_unlock(&m_mutexPlaybackManager);
-	AppInfo("playback start result handle=%d start=%d end=%d\n", ret, iStartTime, iEndTime);
 	return ret;
 
 falied:
@@ -4390,8 +4322,6 @@ Int32 CStorageManager::StopPlayback(Int32 iPlayHandle)
 {
 	if( iPlayHandle < 0 || iPlayHandle >= MAX_PLAYBACK_NUM )
 		return -1;
-
-	AppInfo("playback stop request handle=%d\n", iPlayHandle);
 	
 	pthread_mutex_lock(&m_mutexPlaybackManager);
 	
@@ -4412,7 +4342,6 @@ Int32 CStorageManager::StopPlayback(Int32 iPlayHandle)
 		usleep(50000);
 	}
 
-	AppInfo("playback stop done handle=%d idle=%d\n", iPlayHandle, m_arrStPlaybackManager[iPlayHandle].bIdel);
 	return 0;
 }
 
@@ -4420,8 +4349,6 @@ Int32 CStorageManager::SeekTime(Int32 iPlayHandle, Int32 iStartTime)
 {
 	if( iPlayHandle < 0 || iPlayHandle >= MAX_PLAYBACK_NUM )
 		return -1;
-
-	AppInfo("playback seek request handle=%d target=%d\n", iPlayHandle, iStartTime);
 
 	pthread_mutex_lock(&m_mutexPlaybackManager);
 
@@ -4445,8 +4372,6 @@ Int32 CStorageManager::PausePlaybackOnFile(Int32 iPlayHandle, bool bPause)
 	if( iPlayHandle < 0 || iPlayHandle >= MAX_PLAYBACK_NUM )
 		return -1;
 
-	AppInfo("playback pause request handle=%d pause=%d\n", iPlayHandle, bPause);
-
 	pthread_mutex_lock(&m_mutexPlaybackManager);
 
 	if( m_arrStPlaybackManager[iPlayHandle].bEnablePlay )
@@ -4468,8 +4393,6 @@ Int32 CStorageManager::SetPlaybackSpeed(Int32 iPlayHandle, float fSpeed)
 	if( iPlayHandle < 0 || iPlayHandle >= MAX_PLAYBACK_NUM || 
 		fSpeed < STORAGE_MIN_PB_SPEED || fSpeed > STORAGE_MAX_PB_SPEED )
 		return -1;
-
-	AppInfo("playback speed request handle=%d speed=%.2f\n", iPlayHandle, fSpeed);
 
 	pthread_mutex_lock(&m_mutexPlaybackManager);
 

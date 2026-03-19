@@ -178,10 +178,7 @@ int   CSipClientImpl::Message(const SipMessage* message, int timeout,  SipData**
                  << " local_name=" << m_client_info->local_name
                  << " local=" << m_client_info->LocalIp << ":" << m_client_info->LocalPort
                  << " remote_name=" << m_client_info->RemoteSipSrvName
-                 << " remote=" << m_client_info->RemoteIp << ":" << m_client_info->RemotePort
-                 << " from=" << m_client_info->from
-                 << " to=" << m_client_info->to
-                 << " route=" << m_client_info->route);
+                 << " remote=" << m_client_info->RemoteIp << ":" << m_client_info->RemotePort);
 
     const int ret = m_event_manager->SendSipResquest(
                                                                       kSipMessageMethod,

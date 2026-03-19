@@ -557,7 +557,7 @@ int CGBClientImpl::SendHeartbeat(  const KeepaliveInfo* list)
 
     TVT_LOG_INFO("gb heartbeat send"
                  << " device=" << m_xml_parser->m_local_code
-                 << " remote_name=" << m_sip_connect_param->sip_code
+                 << " remote_name=" << m_gb_connect->GBCode
                  << " remote=" << m_strIP << ":" << m_sip_connect_param->port
                  << " xml_len=" << (int)content.size()
                  << " timeout=" << timeout);
@@ -572,7 +572,7 @@ int CGBClientImpl::SendHeartbeat(  const KeepaliveInfo* list)
 
          TVT_LOG_ERROR("gb heartbeat sip message failed"
                        << " device=" << m_xml_parser->m_local_code
-                       << " remote_name=" << m_sip_connect_param->sip_code
+                       << " remote_name=" << m_gb_connect->GBCode
                        << " remote=" << m_strIP << ":" << m_sip_connect_param->port
                        << " sip_ret=" << sipRet);
 
@@ -590,7 +590,7 @@ int CGBClientImpl::SendHeartbeat(  const KeepaliveInfo* list)
 
         TVT_LOG_ERROR("gb heartbeat response invalid"
                       << " device=" << m_xml_parser->m_local_code
-                      << " remote_name=" << m_sip_connect_param->sip_code
+                      << " remote_name=" << m_gb_connect->GBCode
                       << " remote=" << m_strIP << ":" << m_sip_connect_param->port
                       << " has_result=" << (result ? 1 : 0)
                       << " sip_code=" << (result ? result->messgae.code : -1));
@@ -600,13 +600,11 @@ int CGBClientImpl::SendHeartbeat(  const KeepaliveInfo* list)
 
     }
     else {
-
         TVT_LOG_INFO("gb heartbeat response ok"
                      << " device=" << m_xml_parser->m_local_code
-                     << " remote_name=" << m_sip_connect_param->sip_code
+                     << " remote_name=" << m_gb_connect->GBCode
                      << " remote=" << m_strIP << ":" << m_sip_connect_param->port
                      << " sip_code=" << result->messgae.code);
-
     }
 
 
@@ -1087,10 +1085,13 @@ int CGBClientImpl::ResponseMediaPlayInfo(StreamHandle stream_handle,  const Medi
 {
 
 
-    if( !m_stream_manager->FindStreamHandle(stream_handle)) {
+	if( !m_stream_manager->FindStreamHandle(stream_handle)) {
+
+		TVT_LOG_ERROR("gb media response skipped because stream handle does not exist"
+			<< " handle=" << stream_handle);
 
 
-        return kGbStreamHandleNotExist   ;
+		return kGbStreamHandleNotExist   ;
 
 
     }
@@ -1123,22 +1124,45 @@ int CGBClientImpl::ResponseMediaPlayInfo(StreamHandle stream_handle,  const Medi
     message.Method = kSipInviteMethod;
 
 
-    SipDialogKey* key = (SipDialogKey*)stream_handle;
+	SipDialogKey* key = (SipDialogKey*)stream_handle;
 
 
-    bool result = kGb28181Success;
+	bool result = kGb28181Success;
+
+	TVT_LOG_INFO("gb media response try send 200ok"
+		<< " handle=" << stream_handle
+		<< " answer_transport=" << (info ? (int)info->RtpType : -1)
+		<< " answer_ip=" << (info ? info->IP : "")
+		<< " answer_port=" << (info ? info->Port : 0)
+		<< " ssrc=" << (info ? info->Ssrc : "")
+		<< " content_len=" << content.size()
+		<< " call_id=" << (key ? key->CallId : -1)
+		<< " dialog_id=" << (key ? key->DialogId : -1));
 
 
 
 
 
-    if(kSipSuccess != m_sip_client->Response(key, &message)) {
+	if(kSipSuccess != m_sip_client->Response(key, &message)) {
 
 
-        result = kGbFail;
+		result = kGbFail;
+
+		TVT_LOG_ERROR("gb media response send 200ok failed"
+			<< " handle=" << stream_handle
+			<< " call_id=" << (key ? key->CallId : -1)
+			<< " dialog_id=" << (key ? key->DialogId : -1));
 
 
-    }
+	}
+	else {
+
+		TVT_LOG_INFO("gb media response send 200ok success"
+			<< " handle=" << stream_handle
+			<< " call_id=" << (key ? key->CallId : -1)
+			<< " dialog_id=" << (key ? key->DialogId : -1));
+
+	}
 
 
        return   result;
@@ -3084,10 +3108,15 @@ void  CGBClientImpl::OnInvite(const SipData* data)
    StreamHandle handle = NULL;
 
 
-    if( data->messgae.content_type != kSipContentSDP){
+	if( data->messgae.content_type != kSipContentSDP){
+
+		TVT_LOG_ERROR("gb invite rejected because content type is not sdp"
+			<< " content_type=" << (int)data->messgae.content_type
+			<< " call_id=" << data->Dialog.CallId
+			<< " dialog_id=" << data->Dialog.DialogId);
 
 
-        message.code = kBadRequest;
+		message.code = kBadRequest;
 
 
         goto finally;
@@ -3099,10 +3128,16 @@ void  CGBClientImpl::OnInvite(const SipData* data)
 
 
 
-    if( !CSdpUtil::String2MediaInfo( data->messgae.content,  &media_info)){
+	if( !CSdpUtil::String2MediaInfo( data->messgae.content,  &media_info)){
+
+		  TVT_LOG_ERROR("gb invite rejected because sdp parse failed"
+			<< " call_id=" << data->Dialog.CallId
+			<< " dialog_id=" << data->Dialog.DialogId
+			<< " content_len=" << (data->messgae.content ? strlen(data->messgae.content) : 0)
+			<< " sdp=" << (data->messgae.content ? data->messgae.content : ""));
 
 
-          message.code = kBadRequest;
+		  message.code = kBadRequest;
 
 
           goto finally;
@@ -3131,6 +3166,15 @@ void  CGBClientImpl::OnInvite(const SipData* data)
 
 	}
 
+	TVT_LOG_INFO("gb invite parsed"
+		<< " device=" << media_info.DeviceID
+		<< " request_type=" << (int)media_info.RequestType
+		<< " transport=" << (int)media_info.RtpType
+		<< " remote_ip=" << media_info.IP
+		<< " remote_port=" << media_info.Port
+		<< " call_id=" << data->Dialog.CallId
+		<< " dialog_id=" << data->Dialog.DialogId);
+
 
  
 
@@ -3150,10 +3194,16 @@ void  CGBClientImpl::OnInvite(const SipData* data)
     
 
 
-    if(  !m_gb_receiver || !m_gb_receiver->OnStreamRequest(  handle,  media_info.DeviceID,  media_info.RequestType,  &media_info   )) {
+	if(  !m_gb_receiver || !m_gb_receiver->OnStreamRequest(  handle,  media_info.DeviceID,  media_info.RequestType,  &media_info   )) {
+
+		  TVT_LOG_ERROR("gb invite stream request callback rejected"
+			<< " device=" << media_info.DeviceID
+			<< " request_type=" << (int)media_info.RequestType
+			<< " handle=" << handle
+			<< " has_receiver=" << (m_gb_receiver != NULL ? 1 : 0));
 
 
-          m_stream_manager->DeleteStreamHandle(   (StreamHandle)dialog     );
+		  m_stream_manager->DeleteStreamHandle(   (StreamHandle)dialog     );
 
 
           free(dialog);
@@ -3165,10 +3215,17 @@ void  CGBClientImpl::OnInvite(const SipData* data)
           goto finally;
 
 
-    }
+	}
 
 
-          message.code = kSuccessRequest;
+		  message.code = kSuccessRequest;
+
+		  TVT_LOG_INFO("gb invite stream request accepted and waiting media response"
+			<< " device=" << media_info.DeviceID
+			<< " request_type=" << (int)media_info.RequestType
+			<< " handle=" << handle
+			<< " call_id=" << data->Dialog.CallId
+			<< " dialog_id=" << data->Dialog.DialogId);
 
 
 
@@ -3215,38 +3272,35 @@ void  CGBClientImpl::OnACK(const SipData* data)
 
 {
 
-
-    /*
-
-
-    StreamHandle  handle =  m_stream_manager->FindStreamHandle( data->Dialog.CallId , data->Dialog.DialogId    );
-
+	StreamHandle  handle =  m_stream_manager->FindStreamHandle( data->Dialog.CallId , data->Dialog.DialogId    );
+	TVT_LOG_INFO("gb invite ack received"
+		<< " handle=" << handle
+		<< " call_id=" << data->Dialog.CallId
+		<< " dialog_id=" << data->Dialog.DialogId);
 
     if(!handle){
-
-
+		TVT_LOG_ERROR("gb invite ack ignored because stream handle not found"
+			<< " call_id=" << data->Dialog.CallId
+			<< " dialog_id=" << data->Dialog.DialogId);
         return ;
-
-
     }
-
 
     PlayCtrlCmd cmd;
-
-
+	memset(&cmd, 0, sizeof(cmd));
     cmd.Type = kPlayStart;
 
-
-    if(  m_gb_receiver && m_gb_receiver->OnPlayControl(handle,&cmd)) {
-
-
-
-
-
+    if(  !m_gb_receiver || !m_gb_receiver->OnPlayControl(handle,&cmd)) {
+		TVT_LOG_ERROR("gb invite ack failed to trigger play start"
+			<< " handle=" << handle
+			<< " call_id=" << data->Dialog.CallId
+			<< " dialog_id=" << data->Dialog.DialogId);
+		return;
     }
 
-
-    */
+	TVT_LOG_INFO("gb invite ack triggered play start"
+		<< " handle=" << handle
+		<< " call_id=" << data->Dialog.CallId
+		<< " dialog_id=" << data->Dialog.DialogId);
 
 
 }
