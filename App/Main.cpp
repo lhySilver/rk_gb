@@ -56,6 +56,17 @@ CSofia::~CSofia()
 #endif
 }
 
+void CSofia::StartLocalRuntimeServices()
+{
+	AppInfo("start local runtime services without tuya thread\n");
+
+	g_Camera.start();
+	g_Alarm.SetAllowMotionDetTime(time(NULL) + 10);
+	g_Alarm.Start();
+	g_Siren.Start();
+	g_RecordManager.Start();
+}
+
 bool CSofia::preStart()
 {
 	/// Infra 启动定时器 和 线程管理
@@ -279,7 +290,6 @@ bool CSofia::start()
 		// 初始化onvif server
 		g_OnvifHandle.Init();
 
-
 		// 启动tuya
 		//g_TuyaHandle.start();
 		// Start protocol manager (GB28181/GAT1400/broadcast/listen)
@@ -308,6 +318,7 @@ bool CSofia::start()
 #endif
 			}
 		}
+		StartLocalRuntimeServices();
 
 		if(access(NO_VOICE_PROMPT_FLAG, F_OK) != 0)
 		{
