@@ -1,22 +1,15 @@
 #include "SipEventManager.h"
 #include "eXosip2/eXosip.h"
 #include "eXosip2/eX_call.h"
-#include "eXosip2/eX_setup.h"
 #include "SipUtil.h"
 #include "WaiterManager.h"
 #include "ShareSDK.h"
 #include "common/ClientInfoManager.h"
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 
 #define WAITTIME		50				     //SIP事件监听时间间隔
 #define LIVETIME		(90 * 1000)		//保活时间
 #define MAX_LENGTH_TR    1024
-static const int kRegisterAutomaticActionSettleUs = 200 * 1000;
-
 static void custom_osip_trace(const char *fi, int li, osip_trace_level_t level, const char *chfr, va_list ap)
 {
 	if (!fi || !chfr) {
@@ -46,55 +39,6 @@ static void custom_osip_trace(const char *fi, int li, osip_trace_level_t level, 
 	vsnprintf(buffer + in, MAX_LENGTH_TR - 1 - in, chfr, ap);
 
 	TVT_LOG_INFO(buffer);
-}
-
-static bool NeedResolveLocalSipIp(const char* ip)
-{
-    return ip == NULL || ip[0] == '\0' || strcmp(ip, "0.0.0.0") == 0;
-}
-
-static bool ResolveOutboundLocalSipIp(const char* remote_ip, int remote_port, std::string& local_ip)
-{
-    if (NeedResolveLocalSipIp(remote_ip) || remote_port <= 0 || remote_port > 65535) {
-        return false;
-    }
-
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
-        return false;
-    }
-
-    sockaddr_in remote_addr;
-    memset(&remote_addr, 0, sizeof(remote_addr));
-    remote_addr.sin_family = AF_INET;
-    remote_addr.sin_port = htons((uint16_t)remote_port);
-    if (inet_pton(AF_INET, remote_ip, &remote_addr.sin_addr) != 1) {
-        close(sockfd);
-        return false;
-    }
-
-    if (connect(sockfd, (sockaddr*)&remote_addr, sizeof(remote_addr)) != 0) {
-        close(sockfd);
-        return false;
-    }
-
-    sockaddr_in local_addr;
-    memset(&local_addr, 0, sizeof(local_addr));
-    socklen_t local_addr_len = sizeof(local_addr);
-    if (getsockname(sockfd, (sockaddr*)&local_addr, &local_addr_len) != 0) {
-        close(sockfd);
-        return false;
-    }
-
-    char ipbuf[INET_ADDRSTRLEN] = {0};
-    const char* ipstr = inet_ntop(AF_INET, &local_addr.sin_addr, ipbuf, sizeof(ipbuf));
-    close(sockfd);
-    if (ipstr == NULL || NeedResolveLocalSipIp(ipstr)) {
-        return false;
-    }
-
-    local_ip = ipstr;
-    return true;
 }
 
 void FreeSipData(SipData* data)
@@ -196,7 +140,6 @@ CSipEventManager::CSipEventManager()
 {
        m_stop_flag.SetValue(1);
        m_listen_flag.SetValue(0);
-       m_register_guard_count.SetValue(0);
        m_sip_context  = NULL;
        m_listen_thread_id = NULL;
        m_sip_log_handler = NULL;
@@ -214,7 +157,6 @@ CSipEventManager::~CSipEventManager()
 void CSipEventManager::Stop()
 {
 	m_stop_flag.SetValue(0);
-    m_register_guard_count.SetValue(0);
     if (m_listen_flag && m_sip_context ) {
         eXosip_quit(  m_sip_context  );
 		m_listen_flag.SetValue(0);
@@ -257,7 +199,7 @@ int CSipEventManager::StartSipListen(  SipTransportType type , const NetAddress*
         return kSipInitFail;
     }
     int proco =  ( type == kSipOverTCP ) ? IPPROTO_TCP : IPPROTO_UDP ;
-    eXosip_set_user_agent(m_sip_context,"DGIOT");
+    eXosip_set_user_agent(m_sip_context,"TVT");
      result = eXosip_listen_addr(m_sip_context, proco, NULL , local->port , AF_INET, 0);
     if ( result != 0) {
         eXosip_quit(m_sip_context);
@@ -279,22 +221,10 @@ int CSipEventManager::StartSipListen(  SipTransportType type , const NetAddress*
     }
    
 	osip_trace_initialize_func(TRACE_LEVEL3, custom_osip_trace);
-        if (NeedResolveLocalSipIp(local->ip)) {
-            char guessed_ip[64] = {0};
-            if (eXosip_guess_localip(m_sip_context, AF_INET, guessed_ip, sizeof(guessed_ip)) == 0 &&
-                guessed_ip[0] != '\0') {
-                m_local_ip = guessed_ip;
-            }
-            else {
-                m_local_ip = "0.0.0.0";
-            }
-        }
-        else {
-	    m_local_ip = local->ip;
-        }
-	    m_local_port = local->port;
-	    m_local_name = local_name;
-	    m_listen_flag.SetValue(1);
+    m_local_ip = local->ip;
+    m_local_port = local->port;
+    m_local_name = local_name;
+    m_listen_flag.SetValue(1);
     return kSipSuccess;
 
 }
@@ -660,22 +590,11 @@ void CSipEventManager::HandleResquestCallback(SipSessionHandle handle,  SipData*
 
         PeerInfo*  peer =  m_client_manager->GetPeerInfo( event->request , true);
          if(!peer) {
-             TVT_LOG_ERROR("sip request peer parse failed"
-                           << " method=" << event->request->sip_method
-                           << " tid=" << event->tid);
              return ;
          }
          ClientInfo*  client =  m_client_manager->FindClient(peer);
-         const std::string peer_name = peer->name;
-         const std::string peer_ip = peer->ip;
-         const int peer_port = peer->port;
          delete peer;
          if(!client) {
-             TVT_LOG_ERROR("sip request dropped because client was not matched"
-                           << " method=" << event->request->sip_method
-                           << " peer_name=" << peer_name
-                           << " peer=" << peer_ip << ":" << peer_port
-                           << " tid=" << event->tid);
              return ;
          }
 
@@ -709,6 +628,10 @@ void CSipEventManager::SipEventProcess()
     while(  m_stop_flag  )  {
         
         pEvent = eXosip_event_wait( m_sip_context, 0, 50 );
+
+		eXosip_lock(m_sip_context); 
+		eXosip_automatic_action(m_sip_context);
+		eXosip_unlock(m_sip_context);
 
         if (pEvent == NULL) {
 			continue;
@@ -854,29 +777,6 @@ void CSipEventManager::SipEventProcess()
 int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData** result )
 {
        osip_message_t *pMsg = NULL;
-       const bool guardAutomaticAction = (result != NULL);
-       if (guardAutomaticAction) {
-           m_register_guard_count.Increment();
-       }
-
-       if (NeedResolveLocalSipIp(client_info->LocalIp.c_str())) {
-           std::string resolved_local_ip;
-           if (ResolveOutboundLocalSipIp(client_info->RemoteIp.c_str(), client_info->RemotePort, resolved_local_ip)) {
-               client_info->LocalIp = resolved_local_ip;
-               client_info->SetFromeAndTo();
-               if (NeedResolveLocalSipIp(m_local_ip.c_str())) {
-                   m_local_ip = resolved_local_ip;
-               }
-               TVT_LOG_INFO("sip register resolved local ip by remote"
-                            << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort
-                            << " local=" << client_info->LocalIp);
-           }
-           else {
-               TVT_LOG_ERROR("sip register resolve local ip failed"
-                             << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort
-                             << " local=" << client_info->LocalIp);
-           }
-       }
 
        TVT_LOG_INFO("sip register enter"
                     << " new_reg=" << (client_info->new_reg ? 1 : 0)
@@ -893,9 +793,6 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                TVT_LOG_ERROR("sip register auth info invalid"
                              << " user_empty=" << (client_info->Username.empty() ? 1 : 0)
                              << " pwd_empty=" << (client_info->Password.empty() ? 1 : 0));
-               if (guardAutomaticAction) {
-                   m_register_guard_count.Decrement();
-               }
                return kSipBuildRegisterFailed;
            }
 
@@ -914,9 +811,6 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
               TVT_LOG_ERROR("sip register add auth failed"
                             << " ret=" << authRet
                             << " user=" << client_info->Username);
-              if (guardAutomaticAction) {
-                  m_register_guard_count.Decrement();
-              }
               return kSipBuildRegisterFailed;
           }
        }
@@ -939,9 +833,6 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                               << " regid=" << regid
                               << " from=" << client_info->from
                               << " route=" << client_info->route);
-                if (guardAutomaticAction) {
-                    m_register_guard_count.Decrement();
-                }
                 return kSipBuildRegisterFailed;
             }
                 client_info->RegId = regid;
@@ -950,35 +841,19 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
        }
        else{
 
-           int res = OSIP_WRONG_STATE;
-           int attempt = 0;
-           for (; attempt < 10; ++attempt) {
-               eXosip_lock(m_sip_context);
-               res = eXosip_register_build_register(m_sip_context, client_info->RegId, client_info->Expire, &pMsg);
-               eXosip_unlock(m_sip_context);
-               if (res != OSIP_WRONG_STATE) {
-                   break;
-               }
-               TVT_LOG_INFO("sip build register waiting previous transaction"
-                            << " regid=" << client_info->RegId
-                            << " attempt=" << (attempt + 1));
-               usleep(50 * 1000);
-           }
+           eXosip_lock(m_sip_context);
+           int res = eXosip_register_build_register(m_sip_context, client_info->RegId, client_info->Expire, &pMsg);
+           eXosip_unlock(m_sip_context);
            if( res !=  OSIP_SUCCESS ) {
                TVT_LOG_ERROR("sip build register failed"
                              << " res=" << res
                              << " regid=" << client_info->RegId
-                             << " expire=" << client_info->Expire
-                             << " attempts=" << attempt);
-               if (guardAutomaticAction) {
-                   m_register_guard_count.Decrement();
-               }
+                             << " expire=" << client_info->Expire);
                return kSipBuildRegisterFailed;
            }
            TVT_LOG_INFO("sip build register ok"
                         << " regid=" << client_info->RegId
-                        << " expire=" << client_info->Expire
-                        << " attempts=" << attempt);
+                        << " expire=" << client_info->Expire);
        }
 
         CResponseWaiter *pCond = NULL;
@@ -986,9 +861,6 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
 
             pCond = m_waiter_manager->CreateResponseWaiter(pMsg, kSipRegisterMethod );
             if( pCond==NULL ) {
-                if (guardAutomaticAction) {
-                    m_register_guard_count.Decrement();
-                }
                 return kSipBuildRegisterFailed;
             }
 
@@ -1006,16 +878,13 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
 
         if ( res ) {
             m_waiter_manager->CancleWaitResponse(pCond);
-            if (guardAutomaticAction) {
-                m_register_guard_count.Decrement();
-            }
             TVT_LOG_ERROR("sip send register failed"
                           << " regid=" << client_info->RegId
                           << " res=" << res);
             return kSipMessageSendFailed;
         }
 
-        int code = kSipSuccess;
+        int code;
         SipData* output = NULL;
         if( pCond ) {
              output = (SipData*)malloc(sizeof(SipData));
@@ -1027,12 +896,7 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                           << " regid=" << client_info->RegId);
          }
 
-         if (guardAutomaticAction) {
-             usleep(kRegisterAutomaticActionSettleUs);
-             m_register_guard_count.Decrement();
-         }
-
-         if(code == kSipSuccess && result != NULL){
+         if(code == kSipSuccess){
              *result = output;
          }else{
               if(output)
@@ -1057,6 +921,11 @@ int CSipEventManager::SendSipResquest( SipMethod method,
 {
 
     if(  !m_client_manager->FindClientSession(client_info)  ) {
+          TVT_LOG_ERROR("sip request session missing"
+                        << " method=" << (int)method
+                        << " remote_name=" << (client_info ? client_info->RemoteSipSrvName : "")
+                        << " remote=" << (client_info ? client_info->RemoteIp : "") << ":"
+                        << (client_info ? client_info->RemotePort : -1));
           return kSipSessionNoExist;
     }
 
@@ -1117,13 +986,14 @@ int CSipEventManager::SendSipResquest( SipMethod method,
       }
 
       if(code!= kSipSuccess) {
-             if (method == kSipMessageMethod) {
-                 TVT_LOG_ERROR("sip request build failed"
-                               << " method=" << (int)method
-                               << " code=" << code
-                               << " remote_name=" << client_info->RemoteSipSrvName
-                               << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort);
-             }
+             TVT_LOG_ERROR("sip request build failed"
+                           << " method=" << (int)method
+                           << " code=" << code
+                           << " remote_name=" << client_info->RemoteSipSrvName
+                           << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort
+                           << " from=" << client_info->from
+                           << " to=" << client_info->to
+                           << " route=" << client_info->route);
              eXosip_unlock (m_sip_context);
              return code;
       }
@@ -1135,9 +1005,12 @@ int CSipEventManager::SendSipResquest( SipMethod method,
                        << " has_result=" << (result != NULL ? 1 : 0)
                        << " remote_name=" << client_info->RemoteSipSrvName
                        << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort
+                       << " from=" << client_info->from
+                       << " to=" << client_info->to
+                       << " route=" << client_info->route
                        << " body_len=" << ((message && message->content) ? (int)strlen(message->content) : 0));
       }
-
+	
 	  return  SendResquest(method, timeout, pRequest, client_info, key, message, result);
 }
 
@@ -1193,8 +1066,7 @@ int  CSipEventManager::SendResquest( SipMethod method,
               break;
         case kSipMessageMethod :
             {
-                const int tid = eXosip_message_send_request(m_sip_context,pRequest);
-                code = (tid < 0) ? tid : 0;
+                code = eXosip_message_send_request(m_sip_context,pRequest);
             }
                break;
         case kSipNotifyMethod:
@@ -1243,33 +1115,33 @@ int  CSipEventManager::SendResquest( SipMethod method,
      }
 
 
-     if( code != 0 ) {
-            if( pCond ) {
-                m_waiter_manager->CancleWaitResponse(pCond);
-            }
-            if (method == kSipMessageMethod) {
-                TVT_LOG_ERROR("sip request send failed"
-                              << " method=" << (int)method
-                              << " code=" << code
-                              << " remote_name=" << client_info->RemoteSipSrvName
-                              << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort);
-            }
-            return kSipMessageSendFailed;
-     }
+	     if( code != 0 ) {
+	            if( pCond ) {
+	                m_waiter_manager->CancleWaitResponse(pCond);
+	            }
+                if (method == kSipMessageMethod) {
+                    TVT_LOG_ERROR("sip request send failed"
+                                  << " method=" << (int)method
+                                  << " code=" << code
+                                  << " remote_name=" << client_info->RemoteSipSrvName
+                                  << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort);
+                }
+	            return kSipMessageSendFailed;
+	     }
 
     SipData* output = NULL;
-    if( pCond ) {
-         output = (SipData*)malloc(sizeof(SipData));
-         code = m_waiter_manager->WaitResponse(pCond, timeout, output );
-         if (method == kSipMessageMethod) {
-             TVT_LOG_INFO("sip request wait response"
-                          << " method=" << (int)method
-                          << " wait_code=" << code
-                          << " sip_code=" << ((code == kSipSuccess && output) ? output->messgae.code : -1)
-                          << " remote_name=" << client_info->RemoteSipSrvName
-                          << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort);
-         }
-    }
+	    if( pCond ) {
+	         output = (SipData*)malloc(sizeof(SipData));
+	         code = m_waiter_manager->WaitResponse(pCond, timeout, output );
+             if (method == kSipMessageMethod) {
+                 TVT_LOG_INFO("sip request wait response"
+                              << " method=" << (int)method
+                              << " wait_code=" << code
+                              << " sip_code=" << ((code == kSipSuccess && output) ? output->messgae.code : -1)
+                              << " remote_name=" << client_info->RemoteSipSrvName
+                              << " remote=" << client_info->RemoteIp << ":" << client_info->RemotePort);
+             }
+	    }
 
      if(result && code == kSipSuccess ) {
          *result = output;
@@ -1556,7 +1428,8 @@ SipData* CSipEventManager::GetSipData(bool isRequest, const eXosip_event_t *even
         char *temp =NULL;
         size_t Len = 0;
         if(  0== osip_body_to_str(pBody, &temp, &Len) ) {
-            std::string content= std::string(temp, Len);
+            std::string content= std::string(temp, Len+1);
+            content.at(Len) = '\0';
             CSipUtil::memcpy_safe( &(data->messgae.content) ,content);
             osip_free(temp);
         }
