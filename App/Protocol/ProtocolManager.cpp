@@ -8544,15 +8544,48 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data, int size, 
 
 
 
-    {
+    bool waitLogged = false;
+    while (true) {
 
-        std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+        bool active = false;
+        bool acked = false;
 
-        if (!m_gb_replay_session.active || !m_gb_replay_session.acked) {
+        {
+
+            std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+
+            active = m_gb_replay_session.active;
+            acked = m_gb_replay_session.acked;
+
+        }
+
+        if (!active) {
 
             return;
 
         }
+
+        if (acked) {
+
+            break;
+
+        }
+
+        if (!waitLogged) {
+
+            printf("[ProtocolManager] gb replay frame gated before play-start streamType=%d size=%d ts_ms=%llu\n",
+
+                   frameInfo->iStreamType,
+
+                   size,
+
+                   (unsigned long long)frameInfo->ullTimestamp);
+
+            waitLogged = true;
+
+        }
+
+        usleep(10 * 1000);
 
     }
 

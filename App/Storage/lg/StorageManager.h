@@ -20,7 +20,7 @@
 
 #define MAX_PLAYBACK_NUM 		(1) 		//最大回放用户数
 
-#define STORAGE_MAX_FRAME_SIZE 			(384*1024) 		//单帧最大字节数 	262144 = 2 * 1024 *1024 / 8
+#define STORAGE_MAX_FRAME_SIZE 			(2*1024*1024) 	//单帧最大字节数，3840x1080 首个 IDR/AnnexB 转换后可能超过 384KB
 
 #define STORAGE_MIN_PB_SPEED 			(0.25) 		//最小回放倍速
 #define STORAGE_MAX_PB_SPEED 			(4) 		//最大回放倍速

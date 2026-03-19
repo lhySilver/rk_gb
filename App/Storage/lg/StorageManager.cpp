@@ -3928,6 +3928,10 @@ void CStorageManager::PlaybackProc(int index)
 				pastPbRcdInfo = &s_astPbRcdFileInfo[pos];
 			rec_file_num -= pos;
 		}
+		else
+		{
+			printf("playback read index failed path=%s ret=%d\n", strPath, index_file_size);
+		}
 		if (rec_file_num <= 0 || !pastPbRcdInfo)
 		{
 			AppErr("rec_file_num: %d, pastPbRcdInfo: %p\n", rec_file_num, pastPbRcdInfo);
@@ -4117,6 +4121,13 @@ void CStorageManager::PlaybackProc(int index)
 					ret = mp4_demuxer.Read(pBuffer, STORAGE_MAX_FRAME_SIZE, &stMp4DemuxerFrameInfo);
 					if( ret <= 0 )
 					{
+						printf("playback read stop path=%s ret=%d seek_flag=%d pause=%d start=%d end=%d\n",
+						       strRecordFilePath,
+						       ret,
+						       pPlayManager->bSeekFlag ? 1 : 0,
+						       pPlayManager->bPause ? 1 : 0,
+						       pPlayManager->iStartTime,
+						       pPlayManager->iEndTime);
 						break;
 					}
 
@@ -4167,6 +4178,10 @@ void CStorageManager::PlaybackProc(int index)
 //						printf("stMp4DemuxerFrameInfo.ullTimestamp : %llu\n", stMp4DemuxerFrameInfo.ullTimestamp);
 					pPlayManager->PlaybackProc(pBuffer, ret, &stMp4DemuxerFrameInfo, pPlayManager->pParam);
 				}
+			}
+			else
+			{
+				printf("playback open failed path=%s ret=%d\n", strRecordFilePath, ret);
 			}
 			mp4_demuxer.Close();
 			

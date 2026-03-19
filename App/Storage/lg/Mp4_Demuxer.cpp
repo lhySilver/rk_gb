@@ -565,6 +565,11 @@ int CMp4Demuxer::Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameIn
 
 			if( iBufferSize < iTmpLen )
 			{
+				printf("demux video buffer not enough. buffer=%d frame=%d key=%d pts=%lld\n",
+				       iBufferSize,
+				       iTmpLen,
+				       (m_pAVPacket->flags & AV_PKT_FLAG_KEY) ? 1 : 0,
+				       (long long)m_pAVPacket->pts);
 				av_free(pTmpBuffer);
 				av_packet_unref(m_pAVPacket);
 				return -1;
@@ -596,6 +601,13 @@ int CMp4Demuxer::Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameIn
 			
 		}
 		av_packet_unref(m_pAVPacket);
+	}
+
+	if( ret < 0 )
+	{
+		char errStr[128] = "";
+		av_strerror(ret, errStr, sizeof(errStr));
+		printf("demux read end/error ret=%d err=%s\n", ret, errStr);
 	}
 
 	return iDataLen;
@@ -637,5 +649,4 @@ int CMp4Demuxer::Close()
 	
 	return 0;
 }
-
 
