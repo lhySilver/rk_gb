@@ -122,6 +122,50 @@ int disk_write_file(int fd, char *buffer, int size)
 	return write_count;
 }
 
+static bool CompareRecordFileInfoByTime(const record_file_info_s& lhs, const record_file_info_s& rhs)
+{
+	if (lhs.iStartTime != rhs.iStartTime)
+		return lhs.iStartTime < rhs.iStartTime;
+	if (lhs.iEndTime != rhs.iEndTime)
+		return lhs.iEndTime < rhs.iEndTime;
+	return lhs.iRecType < rhs.iRecType;
+}
+
+static int LoadRecordIndexEntries(const char *path,
+						 record_file_info_s *entries,
+						 int max_entries,
+						 int *raw_count)
+{
+	if (raw_count)
+		*raw_count = 0;
+	if (!path || !entries || max_entries <= 0)
+		return -1;
+
+	memset(entries, 0, sizeof(record_file_info_s) * max_entries);
+
+	FILE *fp = fopen(path, "rb");
+	if (!fp)
+		return -1;
+
+	int raw = 0;
+	int valid = 0;
+	record_file_info_s item = {0};
+	while (raw < max_entries && fread(&item, sizeof(item), 1, fp) == 1)
+	{
+		raw++;
+		if (item.iStartTime <= 0 || item.iEndTime <= 0)
+			continue;
+		entries[valid++] = item;
+	}
+	fclose(fp);
+
+	if (raw_count)
+		*raw_count = raw;
+
+	std::sort(entries, entries + valid, CompareRecordFileInfoByTime);
+	return valid;
+}
+
 
 static void *thread_playback(void *arg)
 {
@@ -3822,44 +3866,22 @@ void CStorageManager::PlaybackProc(int index)
 		memset(s_astPbRcdFileInfo, 0, sizeof(s_astPbRcdFileInfo));
 
 		//查找开始文件位置, 如果没有找到包含开始时间的文件, 则顺位往后移
-		int index_file_size = 0;
+		int raw_file_num = 0;
 		int rec_file_num = 0;
 		record_file_info_s *pastPbRcdInfo = NULL;
 		//先把文件内容读出来再处理
+		char strPath[128] = {0};
 		{
 			CGuard guard(m_mutex);
-			char strPath[128];
 			snprintf(strPath, sizeof(strPath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/index", 
 				tm_start.tm_year+1900, tm_start.tm_mon+1, tm_start.tm_mday);
-			//printf("file: %s\n", strPath);
-			int fd_index = open(strPath, O_RDONLY);
-			if (-1 != fd_index)
-			{
-				index_file_size = disk_read_file(fd_index, (char *)s_astPbRcdFileInfo, sizeof(s_astPbRcdFileInfo));
-				AppInfo("disk_read_file, ret: %d\n", index_file_size);
-				close(fd_index);
-			}
+			rec_file_num = LoadRecordIndexEntries(strPath,
+										 s_astPbRcdFileInfo,
+										 STORAGE_MAX_FILE_PER_DAY,
+										 &raw_file_num);
 		}
-		if (index_file_size > 0)
+		if (rec_file_num > 0)
 		{
-			const int raw_file_num = index_file_size / (int)sizeof(record_file_info_s);
-			int valid_file_num = 0;
-			for (int file_index = 0; file_index < raw_file_num; ++file_index)
-			{
-				if (s_astPbRcdFileInfo[file_index].iStartTime <= 0 || s_astPbRcdFileInfo[file_index].iEndTime <= 0)
-					continue;
-
-				s_astPbRcdFileInfo[valid_file_num++] = s_astPbRcdFileInfo[file_index];
-			}
-			std::sort(s_astPbRcdFileInfo, s_astPbRcdFileInfo + valid_file_num,
-				[](const record_file_info_s& lhs, const record_file_info_s& rhs) {
-					if (lhs.iStartTime != rhs.iStartTime)
-						return lhs.iStartTime < rhs.iStartTime;
-					if (lhs.iEndTime != rhs.iEndTime)
-						return lhs.iEndTime < rhs.iEndTime;
-					return lhs.iRecType < rhs.iRecType;
-				});
-			rec_file_num = valid_file_num;
 			AppInfo("rec_file_num: %d\n", rec_file_num);
 			AppInfo("pos: %d\n", 0);
 			if (rec_file_num > 0)
@@ -3874,7 +3896,10 @@ void CStorageManager::PlaybackProc(int index)
 		}
 		else
 		{
-			printf("playback read index failed path=%s ret=%d\n", strPath, index_file_size);
+			printf("playback read index failed path=%s raw_count=%d valid_count=%d\n",
+			       strPath,
+			       raw_file_num,
+			       rec_file_num);
 		}
 		if (rec_file_num <= 0 || !pastPbRcdInfo)
 		{
@@ -3953,7 +3978,16 @@ void CStorageManager::PlaybackProc(int index)
 
 			//printf("pastPbRcdInfo[%d].iStartTime = %d, pPlayManager->iEndTime = %d\n", i, pastPbRcdInfo[i].iStartTime, pPlayManager->iEndTime);
 			if( pastPbRcdInfo[i].iStartTime > pPlayManager->iEndTime ) 	//超出播放的时间范围
+			{
+				printf("playback candidate window miss start=%d end=%d next_file_start=%d next_file_end=%d index=%d/%d\n",
+				       pPlayManager->iStartTime,
+				       pPlayManager->iEndTime,
+				       pastPbRcdInfo[i].iStartTime,
+				       pastPbRcdInfo[i].iEndTime,
+				       i,
+				       rec_file_num);
 				i = rec_file_num;
+			}
 			
 			if( i == rec_file_num) 	//自动播放到结尾,不退出循环,再次拖动进度条可以继续播放
 			{
@@ -4501,31 +4535,30 @@ void CStorageManager::DownloadProc(int index)
 
 
 	//查找开始文件位置, 如果没有找到包含开始时间的文件, 则顺位往后移
-	int index_file_size = 0;
+	int raw_file_num = 0;
 	int rec_file_num = 0;
 	record_file_info_s *pastPbRcdInfo = NULL;
 	//先把文件内容读出来再处理
+	char strPath[128] = {0};
 	{
 		CGuard guard(m_mutex);
-		char strPath[128];
 		snprintf(strPath, sizeof(strPath), __STORAGE_SD_MOUNT_PATH__"/DCIM/%04d/%02d/%02d/index", 
 			tm_start.tm_year+1900, tm_start.tm_mon+1, tm_start.tm_mday);
-		int fd_index = open(strPath, O_RDONLY);
-		if (-1 != fd_index)
-		{
-			index_file_size = disk_read_file(fd_index, (char *)s_astDlRcdFileInfo, sizeof(s_astDlRcdFileInfo));
-			close(fd_index);
-		}
+		rec_file_num = LoadRecordIndexEntries(strPath,
+									 s_astDlRcdFileInfo,
+									 STORAGE_MAX_FILE_PER_DAY,
+									 &raw_file_num);
 	}
-	if (index_file_size > 0)
+	if (rec_file_num > 0)
 	{
-		rec_file_num = index_file_size / sizeof(record_file_info_s);
-		int pos = 0;
-		while(0 == s_astDlRcdFileInfo[pos].iStartTime && pos < rec_file_num)
-			pos++;
-		rec_file_num -= pos;
-		if (pos < rec_file_num)
-			pastPbRcdInfo = &s_astDlRcdFileInfo[pos];
+		pastPbRcdInfo = &s_astDlRcdFileInfo[0];
+	}
+	else
+	{
+		printf("download read index failed path=%s raw_count=%d valid_count=%d\n",
+		       strPath,
+		       raw_file_num,
+		       rec_file_num);
 	}
 	if (rec_file_num <= 0 || !pastPbRcdInfo)
 	{
