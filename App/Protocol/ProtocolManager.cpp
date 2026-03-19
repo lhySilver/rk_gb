@@ -2993,6 +2993,8 @@ ProtocolManager::ProtocolManager()
       m_gb_current_media_ssrc(0),
       m_gb_current_media_port(0),
 
+      m_gb_replay_generation(0),
+
       m_gb_live_capture_started(false),
 
       m_started(false),
@@ -3042,6 +3044,22 @@ void ProtocolManager::UnInit()
     HandleGbStopStreamRequest(NULL, "uninit");
 
     UnbindGbClientSdk();
+
+    {
+
+        std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+
+        for (std::vector<GbReplayCallbackContext*>::iterator it = m_gb_replay_callback_contexts.begin();
+             it != m_gb_replay_callback_contexts.end();
+             ++it) {
+
+            delete *it;
+
+        }
+
+        m_gb_replay_callback_contexts.clear();
+
+    }
 
     m_provider.reset();
 
@@ -8337,11 +8355,30 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
 
 
 
+    GbReplayCallbackContext* callbackContext = new GbReplayCallbackContext();
+    if (callbackContext == NULL) {
+
+        return -44;
+
+    }
+
+    callbackContext->manager = this;
+    callbackContext->download = download;
+
+    {
+
+        std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+
+        callbackContext->generation = ++m_gb_replay_generation;
+        m_gb_replay_callback_contexts.push_back(callbackContext);
+
+    }
+
     const int storageHandle = download
 
-                                  ? Storage_Module_StartDownload(startSec, endSec, &ProtocolManager::OnGbReplayStorageFrame, this)
+                                  ? Storage_Module_StartDownload(startSec, endSec, &ProtocolManager::OnGbReplayStorageFrame, callbackContext)
 
-                                  : Storage_Module_StartPlayback(startSec, endSec, &ProtocolManager::OnGbReplayStorageFrame, this);
+                                  : Storage_Module_StartPlayback(startSec, endSec, &ProtocolManager::OnGbReplayStorageFrame, callbackContext);
 
     if (storageHandle < 0) {
 
@@ -8356,6 +8393,26 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
                startSec,
 
                endSec);
+
+        {
+
+            std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+
+            for (std::vector<GbReplayCallbackContext*>::iterator it = m_gb_replay_callback_contexts.begin();
+                 it != m_gb_replay_callback_contexts.end();
+                 ++it) {
+
+                if (*it == callbackContext) {
+
+                    delete *it;
+                    m_gb_replay_callback_contexts.erase(it);
+                    break;
+
+                }
+
+            }
+
+        }
 
         return -42;
 
@@ -8388,6 +8445,8 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
         m_gb_replay_session.sent_video_frames = 0;
 
         m_gb_replay_session.sent_audio_frames = 0;
+
+        m_gb_replay_session.generation = callbackContext->generation;
 
     }
 
@@ -8480,7 +8539,9 @@ void ProtocolManager::OnGbReplayStorageFrame(unsigned char* data,
 
 {
 
-    ProtocolManager* self = (ProtocolManager*)userData;
+    GbReplayCallbackContext* context = (GbReplayCallbackContext*)userData;
+
+    ProtocolManager* self = (context != NULL) ? context->manager : NULL;
 
     if (self == NULL) {
 
@@ -8490,15 +8551,20 @@ void ProtocolManager::OnGbReplayStorageFrame(unsigned char* data,
 
 
 
-    self->HandleGbReplayStorageFrame(data, size, frameInfo);
+    self->HandleGbReplayStorageFrame(data, size, frameInfo, context);
 
 }
 
 
 
-void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data, int size, Mp4DemuxerFrameInfo_s* frameInfo)
+void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data,
+                                                 int size,
+                                                 Mp4DemuxerFrameInfo_s* frameInfo,
+                                                 const GbReplayCallbackContext* context)
 
 {
+
+    const uint64_t callbackGeneration = (context != NULL) ? context->generation : 0;
 
     if (data == NULL && size == 0 && frameInfo == NULL) {
 
@@ -8506,13 +8572,20 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data, int size, 
 
         bool hasSession = false;
 
+        bool currentActive = false;
+
+        uint64_t currentGeneration = 0;
+        GbReplayCallbackContext* ownedContext = NULL;
+
 
 
         {
 
             std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
 
-            if (m_gb_replay_session.active) {
+            if (m_gb_replay_session.active &&
+                callbackGeneration != 0 &&
+                callbackGeneration == m_gb_replay_session.generation) {
 
                 ended = m_gb_replay_session;
 
@@ -8521,6 +8594,38 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data, int size, 
                 hasSession = true;
 
             }
+
+            currentActive = m_gb_replay_session.active;
+            currentGeneration = m_gb_replay_session.generation;
+
+            for (std::vector<GbReplayCallbackContext*>::iterator it = m_gb_replay_callback_contexts.begin();
+                 it != m_gb_replay_callback_contexts.end();
+                 ++it) {
+
+                if (*it == context) {
+
+                    ownedContext = *it;
+                    m_gb_replay_callback_contexts.erase(it);
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if (!hasSession && callbackGeneration != 0) {
+
+            printf("[ProtocolManager] gb replay stale eos ignored generation=%llu active=%d current=%llu\n",
+                   (unsigned long long)callbackGeneration,
+                   currentActive ? 1 : 0,
+                   (unsigned long long)currentGeneration);
+
+        }
+
+        if (ownedContext != NULL) {
+
+            delete ownedContext;
 
         }
 
@@ -8580,8 +8685,10 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data, int size, 
 
             std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
 
-            active = m_gb_replay_session.active;
-            acked = m_gb_replay_session.acked;
+            active = (m_gb_replay_session.active &&
+                      callbackGeneration != 0 &&
+                      callbackGeneration == m_gb_replay_session.generation);
+            acked = active && m_gb_replay_session.acked;
 
         }
 

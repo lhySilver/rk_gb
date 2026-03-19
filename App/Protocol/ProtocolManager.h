@@ -18,6 +18,8 @@
 
 #include <atomic>
 
+#include <vector>
+
 
 
 #include "ProtocolService.h"
@@ -206,6 +208,8 @@ private:
 
         uint32_t sent_audio_frames;
 
+        uint64_t generation;
+
 
 
         GbReplaySession()
@@ -228,7 +232,33 @@ private:
 
               sent_video_frames(0),
 
-              sent_audio_frames(0)
+              sent_audio_frames(0),
+
+              generation(0)
+
+        {
+
+        }
+
+    };
+
+    struct GbReplayCallbackContext
+
+    {
+
+        ProtocolManager* manager;
+
+        uint64_t generation;
+
+        bool download;
+
+        GbReplayCallbackContext()
+
+            : manager(NULL),
+
+              generation(0),
+
+              download(false)
 
         {
 
@@ -400,7 +430,10 @@ private:
 
     int ResponseGbQueryPreset(ResponseHandle handle, const QueryParam* param);
 
-    void HandleGbReplayStorageFrame(unsigned char* data, int size, Mp4DemuxerFrameInfo_s* frameInfo);
+    void HandleGbReplayStorageFrame(unsigned char* data,
+                                    int size,
+                                    Mp4DemuxerFrameInfo_s* frameInfo,
+                                    const GbReplayCallbackContext* context);
 
     int HandleGbLiveCaptureInternal(int media_chn,
 
@@ -482,6 +515,10 @@ private:
     std::mutex m_gb_replay_mutex;
 
     GbReplaySession m_gb_replay_session;
+
+    uint64_t m_gb_replay_generation;
+
+    std::vector<GbReplayCallbackContext*> m_gb_replay_callback_contexts;
 
     std::mutex m_gb_live_mutex;
 
