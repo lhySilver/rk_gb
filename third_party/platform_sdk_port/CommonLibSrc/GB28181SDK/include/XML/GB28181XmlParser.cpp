@@ -1243,7 +1243,7 @@ bool CGB28181XmlParser::UnPackNotifyInfo(const std::string &xml_str,  int& sn,  
 
 		 case kBroadcastNotify:
 		 {
-			 res = UnPackBroadcastNotify(xml_str, code, info.notify_message.broadcast_info); break;
+			 res = UnPackBroadcastNotify(xml_str, sn, code, info.notify_message.broadcast_info); break;
 		 }
 
      }
@@ -1927,13 +1927,14 @@ bool CGB28181XmlParser::PackDeviceUpgradeResultNotify(const char* device_id, con
      return true;
 }
 
-bool CGB28181XmlParser::UnPackBroadcastNotify(const std::string &xml_str, std::string code, BroadcastInfo& broadcast)
+bool CGB28181XmlParser::UnPackBroadcastNotify(const std::string &xml_str, int& sn, std::string& code, BroadcastInfo& broadcast)
 {
 	slothxml::broadcast_notify_t notify;
 	if (!slothxml::decode(xml_str, NOTIFY, notify)) {
 		return false;
 	}
-	code = notify.SourceID;
+	sn = (int)notify.SN;
+	code = notify.TargetID;
 	GBUtil::memcpy_safe(broadcast.SourceID, GB_ID_LEN, notify.SourceID);
 	GBUtil::memcpy_safe(broadcast.TargetID, GB_ID_LEN, notify.TargetID);
 

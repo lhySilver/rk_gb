@@ -4,6 +4,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603201618 | issue33_broadcast_notify_fields | 修复 | ✅已完成 | [2026-03/202603201618_issue33_broadcast_notify_fields](2026-03/202603201618_issue33_broadcast_notify_fields/) |
 | 202603201544 | gb_broadcast_session_closure | 修复 | ✅已完成 | [2026-03/202603201544_gb_broadcast_session_closure](2026-03/202603201544_gb_broadcast_session_closure/) |
 | 202603201516 | issue33_gb_broadcast | 修复 | ✅已完成 | [2026-03/202603201516_issue33_gb_broadcast](2026-03/202603201516_issue33_gb_broadcast/) |
 | 202603201130 | issue32_gb_control_config | 修复 | ✅已完成 | [2026-03/202603201130_issue32_gb_control_config](2026-03/202603201130_issue32_gb_control_config/) |
@@ -15,6 +16,7 @@
 
 ### 2026-03
 
+- [202603201618_issue33_broadcast_notify_fields](2026-03/202603201618_issue33_broadcast_notify_fields/) - 修复广播通知响应中的 `SN/DeviceID` 字段丢失，避免平台继续判失败
 - [202603201544_gb_broadcast_session_closure](2026-03/202603201544_gb_broadcast_session_closure/) - 补齐 GB 广播通知会话管理、真实应答地址和 BYE 清理复位
 - [202603201516_issue33_gb_broadcast](2026-03/202603201516_issue33_gb_broadcast/) - 修复 GB 广播通知重复 SIP 应答导致平台侧判定设备未响应
 - [202603201130_issue32_gb_control_config](2026-03/202603201130_issue32_gb_control_config/) - 补齐 GB 远程重启冷却保护与画面翻转配置主链路

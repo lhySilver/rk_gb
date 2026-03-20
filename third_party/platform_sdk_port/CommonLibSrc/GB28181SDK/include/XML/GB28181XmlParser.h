@@ -199,7 +199,7 @@ public:
     bool UnPackDeviceRecordIndexResponse(const std::string &xml_str,  int& sn, int& sum,   RecordIndex* index);
 
 
-	bool UnPackBroadcastNotify(const std::string &xml_str, std::string code, BroadcastInfo& meida_status);
+	bool UnPackBroadcastNotify(const std::string &xml_str, int& sn, std::string& code, BroadcastInfo& meida_status);
 	bool UnPackTeleBootControl(const std::string &xml_str, int& sn , DevControlCmd& cmd);
 	bool UnPackConfigControl(const std::string &xml_str, int& sn , DevControlCmd& cmd);
 

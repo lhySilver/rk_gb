@@ -4683,11 +4683,14 @@ int ProtocolManager::HandleGbBroadcastNotify(const char* gbCode, const Broadcast
     const std::string targetId = SafeStr(info->TargetID, sizeof(info->TargetID));
 
     const std::string deviceId = m_cfg.gb_register.device_id;
+    const std::string resolvedGbCode = (gbCode != NULL && gbCode[0] != '\0')
+                                           ? gbCode
+                                           : (!targetId.empty() ? targetId : deviceId);
 
     if (!targetId.empty() && !deviceId.empty() && targetId != deviceId) {
 
         printf("[ProtocolManager] gb broadcast notify rejected gb=%s source=%s target=%s local_device=%s\n",
-               gbCode != NULL ? gbCode : "",
+               resolvedGbCode.c_str(),
                sourceId.c_str(),
                targetId.c_str(),
                deviceId.c_str());
@@ -4700,7 +4703,7 @@ int ProtocolManager::HandleGbBroadcastNotify(const char* gbCode, const Broadcast
 
     std::lock_guard<std::mutex> lock(m_gb_broadcast_mutex);
 
-    m_gb_broadcast_session.gb_code = (gbCode != NULL) ? gbCode : "";
+    m_gb_broadcast_session.gb_code = resolvedGbCode;
 
     m_gb_broadcast_session.source_id = sourceId;
 

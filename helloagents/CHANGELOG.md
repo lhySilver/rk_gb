@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 reopened 的 GB28181 广播通知响应字段错误问题：`Broadcast Notify` 解析改为回填原始 `SN`，并使用 `TargetID` 作为响应 `DeviceID`/会话 `gb_code`，避免平台因收到 `SN=0`、空设备编号的广播响应而继续判定失败。
 - 补齐 GB28181 广播业务会话闭环：广播通知接入 `ProtocolManager` 管理、音频广播 `200 OK` 优先返回设备实际可达 IP、收到 `BYE` 后自动清理并恢复广播桥待机接收状态。
 - 修复 GB28181 广播通知 `MESSAGE` 在 `OnNotify()` 中被重复应答的问题，改为单次返回携带 XML 的最终响应，并保留 `400/403` 失败语义与诊断日志。
 - 修复 GB28181 配置仅停留在代码默认值的问题，新增 `/userdata/conf/Config/gb28181.ini` 本地配置落盘、缺省自动生成和开关控制能力。
