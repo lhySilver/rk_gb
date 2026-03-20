@@ -1,6 +1,7 @@
 .vscode
 packaging-RV1103_DUAL_IPC/
 packaging-RV1106_DUAL_IPC/
+helloagents/
 # Prerequisites
 #*.d
 
@@ -33,5 +34,4 @@ packaging-RV1106_DUAL_IPC/
 #*.exe
 #*.out
 #*.app
-
 
