@@ -4,6 +4,8 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603201728 | issue33_broadcast_active_invite_sdp | 修复 | ✅已完成 | [2026-03/202603201728_issue33_broadcast_active_invite_sdp](2026-03/202603201728_issue33_broadcast_active_invite_sdp/) |
+| 202603201705 | gb28181_2022_baseline | 知识库 | ✅已完成 | [2026-03/202603201705_gb28181_2022_baseline](2026-03/202603201705_gb28181_2022_baseline/) |
 | 202603201644 | gb_broadcast_2022_alignment | 方案/实现 | ✅已完成 | [2026-03/202603201644_gb_broadcast_2022_alignment](2026-03/202603201644_gb_broadcast_2022_alignment/) |
 | 202603201618 | issue33_broadcast_notify_fields | 修复 | ✅已完成 | [2026-03/202603201618_issue33_broadcast_notify_fields](2026-03/202603201618_issue33_broadcast_notify_fields/) |
 | 202603201544 | gb_broadcast_session_closure | 修复 | ✅已完成 | [2026-03/202603201544_gb_broadcast_session_closure](2026-03/202603201544_gb_broadcast_session_closure/) |
@@ -17,6 +19,8 @@
 
 ### 2026-03
 
+- [202603201728_issue33_broadcast_active_invite_sdp](2026-03/202603201728_issue33_broadcast_active_invite_sdp/) - 修复广播主动 INVITE 收到有效 200 OK 后仍被误判为 SDP 解析失败的问题
+- [202603201705_gb28181_2022_baseline](2026-03/202603201705_gb28181_2022_baseline/) - 新增 GB/T 28181-2022 调试基线知识库，统一注册、保活、流媒体、广播和校时的排查口径
 - [202603201644_gb_broadcast_2022_alignment](2026-03/202603201644_gb_broadcast_2022_alignment/) - 按 GB/T 28181-2022 第 9.12 节重构广播通知、业务应答和设备主动建链流程
 - [202603201618_issue33_broadcast_notify_fields](2026-03/202603201618_issue33_broadcast_notify_fields/) - 修复广播通知响应中的 `SN/DeviceID` 字段丢失，避免平台继续判失败
 - [202603201544_gb_broadcast_session_closure](2026-03/202603201544_gb_broadcast_session_closure/) - 补齐 GB 广播通知会话管理、真实应答地址和 BYE 清理复位

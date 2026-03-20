@@ -4844,11 +4844,32 @@ int ProtocolManager::HandleGbBroadcastNotifyResponse(const char* gbCode, const B
     std::string codec;
     if (!ExtractAudioTransportHint(&answer, remoteIp, remotePort, payloadType, codec)) {
 
-        printf("[ProtocolManager] gb broadcast active invite parse answer failed gb=%s handle=%p\n",
+        const char* mime = "";
+        int mediaFormat = -1;
+        unsigned int sampleRate = 0;
+        if (answer.RtpDescri.mapDescri != NULL && answer.RtpDescri.DescriNum > 0) {
+            mime = answer.RtpDescri.mapDescri[0].MimeType;
+            mediaFormat = (int)answer.RtpDescri.mapDescri[0].MediaFormat;
+            sampleRate = answer.RtpDescri.mapDescri[0].SampleRate;
+        }
+
+        printf("[ProtocolManager] gb broadcast active invite parse answer failed gb=%s handle=%p ip=%s port=%u transport=%s desc_num=%u mime=%s pt=%d rate=%u\n",
                resolvedGbCode.c_str(),
-               handle);
+               handle,
+               answer.IP,
+               answer.Port,
+               GbNetTransportName(answer.RtpType),
+               answer.RtpDescri.DescriNum,
+               mime,
+               mediaFormat,
+               sampleRate);
 
         sdk->StopStreamRequest(handle);
+        if (answer.RtpDescri.mapDescri != NULL) {
+            free(answer.RtpDescri.mapDescri);
+            answer.RtpDescri.mapDescri = NULL;
+            answer.RtpDescri.DescriNum = 0;
+        }
         return -75;
 
     }
@@ -4865,6 +4886,11 @@ int ProtocolManager::HandleGbBroadcastNotifyResponse(const char* gbCode, const B
                handle);
 
         sdk->StopStreamRequest(handle);
+        if (answer.RtpDescri.mapDescri != NULL) {
+            free(answer.RtpDescri.mapDescri);
+            answer.RtpDescri.mapDescri = NULL;
+            answer.RtpDescri.DescriNum = 0;
+        }
         return -76;
 
     }
@@ -4902,6 +4928,12 @@ int ProtocolManager::HandleGbBroadcastNotifyResponse(const char* gbCode, const B
            codec.c_str(),
            payloadType,
            GbNetTransportName(answer.RtpType));
+
+    if (answer.RtpDescri.mapDescri != NULL) {
+        free(answer.RtpDescri.mapDescri);
+        answer.RtpDescri.mapDescri = NULL;
+        answer.RtpDescri.DescriNum = 0;
+    }
 
     return 0;
 #endif

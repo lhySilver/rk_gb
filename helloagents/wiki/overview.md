@@ -16,10 +16,12 @@
 | ProtocolManager | 协议编排、配置与会话生命周期 | 稳定 | [modules/protocol.md](modules/protocol.md) |
 | GB28181 SDK Port | 对接第三方 GB/SIP SDK 与平台差异适配 | 稳定 | [modules/protocol.md](modules/protocol.md) |
 | GAT1400 Client | 1400 注册、保活、接口交互 | 开发中 | [modules/protocol.md](modules/protocol.md) |
+| GB/T 28181-2022 Baseline | 标准流程摘要、调试检查项与工程落点 | 稳定 | [modules/gb28181-2022-baseline.md](modules/gb28181-2022-baseline.md) |
 
 ## 3. 快速链接
 - [技术约定](../project.md)
 - [架构设计](arch.md)
 - [API 手册](api.md)
 - [数据模型](data.md)
+- [GB/T 28181-2022 调试基线](modules/gb28181-2022-baseline.md)
 - [变更历史](../history/index.md)

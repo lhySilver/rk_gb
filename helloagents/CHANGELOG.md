@@ -4,7 +4,11 @@
 
 ## [Unreleased]
 
+### 新增
+- 新增 `GB/T 28181-2022` 调试基线知识库，整理注册、保活、实时流、回放、下载、校时、广播等关键流程，并回链到 `Protocol` 模块文档和项目技术约定。
+
 ### 修复
+- 修复 GB 广播主动 `INVITE` 的 `200 OK` SDP 被误判为解析失败的问题：补齐 `String2MediaInfo()` 对 `m=` payload、`a=rtpmap` 和音视频类型的回填，避免设备在收到有效应答后立即 `BYE`。
 - 按 GB/T 28181-2022 第 9.12 节调整广播链路：广播 `Notify` 先返回纯 SIP `200 OK`，再独立发送 `Broadcast` 应答 `MESSAGE`，随后由设备侧主动发起音频 `INVITE` 建链，并把平台 `200 OK` 中的音频参数应用到广播桥。
 - 修复 reopened 的 GB28181 广播通知响应字段错误问题：`Broadcast Notify` 解析改为回填原始 `SN`，并使用 `TargetID` 作为响应 `DeviceID`/会话 `gb_code`，避免平台因收到 `SN=0`、空设备编号的广播响应而继续判定失败。
 - 补齐 GB28181 广播业务会话闭环：广播通知接入 `ProtocolManager` 管理、音频广播 `200 OK` 优先返回设备实际可达 IP、收到 `BYE` 后自动清理并恢复广播桥待机接收状态。

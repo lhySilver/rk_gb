@@ -13,6 +13,11 @@
 - GB `RecordInfo` 查询与本地录像检索结果映射。
 - 1400 注册、保活与基础能力补齐。
 
+## 标准依据
+- `GB/T 28181-2022` 的项目内调试基线见 [`gb28181-2022-baseline.md`](gb28181-2022-baseline.md)。
+- 涉及注册、保活、实时流、回放、下载、广播、校时等流程时，优先以该基线文档中的章节和抓包检查项为准，再回看实现细节。
+- 当前工程的关键落点集中在 `ProtocolManager`、`GBClientImpl`、`GB28181ClientReceiverAdapter`、`GB28181RtpPsSender` 和 `GB28181BroadcastBridge`。
+
 ## 注意事项
 - `LocalConfigProvider` 现在会优先读取 `/userdata/conf/Config/gb28181.ini`；文件不存在时使用代码默认值并自动生成。
 - `gb28181.ini` 现已支持 `image_flip_mode`，取值会映射到设备主配置 `CFG_CAMERA_PARAM.rotateAttr`，由 Camera/Alarm 既有回调统一生效。
@@ -24,6 +29,9 @@
 - GB 广播 `notify -> invite -> ack/bye` 现在有独立会话状态；`notify` 会校验 `TargetID` 是否匹配本机，`INVITE` 的音频 `200 OK` 会优先返回设备侧可达 IP，`BYE` 后会清理播音状态并把广播桥恢复到待机接收态。
 - TCP 实时流要区分 `setup:active` 与 `setup:passive` 方向。
 - SIP `INVITE` 应答不要被同步媒体建链阻塞。
+- 对于 `MESSAGE` 类命令，要先区分“本事务立即返回纯 SIP `200 OK`”和“后续独立发送业务应答 `MESSAGE`”两层语义，不能混用。
+- `Keepalive`、控制类应答、查询类应答、报警/目录通知确认都需要分别核对 `MESSAGE/200 OK` 与 XML 业务体的对应关系。
+- 广播主动 `INVITE` 的 `200 OK` 若已收到却立刻出现 `parse answer failed` / `BYE`，先检查 SDP 解析结果里是否真正回填了 `payload/rtpmap`，不要只看 `IP/Port`。
 - GB 回放音频不能按原始 PCM 直接塞给 RTP PS；应与实时流保持一致，按 SDP/`gb.live.audio_codec` 输出 `G711A` 或 `G711U`。
 - GB 回放/下载回调需要带 session 身份；否则旧存储线程收尾时的 EOS 可能误伤新回放 session，表现为 ACK 已到但媒体立即 `eos video=0 audio=0`。
 - GB 回放依赖 MP4 demux 连续读到有效 ES；对“packet 已读到但当前未产出有效音视频载荷”的场景不能直接当 EOF，否则会在首包前提前结束回放。

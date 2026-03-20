@@ -2,6 +2,7 @@
 #include "gbutil.h"
 #include "SdpMessage.h"
 #include <stdlib.h>
+#include <string.h>
 #include <string>
 
 static StreamRequestType  String2Enum( const std::string& str   )
@@ -72,6 +73,80 @@ static std::string StripGbSdpExtensions(const char* str, std::string* ssrc)
       return normalized;
 }
 
+static bool ParseRtpmapValue(const std::string& value,
+                             unsigned int* payload,
+                             char* mime,
+                             size_t mime_size,
+                             unsigned int* sample_rate)
+{
+    if (payload == NULL || mime == NULL || mime_size == 0 || sample_rate == NULL) {
+        return false;
+    }
+
+    *payload = 0;
+    *sample_rate = 0;
+    mime[0] = '\0';
+
+    unsigned int parsed_payload = 0;
+    char encoding[128] = {0};
+    if (sscanf(value.c_str(), "%u %127s", &parsed_payload, encoding) != 2) {
+        return false;
+    }
+
+    char* slash = strchr(encoding, '/');
+    if (slash == NULL) {
+        return false;
+    }
+
+    *slash = '\0';
+    ++slash;
+    if (*slash == '\0') {
+        return false;
+    }
+
+    const unsigned int parsed_rate = (unsigned int)atoi(slash);
+    if (parsed_rate == 0) {
+        return false;
+    }
+
+    GBUtil::memcpy_safe(mime, mime_size, encoding);
+    *payload = parsed_payload;
+    *sample_rate = parsed_rate;
+    return true;
+}
+
+static void FillDefaultPayloadInfo(const std::string& media_type,
+                                   unsigned int payload,
+                                   RtpMap* map)
+{
+    if (map == NULL) {
+        return;
+    }
+
+    if (payload == 0) {
+        GBUtil::memcpy_safe(map->MimeType, sizeof(map->MimeType), "PCMU");
+        map->SampleRate = 8000;
+        return;
+    }
+
+    if (payload == 8) {
+        GBUtil::memcpy_safe(map->MimeType, sizeof(map->MimeType), "PCMA");
+        map->SampleRate = 8000;
+        return;
+    }
+
+    if (media_type == "video") {
+        GBUtil::memcpy_safe(map->MimeType, sizeof(map->MimeType), "PS");
+        map->SampleRate = 90000;
+        return;
+    }
+
+    if (media_type == "audio") {
+        GBUtil::memcpy_safe(map->MimeType, sizeof(map->MimeType), "PCMA");
+        map->SampleRate = 8000;
+    }
+}
+
 CSdpUtil::CSdpUtil()
 {
 
@@ -132,6 +207,48 @@ bool CSdpUtil::String2MediaInfo(const char* str, MediaInfo* output )
 
     output->Port = media.GetPort();
 
+    const int payload_count = media.GetPayloadCount();
+    if (payload_count > 0) {
+         output->RtpDescri.mapDescri = (RtpMap*)calloc((size_t)payload_count, sizeof(RtpMap));
+         if (output->RtpDescri.mapDescri == NULL) {
+              return false;
+         }
+
+         output->RtpDescri.DescriNum = (unsigned int)payload_count;
+         for (int i = 0; i < payload_count; ++i) {
+              RtpMap& map = output->RtpDescri.mapDescri[i];
+              const std::string payload_value = media.GetPayload(i);
+              map.MediaFormat = (unsigned int)atoi(payload_value.c_str());
+              FillDefaultPayloadInfo(media.GetType(), map.MediaFormat, &map);
+         }
+
+         const int attr_count = media.GetAttrCount();
+         for (int i = 0; i < attr_count; ++i) {
+              CSdpAttribute& attr = media.GetAttribute(i);
+              if (attr.Invalid() || attr.GetField() != "rtpmap") {
+                   continue;
+              }
+
+              unsigned int payload = 0;
+              unsigned int sample_rate = 0;
+              char mime[CODE_LEN] = {0};
+              if (!ParseRtpmapValue(attr.GetValue(), &payload, mime, sizeof(mime), &sample_rate)) {
+                   continue;
+              }
+
+              for (unsigned int j = 0; j < output->RtpDescri.DescriNum; ++j) {
+                   RtpMap& map = output->RtpDescri.mapDescri[j];
+                   if (map.MediaFormat != payload) {
+                        continue;
+                   }
+
+                   GBUtil::memcpy_safe(map.MimeType, sizeof(map.MimeType), mime);
+                   map.SampleRate = sample_rate;
+                   break;
+              }
+         }
+    }
+
     std::string streamnumber = media.GetAttrValue("streamnumber");
     if (!streamnumber.empty()) {
          output->StreamNum = atoi(streamnumber.c_str());
@@ -156,7 +273,7 @@ bool CSdpUtil::String2MediaInfo(const char* str, MediaInfo* output )
          output->RtpType  = kRtpOverUdp;
     }
 
-    if(  media.GetType().compare("video")!= 0) {
+    if(  media.GetType().compare("video") == 0) {
          output->RtpDescri.type = kGBVideo;
     }else{
          output->RtpDescri.type = kGBAudio;
