@@ -6,6 +6,7 @@
 - 统一输出协议日志与错误信息。
 
 ## 当前重点
+- GB28181 本地配置文件读取、缺省值落盘和开关控制。
 - GB 注册与鉴权稳定性。
 - GB 注册成功后的时间同步与设备本地时间持久化。
 - GB 实时流在 UDP/TCP 模式下的媒体协商兼容性。
@@ -13,6 +14,8 @@
 - 1400 注册、保活与基础能力补齐。
 
 ## 注意事项
+- `LocalConfigProvider` 现在会优先读取 `/userdata/conf/Config/gb28181.ini`；文件不存在时使用代码默认值并自动生成。
+- `gb_register.enabled` 为 `0` 时，`ProtocolManager` 会跳过 GB client 生命周期启动与重注册，但 GAT1400 相关配置校验和生命周期不受影响。
 - TCP 实时流要区分 `setup:active` 与 `setup:passive` 方向。
 - SIP `INVITE` 应答不要被同步媒体建链阻塞。
 - GB 回放音频不能按原始 PCM 直接塞给 RTP PS；应与实时流保持一致，按 SDP/`gb.live.audio_codec` 输出 `G711A` 或 `G711U`。

@@ -5,6 +5,30 @@
 
 ## 关键结构
 
+### ProtocolExternalConfig.gb_register
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| `enabled` | int | GB28181 总开关，`0` 为禁用，`1` 为启用 |
+| `server_ip` | string | GB 平台 SIP 接入地址 |
+| `server_port` | int | GB 平台 SIP 接入端口 |
+| `device_id` | string | 设备国标编码 |
+| `username` | string | 注册用户名/接入编码 |
+| `password` | string | 注册密码 |
+
+### gb28181.ini
+
+| 键名 | 说明 |
+|------|------|
+| `enable` | GB28181 开关 |
+| `username` | 接入编码 |
+| `server_ip` | 接入 IP |
+| `server_port` | 接入端口 |
+| `device_id` | 设备编码 |
+| `password` | 设备密码 |
+
+默认路径: `/userdata/conf/Config/gb28181.ini`
+
 ### MediaInfo
 
 | 字段名 | 类型 | 说明 |

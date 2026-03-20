@@ -2305,6 +2305,7 @@ static std::string BuildConfigDiffSummary(const protocol::ProtocolExternalConfig
     std::string diff;
 
     AppendConfigDiff(diff, "version", before.version, after.version);
+    AppendConfigDiff(diff, "gb.register.enabled", before.gb_register.enabled, after.gb_register.enabled);
 
     AppendConfigDiff(diff, "gb.register.server_ip", before.gb_register.server_ip, after.gb_register.server_ip);
 
@@ -3136,21 +3137,24 @@ int ProtocolManager::Start()
     }
 
 
+    if (m_cfg.gb_register.enabled != 0) {
+        ret = StartGbClientLifecycle();
 
-    ret = StartGbClientLifecycle();
+        if (ret != 0) {
 
-    if (ret != 0) {
+            printf("[ProtocolManager] start gb client lifecycle failed: %d\n", ret);
 
-        printf("[ProtocolManager] start gb client lifecycle failed: %d\n", ret);
+            m_listen.StopSession();
 
-        m_listen.StopSession();
+            m_broadcast.StopSession();
 
-        m_broadcast.StopSession();
+            m_rtp_ps_sender.CloseSession();
 
-        m_rtp_ps_sender.CloseSession();
+            return ret;
 
-        return ret;
-
+        }
+    } else {
+        printf("[ProtocolManager] skip gb client lifecycle because config disabled\n");
     }
 
     if (m_gat_client.get() != NULL) {
@@ -3289,6 +3293,18 @@ int ProtocolManager::ReloadExternalConfig()
                                (m_cfg.gb_listen.codec != latest.gb_listen.codec) ||
 
                                (m_cfg.gb_listen.packet_ms != latest.gb_listen.packet_ms);
+
+    const bool reloadGbLifecycle = (m_cfg.gb_register.enabled != latest.gb_register.enabled) ||
+
+                                   (m_cfg.gb_register.server_ip != latest.gb_register.server_ip) ||
+
+                                   (m_cfg.gb_register.server_port != latest.gb_register.server_port) ||
+
+                                   (m_cfg.gb_register.device_id != latest.gb_register.device_id) ||
+
+                                   (m_cfg.gb_register.username != latest.gb_register.username) ||
+
+                                   (m_cfg.gb_register.password != latest.gb_register.password);
 
     const bool applyMediaConfig = (m_cfg.gb_video.main_codec != latest.gb_video.main_codec) ||
 
@@ -3455,24 +3471,51 @@ int ProtocolManager::ReloadExternalConfig()
 
         }
 
+        if (reloadGbLifecycle) {
+            StopGbClientLifecycle();
+            if (m_cfg.gb_register.enabled != 0) {
+                const int regRet = StartGbClientLifecycle();
 
+                if (regRet != 0) {
 
-        const int regRet = RegisterGbClient(true);
+                    printf("[ProtocolManager] module=config event=config_apply_fail trace=manager error=%d stage=gb_restart version=%s\n",
 
-        if (regRet != 0) {
+                           regRet,
 
-            printf("[ProtocolManager] module=config event=config_apply_fail trace=manager error=%d stage=gb_reregister version=%s\n",
+                           m_cfg.version.c_str());
 
-                   regRet,
+                    return regRet;
 
-                   m_cfg.version.c_str());
+                }
 
+                printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_restart version=%s\n",
+
+                       m_cfg.version.c_str());
+            } else {
+                printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_disable version=%s\n",
+                       m_cfg.version.c_str());
+            }
+        } else if (m_cfg.gb_register.enabled != 0) {
+            const int regRet = RegisterGbClient(true);
+
+            if (regRet != 0) {
+
+                printf("[ProtocolManager] module=config event=config_apply_fail trace=manager error=%d stage=gb_reregister version=%s\n",
+
+                       regRet,
+
+                       m_cfg.version.c_str());
+
+            } else {
+
+                printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_reregister version=%s\n",
+
+                       m_cfg.version.c_str());
+
+            }
         } else {
-
-            printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_reregister version=%s\n",
-
+            printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=gb_skip version=%s\n",
                    m_cfg.version.c_str());
-
         }
 
         if (reloadGat && m_gat_client.get() != NULL) {
@@ -3512,6 +3555,11 @@ int ProtocolManager::StartGbClientLifecycle()
 {
 
 #if PROTOCOL_HAS_GB28181_CLIENT_SDK
+
+    if (m_cfg.gb_register.enabled == 0) {
+        printf("[ProtocolManager] gb client lifecycle disabled by config\n");
+        return 0;
+    }
 
     {
 
@@ -3742,6 +3790,14 @@ int ProtocolManager::RegisterGbClient(bool force)
 #if PROTOCOL_HAS_GB28181_CLIENT_SDK
 
     std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
+
+    if (m_cfg.gb_register.enabled == 0) {
+        printf("[ProtocolManager] gb register skipped because config disabled\n");
+        m_gb_client_registered = false;
+        m_gb_register_success_ms = 0;
+        m_gb_register_expires_sec = 0;
+        return 0;
+    }
 
     if (m_gb_client_sdk == NULL || !m_gb_client_started) {
 

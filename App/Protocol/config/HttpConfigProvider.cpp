@@ -412,6 +412,7 @@ void HttpConfigProvider::InitDefaultConfig()
 {
     m_cached_cfg.version = "v1-default";
 
+    m_cached_cfg.gb_register.enabled = 1;
     m_cached_cfg.gb_register.server_ip = "183.252.186.165";
     m_cached_cfg.gb_register.server_port = 15566;
     m_cached_cfg.gb_register.device_id = "35010101001320124879";
@@ -493,6 +494,8 @@ std::string HttpConfigProvider::ToMinimalJson(const ProtocolExternalConfig& cfg)
     std::string json = "{";
 
     json += "\"version\":\"" + cfg.version + "\",";
+    snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.enabled);
+    json += "\"gb_register_enabled\":" + std::string(tmp) + ",";
     json += "\"gb_register_server_ip\":\"" + cfg.gb_register.server_ip + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.server_port);
     json += "\"gb_register_server_port\":" + std::string(tmp) + ",";
@@ -621,6 +624,9 @@ int HttpConfigProvider::PullLatest(ProtocolExternalConfig& out)
         next.version = value;
     }
 
+    if (FindIntField(body, "gb_register_enabled", ivalue)) {
+        next.gb_register.enabled = (ivalue != 0) ? 1 : 0;
+    }
     if (FindStringField(body, "gb_register_server_ip", value)) {
         next.gb_register.server_ip = value;
     }
@@ -855,54 +861,56 @@ int HttpConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
 
 int HttpConfigProvider::Validate(const ProtocolExternalConfig& cfg)
 {
-    if (cfg.gb_register.server_ip.empty() || cfg.gb_register.server_port <= 0) {
-        LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
-        return -1;
-    }
+    if (cfg.gb_register.enabled != 0) {
+        if (cfg.gb_register.server_ip.empty() || cfg.gb_register.server_port <= 0) {
+            LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
+            return -1;
+        }
 
-    if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
-        LogConfigValidateFail(cfg, -2, "gb_live_transport");
-        return -2;
-    }
+        if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
+            LogConfigValidateFail(cfg, -2, "gb_live_transport");
+            return -2;
+        }
 
-    if (cfg.gb_live.target_ip.empty() || cfg.gb_live.target_port <= 0) {
-        LogConfigValidateFail(cfg, -3, "gb_live_target");
-        return -3;
-    }
+        if (cfg.gb_live.target_ip.empty() || cfg.gb_live.target_port <= 0) {
+            LogConfigValidateFail(cfg, -3, "gb_live_target");
+            return -3;
+        }
 
-    if (cfg.gb_live.video_codec.empty()) {
-        LogConfigValidateFail(cfg, -4, "gb_live_video_codec");
-        return -4;
-    }
+        if (cfg.gb_live.video_codec.empty()) {
+            LogConfigValidateFail(cfg, -4, "gb_live_video_codec");
+            return -4;
+        }
 
-    if (cfg.gb_live.mtu < 256 || cfg.gb_live.mtu > 1500) {
-        LogConfigValidateFail(cfg, -5, "gb_live_mtu");
-        return -5;
-    }
+        if (cfg.gb_live.mtu < 256 || cfg.gb_live.mtu > 1500) {
+            LogConfigValidateFail(cfg, -5, "gb_live_mtu");
+            return -5;
+        }
 
-    if (cfg.gb_live.payload_type < 0 || cfg.gb_live.payload_type > 127) {
-        LogConfigValidateFail(cfg, -6, "gb_live_payload_type");
-        return -6;
-    }
+        if (cfg.gb_live.payload_type < 0 || cfg.gb_live.payload_type > 127) {
+            LogConfigValidateFail(cfg, -6, "gb_live_payload_type");
+            return -6;
+        }
 
-    if (cfg.gb_video.main_codec.empty() || cfg.gb_video.sub_codec.empty()) {
-        LogConfigValidateFail(cfg, -16, "gb_video_codec");
-        return -16;
-    }
+        if (cfg.gb_video.main_codec.empty() || cfg.gb_video.sub_codec.empty()) {
+            LogConfigValidateFail(cfg, -16, "gb_video_codec");
+            return -16;
+        }
 
-    if (cfg.gb_video.main_resolution.empty() || cfg.gb_video.sub_resolution.empty()) {
-        LogConfigValidateFail(cfg, -17, "gb_video_resolution");
-        return -17;
-    }
+        if (cfg.gb_video.main_resolution.empty() || cfg.gb_video.sub_resolution.empty()) {
+            LogConfigValidateFail(cfg, -17, "gb_video_resolution");
+            return -17;
+        }
 
-    if (cfg.gb_video.main_fps <= 0 || cfg.gb_video.sub_fps <= 0) {
-        LogConfigValidateFail(cfg, -18, "gb_video_fps");
-        return -18;
-    }
+        if (cfg.gb_video.main_fps <= 0 || cfg.gb_video.sub_fps <= 0) {
+            LogConfigValidateFail(cfg, -18, "gb_video_fps");
+            return -18;
+        }
 
-    if (cfg.gb_video.main_bitrate_kbps <= 0 || cfg.gb_video.sub_bitrate_kbps <= 0) {
-        LogConfigValidateFail(cfg, -19, "gb_video_bitrate");
-        return -19;
+        if (cfg.gb_video.main_bitrate_kbps <= 0 || cfg.gb_video.sub_bitrate_kbps <= 0) {
+            LogConfigValidateFail(cfg, -19, "gb_video_bitrate");
+            return -19;
+        }
     }
 
     if (cfg.gat_register.server_ip.empty() || cfg.gat_register.server_port <= 0) {

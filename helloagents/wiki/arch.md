@@ -36,4 +36,5 @@ sequenceDiagram
 
 | adr_id | title | date | status | affected_modules | details |
 |--------|-------|------|--------|------------------|---------|
+| ADR-20260320-issue31 | GB28181 接入参数改为本地文件优先并支持禁用开关 | 2026-03-20 | ✅已采纳 | LocalConfigProvider, HttpConfigProvider, ProtocolManager | [history/2026-03/202603201017_issue31_gb_local_config/how.md](../history/2026-03/202603201017_issue31_gb_local_config/how.md) |
 | ADR-20260316-issue27 | GB 实时流 TCP 协商在 ACK 后再建立媒体连接 | 2026-03-16 | ✅已采纳 | ProtocolManager, GB28181RtpPsSender | [history/2026-03/202603161102_issue27_gb_live_tcp/how.md](../history/2026-03/202603161102_issue27_gb_live_tcp/how.md) |

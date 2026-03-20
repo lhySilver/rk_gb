@@ -9,6 +9,7 @@ namespace protocol
 
 struct GbRegisterParam
 {
+    int enabled;
     std::string server_ip;
     int server_port;
     std::string device_id;
@@ -17,7 +18,7 @@ struct GbRegisterParam
     std::string password;
     int expires_sec;
 
-    GbRegisterParam() : server_port(0), device_name("IPC"), expires_sec(3600) {}
+    GbRegisterParam() : enabled(1), server_port(0), device_name("IPC"), expires_sec(3600) {}
 };
 
 struct GbKeepaliveParam
