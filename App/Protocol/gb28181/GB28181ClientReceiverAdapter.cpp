@@ -71,6 +71,29 @@ bool GB28181ClientReceiverAdapter::OnNotify(NotifyType type, const char* gb_code
     return (m_manager->HandleGbBroadcastNotify(gb_code, broadcastInfo) == 0);
 }
 
+bool GB28181ClientReceiverAdapter::OnBroadcastResponse(const char* gb_code, void* info, bool ok)
+{
+    const BroadcastInfo* broadcastInfo = (const BroadcastInfo*)info;
+    const std::string sourceId = (broadcastInfo != NULL)
+                                     ? SafeStr(broadcastInfo->SourceID, sizeof(broadcastInfo->SourceID))
+                                     : "";
+    const std::string targetId = (broadcastInfo != NULL)
+                                     ? SafeStr(broadcastInfo->TargetID, sizeof(broadcastInfo->TargetID))
+                                     : "";
+
+    printf("[GB28181][ReceiverAdapter] notify broadcast response gb=%s source=%s target=%s ok=%d\n",
+           gb_code != NULL ? gb_code : "",
+           sourceId.c_str(),
+           targetId.c_str(),
+           ok ? 1 : 0);
+
+    if (m_manager == NULL || broadcastInfo == NULL) {
+        return false;
+    }
+
+    return (m_manager->HandleGbBroadcastNotifyResponse(gb_code, broadcastInfo, ok) == 0);
+}
+
 
 bool GB28181ClientReceiverAdapter::OnQuery(ResponseHandle handle, const QueryParam* param)
 {

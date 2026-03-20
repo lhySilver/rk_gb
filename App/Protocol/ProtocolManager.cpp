@@ -4724,6 +4724,190 @@ int ProtocolManager::HandleGbBroadcastNotify(const char* gbCode, const Broadcast
 
 }
 
+int ProtocolManager::HandleGbBroadcastNotifyResponse(const char* gbCode, const BroadcastInfo* info, bool ok)
+
+{
+
+#if !PROTOCOL_HAS_GB28181_CLIENT_SDK
+    (void)gbCode;
+    (void)info;
+    (void)ok;
+    return -1;
+#else
+    if (!ok || info == NULL) {
+
+        printf("[ProtocolManager] gb broadcast notify response unavailable gb=%s ok=%d\n",
+               gbCode != NULL ? gbCode : "",
+               ok ? 1 : 0);
+
+        return -70;
+
+    }
+
+
+    const std::string sourceId = SafeStr(info->SourceID, sizeof(info->SourceID));
+
+    const std::string targetId = SafeStr(info->TargetID, sizeof(info->TargetID));
+
+    const std::string deviceId = m_cfg.gb_register.device_id;
+    const std::string resolvedGbCode = (gbCode != NULL && gbCode[0] != '\0')
+                                           ? gbCode
+                                           : (!targetId.empty() ? targetId : deviceId);
+
+
+    GB28181ClientSDK* sdk = NULL;
+    {
+        std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
+        sdk = m_gb_client_sdk;
+    }
+
+    if (sdk == NULL) {
+
+        printf("[ProtocolManager] gb broadcast active invite skipped no sdk gb=%s source=%s target=%s\n",
+               resolvedGbCode.c_str(),
+               sourceId.c_str(),
+               targetId.c_str());
+
+        return -71;
+
+    }
+
+
+    std::string localIp;
+    if (!ResolveGbResponseLocalIp(m_cfg.gb_register.server_ip, m_cfg.gb_register.server_port, localIp)) {
+        std::lock_guard<std::mutex> lock(m_gb_broadcast_mutex);
+        localIp = m_gb_broadcast_session.local_ip;
+    }
+
+    if (localIp.empty()) {
+
+        printf("[ProtocolManager] gb broadcast active invite local ip unavailable server=%s:%d gb=%s\n",
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port,
+               resolvedGbCode.c_str());
+
+        return -72;
+
+    }
+
+
+    RtpMap requestMap;
+    MediaInfo request;
+    memset(&requestMap, 0, sizeof(requestMap));
+    memset(&request, 0, sizeof(request));
+
+    int ret = BuildGbBroadcastMediaInfo(localIp, resolvedGbCode, request, requestMap);
+    if (ret != 0) {
+
+        printf("[ProtocolManager] gb broadcast active invite build request failed ret=%d gb=%s\n",
+               ret,
+               resolvedGbCode.c_str());
+
+        return -73;
+
+    }
+
+    request.StreamNum = 0;
+
+
+    MediaInfo answer;
+    memset(&answer, 0, sizeof(answer));
+
+    StreamHandle handle = NULL;
+    printf("[ProtocolManager] gb broadcast active invite start gb=%s source=%s target=%s transport=%s local=%s:%u codec=%s pt=%u\n",
+           resolvedGbCode.c_str(),
+           sourceId.c_str(),
+           targetId.c_str(),
+           GbNetTransportName(request.RtpType),
+           request.IP,
+           request.Port,
+           requestMap.MimeType,
+           requestMap.MediaFormat);
+
+    ret = sdk->StartLiveStreamRequest(&request, &answer, &handle);
+    if (!IsGbSdkSuccess(ret) || handle == NULL) {
+
+        printf("[ProtocolManager] gb broadcast active invite failed ret=%d gb=%s source=%s target=%s\n",
+               ret,
+               resolvedGbCode.c_str(),
+               sourceId.c_str(),
+               targetId.c_str());
+
+        return -74;
+
+    }
+
+
+    std::string remoteIp;
+    int remotePort = 0;
+    int payloadType = -1;
+    std::string codec;
+    if (!ExtractAudioTransportHint(&answer, remoteIp, remotePort, payloadType, codec)) {
+
+        printf("[ProtocolManager] gb broadcast active invite parse answer failed gb=%s handle=%p\n",
+               resolvedGbCode.c_str(),
+               handle);
+
+        sdk->StopStreamRequest(handle);
+        return -75;
+
+    }
+
+
+    ret = ApplyGbBroadcastTransportHint(remoteIp, remotePort, payloadType, codec, answer.RtpType);
+    if (ret != 0) {
+
+        printf("[ProtocolManager] gb broadcast active invite apply answer failed ret=%d gb=%s remote=%s:%d handle=%p\n",
+               ret,
+               resolvedGbCode.c_str(),
+               remoteIp.c_str(),
+               remotePort,
+               handle);
+
+        sdk->StopStreamRequest(handle);
+        return -76;
+
+    }
+
+
+    {
+        std::lock_guard<std::mutex> lock(m_gb_broadcast_mutex);
+        const uint64_t notifyTsMs = m_gb_broadcast_session.notify_ts_ms;
+        m_gb_broadcast_session = GbBroadcastSession();
+        m_gb_broadcast_session.active = true;
+        m_gb_broadcast_session.acked = true;
+        m_gb_broadcast_session.stream_handle = handle;
+        m_gb_broadcast_session.gb_code = resolvedGbCode;
+        m_gb_broadcast_session.source_id = sourceId;
+        m_gb_broadcast_session.target_id = targetId;
+        m_gb_broadcast_session.remote_ip = remoteIp;
+        m_gb_broadcast_session.remote_port = remotePort;
+        m_gb_broadcast_session.local_ip = request.IP;
+        m_gb_broadcast_session.local_port = (int)request.Port;
+        m_gb_broadcast_session.payload_type = payloadType;
+        m_gb_broadcast_session.transport_type = (int)answer.RtpType;
+        m_gb_broadcast_session.codec = codec;
+        m_gb_broadcast_session.notify_ts_ms = notifyTsMs;
+        m_gb_broadcast_session.invite_ts_ms = GetNowMs();
+    }
+
+
+    printf("[ProtocolManager] gb broadcast active invite established gb=%s handle=%p remote=%s:%d local=%s:%u codec=%s pt=%d transport=%s\n",
+           resolvedGbCode.c_str(),
+           handle,
+           remoteIp.c_str(),
+           remotePort,
+           request.IP,
+           request.Port,
+           codec.c_str(),
+           payloadType,
+           GbNetTransportName(answer.RtpType));
+
+    return 0;
+#endif
+
+}
+
 
 
 int ProtocolManager::HandleGbAudioStreamRequest(StreamHandle handle, const char* gbCode, const MediaInfo* input)

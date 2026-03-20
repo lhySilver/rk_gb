@@ -20,6 +20,7 @@
 - GB `TeleBoot` 远程重启已接入冷却保护；短时间内重复命令会被拒绝并打印 `gb teleboot rejected` 日志。
 - GB 广播通知 `MESSAGE` 只能对同一事务返回一次最终 SIP 响应；不要先发空 `200 OK` 再补带 XML 的 `Response`，否则平台只会收到前一个无业务体的应答。
 - GB 广播 `Notify` 的业务 XML 响应必须回填平台原始 `SN`，并以 `TargetID` 作为响应 `DeviceID`；如果返回成 `SN=0` 或空设备编号，平台通常不会继续进入后续广播流程。
+- 针对 GB/T 28181-2022 第 9.12 节广播流程，设备当前实现已调整为“`Notify` 先回纯 SIP `200 OK` -> 独立发送 `Broadcast` 应答 `MESSAGE` -> 设备主动发起 `Talk` 音频 `INVITE`”；仍保留被动 `INVITE` 处理链作为兼容兜底。
 - GB 广播 `notify -> invite -> ack/bye` 现在有独立会话状态；`notify` 会校验 `TargetID` 是否匹配本机，`INVITE` 的音频 `200 OK` 会优先返回设备侧可达 IP，`BYE` 后会清理播音状态并把广播桥恢复到待机接收态。
 - TCP 实时流要区分 `setup:active` 与 `setup:passive` 方向。
 - SIP `INVITE` 应答不要被同步媒体建链阻塞。

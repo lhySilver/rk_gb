@@ -2268,6 +2268,128 @@ void  CGBClientImpl::OnNotify(ProtocolType  type, const SipData* data)
 {
 
 
+	if (GetNotifyType(type) == kBroadcastNotify) {
+
+
+		SipMessage message;
+
+
+		memset(&message, 0, sizeof(message));
+
+
+		message.code = kSuccessRequest;
+
+
+		message.Method = kSipMessageMethod;
+
+
+		int sn = 0;
+
+
+		NotifyInfo info;
+
+
+		memset(&info, 0, sizeof(info));
+
+
+		info.type = GetNotifyType(type);
+
+
+		if (!m_xml_parser->UnPackNotifyInfo(data->messgae.content, sn, info)) {
+
+
+			message.code = kBadRequest;
+
+
+			TVT_LOG_ERROR("gb notify unpack failed"
+			              << " notify_type=" << (int)info.type
+			              << " xml_len=" << (data->messgae.content ? (int)strlen(data->messgae.content) : 0));
+
+
+			if (kSipSuccess != m_sip_client->Response(&(data->Dialog), &message)) {
+
+
+				TVT_LOG_ERROR("gb notify sip response send failed"
+				              << " notify_type=" << (int)info.type
+				              << " sn=" << sn
+				              << " gb_code=" << info.GBCode
+				              << " sip_code=" << message.code);
+
+
+			}
+
+
+			return;
+
+
+		}
+
+
+		bool accepted = true;
+
+
+		if (m_gb_receiver && !m_gb_receiver->OnNotify(info.type, info.GBCode, &info)) {
+
+
+			accepted = false;
+
+
+			message.code = kForbidden;
+
+
+		}
+
+
+		TVT_LOG_INFO("gb notify sip response"
+		             << " notify_type=" << (int)info.type
+		             << " sn=" << sn
+		             << " gb_code=" << info.GBCode
+		             << " sip_code=" << message.code);
+
+
+		if (kSipSuccess != m_sip_client->Response(&(data->Dialog), &message)) {
+
+
+			TVT_LOG_ERROR("gb notify sip response send failed"
+			              << " notify_type=" << (int)info.type
+			              << " sn=" << sn
+			              << " gb_code=" << info.GBCode
+			              << " sip_code=" << message.code);
+
+
+			return;
+
+
+		}
+
+
+		bool responseOk = false;
+
+
+		if (accepted) {
+
+
+			responseOk = (SendBroadcastResponseMessage(sn, true, info.GBCode) == kGb28181Success);
+
+
+		}
+
+
+		if (m_gb_receiver) {
+
+
+			m_gb_receiver->OnBroadcastResponse(info.GBCode, &(info.notify_message.broadcast_info), responseOk);
+
+
+		}
+
+
+		return;
+
+
+	}
+
+
 	SipMessage message;
 
 
@@ -2365,6 +2487,121 @@ finally:
 
 
 	}
+
+
+}
+
+int CGBClientImpl::SendBroadcastResponseMessage(int sn, bool result, const char* GBCode)
+
+
+{
+
+
+	SipMessage message;
+
+
+	memset(&message,0,sizeof(message));
+
+
+	message.Method = kSipMessageMethod;
+
+
+	message.content_type = kSipContentMANSCDP_XML;
+
+
+	std::string content;
+
+
+	m_xml_parser->PackResponse("Broadcast", sn, result, GBCode, content );
+
+
+	if(content.empty()) {
+
+
+		TVT_LOG_ERROR("gb broadcast response message encode failed"
+		              << " sn=" << sn
+		              << " gb_code=" << (GBCode != NULL ? GBCode : "")
+		              << " result=" << (result ? 1 : 0));
+
+
+		return kGbXmlEncodeFail;
+
+
+	}
+
+
+	message.content = (char*)content.c_str();
+
+
+	const int timeout = 3000;
+
+
+	SipData* response = NULL;
+
+
+	TVT_LOG_INFO("gb broadcast response message send"
+	             << " sn=" << sn
+	             << " gb_code=" << (GBCode != NULL ? GBCode : "")
+	             << " result=" << (result ? 1 : 0)
+	             << " xml_len=" << (int)content.size()
+	             << " timeout=" << timeout);
+
+
+	const int sipRet = m_sip_client->Message(&message, timeout, &response);
+
+
+	if(kSipSuccess != sipRet) {
+
+
+		TVT_LOG_ERROR("gb broadcast response message sip failed"
+		              << " sn=" << sn
+		              << " gb_code=" << (GBCode != NULL ? GBCode : "")
+		              << " sip_ret=" << sipRet);
+
+
+		return kGbMessageFail;
+
+
+	}
+
+
+	int code = kGb28181Success;
+
+
+	if(!response || response->messgae.code != kSuccessRequest) {
+
+
+		TVT_LOG_ERROR("gb broadcast response message invalid"
+		              << " sn=" << sn
+		              << " gb_code=" << (GBCode != NULL ? GBCode : "")
+		              << " has_result=" << (response ? 1 : 0)
+		              << " sip_code=" << (response ? response->messgae.code : -1));
+
+
+		code = kGbResponseCodeError;
+
+
+	}
+
+
+	else {
+
+
+		TVT_LOG_INFO("gb broadcast response message ok"
+		             << " sn=" << sn
+		             << " gb_code=" << (GBCode != NULL ? GBCode : "")
+		             << " sip_code=" << response->messgae.code);
+
+
+	}
+
+
+	m_sip_client->FreeSipResult(response);
+
+
+	return code;
+
+
 
 
 }

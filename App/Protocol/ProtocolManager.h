@@ -127,6 +127,7 @@ public:
                                   RtpMap& outMap) const;
 
     int HandleGbBroadcastNotify(const char* gbCode, const BroadcastInfo* info);
+    int HandleGbBroadcastNotifyResponse(const char* gbCode, const BroadcastInfo* info, bool ok);
 
 
 

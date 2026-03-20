@@ -992,7 +992,8 @@ class GBClientReceiver
    virtual bool OnDeviceControl(ResponseHandle handle , const DevControlCmd* cmd) {  return  true;}
    virtual bool OnQuery( ResponseHandle  handle, const QueryParam* param ){return true;}
    virtual bool OnNotify(NotifyType type,  const char* gb_code,  void* info  ){return true;}
-   virtual bool OnSubscribe(SubscribeHandle handle, SubscribeType type,  const char* gb_code,  void* info  ){return true;} 
+   virtual bool OnBroadcastResponse(const char* gb_code, void* info, bool ok) { return true; }
+   virtual bool OnSubscribe(SubscribeHandle handle, SubscribeType type,  const char* gb_code,  void* info  ){return true;}
    virtual bool OnStreamRequest(StreamHandle handle, const char* gb_code, StreamRequestType type, const MediaInfo* input  ){return true;}
    virtual bool OnPlayControl(StreamHandle handle , const PlayCtrlCmd* cmd){return true;}
    virtual bool OnQueryResponse( QueryType type, const char* gb_code, void* msg ){return true;}

@@ -200,6 +200,7 @@ public:
     int	SendSipMessageWithBadReq(const SipData* data);
 
 	int	SendSipMessageForDeviceControlResponse(std::string cmdStr,const SipData* data,int sn,bool result,char* GBCode);
+    int SendBroadcastResponseMessage(int sn, bool result, const char* GBCode);
 
 
 

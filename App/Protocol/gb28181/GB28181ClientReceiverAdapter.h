@@ -19,6 +19,7 @@ public:
     void BindManager(ProtocolManager* manager);
 
     virtual bool OnNotify(NotifyType type, const char* gb_code, void* info);
+    virtual bool OnBroadcastResponse(const char* gb_code, void* info, bool ok);
     virtual bool OnDeviceControl(ResponseHandle handle, const DevControlCmd* cmd);
     virtual bool OnSubscribe(SubscribeHandle handle, SubscribeType type, const char* gb_code, void* info);
     virtual bool OnQuery(ResponseHandle handle, const QueryParam* param);
