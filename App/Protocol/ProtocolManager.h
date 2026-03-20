@@ -501,6 +501,7 @@ private:
     bool m_gb_client_started;
 
     bool m_gb_client_registered;
+    std::atomic<uint64_t> m_gb_last_teleboot_ms;
     uint64_t m_gb_register_success_ms;
     uint32_t m_gb_register_expires_sec;
 

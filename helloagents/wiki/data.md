@@ -26,6 +26,7 @@
 | `server_port` | 接入端口 |
 | `device_id` | 设备编码 |
 | `password` | 设备密码 |
+| `image_flip_mode` | GB 画面翻转配置，`close` 为正常，非 `close` 值会映射为设备 `RA_180` 翻转 |
 
 默认路径: `/userdata/conf/Config/gb28181.ini`
 

@@ -15,7 +15,9 @@
 
 ## 注意事项
 - `LocalConfigProvider` 现在会优先读取 `/userdata/conf/Config/gb28181.ini`；文件不存在时使用代码默认值并自动生成。
+- `gb28181.ini` 现已支持 `image_flip_mode`，取值会映射到设备主配置 `CFG_CAMERA_PARAM.rotateAttr`，由 Camera/Alarm 既有回调统一生效。
 - `gb_register.enabled` 为 `0` 时，`ProtocolManager` 会跳过 GB client 生命周期启动与重注册，但 GAT1400 相关配置校验和生命周期不受影响。
+- GB `TeleBoot` 远程重启已接入冷却保护；短时间内重复命令会被拒绝并打印 `gb teleboot rejected` 日志。
 - TCP 实时流要区分 `setup:active` 与 `setup:passive` 方向。
 - SIP `INVITE` 应答不要被同步媒体建链阻塞。
 - GB 回放音频不能按原始 PCM 直接塞给 RTP PS；应与实时流保持一致，按 SDP/`gb.live.audio_codec` 输出 `G711A` 或 `G711U`。

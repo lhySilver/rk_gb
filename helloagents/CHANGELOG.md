@@ -6,6 +6,8 @@
 
 ### 修复
 - 修复 GB28181 配置仅停留在代码默认值的问题，新增 `/userdata/conf/Config/gb28181.ini` 本地配置落盘、缺省自动生成和开关控制能力。
+- 修复 GB 画面翻转配置未接入设备主配置链路的问题，改为复用 `CFG_CAMERA_PARAM.rotateAttr` 并将 `image_flip_mode` 持久化到 `gb28181.ini`。
+- 修复 GB 远程重启控制缺少冷却保护的问题，新增基于 `gb_reboot.cooldown_sec` 的防抖限制。
 - 修正 GB28181 实时流在 TCP 协商场景下的 SIP/媒体建立时序。
 - 修复 GB 注册时间同步仅 dry-run 不落地的问题，并补齐录像文件列表查询响应。
 - 修复 LG 存储分支录像时间搜索误用索引导致的查询结果错乱。

@@ -43,6 +43,7 @@
 
 #include "Storage_api.h"
 #include "Manager/ConfigManager.h"
+#include "ExchangeAL/CameraExchange.h"
 #include "ExchangeAL/ExchangeKind.h"
 
 #include "Ptz/Ptz.h"
@@ -1610,12 +1611,15 @@ static bool ReadRkOsdPosition(int id, int* x, int* y)
 
 static bool ReadRkImageFlipMode(std::string& value)
 {
-    const char* out = NULL;
-    if (rk_isp_get_image_flip(0, &out) != 0 || out == NULL || out[0] == '\0') {
+    CConfigTable table;
+    CameraParamAll config;
+    memset(&config, 0, sizeof(config));
+    if (!g_configManager.getConfig(getConfigName(CFG_CAMERA_PARAM), table)) {
         return false;
     }
 
-    value = out;
+    TExchangeAL<CameraParamAll>::getConfigV2(table, config, 1);
+    value = (config.vCameraParamAll[0].rotateAttr == RA_NONE) ? "close" : "centrosymmetric";
     return true;
 }
 
@@ -1814,14 +1818,27 @@ static void ApplyRkImageFlipConfig(const std::string& desiredMode)
         return;
     }
 
-    std::string currentMode;
-    const bool currentKnown = ReadRkImageFlipMode(currentMode);
-    if (!currentKnown || NormalizeGbImageFlipMode(currentMode) != normalizedMode) {
-        const int ret = rk_isp_set_image_flip(0, normalizedMode.c_str());
-        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=image_flip value=%s current=%s\n",
+    const int desiredRotate = (normalizedMode == "close") ? RA_NONE : RA_180;
+    CConfigTable table;
+    CameraParamAll config;
+    memset(&config, 0, sizeof(config));
+    if (!g_configManager.getConfig(getConfigName(CFG_CAMERA_PARAM), table)) {
+        printf("[ProtocolManager] module=config event=media_apply trace=manager error=-1 target=image_flip value=%s current=unknown\n",
+               normalizedMode.c_str());
+        return;
+    }
+
+    TExchangeAL<CameraParamAll>::getConfigV2(table, config, 1);
+    const int currentRotate = config.vCameraParamAll[0].rotateAttr;
+    if (currentRotate != desiredRotate) {
+        config.vCameraParamAll[0].rotateAttr = desiredRotate;
+        TExchangeAL<CameraParamAll>::setConfigV2(config, table, 1);
+        const int ret = g_configManager.setConfig(getConfigName(CFG_CAMERA_PARAM), table, 0, IConfigManager::applyOK);
+        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=image_flip value=%s current=%d desired=%d\n",
                ret,
                normalizedMode.c_str(),
-               currentKnown ? currentMode.c_str() : "unknown");
+               currentRotate,
+               desiredRotate);
     }
 }
 
@@ -2982,6 +2999,7 @@ ProtocolManager::ProtocolManager()
       m_gb_client_started(false),
 
       m_gb_client_registered(false),
+      m_gb_last_teleboot_ms(0),
       m_gb_register_success_ms(0),
       m_gb_register_expires_sec(0),
 
@@ -3135,6 +3153,8 @@ int ProtocolManager::Start()
                m_cfg.gb_listen.target_ip.c_str(),
                m_cfg.gb_listen.target_port);
     }
+
+    ApplyRkImageFlipConfig(m_cfg.gb_image.flip_mode);
 
 
     if (m_cfg.gb_register.enabled != 0) {
@@ -3335,6 +3355,7 @@ int ProtocolManager::ReloadExternalConfig()
                                   (m_cfg.gb_osd.event_enabled != latest.gb_osd.event_enabled) ||
 
                                   (m_cfg.gb_osd.alert_enabled != latest.gb_osd.alert_enabled);
+    const bool applyImageFlipConfig = (m_cfg.gb_image.flip_mode != latest.gb_image.flip_mode);
 
     const bool reloadGat = (m_cfg.gat_register.server_ip != latest.gat_register.server_ip) ||
 
@@ -3469,6 +3490,10 @@ int ProtocolManager::ReloadExternalConfig()
                        m_cfg.gb_listen.target_port);
             }
 
+        }
+
+        if (applyImageFlipConfig) {
+            ApplyRkImageFlipConfig(m_cfg.gb_image.flip_mode);
         }
 
         if (reloadGbLifecycle) {
@@ -5977,19 +6002,37 @@ int ProtocolManager::HandleGbTeleBootControl(const DevControlCmd* cmd)
 
 
 
+    const uint64_t nowMs = GetSteadyNowMs();
+    const uint64_t lastMs = m_gb_last_teleboot_ms.load();
+    const uint64_t cooldownMs = (m_cfg.gb_reboot.cooldown_sec > 0)
+        ? (static_cast<uint64_t>(m_cfg.gb_reboot.cooldown_sec) * 1000ULL)
+        : 0ULL;
+    if (cooldownMs > 0 && lastMs > 0 && nowMs > lastMs && (nowMs - lastMs) < cooldownMs) {
+        printf("[ProtocolManager] gb teleboot rejected gb=%s cooldown=%d last_ms=%llu now_ms=%llu\n",
+               cmd->GBCode,
+               m_cfg.gb_reboot.cooldown_sec,
+               (unsigned long long)lastMs,
+               (unsigned long long)nowMs);
+        return -88;
+    }
+
+    m_gb_last_teleboot_ms.store(nowMs);
+
     if (!CreateDetachedThread((char*)"gb_reboot", GbRemoteRestartThread, NULL, true)) {
 
-        return -88;
+        m_gb_last_teleboot_ms.store(lastMs);
+        return -89;
 
     }
 
 
 
-    printf("[ProtocolManager] gb teleboot scheduled gb=%s cooldown=%d\n",
+    printf("[ProtocolManager] gb teleboot scheduled gb=%s cooldown=%d require_auth_level=%d\n",
 
            cmd->GBCode,
 
-           m_cfg.gb_reboot.cooldown_sec);
+           m_cfg.gb_reboot.cooldown_sec,
+           m_cfg.gb_reboot.require_auth_level);
 
     return 0;
 

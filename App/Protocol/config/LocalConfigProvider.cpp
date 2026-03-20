@@ -37,7 +37,7 @@ std::string BuildConfigLogSummary(const protocol::ProtocolExternalConfig& cfg)
     char buffer[512] = {0};
     snprintf(buffer,
              sizeof(buffer),
-             "version=%s gb_enable=%d gb=%s:%d live=%s/%s:%d gat=%s:%d/%d broadcast=%s/%d listen=%s/%s:%d",
+             "version=%s gb_enable=%d gb=%s:%d live=%s/%s:%d flip=%s gat=%s:%d/%d broadcast=%s/%d listen=%s/%s:%d",
              cfg.version.c_str(),
              cfg.gb_register.enabled,
              cfg.gb_register.server_ip.c_str(),
@@ -45,6 +45,7 @@ std::string BuildConfigLogSummary(const protocol::ProtocolExternalConfig& cfg)
              cfg.gb_live.transport.c_str(),
              cfg.gb_live.target_ip.c_str(),
              cfg.gb_live.target_port,
+             cfg.gb_image.flip_mode.c_str(),
              cfg.gat_register.server_ip.c_str(),
              cfg.gat_register.server_port,
              cfg.gat_register.listen_port,
@@ -139,6 +140,11 @@ bool LoadLocalConfigFile(protocol::ProtocolExternalConfig& cfg)
         cfg.gb_register.password = value;
     }
 
+    memset(value, 0, sizeof(value));
+    if (ini.read_profile_string(kLocalGbConfigSection, "image_flip_mode", value, sizeof(value), kLocalGbConfigFile) == 0) {
+        cfg.gb_image.flip_mode = value;
+    }
+
     return true;
 }
 
@@ -160,6 +166,7 @@ int SaveLocalConfigFile(const protocol::ProtocolExternalConfig& cfg)
     fprintf(fp, "server_port=%d\n", cfg.gb_register.server_port);
     fprintf(fp, "device_id=%s\n", cfg.gb_register.device_id.c_str());
     fprintf(fp, "password=%s\n", cfg.gb_register.password.c_str());
+    fprintf(fp, "image_flip_mode=%s\n", cfg.gb_image.flip_mode.c_str());
 
     const int flushRet = fflush(fp);
     const int closeRet = fclose(fp);
