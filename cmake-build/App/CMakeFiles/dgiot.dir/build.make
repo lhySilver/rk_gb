@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include App/CMakeFiles/dgiot.dir/depend.make
@@ -59,1134 +59,1134 @@ include App/CMakeFiles/dgiot.dir/flags.make
 
 App/CMakeFiles/dgiot.dir/Main.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object App/CMakeFiles/dgiot.dir/Main.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Main.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object App/CMakeFiles/dgiot.dir/Main.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Main.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Main.cpp
 
 App/CMakeFiles/dgiot.dir/Main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Main.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Main.cpp > CMakeFiles/dgiot.dir/Main.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Main.cpp > CMakeFiles/dgiot.dir/Main.cpp.i
 
 App/CMakeFiles/dgiot.dir/Main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Main.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Main.cpp -o CMakeFiles/dgiot.dir/Main.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Main.cpp -o CMakeFiles/dgiot.dir/Main.cpp.s
 
 App/CMakeFiles/dgiot.dir/Common.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Common.cpp.o: ../App/Common.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object App/CMakeFiles/dgiot.dir/Common.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Common.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Common.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object App/CMakeFiles/dgiot.dir/Common.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Common.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Common.cpp
 
 App/CMakeFiles/dgiot.dir/Common.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Common.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Common.cpp > CMakeFiles/dgiot.dir/Common.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Common.cpp > CMakeFiles/dgiot.dir/Common.cpp.i
 
 App/CMakeFiles/dgiot.dir/Common.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Common.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Common.cpp -o CMakeFiles/dgiot.dir/Common.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Common.cpp -o CMakeFiles/dgiot.dir/Common.cpp.s
 
 App/CMakeFiles/dgiot.dir/Inifile.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Inifile.cpp.o: ../App/Inifile.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object App/CMakeFiles/dgiot.dir/Inifile.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Inifile.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Inifile.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object App/CMakeFiles/dgiot.dir/Inifile.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Inifile.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Inifile.cpp
 
 App/CMakeFiles/dgiot.dir/Inifile.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Inifile.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Inifile.cpp > CMakeFiles/dgiot.dir/Inifile.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Inifile.cpp > CMakeFiles/dgiot.dir/Inifile.cpp.i
 
 App/CMakeFiles/dgiot.dir/Inifile.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Inifile.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Inifile.cpp -o CMakeFiles/dgiot.dir/Inifile.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Inifile.cpp -o CMakeFiles/dgiot.dir/Inifile.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.o: ../App/Media/AVManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AVManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AVManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AVManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AVManager.cpp
 
 App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/AVManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AVManager.cpp > CMakeFiles/dgiot.dir/Media/AVManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AVManager.cpp > CMakeFiles/dgiot.dir/Media/AVManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/AVManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/AVManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AVManager.cpp -o CMakeFiles/dgiot.dir/Media/AVManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AVManager.cpp -o CMakeFiles/dgiot.dir/Media/AVManager.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/Storage.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/Storage.cpp.o: ../App/Media/Storage.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Storage.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Storage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Storage.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Storage.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Storage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Storage.cpp
 
 App/CMakeFiles/dgiot.dir/Media/Storage.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/Storage.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Storage.cpp > CMakeFiles/dgiot.dir/Media/Storage.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Storage.cpp > CMakeFiles/dgiot.dir/Media/Storage.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/Storage.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/Storage.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Storage.cpp -o CMakeFiles/dgiot.dir/Media/Storage.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Storage.cpp -o CMakeFiles/dgiot.dir/Media/Storage.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o: ../App/Media/MediaDefaultConfig.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/MediaDefaultConfig.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/MediaDefaultConfig.cpp
 
 App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/MediaDefaultConfig.cpp > CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/MediaDefaultConfig.cpp > CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/MediaDefaultConfig.cpp -o CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/MediaDefaultConfig.cpp -o CMakeFiles/dgiot.dir/Media/MediaDefaultConfig.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/Record.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/Record.cpp.o: ../App/Media/Record.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Record.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Record.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Record.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Record.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Record.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Record.cpp
 
 App/CMakeFiles/dgiot.dir/Media/Record.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/Record.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Record.cpp > CMakeFiles/dgiot.dir/Media/Record.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Record.cpp > CMakeFiles/dgiot.dir/Media/Record.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/Record.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/Record.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Record.cpp -o CMakeFiles/dgiot.dir/Media/Record.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Record.cpp -o CMakeFiles/dgiot.dir/Media/Record.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.o: ../App/Media/Alarm.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Alarm.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Alarm.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Alarm.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Alarm.cpp
 
 App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/Alarm.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Alarm.cpp > CMakeFiles/dgiot.dir/Media/Alarm.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Alarm.cpp > CMakeFiles/dgiot.dir/Media/Alarm.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/Alarm.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/Alarm.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Alarm.cpp -o CMakeFiles/dgiot.dir/Media/Alarm.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Alarm.cpp -o CMakeFiles/dgiot.dir/Media/Alarm.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/Camera.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/Camera.cpp.o: ../App/Media/Camera.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Camera.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Camera.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Camera.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Camera.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Camera.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Camera.cpp
 
 App/CMakeFiles/dgiot.dir/Media/Camera.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/Camera.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Camera.cpp > CMakeFiles/dgiot.dir/Media/Camera.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Camera.cpp > CMakeFiles/dgiot.dir/Media/Camera.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/Camera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/Camera.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Camera.cpp -o CMakeFiles/dgiot.dir/Media/Camera.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Camera.cpp -o CMakeFiles/dgiot.dir/Media/Camera.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o: ../App/Media/AudioPrompt.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioPrompt.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioPrompt.cpp
 
 App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioPrompt.cpp > CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioPrompt.cpp > CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioPrompt.cpp -o CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioPrompt.cpp -o CMakeFiles/dgiot.dir/Media/AudioPrompt.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o: ../App/Media/IndicatorLight.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/IndicatorLight.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/IndicatorLight.cpp
 
 App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/IndicatorLight.cpp > CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/IndicatorLight.cpp > CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/IndicatorLight.cpp -o CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/IndicatorLight.cpp -o CMakeFiles/dgiot.dir/Media/IndicatorLight.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/Siren.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/Siren.cpp.o: ../App/Media/Siren.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Siren.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Siren.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Siren.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object App/CMakeFiles/dgiot.dir/Media/Siren.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/Siren.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Siren.cpp
 
 App/CMakeFiles/dgiot.dir/Media/Siren.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/Siren.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Siren.cpp > CMakeFiles/dgiot.dir/Media/Siren.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Siren.cpp > CMakeFiles/dgiot.dir/Media/Siren.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/Siren.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/Siren.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/Siren.cpp -o CMakeFiles/dgiot.dir/Media/Siren.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/Siren.cpp -o CMakeFiles/dgiot.dir/Media/Siren.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o: ../App/Media/AudioManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/AudioManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioManager.cpp
 
 App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/AudioManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioManager.cpp > CMakeFiles/dgiot.dir/Media/AudioManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioManager.cpp > CMakeFiles/dgiot.dir/Media/AudioManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/AudioManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/AudioManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/AudioManager.cpp -o CMakeFiles/dgiot.dir/Media/AudioManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/AudioManager.cpp -o CMakeFiles/dgiot.dir/Media/AudioManager.cpp.s
 
 App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o: ../App/Media/CameraFilter.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/CameraFilter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/CameraFilter.cpp
 
 App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/CameraFilter.cpp > CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/CameraFilter.cpp > CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.i
 
 App/CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Media/CameraFilter.cpp -o CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Media/CameraFilter.cpp -o CMakeFiles/dgiot.dir/Media/CameraFilter.cpp.s
 
 App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o: ../App/Manager/ManagerDefaultConfig.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Manager/ManagerDefaultConfig.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Manager/ManagerDefaultConfig.cpp
 
 App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Manager/ManagerDefaultConfig.cpp > CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Manager/ManagerDefaultConfig.cpp > CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.i
 
 App/CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Manager/ManagerDefaultConfig.cpp -o CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Manager/ManagerDefaultConfig.cpp -o CMakeFiles/dgiot.dir/Manager/ManagerDefaultConfig.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o: ../App/tuya/Tuya.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/Tuya.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/Tuya.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya.cpp > CMakeFiles/dgiot.dir/tuya/Tuya.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya.cpp > CMakeFiles/dgiot.dir/tuya/Tuya.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/Tuya.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya.cpp -o CMakeFiles/dgiot.dir/tuya/Tuya.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya.cpp -o CMakeFiles/dgiot.dir/tuya/Tuya.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o: ../App/tuya/Tuya_common.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya_common.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya_common.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya_common.cpp > CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya_common.cpp > CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/Tuya_common.cpp -o CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/Tuya_common.cpp -o CMakeFiles/dgiot.dir/tuya/Tuya_common.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o: ../App/tuya/tuya_ipc_cloud_storage.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_cloud_storage.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_cloud_storage.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_cloud_storage.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_cloud_storage.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_cloud_storage.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_cloud_storage.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_cloud_storage.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o: ../App/tuya/tuya_ipc_motion_detect.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_motion_detect.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_motion_detect.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_motion_detect.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_motion_detect.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_motion_detect.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_motion_detect.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_motion_detect.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o: ../App/tuya/tuya_ipc_dp_handler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_handler.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_handler.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_handler.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_handler.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_handler.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_handler.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_handler.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o: ../App/tuya/tuya_ipc_dp_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_utils.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_utils.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_utils.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_dp_utils.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_dp_utils.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_dp_utils.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o: ../App/tuya/tuya_ipc_media_handler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_media_handler.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_media_handler.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_media_handler.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_media_handler.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_media_handler.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_media_handler.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_media_handler.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o: ../App/tuya/tuya_ipc_p2p.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_p2p.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_p2p.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_p2p.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_p2p.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_p2p.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_p2p.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_p2p.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o: ../App/tuya/tuya_ipc_sd.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sd.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sd.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sd.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sd.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sd.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sd.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sd.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o: ../App/tuya/tuya_ipc_system_control.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_system_control.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_system_control.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_system_control.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_system_control.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_system_control.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_system_control.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_system_control.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o: ../App/tuya/tuya_ipc_wifi.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wifi.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wifi.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wifi.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wifi.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wifi.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wifi.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wifi.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o: ../App/tuya/tuya_ipc_wired.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wired.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wired.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wired.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wired.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_wired.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_wired.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_wired.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o: ../App/tuya/tuya_main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_main.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_main.cpp > CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_main.cpp > CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_main.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_main.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_main.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/tuya/tuya_ipc_sdk_upgrade_demo.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_upgrade_demo.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o: ../App/tuya/tuya_ipc_sdk_simple_start.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_simple_start.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_simple_start.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_simple_start.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_simple_start.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_sdk_simple_start.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_sdk_simple_start.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_simple_start.cpp.s
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o: ../App/tuya/tuya_ipc_doorbell.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_doorbell.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_doorbell.cpp
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_doorbell.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_doorbell.cpp > CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.i
 
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/tuya/tuya_ipc_doorbell.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/tuya/tuya_ipc_doorbell.cpp -o CMakeFiles/dgiot.dir/tuya/tuya_ipc_doorbell.cpp.s
 
 App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o: ../App/Net/NetConfigHook.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Net/NetConfigHook.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Net/NetConfigHook.cpp
 
 App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Net/NetConfigHook.cpp > CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Net/NetConfigHook.cpp > CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.i
 
 App/CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Net/NetConfigHook.cpp -o CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Net/NetConfigHook.cpp -o CMakeFiles/dgiot.dir/Net/NetConfigHook.cpp.s
 
 App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o: ../App/QrCode/QrCode.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/QrCode/QrCode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/QrCode/QrCode.cpp
 
 App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/QrCode/QrCode.cpp > CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/QrCode/QrCode.cpp > CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.i
 
 App/CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/QrCode/QrCode.cpp -o CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/QrCode/QrCode.cpp -o CMakeFiles/dgiot.dir/QrCode/QrCode.cpp.s
 
 App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o: ../App/ProduceNew/NetWifi.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProduceNew/NetWifi.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProduceNew/NetWifi.cpp
 
 App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProduceNew/NetWifi.cpp > CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProduceNew/NetWifi.cpp > CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.i
 
 App/CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProduceNew/NetWifi.cpp -o CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProduceNew/NetWifi.cpp -o CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.s
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o: ../App/TestModuleV2/TestModuleV2_Demo.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestModuleV2_Demo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestModuleV2_Demo.cpp
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestModuleV2_Demo.cpp > CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestModuleV2_Demo.cpp > CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.i
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestModuleV2_Demo.cpp -o CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestModuleV2_Demo.cpp -o CMakeFiles/dgiot.dir/TestModuleV2/TestModuleV2_Demo.cpp.s
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o: ../App/TestModuleV2/TestMonitor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestMonitor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestMonitor.cpp
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestMonitor.cpp > CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestMonitor.cpp > CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.i
 
 App/CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/TestModuleV2/TestMonitor.cpp -o CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/TestModuleV2/TestMonitor.cpp -o CMakeFiles/dgiot.dir/TestModuleV2/TestMonitor.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o: ../App/Storage/lg/DiskManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/DiskManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/DiskManager.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/DiskManager.cpp > CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/DiskManager.cpp > CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/DiskManager.cpp -o CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/DiskManager.cpp -o CMakeFiles/dgiot.dir/Storage/lg/DiskManager.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o: ../App/Storage/lg/Mp4_Demuxer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Mp4_Demuxer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Mp4_Demuxer.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Mp4_Demuxer.cpp > CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Mp4_Demuxer.cpp > CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Mp4_Demuxer.cpp -o CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Mp4_Demuxer.cpp -o CMakeFiles/dgiot.dir/Storage/lg/Mp4_Demuxer.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o: ../App/Storage/lg/mp4_muxing.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/mp4_muxing.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/mp4_muxing.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/mp4_muxing.cpp > CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/mp4_muxing.cpp > CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/mp4_muxing.cpp -o CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/mp4_muxing.cpp -o CMakeFiles/dgiot.dir/Storage/lg/mp4_muxing.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o: ../App/Storage/lg/Storage_api.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Storage_api.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Storage_api.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Storage_api.cpp > CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Storage_api.cpp > CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/Storage_api.cpp -o CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/Storage_api.cpp -o CMakeFiles/dgiot.dir/Storage/lg/Storage_api.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o: ../App/Storage/lg/StorageManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/StorageManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/StorageManager.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/StorageManager.cpp > CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/StorageManager.cpp > CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/StorageManager.cpp -o CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/StorageManager.cpp -o CMakeFiles/dgiot.dir/Storage/lg/StorageManager.cpp.s
 
 App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o: ../App/Storage/lg/RingBuffer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/RingBuffer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/RingBuffer.cpp
 
 App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/RingBuffer.cpp > CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/RingBuffer.cpp > CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.i
 
 App/CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Storage/lg/RingBuffer.cpp -o CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Storage/lg/RingBuffer.cpp -o CMakeFiles/dgiot.dir/Storage/lg/RingBuffer.cpp.s
 
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o: ../App/Ptz/Ptz.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Ptz/Ptz.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Ptz/Ptz.cpp
 
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Ptz/Ptz.cpp > CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Ptz/Ptz.cpp > CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.i
 
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Ptz/Ptz.cpp -o CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Ptz/Ptz.cpp -o CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.s
 
 App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o: ../App/Pcba/Pcba.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Pcba/Pcba.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Pcba/Pcba.cpp
 
 App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Pcba/Pcba.cpp > CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Pcba/Pcba.cpp > CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.i
 
 App/CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Pcba/Pcba.cpp -o CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Pcba/Pcba.cpp -o CMakeFiles/dgiot.dir/Pcba/Pcba.cpp.s
 
 App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o: ../App/Rtsp/live_rtsp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Rtsp/live_rtsp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Rtsp/live_rtsp.cpp
 
 App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Rtsp/live_rtsp.cpp > CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Rtsp/live_rtsp.cpp > CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.i
 
 App/CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Rtsp/live_rtsp.cpp -o CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Rtsp/live_rtsp.cpp -o CMakeFiles/dgiot.dir/Rtsp/live_rtsp.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o: ../App/RtspServer/src/net/Acceptor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Acceptor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Acceptor.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Acceptor.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Acceptor.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Acceptor.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Acceptor.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Acceptor.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o: ../App/RtspServer/src/net/BufferReader.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferReader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferReader.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferReader.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferReader.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferReader.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferReader.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferReader.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o: ../App/RtspServer/src/net/BufferWriter.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferWriter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferWriter.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferWriter.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferWriter.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/BufferWriter.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/BufferWriter.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/BufferWriter.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o: ../App/RtspServer/src/net/EpollTaskScheduler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EpollTaskScheduler.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EpollTaskScheduler.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EpollTaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EpollTaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EpollTaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EpollTaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/EpollTaskScheduler.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o: ../App/RtspServer/src/net/EventLoop.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EventLoop.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EventLoop.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EventLoop.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EventLoop.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/EventLoop.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/EventLoop.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/EventLoop.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o: ../App/RtspServer/src/net/Logger.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Logger.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Logger.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Logger.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Logger.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Logger.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Logger.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Logger.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o: ../App/RtspServer/src/net/MemoryManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/MemoryManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/MemoryManager.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/MemoryManager.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/MemoryManager.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/MemoryManager.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/MemoryManager.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/MemoryManager.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o: ../App/RtspServer/src/net/NetInterface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/NetInterface.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/NetInterface.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/NetInterface.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/NetInterface.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/NetInterface.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/NetInterface.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/NetInterface.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o: ../App/RtspServer/src/net/Pipe.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Pipe.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Pipe.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Pipe.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Pipe.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Pipe.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Pipe.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Pipe.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o: ../App/RtspServer/src/net/SelectTaskScheduler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SelectTaskScheduler.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SelectTaskScheduler.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SelectTaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SelectTaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SelectTaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SelectTaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/SelectTaskScheduler.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o: ../App/RtspServer/src/net/SocketUtil.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SocketUtil.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SocketUtil.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SocketUtil.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SocketUtil.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/SocketUtil.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/SocketUtil.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/SocketUtil.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o: ../App/RtspServer/src/net/TaskScheduler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TaskScheduler.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TaskScheduler.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TaskScheduler.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TaskScheduler.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TaskScheduler.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o: ../App/RtspServer/src/net/TcpConnection.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpConnection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpConnection.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpConnection.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o: ../App/RtspServer/src/net/TcpServer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpServer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpServer.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpServer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpServer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpServer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpServer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpServer.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o: ../App/RtspServer/src/net/TcpSocket.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpSocket.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpSocket.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpSocket.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpSocket.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/TcpSocket.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/TcpSocket.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/TcpSocket.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o: ../App/RtspServer/src/net/Timer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timer.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timer.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o: ../App/RtspServer/src/net/Timestamp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timestamp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timestamp.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timestamp.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timestamp.cpp > CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/net/Timestamp.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/net/Timestamp.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/net/Timestamp.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o: ../App/RtspServer/src/xop/AACSource.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/AACSource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/AACSource.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/AACSource.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/AACSource.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/AACSource.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/AACSource.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/AACSource.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o: ../App/RtspServer/src/xop/DigestAuthentication.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/DigestAuthentication.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/DigestAuthentication.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/DigestAuthentication.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/DigestAuthentication.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/DigestAuthentication.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/DigestAuthentication.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/DigestAuthentication.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o: ../App/RtspServer/src/xop/G711ASource.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/G711ASource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/G711ASource.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/G711ASource.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/G711ASource.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/G711ASource.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/G711ASource.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/G711ASource.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o: ../App/RtspServer/src/xop/H264Parser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Parser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Parser.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Parser.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Parser.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Parser.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Parser.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Parser.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o: ../App/RtspServer/src/xop/H264Source.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Source.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Source.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H264Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H264Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H264Source.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o: ../App/RtspServer/src/xop/H265Source.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H265Source.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H265Source.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H265Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H265Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/H265Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/H265Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/H265Source.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o: ../App/RtspServer/src/xop/MediaSession.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/MediaSession.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/MediaSession.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/MediaSession.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/MediaSession.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/MediaSession.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/MediaSession.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/MediaSession.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o: ../App/RtspServer/src/xop/RtpConnection.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtpConnection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtpConnection.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtpConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtpConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtpConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtpConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtpConnection.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o: ../App/RtspServer/src/xop/RtspConnection.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspConnection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspConnection.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspConnection.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspConnection.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspConnection.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o: ../App/RtspServer/src/xop/RtspMessage.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspMessage.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspMessage.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspMessage.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspMessage.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspMessage.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspMessage.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspMessage.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o: ../App/RtspServer/src/xop/RtspPusher.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspPusher.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspPusher.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspPusher.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspPusher.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspPusher.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspPusher.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspPusher.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o: ../App/RtspServer/src/xop/RtspServer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspServer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspServer.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspServer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspServer.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/RtspServer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/RtspServer.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/RtspServer.cpp.s
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o: ../App/RtspServer/src/xop/VP8Source.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/VP8Source.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building CXX object App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/VP8Source.cpp
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/VP8Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/VP8Source.cpp > CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.i
 
 App/CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/RtspServer/src/xop/VP8Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/RtspServer/src/xop/VP8Source.cpp -o CMakeFiles/dgiot.dir/RtspServer/src/xop/VP8Source.cpp.s
 
 App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o: ../App/Onvif/Onvif.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building CXX object App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Onvif/Onvif.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building CXX object App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Onvif/Onvif.cpp
 
 App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Onvif/Onvif.cpp > CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Onvif/Onvif.cpp > CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.i
 
 App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Onvif/Onvif.cpp -o CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Onvif/Onvif.cpp -o CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.s
 
 App/CMakeFiles/dgiot.dir/Update/update.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Update/update.cpp.o: ../App/Update/update.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building CXX object App/CMakeFiles/dgiot.dir/Update/update.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Update/update.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Update/update.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building CXX object App/CMakeFiles/dgiot.dir/Update/update.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Update/update.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Update/update.cpp
 
 App/CMakeFiles/dgiot.dir/Update/update.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Update/update.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Update/update.cpp > CMakeFiles/dgiot.dir/Update/update.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Update/update.cpp > CMakeFiles/dgiot.dir/Update/update.cpp.i
 
 App/CMakeFiles/dgiot.dir/Update/update.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Update/update.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Update/update.cpp -o CMakeFiles/dgiot.dir/Update/update.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Update/update.cpp -o CMakeFiles/dgiot.dir/Update/update.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/ProtocolManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/ProtocolManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/ProtocolManager.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/ProtocolManager.cpp > CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/ProtocolManager.cpp > CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/ProtocolManager.cpp -o CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/ProtocolManager.cpp -o CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.s
 
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: ../App/Protocol/config/HttpConfigProvider.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/config/HttpConfigProvider.cpp
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Protocol/config/LocalConfigProvider.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/config/LocalConfigProvider.cpp
 
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/config/HttpConfigProvider.cpp > CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.i
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.i"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/config/LocalConfigProvider.cpp > CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.i
 
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/config/HttpConfigProvider.cpp -o CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.s
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.s"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/config/LocalConfigProvider.cpp -o CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181BroadcastBridge.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181BroadcastBridge.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181BroadcastBridge.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181BroadcastBridge.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181BroadcastBridge.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181BroadcastBridge.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ListenBridge.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ListenBridge.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ListenBridge.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ListenBridge.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ListenBridge.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ListenBridge.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/gb28181/GB28181RtpPsSender.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181RtpPsSender.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181RtpPsSender.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181RtpPsSender.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181RtpPsSender.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181RtpPsSender.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181RtpPsSender.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp > CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp -o CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.s
 
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: ../App/Protocol/gat1400/GAT1400ClientService.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gat1400/GAT1400ClientService.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building CXX object App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gat1400/GAT1400ClientService.cpp
 
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gat1400/GAT1400ClientService.cpp > CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gat1400/GAT1400ClientService.cpp > CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.i
 
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gat1400/GAT1400ClientService.cpp -o CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gat1400/GAT1400ClientService.cpp -o CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.s
 
 App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o: ../App/Encryption/Encryption.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building CXX object App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Encryption/Encryption.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building CXX object App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Encryption/Encryption.cpp
 
 App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Encryption/Encryption.cpp > CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Encryption/Encryption.cpp > CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.i
 
 App/CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Encryption/Encryption.cpp -o CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Encryption/Encryption.cpp -o CMakeFiles/dgiot.dir/Encryption/Encryption.cpp.s
 
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o: ../App/ProductCof/ProductCof.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building CXX object App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProductCof/ProductCof.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building CXX object App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProductCof/ProductCof.cpp
 
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProductCof/ProductCof.cpp > CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProductCof/ProductCof.cpp > CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.i
 
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/ProductCof/ProductCof.cpp -o CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/ProductCof/ProductCof.cpp -o CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.s
 
 App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o: App/CMakeFiles/dgiot.dir/flags.make
 App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o: ../App/Wdt/Wdt.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building CXX object App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Wdt/Wdt.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Building CXX object App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Wdt/Wdt.cpp
 
 App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Wdt/Wdt.cpp > CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Wdt/Wdt.cpp > CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.i
 
 App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Wdt/Wdt.cpp -o CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Wdt/Wdt.cpp -o CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.s
 
 # Object files for target dgiot
 dgiot_OBJECTS = \
@@ -1268,7 +1268,7 @@ dgiot_OBJECTS = \
 "CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o" \
 "CMakeFiles/dgiot.dir/Update/update.cpp.o" \
 "CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o" \
-"CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o" \
+"CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o" \
 "CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o" \
 "CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o" \
 "CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o" \
@@ -1359,7 +1359,7 @@ dgiot_EXTERNAL_OBJECTS =
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Onvif/Onvif.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Update/update.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o
-../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o
+../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o
@@ -1369,6 +1369,8 @@ dgiot_EXTERNAL_OBJECTS =
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/Wdt/Wdt.cpp.o
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/build.make
+../Bin/dgiot: App/libmedia_server_mpeg.a
+../Bin/dgiot: App/libmedia_server_rtp.a
 ../Bin/dgiot: App/libgat1400_client_sdk_port.a
 ../Bin/dgiot: App/libgb28181_client_sdk_port.a
 ../Bin/dgiot: App/libsip_sdk_port.a
@@ -1377,8 +1379,8 @@ dgiot_EXTERNAL_OBJECTS =
 ../Bin/dgiot: ../third_party/gb_sip/install/lib/libosipparser2.a
 ../Bin/dgiot: App/libshare_sdk_port.a
 ../Bin/dgiot: App/CMakeFiles/dgiot.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Linking CXX executable ../../Bin/dgiot"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dgiot.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_88) "Linking CXX executable ../../Bin/dgiot"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dgiot.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 App/CMakeFiles/dgiot.dir/build: ../Bin/dgiot
@@ -1386,10 +1388,10 @@ App/CMakeFiles/dgiot.dir/build: ../Bin/dgiot
 .PHONY : App/CMakeFiles/dgiot.dir/build
 
 App/CMakeFiles/dgiot.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/dgiot.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/dgiot.dir/cmake_clean.cmake
 .PHONY : App/CMakeFiles/dgiot.dir/clean
 
 App/CMakeFiles/dgiot.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App/CMakeFiles/dgiot.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App/CMakeFiles/dgiot.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : App/CMakeFiles/dgiot.dir/depend
 

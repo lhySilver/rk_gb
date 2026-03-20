@@ -10,15 +10,15 @@
 stdint.h
 -
 
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.c
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.c
 stdint.h
 -
 string.h
 -
 aes.h
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.h
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.h
 
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/crypto.c
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/crypto.c
 stdio.h
 -
 string.h
@@ -28,5 +28,5 @@ stdint.h
 stdlib.h
 -
 aes.h
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.h
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.h
 

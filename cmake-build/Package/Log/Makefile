@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log/CMakeFiles/progress.marks
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log/CMakeFiles/progress.marks
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/clean
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 Package/Log/CMakeFiles/log.dir/rule:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/CMakeFiles/log.dir/rule
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Log/CMakeFiles/log.dir/rule
 .PHONY : Package/Log/CMakeFiles/log.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ log: Package/Log/CMakeFiles/log.dir/rule
 
 # fast build rule for target.
 log/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/build
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/build
 .PHONY : log/fast
 
 Source/LogManager.o: Source/LogManager.cpp.o
@@ -131,7 +131,7 @@ Source/LogManager.o: Source/LogManager.cpp.o
 
 # target to build an object file
 Source/LogManager.cpp.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o
 .PHONY : Source/LogManager.cpp.o
 
 Source/LogManager.i: Source/LogManager.cpp.i
@@ -140,7 +140,7 @@ Source/LogManager.i: Source/LogManager.cpp.i
 
 # target to preprocess a source file
 Source/LogManager.cpp.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.i
 .PHONY : Source/LogManager.cpp.i
 
 Source/LogManager.s: Source/LogManager.cpp.s
@@ -149,7 +149,7 @@ Source/LogManager.s: Source/LogManager.cpp.s
 
 # target to generate assembly for a file
 Source/LogManager.cpp.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.s
 .PHONY : Source/LogManager.cpp.s
 
 Source/XMDebug.o: Source/XMDebug.cpp.o
@@ -158,7 +158,7 @@ Source/XMDebug.o: Source/XMDebug.cpp.o
 
 # target to build an object file
 Source/XMDebug.cpp.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o
 .PHONY : Source/XMDebug.cpp.o
 
 Source/XMDebug.i: Source/XMDebug.cpp.i
@@ -167,7 +167,7 @@ Source/XMDebug.i: Source/XMDebug.cpp.i
 
 # target to preprocess a source file
 Source/XMDebug.cpp.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.i
 .PHONY : Source/XMDebug.cpp.i
 
 Source/XMDebug.s: Source/XMDebug.cpp.s
@@ -176,7 +176,7 @@ Source/XMDebug.s: Source/XMDebug.cpp.s
 
 # target to generate assembly for a file
 Source/XMDebug.cpp.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Log/CMakeFiles/log.dir/build.make Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.s
 .PHONY : Source/XMDebug.cpp.s
 
 # Help Target
@@ -205,6 +205,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -6,5 +6,5 @@ CXX_FLAGS =   -o3 -w -Wno-psabi
 
 CXX_DEFINES = -DLINUX
 
-CXX_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Infra/Source -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Include 
+CXX_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Infra/Source -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Include 
 

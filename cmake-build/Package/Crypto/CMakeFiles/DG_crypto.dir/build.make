@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include Package/Crypto/CMakeFiles/DG_crypto.dir/depend.make
@@ -59,29 +59,29 @@ include Package/Crypto/CMakeFiles/DG_crypto.dir/flags.make
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o: Package/Crypto/CMakeFiles/DG_crypto.dir/flags.make
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o: ../Package/Crypto/Source/aes.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/DG_crypto.dir/Source/aes.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/DG_crypto.dir/Source/aes.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.c
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/DG_crypto.dir/Source/aes.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.c > CMakeFiles/DG_crypto.dir/Source/aes.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.c > CMakeFiles/DG_crypto.dir/Source/aes.c.i
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/DG_crypto.dir/Source/aes.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.c -o CMakeFiles/DG_crypto.dir/Source/aes.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.c -o CMakeFiles/DG_crypto.dir/Source/aes.c.s
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o: Package/Crypto/CMakeFiles/DG_crypto.dir/flags.make
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o: ../Package/Crypto/Source/crypto.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/DG_crypto.dir/Source/crypto.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/crypto.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/DG_crypto.dir/Source/crypto.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/crypto.c
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/DG_crypto.dir/Source/crypto.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/crypto.c > CMakeFiles/DG_crypto.dir/Source/crypto.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/crypto.c > CMakeFiles/DG_crypto.dir/Source/crypto.c.i
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/DG_crypto.dir/Source/crypto.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/crypto.c -o CMakeFiles/DG_crypto.dir/Source/crypto.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/crypto.c -o CMakeFiles/DG_crypto.dir/Source/crypto.c.s
 
 # Object files for target DG_crypto
 DG_crypto_OBJECTS = \
@@ -95,9 +95,9 @@ DG_crypto_EXTERNAL_OBJECTS =
 ../Lib/Package/libDG_crypto.a: Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o
 ../Lib/Package/libDG_crypto.a: Package/Crypto/CMakeFiles/DG_crypto.dir/build.make
 ../Lib/Package/libDG_crypto.a: Package/Crypto/CMakeFiles/DG_crypto.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library ../../../Lib/Package/libDG_crypto.a"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -P CMakeFiles/DG_crypto.dir/cmake_clean_target.cmake
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DG_crypto.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library ../../../Lib/Package/libDG_crypto.a"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -P CMakeFiles/DG_crypto.dir/cmake_clean_target.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/DG_crypto.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 Package/Crypto/CMakeFiles/DG_crypto.dir/build: ../Lib/Package/libDG_crypto.a
@@ -105,10 +105,10 @@ Package/Crypto/CMakeFiles/DG_crypto.dir/build: ../Lib/Package/libDG_crypto.a
 .PHONY : Package/Crypto/CMakeFiles/DG_crypto.dir/build
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -P CMakeFiles/DG_crypto.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto && $(CMAKE_COMMAND) -P CMakeFiles/DG_crypto.dir/cmake_clean.cmake
 .PHONY : Package/Crypto/CMakeFiles/DG_crypto.dir/clean
 
 Package/Crypto/CMakeFiles/DG_crypto.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : Package/Crypto/CMakeFiles/DG_crypto.dir/depend
 

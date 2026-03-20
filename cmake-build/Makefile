@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -215,6 +215,19 @@ Onvif/fast:
 .PHONY : Onvif/fast
 
 #=============================================================================
+# Target rules for targets named gb28181_client_sdk_port
+
+# Build rule for target.
+gb28181_client_sdk_port: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gb28181_client_sdk_port
+.PHONY : gb28181_client_sdk_port
+
+# fast build rule for target.
+gb28181_client_sdk_port/fast:
+	$(MAKE) -f App/CMakeFiles/gb28181_client_sdk_port.dir/build.make App/CMakeFiles/gb28181_client_sdk_port.dir/build
+.PHONY : gb28181_client_sdk_port/fast
+
+#=============================================================================
 # Target rules for targets named dgiot
 
 # Build rule for target.
@@ -228,17 +241,17 @@ dgiot/fast:
 .PHONY : dgiot/fast
 
 #=============================================================================
-# Target rules for targets named share_sdk_port
+# Target rules for targets named media_server_rtp
 
 # Build rule for target.
-share_sdk_port: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 share_sdk_port
-.PHONY : share_sdk_port
+media_server_rtp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 media_server_rtp
+.PHONY : media_server_rtp
 
 # fast build rule for target.
-share_sdk_port/fast:
-	$(MAKE) -f App/CMakeFiles/share_sdk_port.dir/build.make App/CMakeFiles/share_sdk_port.dir/build
-.PHONY : share_sdk_port/fast
+media_server_rtp/fast:
+	$(MAKE) -f App/CMakeFiles/media_server_rtp.dir/build.make App/CMakeFiles/media_server_rtp.dir/build
+.PHONY : media_server_rtp/fast
 
 #=============================================================================
 # Target rules for targets named sip_sdk_port
@@ -267,17 +280,30 @@ gat1400_client_sdk_port/fast:
 .PHONY : gat1400_client_sdk_port/fast
 
 #=============================================================================
-# Target rules for targets named gb28181_client_sdk_port
+# Target rules for targets named share_sdk_port
 
 # Build rule for target.
-gb28181_client_sdk_port: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gb28181_client_sdk_port
-.PHONY : gb28181_client_sdk_port
+share_sdk_port: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 share_sdk_port
+.PHONY : share_sdk_port
 
 # fast build rule for target.
-gb28181_client_sdk_port/fast:
-	$(MAKE) -f App/CMakeFiles/gb28181_client_sdk_port.dir/build.make App/CMakeFiles/gb28181_client_sdk_port.dir/build
-.PHONY : gb28181_client_sdk_port/fast
+share_sdk_port/fast:
+	$(MAKE) -f App/CMakeFiles/share_sdk_port.dir/build.make App/CMakeFiles/share_sdk_port.dir/build
+.PHONY : share_sdk_port/fast
+
+#=============================================================================
+# Target rules for targets named media_server_mpeg
+
+# Build rule for target.
+media_server_mpeg: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 media_server_mpeg
+.PHONY : media_server_mpeg
+
+# fast build rule for target.
+media_server_mpeg/fast:
+	$(MAKE) -f App/CMakeFiles/media_server_mpeg.dir/build.make App/CMakeFiles/media_server_mpeg.dir/build
+.PHONY : media_server_mpeg/fast
 
 # Help Target
 help:
@@ -295,11 +321,13 @@ help:
 	@echo "... log"
 	@echo "... Manager"
 	@echo "... Onvif"
+	@echo "... gb28181_client_sdk_port"
 	@echo "... dgiot"
-	@echo "... share_sdk_port"
+	@echo "... media_server_rtp"
 	@echo "... sip_sdk_port"
 	@echo "... gat1400_client_sdk_port"
-	@echo "... gb28181_client_sdk_port"
+	@echo "... share_sdk_port"
+	@echo "... media_server_mpeg"
 .PHONY : help
 
 

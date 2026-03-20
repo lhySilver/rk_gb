@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/aes.c" "/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o"
-  "/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Source/crypto.c" "/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o"
+  "/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/aes.c" "/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o"
+  "/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Source/crypto.c" "/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

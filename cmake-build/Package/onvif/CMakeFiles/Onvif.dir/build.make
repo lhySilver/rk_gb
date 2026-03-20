@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include Package/onvif/CMakeFiles/Onvif.dir/depend.make
@@ -59,172 +59,172 @@ include Package/onvif/CMakeFiles/Onvif.dir/flags.make
 
 Package/onvif/CMakeFiles/Onvif.dir/base64.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/base64.c.o: ../Package/onvif/base64.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object Package/onvif/CMakeFiles/Onvif.dir/base64.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/base64.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/base64.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object Package/onvif/CMakeFiles/Onvif.dir/base64.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/base64.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/base64.c
 
 Package/onvif/CMakeFiles/Onvif.dir/base64.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/base64.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/base64.c > CMakeFiles/Onvif.dir/base64.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/base64.c > CMakeFiles/Onvif.dir/base64.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/base64.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/base64.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/base64.c -o CMakeFiles/Onvif.dir/base64.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/base64.c -o CMakeFiles/Onvif.dir/base64.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/commfun.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/commfun.c.o: ../Package/onvif/commfun.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object Package/onvif/CMakeFiles/Onvif.dir/commfun.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/commfun.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/commfun.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object Package/onvif/CMakeFiles/Onvif.dir/commfun.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/commfun.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/commfun.c
 
 Package/onvif/CMakeFiles/Onvif.dir/commfun.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/commfun.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/commfun.c > CMakeFiles/Onvif.dir/commfun.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/commfun.c > CMakeFiles/Onvif.dir/commfun.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/commfun.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/commfun.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/commfun.c -o CMakeFiles/Onvif.dir/commfun.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/commfun.c -o CMakeFiles/Onvif.dir/commfun.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/hxml.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/hxml.c.o: ../Package/onvif/hxml.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object Package/onvif/CMakeFiles/Onvif.dir/hxml.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/hxml.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/hxml.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object Package/onvif/CMakeFiles/Onvif.dir/hxml.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/hxml.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/hxml.c
 
 Package/onvif/CMakeFiles/Onvif.dir/hxml.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/hxml.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/hxml.c > CMakeFiles/Onvif.dir/hxml.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/hxml.c > CMakeFiles/Onvif.dir/hxml.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/hxml.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/hxml.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/hxml.c -o CMakeFiles/Onvif.dir/hxml.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/hxml.c -o CMakeFiles/Onvif.dir/hxml.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/main.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/main.c.o: ../Package/onvif/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object Package/onvif/CMakeFiles/Onvif.dir/main.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/main.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object Package/onvif/CMakeFiles/Onvif.dir/main.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/main.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/main.c
 
 Package/onvif/CMakeFiles/Onvif.dir/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/main.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/main.c > CMakeFiles/Onvif.dir/main.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/main.c > CMakeFiles/Onvif.dir/main.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/main.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/main.c -o CMakeFiles/Onvif.dir/main.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/main.c -o CMakeFiles/Onvif.dir/main.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif.c.o: ../Package/onvif/onvif.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif.c > CMakeFiles/Onvif.dir/onvif.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif.c > CMakeFiles/Onvif.dir/onvif.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif.c -o CMakeFiles/Onvif.dir/onvif.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif.c -o CMakeFiles/Onvif.dir/onvif.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.o: ../Package/onvif/onvif_discovery.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_discovery.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_discovery.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_discovery.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_discovery.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif_discovery.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_discovery.c > CMakeFiles/Onvif.dir/onvif_discovery.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_discovery.c > CMakeFiles/Onvif.dir/onvif_discovery.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_discovery.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif_discovery.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_discovery.c -o CMakeFiles/Onvif.dir/onvif_discovery.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_discovery.c -o CMakeFiles/Onvif.dir/onvif_discovery.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.o: ../Package/onvif/onvif_error_respones.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_error_respones.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_error_respones.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_error_respones.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_error_respones.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif_error_respones.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_error_respones.c > CMakeFiles/Onvif.dir/onvif_error_respones.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_error_respones.c > CMakeFiles/Onvif.dir/onvif_error_respones.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_error_respones.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif_error_respones.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_error_respones.c -o CMakeFiles/Onvif.dir/onvif_error_respones.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_error_respones.c -o CMakeFiles/Onvif.dir/onvif_error_respones.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.o: ../Package/onvif/onvif_function.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_function.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_function.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_function.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_function.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif_function.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_function.c > CMakeFiles/Onvif.dir/onvif_function.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_function.c > CMakeFiles/Onvif.dir/onvif_function.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_function.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif_function.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_function.c -o CMakeFiles/Onvif.dir/onvif_function.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_function.c -o CMakeFiles/Onvif.dir/onvif_function.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.o: ../Package/onvif/onvif_serve.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_serve.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_serve.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_serve.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_serve.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif_serve.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_serve.c > CMakeFiles/Onvif.dir/onvif_serve.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_serve.c > CMakeFiles/Onvif.dir/onvif_serve.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_serve.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif_serve.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_serve.c -o CMakeFiles/Onvif.dir/onvif_serve.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_serve.c -o CMakeFiles/Onvif.dir/onvif_serve.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.o: ../Package/onvif/onvif_threadpool.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_threadpool.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_threadpool.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/onvif_threadpool.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_threadpool.c
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/onvif_threadpool.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_threadpool.c > CMakeFiles/Onvif.dir/onvif_threadpool.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_threadpool.c > CMakeFiles/Onvif.dir/onvif_threadpool.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/onvif_threadpool.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/onvif_threadpool.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/onvif_threadpool.c -o CMakeFiles/Onvif.dir/onvif_threadpool.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/onvif_threadpool.c -o CMakeFiles/Onvif.dir/onvif_threadpool.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/sha1.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/sha1.c.o: ../Package/onvif/sha1.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object Package/onvif/CMakeFiles/Onvif.dir/sha1.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/sha1.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/sha1.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object Package/onvif/CMakeFiles/Onvif.dir/sha1.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/sha1.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/sha1.c
 
 Package/onvif/CMakeFiles/Onvif.dir/sha1.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/sha1.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/sha1.c > CMakeFiles/Onvif.dir/sha1.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/sha1.c > CMakeFiles/Onvif.dir/sha1.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/sha1.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/sha1.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/sha1.c -o CMakeFiles/Onvif.dir/sha1.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/sha1.c -o CMakeFiles/Onvif.dir/sha1.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.o: ../Package/onvif/xml_get_data.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/xml_get_data.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_get_data.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/xml_get_data.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_get_data.c
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/xml_get_data.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_get_data.c > CMakeFiles/Onvif.dir/xml_get_data.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_get_data.c > CMakeFiles/Onvif.dir/xml_get_data.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_get_data.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/xml_get_data.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_get_data.c -o CMakeFiles/Onvif.dir/xml_get_data.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_get_data.c -o CMakeFiles/Onvif.dir/xml_get_data.c.s
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.o: Package/onvif/CMakeFiles/Onvif.dir/flags.make
 Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.o: ../Package/onvif/xml_node.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/xml_node.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_node.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Onvif.dir/xml_node.c.o   -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_node.c
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Onvif.dir/xml_node.c.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_node.c > CMakeFiles/Onvif.dir/xml_node.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_node.c > CMakeFiles/Onvif.dir/xml_node.c.i
 
 Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Onvif.dir/xml_node.c.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/xml_node.c -o CMakeFiles/Onvif.dir/xml_node.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && arm-rockchip830-linux-uclibcgnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/xml_node.c -o CMakeFiles/Onvif.dir/xml_node.c.s
 
 # Object files for target Onvif
 Onvif_OBJECTS = \
@@ -260,9 +260,9 @@ Onvif_EXTERNAL_OBJECTS =
 ../Lib/Package/libOnvif.a: Package/onvif/CMakeFiles/Onvif.dir/xml_node.c.o
 ../Lib/Package/libOnvif.a: Package/onvif/CMakeFiles/Onvif.dir/build.make
 ../Lib/Package/libOnvif.a: Package/onvif/CMakeFiles/Onvif.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking C static library ../../../Lib/Package/libOnvif.a"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && $(CMAKE_COMMAND) -P CMakeFiles/Onvif.dir/cmake_clean_target.cmake
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Onvif.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking C static library ../../../Lib/Package/libOnvif.a"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && $(CMAKE_COMMAND) -P CMakeFiles/Onvif.dir/cmake_clean_target.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Onvif.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 Package/onvif/CMakeFiles/Onvif.dir/build: ../Lib/Package/libOnvif.a
@@ -270,10 +270,10 @@ Package/onvif/CMakeFiles/Onvif.dir/build: ../Lib/Package/libOnvif.a
 .PHONY : Package/onvif/CMakeFiles/Onvif.dir/build
 
 Package/onvif/CMakeFiles/Onvif.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif && $(CMAKE_COMMAND) -P CMakeFiles/Onvif.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif && $(CMAKE_COMMAND) -P CMakeFiles/Onvif.dir/cmake_clean.cmake
 .PHONY : Package/onvif/CMakeFiles/Onvif.dir/clean
 
 Package/onvif/CMakeFiles/Onvif.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/onvif/CMakeFiles/Onvif.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/onvif/CMakeFiles/Onvif.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : Package/onvif/CMakeFiles/Onvif.dir/depend
 

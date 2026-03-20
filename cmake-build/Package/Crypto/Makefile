@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Crypto/CMakeFiles/progress.marks
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Crypto/CMakeFiles/progress.marks
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/clean
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 Package/Crypto/CMakeFiles/DG_crypto.dir/rule:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/CMakeFiles/DG_crypto.dir/rule
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/Crypto/CMakeFiles/DG_crypto.dir/rule
 .PHONY : Package/Crypto/CMakeFiles/DG_crypto.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ DG_crypto: Package/Crypto/CMakeFiles/DG_crypto.dir/rule
 
 # fast build rule for target.
 DG_crypto/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/build
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/build
 .PHONY : DG_crypto/fast
 
 Source/aes.o: Source/aes.c.o
@@ -131,7 +131,7 @@ Source/aes.o: Source/aes.c.o
 
 # target to build an object file
 Source/aes.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.o
 .PHONY : Source/aes.c.o
 
 Source/aes.i: Source/aes.c.i
@@ -140,7 +140,7 @@ Source/aes.i: Source/aes.c.i
 
 # target to preprocess a source file
 Source/aes.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.i
 .PHONY : Source/aes.c.i
 
 Source/aes.s: Source/aes.c.s
@@ -149,7 +149,7 @@ Source/aes.s: Source/aes.c.s
 
 # target to generate assembly for a file
 Source/aes.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/aes.c.s
 .PHONY : Source/aes.c.s
 
 Source/crypto.o: Source/crypto.c.o
@@ -158,7 +158,7 @@ Source/crypto.o: Source/crypto.c.o
 
 # target to build an object file
 Source/crypto.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.o
 .PHONY : Source/crypto.c.o
 
 Source/crypto.i: Source/crypto.c.i
@@ -167,7 +167,7 @@ Source/crypto.i: Source/crypto.c.i
 
 # target to preprocess a source file
 Source/crypto.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.i
 .PHONY : Source/crypto.c.i
 
 Source/crypto.s: Source/crypto.c.s
@@ -176,7 +176,7 @@ Source/crypto.s: Source/crypto.c.s
 
 # target to generate assembly for a file
 Source/crypto.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/Crypto/CMakeFiles/DG_crypto.dir/build.make Package/Crypto/CMakeFiles/DG_crypto.dir/Source/crypto.c.s
 .PHONY : Source/crypto.c.s
 
 # Help Target
@@ -205,6 +205,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

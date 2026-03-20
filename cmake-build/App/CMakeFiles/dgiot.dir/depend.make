@@ -500,8 +500,8 @@ App/CMakeFiles/dgiot.dir/Inifile.cpp.o: ../App/tuya/include/tuya_ipc_system_cont
 
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Encryption/Encryption.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/ProductCof/ProductCof.h
-App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/config/HttpConfigProvider.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
+App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/config/LocalConfigProvider.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.h
@@ -609,6 +609,9 @@ App/CMakeFiles/dgiot.dir/Main.cpp.o: ../Middleware/Include/PAL/System.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../Middleware/Include/PAL/Video.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../Middleware/Include/PAL/WatchDog.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../Middleware/Include/PAL/libdmc.h
+App/CMakeFiles/dgiot.dir/Main.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181ClientSDK.h
+App/CMakeFiles/dgiot.dir/Main.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/dgiot.dir/Main.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Common.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/HttpServer/HttpServer.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Main.cpp
@@ -631,9 +634,6 @@ App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/ProduceNew/NetWifi.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/ProduceNew/Produce.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/ProtocolManager.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/ProtocolService.h
-App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/gb28181/GB28181ClientSDK.h
-App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Ptz/Ptz.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/QrCode/QrCode.h
 App/CMakeFiles/dgiot.dir/Main.cpp.o: ../App/Rtsp/live_rtsp.h
@@ -3506,16 +3506,13 @@ App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o: ../Middleware/Include/PAL/
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o: ../App/ProductCof/ProductCof.cpp
 App/CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o: ../App/ProductCof/ProductCof.h
 
-App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/config/HttpConfigProvider.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/config/LocalConfigProvider.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.h
-App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181ClientSDK.h
-App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/GB28181RtpPsSender.h
-App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Ptz/Ptz.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/DiskManager.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/Mp4_Demuxer.h
@@ -3524,6 +3521,7 @@ App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/Stora
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/StorageManager.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/Storage_api.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Storage/lg/mp4_muxing.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ExchangeAL/CameraExchange.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ExchangeAL/CommExchange.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ExchangeAL/Exchange.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ExchangeAL/ExchangeKind.h
@@ -3581,22 +3579,30 @@ App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ffmpeg/libav
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ffmpeg/libswresample/swresample.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Include/ffmpeg/libswresample/version.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/Audio_coder.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/Camera.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/Capture.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/MotionDetect.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/Types.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/Video.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../Middleware/Include/PAL/libdmc.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/CMS1400Struct.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181ClientSDK.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/LowerGAT1400Observer.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
+App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/ProtocolManager.cpp
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/ProtocolManager.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/ProtocolService.h
 App/CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o: ../App/Protocol/gat1400/GAT1400ClientService.h
 
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: ../App/Protocol/config/HttpConfigProvider.cpp
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: ../App/Protocol/config/HttpConfigProvider.h
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
-App/CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Inifile.h
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Protocol/config/LocalConfigProvider.cpp
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Protocol/config/LocalConfigProvider.h
+App/CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 
+App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/CMS1400Struct.h
 App/CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/LowerGAT1400Observer.h
@@ -3624,6 +3630,7 @@ App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/O
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Pcba/Pcba.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/ProduceNew/Produce.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/ProductCof/ProductCof.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Ptz/Ptz.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/QrCode/QrCode.h
@@ -3770,15 +3777,16 @@ App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../Middl
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../Middleware/Include/PAL/Video.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../Middleware/Include/PAL/WatchDog.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../Middleware/Include/PAL/libdmc.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.cpp
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.h
-App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/ProtocolManager.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/ProtocolService.h
-App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/config/HttpConfigProvider.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/config/LocalConfigProvider.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.h
@@ -3830,11 +3838,12 @@ App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ..
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../Include/ffmpeg/libswresample/version.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../Package/jsoncpp/include/json/allocator.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../Package/jsoncpp/include/json/config.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.h
-App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../Middleware/Include/PAL/Audio.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../Middleware/Include/PAL/Audio_coder.h
@@ -3845,6 +3854,7 @@ App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../Middlewa
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.cpp
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ListenBridge.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.h
 
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/ProtocolLog.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../third_party/media-server/libmpeg/include/mpeg-proto.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../third_party/media-server/libmpeg/include/mpeg-ps.h
@@ -3852,6 +3862,7 @@ App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../third_par
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../third_party/media-server/librtp/include/rtp-profile.h
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/gb28181/GB28181RtpPsSender.cpp
 App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/gb28181/GB28181RtpPsSender.h
+App/CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181RtpPsSender.cpp.o: ../App/Protocol/gb28181/MediaServerCompat.h
 
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o: ../App/Common.h
 App/CMakeFiles/dgiot.dir/Ptz/Ptz.cpp.o: ../App/Encryption/Encryption.h
@@ -6887,15 +6898,13 @@ App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Onvif/Onvi
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Pcba/Pcba.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/ProduceNew/Produce.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/ProductCof/ProductCof.h
-App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/config/HttpConfigProvider.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/config/IExternalConfigProvider.h
+App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/config/LocalConfigProvider.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/config/ProtocolExternalConfig.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/GB28181BroadcastBridge.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/GB28181ClientReceiverAdapter.h
-App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/GB28181ListenBridge.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/GB28181RtpPsSender.h
-App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Ptz/Ptz.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/QrCode/QrCode.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Rtsp/live_rtsp.h
@@ -7026,6 +7035,8 @@ App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../Middleware/Inc
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../Middleware/Include/PAL/Video.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../Middleware/Include/PAL/WatchDog.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../Middleware/Include/PAL/libdmc.h
+App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Main.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/ProtocolManager.h
 App/CMakeFiles/dgiot.dir/tuya/tuya_ipc_sdk_upgrade_demo.cpp.o: ../App/Protocol/ProtocolService.h

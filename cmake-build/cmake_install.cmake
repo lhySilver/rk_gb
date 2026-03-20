@@ -1,4 +1,4 @@
-# Install script for directory: /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+# Install script for directory: /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/cmake_install.cmake")
-  include("/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App/cmake_install.cmake")
+  include("/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/cmake_install.cmake")
+  include("/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App/cmake_install.cmake")
 
 endif()
 
@@ -52,5 +52,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

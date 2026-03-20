@@ -46,34 +46,34 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/Comm
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../App/Protocol/gb28181/GB28181ClientSDK.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/CustomContainer.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181ClientSDK.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/NetSocketSDK.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/CustomContainer.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/NetSocketSDK.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipStackSDK.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/RtspParser.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.h
@@ -104,42 +104,42 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/Comm
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/gb_sip/install/include/osipparser2/osip_const.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/gb_sip/install/include/osipparser2/osip_list.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/gb_sip/install/include/osipparser2/osip_uri.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/gb_sip/install/include/osipparser2/sdp_message.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/gbutil.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/gbutil.h
@@ -355,13 +355,13 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/Comm
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.h
 
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../App/Protocol/gb28181/GB28181Defs.h
-App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../App/Protocol/gb28181/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
+App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.h
 

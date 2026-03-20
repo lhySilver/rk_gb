@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include Package/Manager/CMakeFiles/Manager.dir/depend.make
@@ -59,94 +59,94 @@ include Package/Manager/CMakeFiles/Manager.dir/flags.make
 
 Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o: ../Package/Manager/Source/ConfigManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/ConfigManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/ConfigManager.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/ConfigManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/ConfigManager.cpp > CMakeFiles/Manager.dir/Source/ConfigManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/ConfigManager.cpp > CMakeFiles/Manager.dir/Source/ConfigManager.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/ConfigManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/ConfigManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/ConfigManager.cpp -o CMakeFiles/Manager.dir/Source/ConfigManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/ConfigManager.cpp -o CMakeFiles/Manager.dir/Source/ConfigManager.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.o: ../Package/Manager/Source/User.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/User.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/User.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/User.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/User.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/User.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/User.cpp > CMakeFiles/Manager.dir/Source/User.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/User.cpp > CMakeFiles/Manager.dir/Source/User.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/User.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/User.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/User.cpp -o CMakeFiles/Manager.dir/Source/User.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/User.cpp -o CMakeFiles/Manager.dir/Source/User.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.o: ../Package/Manager/Source/UserManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/UserManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/UserManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/UserManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/UserManager.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/UserManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/UserManager.cpp > CMakeFiles/Manager.dir/Source/UserManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/UserManager.cpp > CMakeFiles/Manager.dir/Source/UserManager.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/UserManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/UserManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/UserManager.cpp -o CMakeFiles/Manager.dir/Source/UserManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/UserManager.cpp -o CMakeFiles/Manager.dir/Source/UserManager.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.o: ../Package/Manager/Source/Event.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/Event.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Event.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/Event.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Event.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/Event.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Event.cpp > CMakeFiles/Manager.dir/Source/Event.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Event.cpp > CMakeFiles/Manager.dir/Source/Event.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Event.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/Event.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Event.cpp -o CMakeFiles/Manager.dir/Source/Event.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Event.cpp -o CMakeFiles/Manager.dir/Source/Event.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.o: ../Package/Manager/Source/MagicBox.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/MagicBox.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/MagicBox.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/MagicBox.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/MagicBox.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/MagicBox.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/MagicBox.cpp > CMakeFiles/Manager.dir/Source/MagicBox.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/MagicBox.cpp > CMakeFiles/Manager.dir/Source/MagicBox.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/MagicBox.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/MagicBox.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/MagicBox.cpp -o CMakeFiles/Manager.dir/Source/MagicBox.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/MagicBox.cpp -o CMakeFiles/Manager.dir/Source/MagicBox.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o: ../Package/Manager/Source/DefaultConfig.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/DefaultConfig.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/DefaultConfig.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/DefaultConfig.cpp > CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/DefaultConfig.cpp > CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/DefaultConfig.cpp -o CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/DefaultConfig.cpp -o CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.s
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.o: Package/Manager/CMakeFiles/Manager.dir/flags.make
 Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.o: ../Package/Manager/Source/Md5.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/Md5.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Md5.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Manager.dir/Source/Md5.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Md5.cpp
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Manager.dir/Source/Md5.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Md5.cpp > CMakeFiles/Manager.dir/Source/Md5.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Md5.cpp > CMakeFiles/Manager.dir/Source/Md5.cpp.i
 
 Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Manager.dir/Source/Md5.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager/Source/Md5.cpp -o CMakeFiles/Manager.dir/Source/Md5.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager/Source/Md5.cpp -o CMakeFiles/Manager.dir/Source/Md5.cpp.s
 
 # Object files for target Manager
 Manager_OBJECTS = \
@@ -170,9 +170,9 @@ Manager_EXTERNAL_OBJECTS =
 ../Lib/Package/libManager.a: Package/Manager/CMakeFiles/Manager.dir/Source/Md5.cpp.o
 ../Lib/Package/libManager.a: Package/Manager/CMakeFiles/Manager.dir/build.make
 ../Lib/Package/libManager.a: Package/Manager/CMakeFiles/Manager.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX static library ../../../Lib/Package/libManager.a"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && $(CMAKE_COMMAND) -P CMakeFiles/Manager.dir/cmake_clean_target.cmake
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Manager.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX static library ../../../Lib/Package/libManager.a"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && $(CMAKE_COMMAND) -P CMakeFiles/Manager.dir/cmake_clean_target.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Manager.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 Package/Manager/CMakeFiles/Manager.dir/build: ../Lib/Package/libManager.a
@@ -180,10 +180,10 @@ Package/Manager/CMakeFiles/Manager.dir/build: ../Lib/Package/libManager.a
 .PHONY : Package/Manager/CMakeFiles/Manager.dir/build
 
 Package/Manager/CMakeFiles/Manager.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager && $(CMAKE_COMMAND) -P CMakeFiles/Manager.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager && $(CMAKE_COMMAND) -P CMakeFiles/Manager.dir/cmake_clean.cmake
 .PHONY : Package/Manager/CMakeFiles/Manager.dir/clean
 
 Package/Manager/CMakeFiles/Manager.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Manager /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Manager/CMakeFiles/Manager.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Manager /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Manager/CMakeFiles/Manager.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : Package/Manager/CMakeFiles/Manager.dir/depend
 

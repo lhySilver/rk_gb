@@ -6,6 +6,16 @@
 
 #IncludeRegexTransform: 
 
+../App/Protocol/ProtocolLog.h
+stdarg.h
+-
+stdio.h
+-
+sys/time.h
+-
+time.h
+-
+
 ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 assert.h
 -
@@ -38,9 +48,11 @@ typeinfo.h
 strstream
 -
 
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/sdk_port/ShareSdkShim.cpp
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/sdk_port/ShareSdkShim.cpp
 ShareSDK.h
-/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/sdk_port/ShareSDK.h
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/sdk_port/ShareSDK.h
+ProtocolLog.h
+/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/sdk_port/ProtocolLog.h
 pthread.h
 -
 unistd.h

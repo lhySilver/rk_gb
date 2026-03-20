@@ -1,4 +1,4 @@
-# Install script for directory: /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Infra
+# Install script for directory: /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Infra
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

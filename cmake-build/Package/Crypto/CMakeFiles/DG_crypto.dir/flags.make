@@ -6,5 +6,5 @@ C_FLAGS =   -o3 -w -Wno-psabi
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Crypto/Include 
+C_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Crypto/Include 
 

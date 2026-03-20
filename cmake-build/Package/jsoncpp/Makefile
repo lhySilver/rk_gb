@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/jsoncpp/CMakeFiles/progress.marks
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/jsoncpp/CMakeFiles/progress.marks
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/clean
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 Package/jsoncpp/CMakeFiles/json.dir/rule:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/CMakeFiles/json.dir/rule
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 Package/jsoncpp/CMakeFiles/json.dir/rule
 .PHONY : Package/jsoncpp/CMakeFiles/json.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ json: Package/jsoncpp/CMakeFiles/json.dir/rule
 
 # fast build rule for target.
 json/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/build
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/build
 .PHONY : json/fast
 
 json_reader.o: json_reader.cpp.o
@@ -131,7 +131,7 @@ json_reader.o: json_reader.cpp.o
 
 # target to build an object file
 json_reader.cpp.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.o
 .PHONY : json_reader.cpp.o
 
 json_reader.i: json_reader.cpp.i
@@ -140,7 +140,7 @@ json_reader.i: json_reader.cpp.i
 
 # target to preprocess a source file
 json_reader.cpp.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.i
 .PHONY : json_reader.cpp.i
 
 json_reader.s: json_reader.cpp.s
@@ -149,7 +149,7 @@ json_reader.s: json_reader.cpp.s
 
 # target to generate assembly for a file
 json_reader.cpp.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_reader.cpp.s
 .PHONY : json_reader.cpp.s
 
 json_value.o: json_value.cpp.o
@@ -158,7 +158,7 @@ json_value.o: json_value.cpp.o
 
 # target to build an object file
 json_value.cpp.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.o
 .PHONY : json_value.cpp.o
 
 json_value.i: json_value.cpp.i
@@ -167,7 +167,7 @@ json_value.i: json_value.cpp.i
 
 # target to preprocess a source file
 json_value.cpp.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.i
 .PHONY : json_value.cpp.i
 
 json_value.s: json_value.cpp.s
@@ -176,7 +176,7 @@ json_value.s: json_value.cpp.s
 
 # target to generate assembly for a file
 json_value.cpp.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_value.cpp.s
 .PHONY : json_value.cpp.s
 
 json_writer.o: json_writer.cpp.o
@@ -185,7 +185,7 @@ json_writer.o: json_writer.cpp.o
 
 # target to build an object file
 json_writer.cpp.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.o
 .PHONY : json_writer.cpp.o
 
 json_writer.i: json_writer.cpp.i
@@ -194,7 +194,7 @@ json_writer.i: json_writer.cpp.i
 
 # target to preprocess a source file
 json_writer.cpp.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.i
 .PHONY : json_writer.cpp.i
 
 json_writer.s: json_writer.cpp.s
@@ -203,7 +203,7 @@ json_writer.s: json_writer.cpp.s
 
 # target to generate assembly for a file
 json_writer.cpp.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(MAKE) -f Package/jsoncpp/CMakeFiles/json.dir/build.make Package/jsoncpp/CMakeFiles/json.dir/json_writer.cpp.s
 .PHONY : json_writer.cpp.s
 
 # Help Target
@@ -235,6 +235,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

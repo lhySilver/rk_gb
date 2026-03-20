@@ -23,7 +23,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/dgiot.dir/ProduceNew/NetWifi.cpp.o"
   "CMakeFiles/dgiot.dir/ProductCof/ProductCof.cpp.o"
   "CMakeFiles/dgiot.dir/Protocol/ProtocolManager.cpp.o"
-  "CMakeFiles/dgiot.dir/Protocol/config/HttpConfigProvider.cpp.o"
+  "CMakeFiles/dgiot.dir/Protocol/config/LocalConfigProvider.cpp.o"
   "CMakeFiles/dgiot.dir/Protocol/gat1400/GAT1400ClientService.cpp.o"
   "CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181BroadcastBridge.cpp.o"
   "CMakeFiles/dgiot.dir/Protocol/gb28181/GB28181ClientReceiverAdapter.cpp.o"

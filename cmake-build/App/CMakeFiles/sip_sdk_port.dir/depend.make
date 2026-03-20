@@ -97,6 +97,7 @@ App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/Si
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
 App/CMakeFiles/sip_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/SipSDK/common/ClientInfoManager.cpp

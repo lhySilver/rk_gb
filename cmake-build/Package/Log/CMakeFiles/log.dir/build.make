@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include Package/Log/CMakeFiles/log.dir/depend.make
@@ -59,29 +59,29 @@ include Package/Log/CMakeFiles/log.dir/flags.make
 
 Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o: Package/Log/CMakeFiles/log.dir/flags.make
 Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o: ../Package/Log/Source/LogManager.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/log.dir/Source/LogManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/LogManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/log.dir/Source/LogManager.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/LogManager.cpp
 
 Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/log.dir/Source/LogManager.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/LogManager.cpp > CMakeFiles/log.dir/Source/LogManager.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/LogManager.cpp > CMakeFiles/log.dir/Source/LogManager.cpp.i
 
 Package/Log/CMakeFiles/log.dir/Source/LogManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/log.dir/Source/LogManager.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/LogManager.cpp -o CMakeFiles/log.dir/Source/LogManager.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/LogManager.cpp -o CMakeFiles/log.dir/Source/LogManager.cpp.s
 
 Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o: Package/Log/CMakeFiles/log.dir/flags.make
 Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o: ../Package/Log/Source/XMDebug.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/log.dir/Source/XMDebug.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/XMDebug.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/log.dir/Source/XMDebug.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/XMDebug.cpp
 
 Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/log.dir/Source/XMDebug.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/XMDebug.cpp > CMakeFiles/log.dir/Source/XMDebug.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/XMDebug.cpp > CMakeFiles/log.dir/Source/XMDebug.cpp.i
 
 Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/log.dir/Source/XMDebug.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log/Source/XMDebug.cpp -o CMakeFiles/log.dir/Source/XMDebug.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log/Source/XMDebug.cpp -o CMakeFiles/log.dir/Source/XMDebug.cpp.s
 
 # Object files for target log
 log_OBJECTS = \
@@ -95,9 +95,9 @@ log_EXTERNAL_OBJECTS =
 ../Lib/Package/liblog.a: Package/Log/CMakeFiles/log.dir/Source/XMDebug.cpp.o
 ../Lib/Package/liblog.a: Package/Log/CMakeFiles/log.dir/build.make
 ../Lib/Package/liblog.a: Package/Log/CMakeFiles/log.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library ../../../Lib/Package/liblog.a"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && $(CMAKE_COMMAND) -P CMakeFiles/log.dir/cmake_clean_target.cmake
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/log.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library ../../../Lib/Package/liblog.a"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && $(CMAKE_COMMAND) -P CMakeFiles/log.dir/cmake_clean_target.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/log.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 Package/Log/CMakeFiles/log.dir/build: ../Lib/Package/liblog.a
@@ -105,10 +105,10 @@ Package/Log/CMakeFiles/log.dir/build: ../Lib/Package/liblog.a
 .PHONY : Package/Log/CMakeFiles/log.dir/build
 
 Package/Log/CMakeFiles/log.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log && $(CMAKE_COMMAND) -P CMakeFiles/log.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log && $(CMAKE_COMMAND) -P CMakeFiles/log.dir/cmake_clean.cmake
 .PHONY : Package/Log/CMakeFiles/log.dir/clean
 
 Package/Log/CMakeFiles/log.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/Log /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/Package/Log/CMakeFiles/log.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/Log /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/Package/Log/CMakeFiles/log.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : Package/Log/CMakeFiles/log.dir/depend
 

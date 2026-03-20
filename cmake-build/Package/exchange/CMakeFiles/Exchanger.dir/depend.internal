@@ -18,7 +18,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/CameraExchange.cpp.o
  ../Include/Types/Types.h
  ../Middleware/Include/PAL/Camera.h
  ../Middleware/Include/PAL/Video.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/CameraExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/CameraExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/CaptureExchange.cpp.o
  ../Include/ExchangeAL/CaptureExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -34,7 +34,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/CaptureExchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/CaptureExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/CaptureExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/ChainExchange.cpp.o
  ../Include/ExchangeAL/CaptureExchange.h
  ../Include/ExchangeAL/ChainExchange.h
@@ -51,7 +51,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/ChainExchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/ChainExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/ChainExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/CommExchange.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -74,7 +74,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/CommExchange.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/CommExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/CommExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/Exchange.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/Infra/Time.h
@@ -89,7 +89,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/Exchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/Exchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/Exchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/ExchangeKind.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/ExchangeAL/ExchangeKind.h
@@ -105,7 +105,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/ExchangeKind.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/ExchangeKind.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/ExchangeKind.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/GUIExchange.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -131,7 +131,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/GUIExchange.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/GUIExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/GUIExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/GeneralExchange.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/ExchangeAL/GUIExchange.h
@@ -148,7 +148,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/GeneralExchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/GeneralExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/GeneralExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/ManagerExchange.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/ExchangeAL/ManagerExchange.h
@@ -164,7 +164,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/ManagerExchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/ManagerExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/ManagerExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/MediaExchange.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -188,7 +188,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/MediaExchange.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/MediaExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/MediaExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPAbilitySet.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -216,7 +216,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPAbilitySet.cpp.o
  ../Middleware/Include/PAL/Capture.h
  ../Middleware/Include/PAL/MotionDetect.h
  ../Middleware/Include/PAL/libdmc.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/NetIPAbilitySet.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/NetIPAbilitySet.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPDeviceInfo.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/ExchangeAL/NetIPDeviceInfo.h
@@ -232,7 +232,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPDeviceInfo.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/NetIPDeviceInfo.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/NetIPDeviceInfo.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPOperation.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -258,7 +258,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/NetIPOperation.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/NetIPOperation.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/NetIPOperation.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/NetPlatform.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -284,7 +284,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/NetPlatform.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/NetPlatform.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/NetPlatform.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/NetWorkExchange.cpp.o
  ../Include/ExchangeAL/CommExchange.h
  ../Include/ExchangeAL/Exchange.h
@@ -309,7 +309,7 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/NetWorkExchange.cpp.o
  ../Include/Manager/EventManager.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/NetWorkExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/NetWorkExchange.cpp
 Package/exchange/CMakeFiles/Exchanger.dir/Source/StorageExchange.cpp.o
  ../Include/ExchangeAL/Exchange.h
  ../Include/ExchangeAL/StorageExchange.h
@@ -325,4 +325,4 @@ Package/exchange/CMakeFiles/Exchanger.dir/Source/StorageExchange.cpp.o
  ../Include/Json/writer.h
  ../Include/Types/Defs.h
  ../Include/Types/Types.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/exchange/Source/StorageExchange.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/exchange/Source/StorageExchange.cpp

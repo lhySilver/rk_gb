@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build
 
 # Include any dependencies generated for this target.
 include App/CMakeFiles/gat1400_client_sdk_port.dir/depend.make
@@ -59,55 +59,55 @@ include App/CMakeFiles/gat1400_client_sdk_port.dir/flags.make
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o: App/CMakeFiles/gat1400_client_sdk_port.dir/flags.make
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.i
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/Base64Coder.cpp.s
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o: App/CMakeFiles/gat1400_client_sdk_port.dir/flags.make
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o: ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.i
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/PUB_md5.cpp.s
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o: App/CMakeFiles/gat1400_client_sdk_port.dir/flags.make
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.i
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/include/GAT1400Json.cpp.s
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o: App/CMakeFiles/gat1400_client_sdk_port.dir/flags.make
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o: ../third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o -c /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.i"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp > CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.i
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.s"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && arm-rockchip830-linux-uclibcgnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp -o CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.s
 
 # Object files for target gat1400_client_sdk_port
 gat1400_client_sdk_port_OBJECTS = \
@@ -125,9 +125,9 @@ App/libgat1400_client_sdk_port.a: App/CMakeFiles/gat1400_client_sdk_port.dir/__/
 App/libgat1400_client_sdk_port.a: App/CMakeFiles/gat1400_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GAT1400SDK/GAT1400OUT/HttpClient/http_auth.cpp.o
 App/libgat1400_client_sdk_port.a: App/CMakeFiles/gat1400_client_sdk_port.dir/build.make
 App/libgat1400_client_sdk_port.a: App/CMakeFiles/gat1400_client_sdk_port.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libgat1400_client_sdk_port.a"
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/gat1400_client_sdk_port.dir/cmake_clean_target.cmake
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gat1400_client_sdk_port.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libgat1400_client_sdk_port.a"
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/gat1400_client_sdk_port.dir/cmake_clean_target.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gat1400_client_sdk_port.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 App/CMakeFiles/gat1400_client_sdk_port.dir/build: App/libgat1400_client_sdk_port.a
@@ -135,10 +135,10 @@ App/CMakeFiles/gat1400_client_sdk_port.dir/build: App/libgat1400_client_sdk_port
 .PHONY : App/CMakeFiles/gat1400_client_sdk_port.dir/build
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/gat1400_client_sdk_port.dir/cmake_clean.cmake
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App && $(CMAKE_COMMAND) -P CMakeFiles/gat1400_client_sdk_port.dir/cmake_clean.cmake
 .PHONY : App/CMakeFiles/gat1400_client_sdk_port.dir/clean
 
 App/CMakeFiles/gat1400_client_sdk_port.dir/depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/cmake-build/App/CMakeFiles/gat1400_client_sdk_port.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/cmake-build/App/CMakeFiles/gat1400_client_sdk_port.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : App/CMakeFiles/gat1400_client_sdk_port.dir/depend
 

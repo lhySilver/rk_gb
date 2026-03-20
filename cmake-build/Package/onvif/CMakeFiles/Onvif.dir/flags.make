@@ -6,5 +6,5 @@ C_FLAGS =   -o3 -w -Wno-psabi -Wno-stringop-overflow
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/. -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/onvif/inc 
+C_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/. -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/onvif/inc 
 

@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake
+CMAKE_COMMAND = /usr/local/bin/cmake
 
 # The command to remove a file.
-RM = /opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -E remove -f
+RM = /usr/local/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware
+CMAKE_SOURCE_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build
+CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middle
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -70,7 +70,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/cmake-3.16.3-Linux-x86_64/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/usr/local/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -80,14 +80,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build/libmpp/CMakeFiles/progress.marks
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build/CMakeFiles 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build/CMakeFiles /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build/libmpp/CMakeFiles/progress.marks
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/clean
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/preinstall
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 libmpp/CMakeFiles/mpp.dir/rule:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/CMakeFiles/mpp.dir/rule
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f CMakeFiles/Makefile2 libmpp/CMakeFiles/mpp.dir/rule
 .PHONY : libmpp/CMakeFiles/mpp.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ mpp: libmpp/CMakeFiles/mpp.dir/rule
 
 # fast build rule for target.
 mpp/fast:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/build
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/build
 .PHONY : mpp/fast
 
 libdmc/libdmc.o: libdmc/libdmc.c.o
@@ -131,7 +131,7 @@ libdmc/libdmc.o: libdmc/libdmc.c.o
 
 # target to build an object file
 libdmc/libdmc.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.o
 .PHONY : libdmc/libdmc.c.o
 
 libdmc/libdmc.i: libdmc/libdmc.c.i
@@ -140,7 +140,7 @@ libdmc/libdmc.i: libdmc/libdmc.c.i
 
 # target to preprocess a source file
 libdmc/libdmc.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.i
 .PHONY : libdmc/libdmc.c.i
 
 libdmc/libdmc.s: libdmc/libdmc.c.s
@@ -149,7 +149,7 @@ libdmc/libdmc.s: libdmc/libdmc.c.s
 
 # target to generate assembly for a file
 libdmc/libdmc.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/libdmc/libdmc.c.s
 .PHONY : libdmc/libdmc.c.s
 
 rkipc/common/common.o: rkipc/common/common.c.o
@@ -158,7 +158,7 @@ rkipc/common/common.o: rkipc/common/common.c.o
 
 # target to build an object file
 rkipc/common/common.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.o
 .PHONY : rkipc/common/common.c.o
 
 rkipc/common/common.i: rkipc/common/common.c.i
@@ -167,7 +167,7 @@ rkipc/common/common.i: rkipc/common/common.c.i
 
 # target to preprocess a source file
 rkipc/common/common.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.i
 .PHONY : rkipc/common/common.c.i
 
 rkipc/common/common.s: rkipc/common/common.c.s
@@ -176,7 +176,7 @@ rkipc/common/common.s: rkipc/common/common.c.s
 
 # target to generate assembly for a file
 rkipc/common/common.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/common.c.s
 .PHONY : rkipc/common/common.c.s
 
 rkipc/common/event/event.o: rkipc/common/event/event.c.o
@@ -185,7 +185,7 @@ rkipc/common/event/event.o: rkipc/common/event/event.c.o
 
 # target to build an object file
 rkipc/common/event/event.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.o
 .PHONY : rkipc/common/event/event.c.o
 
 rkipc/common/event/event.i: rkipc/common/event/event.c.i
@@ -194,7 +194,7 @@ rkipc/common/event/event.i: rkipc/common/event/event.c.i
 
 # target to preprocess a source file
 rkipc/common/event/event.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.i
 .PHONY : rkipc/common/event/event.c.i
 
 rkipc/common/event/event.s: rkipc/common/event/event.c.s
@@ -203,7 +203,7 @@ rkipc/common/event/event.s: rkipc/common/event/event.c.s
 
 # target to generate assembly for a file
 rkipc/common/event/event.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/event/event.c.s
 .PHONY : rkipc/common/event/event.c.s
 
 rkipc/common/isp/rv1106/isp.o: rkipc/common/isp/rv1106/isp.c.o
@@ -212,7 +212,7 @@ rkipc/common/isp/rv1106/isp.o: rkipc/common/isp/rv1106/isp.c.o
 
 # target to build an object file
 rkipc/common/isp/rv1106/isp.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.o
 .PHONY : rkipc/common/isp/rv1106/isp.c.o
 
 rkipc/common/isp/rv1106/isp.i: rkipc/common/isp/rv1106/isp.c.i
@@ -221,7 +221,7 @@ rkipc/common/isp/rv1106/isp.i: rkipc/common/isp/rv1106/isp.c.i
 
 # target to preprocess a source file
 rkipc/common/isp/rv1106/isp.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.i
 .PHONY : rkipc/common/isp/rv1106/isp.c.i
 
 rkipc/common/isp/rv1106/isp.s: rkipc/common/isp/rv1106/isp.c.s
@@ -230,7 +230,7 @@ rkipc/common/isp/rv1106/isp.s: rkipc/common/isp/rv1106/isp.c.s
 
 # target to generate assembly for a file
 rkipc/common/isp/rv1106/isp.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/isp/rv1106/isp.c.s
 .PHONY : rkipc/common/isp/rv1106/isp.c.s
 
 rkipc/common/network/Hostapd.o: rkipc/common/network/Hostapd.c.o
@@ -239,7 +239,7 @@ rkipc/common/network/Hostapd.o: rkipc/common/network/Hostapd.c.o
 
 # target to build an object file
 rkipc/common/network/Hostapd.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.o
 .PHONY : rkipc/common/network/Hostapd.c.o
 
 rkipc/common/network/Hostapd.i: rkipc/common/network/Hostapd.c.i
@@ -248,7 +248,7 @@ rkipc/common/network/Hostapd.i: rkipc/common/network/Hostapd.c.i
 
 # target to preprocess a source file
 rkipc/common/network/Hostapd.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.i
 .PHONY : rkipc/common/network/Hostapd.c.i
 
 rkipc/common/network/Hostapd.s: rkipc/common/network/Hostapd.c.s
@@ -257,7 +257,7 @@ rkipc/common/network/Hostapd.s: rkipc/common/network/Hostapd.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/Hostapd.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Hostapd.c.s
 .PHONY : rkipc/common/network/Hostapd.c.s
 
 rkipc/common/network/RK_encode.o: rkipc/common/network/RK_encode.c.o
@@ -266,7 +266,7 @@ rkipc/common/network/RK_encode.o: rkipc/common/network/RK_encode.c.o
 
 # target to build an object file
 rkipc/common/network/RK_encode.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.o
 .PHONY : rkipc/common/network/RK_encode.c.o
 
 rkipc/common/network/RK_encode.i: rkipc/common/network/RK_encode.c.i
@@ -275,7 +275,7 @@ rkipc/common/network/RK_encode.i: rkipc/common/network/RK_encode.c.i
 
 # target to preprocess a source file
 rkipc/common/network/RK_encode.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.i
 .PHONY : rkipc/common/network/RK_encode.c.i
 
 rkipc/common/network/RK_encode.s: rkipc/common/network/RK_encode.c.s
@@ -284,7 +284,7 @@ rkipc/common/network/RK_encode.s: rkipc/common/network/RK_encode.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/RK_encode.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/RK_encode.c.s
 .PHONY : rkipc/common/network/RK_encode.c.s
 
 rkipc/common/network/Rk_wifi.o: rkipc/common/network/Rk_wifi.c.o
@@ -293,7 +293,7 @@ rkipc/common/network/Rk_wifi.o: rkipc/common/network/Rk_wifi.c.o
 
 # target to build an object file
 rkipc/common/network/Rk_wifi.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.o
 .PHONY : rkipc/common/network/Rk_wifi.c.o
 
 rkipc/common/network/Rk_wifi.i: rkipc/common/network/Rk_wifi.c.i
@@ -302,7 +302,7 @@ rkipc/common/network/Rk_wifi.i: rkipc/common/network/Rk_wifi.c.i
 
 # target to preprocess a source file
 rkipc/common/network/Rk_wifi.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.i
 .PHONY : rkipc/common/network/Rk_wifi.c.i
 
 rkipc/common/network/Rk_wifi.s: rkipc/common/network/Rk_wifi.c.s
@@ -311,7 +311,7 @@ rkipc/common/network/Rk_wifi.s: rkipc/common/network/Rk_wifi.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/Rk_wifi.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/Rk_wifi.c.s
 .PHONY : rkipc/common/network/Rk_wifi.c.s
 
 rkipc/common/network/gbk_to_utf8.o: rkipc/common/network/gbk_to_utf8.c.o
@@ -320,7 +320,7 @@ rkipc/common/network/gbk_to_utf8.o: rkipc/common/network/gbk_to_utf8.c.o
 
 # target to build an object file
 rkipc/common/network/gbk_to_utf8.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.o
 .PHONY : rkipc/common/network/gbk_to_utf8.c.o
 
 rkipc/common/network/gbk_to_utf8.i: rkipc/common/network/gbk_to_utf8.c.i
@@ -329,7 +329,7 @@ rkipc/common/network/gbk_to_utf8.i: rkipc/common/network/gbk_to_utf8.c.i
 
 # target to preprocess a source file
 rkipc/common/network/gbk_to_utf8.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.i
 .PHONY : rkipc/common/network/gbk_to_utf8.c.i
 
 rkipc/common/network/gbk_to_utf8.s: rkipc/common/network/gbk_to_utf8.c.s
@@ -338,7 +338,7 @@ rkipc/common/network/gbk_to_utf8.s: rkipc/common/network/gbk_to_utf8.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/gbk_to_utf8.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/gbk_to_utf8.c.s
 .PHONY : rkipc/common/network/gbk_to_utf8.c.s
 
 rkipc/common/network/network.o: rkipc/common/network/network.c.o
@@ -347,7 +347,7 @@ rkipc/common/network/network.o: rkipc/common/network/network.c.o
 
 # target to build an object file
 rkipc/common/network/network.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.o
 .PHONY : rkipc/common/network/network.c.o
 
 rkipc/common/network/network.i: rkipc/common/network/network.c.i
@@ -356,7 +356,7 @@ rkipc/common/network/network.i: rkipc/common/network/network.c.i
 
 # target to preprocess a source file
 rkipc/common/network/network.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.i
 .PHONY : rkipc/common/network/network.c.i
 
 rkipc/common/network/network.s: rkipc/common/network/network.c.s
@@ -365,7 +365,7 @@ rkipc/common/network/network.s: rkipc/common/network/network.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/network.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/network.c.s
 .PHONY : rkipc/common/network/network.c.s
 
 rkipc/common/network/ntp.o: rkipc/common/network/ntp.c.o
@@ -374,7 +374,7 @@ rkipc/common/network/ntp.o: rkipc/common/network/ntp.c.o
 
 # target to build an object file
 rkipc/common/network/ntp.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.o
 .PHONY : rkipc/common/network/ntp.c.o
 
 rkipc/common/network/ntp.i: rkipc/common/network/ntp.c.i
@@ -383,7 +383,7 @@ rkipc/common/network/ntp.i: rkipc/common/network/ntp.c.i
 
 # target to preprocess a source file
 rkipc/common/network/ntp.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.i
 .PHONY : rkipc/common/network/ntp.c.i
 
 rkipc/common/network/ntp.s: rkipc/common/network/ntp.c.s
@@ -392,7 +392,7 @@ rkipc/common/network/ntp.s: rkipc/common/network/ntp.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/ntp.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/ntp.c.s
 .PHONY : rkipc/common/network/ntp.c.s
 
 rkipc/common/network/utf8_to_gbk.o: rkipc/common/network/utf8_to_gbk.c.o
@@ -401,7 +401,7 @@ rkipc/common/network/utf8_to_gbk.o: rkipc/common/network/utf8_to_gbk.c.o
 
 # target to build an object file
 rkipc/common/network/utf8_to_gbk.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.o
 .PHONY : rkipc/common/network/utf8_to_gbk.c.o
 
 rkipc/common/network/utf8_to_gbk.i: rkipc/common/network/utf8_to_gbk.c.i
@@ -410,7 +410,7 @@ rkipc/common/network/utf8_to_gbk.i: rkipc/common/network/utf8_to_gbk.c.i
 
 # target to preprocess a source file
 rkipc/common/network/utf8_to_gbk.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.i
 .PHONY : rkipc/common/network/utf8_to_gbk.c.i
 
 rkipc/common/network/utf8_to_gbk.s: rkipc/common/network/utf8_to_gbk.c.s
@@ -419,7 +419,7 @@ rkipc/common/network/utf8_to_gbk.s: rkipc/common/network/utf8_to_gbk.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/utf8_to_gbk.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utf8_to_gbk.c.s
 .PHONY : rkipc/common/network/utf8_to_gbk.c.s
 
 rkipc/common/network/utility.o: rkipc/common/network/utility.c.o
@@ -428,7 +428,7 @@ rkipc/common/network/utility.o: rkipc/common/network/utility.c.o
 
 # target to build an object file
 rkipc/common/network/utility.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.o
 .PHONY : rkipc/common/network/utility.c.o
 
 rkipc/common/network/utility.i: rkipc/common/network/utility.c.i
@@ -437,7 +437,7 @@ rkipc/common/network/utility.i: rkipc/common/network/utility.c.i
 
 # target to preprocess a source file
 rkipc/common/network/utility.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.i
 .PHONY : rkipc/common/network/utility.c.i
 
 rkipc/common/network/utility.s: rkipc/common/network/utility.c.s
@@ -446,7 +446,7 @@ rkipc/common/network/utility.s: rkipc/common/network/utility.c.s
 
 # target to generate assembly for a file
 rkipc/common/network/utility.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/network/utility.c.s
 .PHONY : rkipc/common/network/utility.c.s
 
 rkipc/common/osd/bmp_reader.o: rkipc/common/osd/bmp_reader.c.o
@@ -455,7 +455,7 @@ rkipc/common/osd/bmp_reader.o: rkipc/common/osd/bmp_reader.c.o
 
 # target to build an object file
 rkipc/common/osd/bmp_reader.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.o
 .PHONY : rkipc/common/osd/bmp_reader.c.o
 
 rkipc/common/osd/bmp_reader.i: rkipc/common/osd/bmp_reader.c.i
@@ -464,7 +464,7 @@ rkipc/common/osd/bmp_reader.i: rkipc/common/osd/bmp_reader.c.i
 
 # target to preprocess a source file
 rkipc/common/osd/bmp_reader.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.i
 .PHONY : rkipc/common/osd/bmp_reader.c.i
 
 rkipc/common/osd/bmp_reader.s: rkipc/common/osd/bmp_reader.c.s
@@ -473,7 +473,7 @@ rkipc/common/osd/bmp_reader.s: rkipc/common/osd/bmp_reader.c.s
 
 # target to generate assembly for a file
 rkipc/common/osd/bmp_reader.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/bmp_reader.c.s
 .PHONY : rkipc/common/osd/bmp_reader.c.s
 
 rkipc/common/osd/color_table.o: rkipc/common/osd/color_table.c.o
@@ -482,7 +482,7 @@ rkipc/common/osd/color_table.o: rkipc/common/osd/color_table.c.o
 
 # target to build an object file
 rkipc/common/osd/color_table.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.o
 .PHONY : rkipc/common/osd/color_table.c.o
 
 rkipc/common/osd/color_table.i: rkipc/common/osd/color_table.c.i
@@ -491,7 +491,7 @@ rkipc/common/osd/color_table.i: rkipc/common/osd/color_table.c.i
 
 # target to preprocess a source file
 rkipc/common/osd/color_table.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.i
 .PHONY : rkipc/common/osd/color_table.c.i
 
 rkipc/common/osd/color_table.s: rkipc/common/osd/color_table.c.s
@@ -500,7 +500,7 @@ rkipc/common/osd/color_table.s: rkipc/common/osd/color_table.c.s
 
 # target to generate assembly for a file
 rkipc/common/osd/color_table.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/color_table.c.s
 .PHONY : rkipc/common/osd/color_table.c.s
 
 rkipc/common/osd/draw_paint.o: rkipc/common/osd/draw_paint.c.o
@@ -509,7 +509,7 @@ rkipc/common/osd/draw_paint.o: rkipc/common/osd/draw_paint.c.o
 
 # target to build an object file
 rkipc/common/osd/draw_paint.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.o
 .PHONY : rkipc/common/osd/draw_paint.c.o
 
 rkipc/common/osd/draw_paint.i: rkipc/common/osd/draw_paint.c.i
@@ -518,7 +518,7 @@ rkipc/common/osd/draw_paint.i: rkipc/common/osd/draw_paint.c.i
 
 # target to preprocess a source file
 rkipc/common/osd/draw_paint.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.i
 .PHONY : rkipc/common/osd/draw_paint.c.i
 
 rkipc/common/osd/draw_paint.s: rkipc/common/osd/draw_paint.c.s
@@ -527,7 +527,7 @@ rkipc/common/osd/draw_paint.s: rkipc/common/osd/draw_paint.c.s
 
 # target to generate assembly for a file
 rkipc/common/osd/draw_paint.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/draw_paint.c.s
 .PHONY : rkipc/common/osd/draw_paint.c.s
 
 rkipc/common/osd/font_factory.o: rkipc/common/osd/font_factory.c.o
@@ -536,7 +536,7 @@ rkipc/common/osd/font_factory.o: rkipc/common/osd/font_factory.c.o
 
 # target to build an object file
 rkipc/common/osd/font_factory.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.o
 .PHONY : rkipc/common/osd/font_factory.c.o
 
 rkipc/common/osd/font_factory.i: rkipc/common/osd/font_factory.c.i
@@ -545,7 +545,7 @@ rkipc/common/osd/font_factory.i: rkipc/common/osd/font_factory.c.i
 
 # target to preprocess a source file
 rkipc/common/osd/font_factory.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.i
 .PHONY : rkipc/common/osd/font_factory.c.i
 
 rkipc/common/osd/font_factory.s: rkipc/common/osd/font_factory.c.s
@@ -554,7 +554,7 @@ rkipc/common/osd/font_factory.s: rkipc/common/osd/font_factory.c.s
 
 # target to generate assembly for a file
 rkipc/common/osd/font_factory.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/font_factory.c.s
 .PHONY : rkipc/common/osd/font_factory.c.s
 
 rkipc/common/osd/osd.o: rkipc/common/osd/osd.c.o
@@ -563,7 +563,7 @@ rkipc/common/osd/osd.o: rkipc/common/osd/osd.c.o
 
 # target to build an object file
 rkipc/common/osd/osd.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.o
 .PHONY : rkipc/common/osd/osd.c.o
 
 rkipc/common/osd/osd.i: rkipc/common/osd/osd.c.i
@@ -572,7 +572,7 @@ rkipc/common/osd/osd.i: rkipc/common/osd/osd.c.i
 
 # target to preprocess a source file
 rkipc/common/osd/osd.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.i
 .PHONY : rkipc/common/osd/osd.c.i
 
 rkipc/common/osd/osd.s: rkipc/common/osd/osd.c.s
@@ -581,7 +581,7 @@ rkipc/common/osd/osd.s: rkipc/common/osd/osd.c.s
 
 # target to generate assembly for a file
 rkipc/common/osd/osd.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/osd/osd.c.s
 .PHONY : rkipc/common/osd/osd.c.s
 
 rkipc/common/param/awb_calib.o: rkipc/common/param/awb_calib.c.o
@@ -590,7 +590,7 @@ rkipc/common/param/awb_calib.o: rkipc/common/param/awb_calib.c.o
 
 # target to build an object file
 rkipc/common/param/awb_calib.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.o
 .PHONY : rkipc/common/param/awb_calib.c.o
 
 rkipc/common/param/awb_calib.i: rkipc/common/param/awb_calib.c.i
@@ -599,7 +599,7 @@ rkipc/common/param/awb_calib.i: rkipc/common/param/awb_calib.c.i
 
 # target to preprocess a source file
 rkipc/common/param/awb_calib.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.i
 .PHONY : rkipc/common/param/awb_calib.c.i
 
 rkipc/common/param/awb_calib.s: rkipc/common/param/awb_calib.c.s
@@ -608,7 +608,7 @@ rkipc/common/param/awb_calib.s: rkipc/common/param/awb_calib.c.s
 
 # target to generate assembly for a file
 rkipc/common/param/awb_calib.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/awb_calib.c.s
 .PHONY : rkipc/common/param/awb_calib.c.s
 
 rkipc/common/param/dictionary.o: rkipc/common/param/dictionary.c.o
@@ -617,7 +617,7 @@ rkipc/common/param/dictionary.o: rkipc/common/param/dictionary.c.o
 
 # target to build an object file
 rkipc/common/param/dictionary.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.o
 .PHONY : rkipc/common/param/dictionary.c.o
 
 rkipc/common/param/dictionary.i: rkipc/common/param/dictionary.c.i
@@ -626,7 +626,7 @@ rkipc/common/param/dictionary.i: rkipc/common/param/dictionary.c.i
 
 # target to preprocess a source file
 rkipc/common/param/dictionary.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.i
 .PHONY : rkipc/common/param/dictionary.c.i
 
 rkipc/common/param/dictionary.s: rkipc/common/param/dictionary.c.s
@@ -635,7 +635,7 @@ rkipc/common/param/dictionary.s: rkipc/common/param/dictionary.c.s
 
 # target to generate assembly for a file
 rkipc/common/param/dictionary.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/dictionary.c.s
 .PHONY : rkipc/common/param/dictionary.c.s
 
 rkipc/common/param/iniparser.o: rkipc/common/param/iniparser.c.o
@@ -644,7 +644,7 @@ rkipc/common/param/iniparser.o: rkipc/common/param/iniparser.c.o
 
 # target to build an object file
 rkipc/common/param/iniparser.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.o
 .PHONY : rkipc/common/param/iniparser.c.o
 
 rkipc/common/param/iniparser.i: rkipc/common/param/iniparser.c.i
@@ -653,7 +653,7 @@ rkipc/common/param/iniparser.i: rkipc/common/param/iniparser.c.i
 
 # target to preprocess a source file
 rkipc/common/param/iniparser.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.i
 .PHONY : rkipc/common/param/iniparser.c.i
 
 rkipc/common/param/iniparser.s: rkipc/common/param/iniparser.c.s
@@ -662,7 +662,7 @@ rkipc/common/param/iniparser.s: rkipc/common/param/iniparser.c.s
 
 # target to generate assembly for a file
 rkipc/common/param/iniparser.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/iniparser.c.s
 .PHONY : rkipc/common/param/iniparser.c.s
 
 rkipc/common/param/param.o: rkipc/common/param/param.c.o
@@ -671,7 +671,7 @@ rkipc/common/param/param.o: rkipc/common/param/param.c.o
 
 # target to build an object file
 rkipc/common/param/param.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.o
 .PHONY : rkipc/common/param/param.c.o
 
 rkipc/common/param/param.i: rkipc/common/param/param.c.i
@@ -680,7 +680,7 @@ rkipc/common/param/param.i: rkipc/common/param/param.c.i
 
 # target to preprocess a source file
 rkipc/common/param/param.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.i
 .PHONY : rkipc/common/param/param.c.i
 
 rkipc/common/param/param.s: rkipc/common/param/param.c.s
@@ -689,7 +689,7 @@ rkipc/common/param/param.s: rkipc/common/param/param.c.s
 
 # target to generate assembly for a file
 rkipc/common/param/param.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/param/param.c.s
 .PHONY : rkipc/common/param/param.c.s
 
 rkipc/common/region_clip/region_clip.o: rkipc/common/region_clip/region_clip.c.o
@@ -698,7 +698,7 @@ rkipc/common/region_clip/region_clip.o: rkipc/common/region_clip/region_clip.c.o
 
 # target to build an object file
 rkipc/common/region_clip/region_clip.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.o
 .PHONY : rkipc/common/region_clip/region_clip.c.o
 
 rkipc/common/region_clip/region_clip.i: rkipc/common/region_clip/region_clip.c.i
@@ -707,7 +707,7 @@ rkipc/common/region_clip/region_clip.i: rkipc/common/region_clip/region_clip.c.i
 
 # target to preprocess a source file
 rkipc/common/region_clip/region_clip.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.i
 .PHONY : rkipc/common/region_clip/region_clip.c.i
 
 rkipc/common/region_clip/region_clip.s: rkipc/common/region_clip/region_clip.c.s
@@ -716,7 +716,7 @@ rkipc/common/region_clip/region_clip.s: rkipc/common/region_clip/region_clip.c.s
 
 # target to generate assembly for a file
 rkipc/common/region_clip/region_clip.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/region_clip/region_clip.c.s
 .PHONY : rkipc/common/region_clip/region_clip.c.s
 
 rkipc/common/rockiva/rockiva.o: rkipc/common/rockiva/rockiva.c.o
@@ -725,7 +725,7 @@ rkipc/common/rockiva/rockiva.o: rkipc/common/rockiva/rockiva.c.o
 
 # target to build an object file
 rkipc/common/rockiva/rockiva.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.o
 .PHONY : rkipc/common/rockiva/rockiva.c.o
 
 rkipc/common/rockiva/rockiva.i: rkipc/common/rockiva/rockiva.c.i
@@ -734,7 +734,7 @@ rkipc/common/rockiva/rockiva.i: rkipc/common/rockiva/rockiva.c.i
 
 # target to preprocess a source file
 rkipc/common/rockiva/rockiva.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.i
 .PHONY : rkipc/common/rockiva/rockiva.c.i
 
 rkipc/common/rockiva/rockiva.s: rkipc/common/rockiva/rockiva.c.s
@@ -743,7 +743,7 @@ rkipc/common/rockiva/rockiva.s: rkipc/common/rockiva/rockiva.c.s
 
 # target to generate assembly for a file
 rkipc/common/rockiva/rockiva.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rockiva/rockiva.c.s
 .PHONY : rkipc/common/rockiva/rockiva.c.s
 
 rkipc/common/roi/roi.o: rkipc/common/roi/roi.c.o
@@ -752,7 +752,7 @@ rkipc/common/roi/roi.o: rkipc/common/roi/roi.c.o
 
 # target to build an object file
 rkipc/common/roi/roi.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.o
 .PHONY : rkipc/common/roi/roi.c.o
 
 rkipc/common/roi/roi.i: rkipc/common/roi/roi.c.i
@@ -761,7 +761,7 @@ rkipc/common/roi/roi.i: rkipc/common/roi/roi.c.i
 
 # target to preprocess a source file
 rkipc/common/roi/roi.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.i
 .PHONY : rkipc/common/roi/roi.c.i
 
 rkipc/common/roi/roi.s: rkipc/common/roi/roi.c.s
@@ -770,7 +770,7 @@ rkipc/common/roi/roi.s: rkipc/common/roi/roi.c.s
 
 # target to generate assembly for a file
 rkipc/common/roi/roi.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/roi/roi.c.s
 .PHONY : rkipc/common/roi/roi.c.s
 
 rkipc/common/rtmp/rtmp.o: rkipc/common/rtmp/rtmp.c.o
@@ -779,7 +779,7 @@ rkipc/common/rtmp/rtmp.o: rkipc/common/rtmp/rtmp.c.o
 
 # target to build an object file
 rkipc/common/rtmp/rtmp.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.o
 .PHONY : rkipc/common/rtmp/rtmp.c.o
 
 rkipc/common/rtmp/rtmp.i: rkipc/common/rtmp/rtmp.c.i
@@ -788,7 +788,7 @@ rkipc/common/rtmp/rtmp.i: rkipc/common/rtmp/rtmp.c.i
 
 # target to preprocess a source file
 rkipc/common/rtmp/rtmp.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.i
 .PHONY : rkipc/common/rtmp/rtmp.c.i
 
 rkipc/common/rtmp/rtmp.s: rkipc/common/rtmp/rtmp.c.s
@@ -797,7 +797,7 @@ rkipc/common/rtmp/rtmp.s: rkipc/common/rtmp/rtmp.c.s
 
 # target to generate assembly for a file
 rkipc/common/rtmp/rtmp.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtmp/rtmp.c.s
 .PHONY : rkipc/common/rtmp/rtmp.c.s
 
 rkipc/common/rtsp/rtsp.o: rkipc/common/rtsp/rtsp.c.o
@@ -806,7 +806,7 @@ rkipc/common/rtsp/rtsp.o: rkipc/common/rtsp/rtsp.c.o
 
 # target to build an object file
 rkipc/common/rtsp/rtsp.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.o
 .PHONY : rkipc/common/rtsp/rtsp.c.o
 
 rkipc/common/rtsp/rtsp.i: rkipc/common/rtsp/rtsp.c.i
@@ -815,7 +815,7 @@ rkipc/common/rtsp/rtsp.i: rkipc/common/rtsp/rtsp.c.i
 
 # target to preprocess a source file
 rkipc/common/rtsp/rtsp.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.i
 .PHONY : rkipc/common/rtsp/rtsp.c.i
 
 rkipc/common/rtsp/rtsp.s: rkipc/common/rtsp/rtsp.c.s
@@ -824,7 +824,7 @@ rkipc/common/rtsp/rtsp.s: rkipc/common/rtsp/rtsp.c.s
 
 # target to generate assembly for a file
 rkipc/common/rtsp/rtsp.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/rtsp/rtsp.c.s
 .PHONY : rkipc/common/rtsp/rtsp.c.s
 
 rkipc/common/socket_server/server.o: rkipc/common/socket_server/server.c.o
@@ -833,7 +833,7 @@ rkipc/common/socket_server/server.o: rkipc/common/socket_server/server.c.o
 
 # target to build an object file
 rkipc/common/socket_server/server.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.o
 .PHONY : rkipc/common/socket_server/server.c.o
 
 rkipc/common/socket_server/server.i: rkipc/common/socket_server/server.c.i
@@ -842,7 +842,7 @@ rkipc/common/socket_server/server.i: rkipc/common/socket_server/server.c.i
 
 # target to preprocess a source file
 rkipc/common/socket_server/server.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.i
 .PHONY : rkipc/common/socket_server/server.c.i
 
 rkipc/common/socket_server/server.s: rkipc/common/socket_server/server.c.s
@@ -851,7 +851,7 @@ rkipc/common/socket_server/server.s: rkipc/common/socket_server/server.c.s
 
 # target to generate assembly for a file
 rkipc/common/socket_server/server.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/server.c.s
 .PHONY : rkipc/common/socket_server/server.c.s
 
 rkipc/common/socket_server/socket.o: rkipc/common/socket_server/socket.c.o
@@ -860,7 +860,7 @@ rkipc/common/socket_server/socket.o: rkipc/common/socket_server/socket.c.o
 
 # target to build an object file
 rkipc/common/socket_server/socket.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.o
 .PHONY : rkipc/common/socket_server/socket.c.o
 
 rkipc/common/socket_server/socket.i: rkipc/common/socket_server/socket.c.i
@@ -869,7 +869,7 @@ rkipc/common/socket_server/socket.i: rkipc/common/socket_server/socket.c.i
 
 # target to preprocess a source file
 rkipc/common/socket_server/socket.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.i
 .PHONY : rkipc/common/socket_server/socket.c.i
 
 rkipc/common/socket_server/socket.s: rkipc/common/socket_server/socket.c.s
@@ -878,7 +878,7 @@ rkipc/common/socket_server/socket.s: rkipc/common/socket_server/socket.c.s
 
 # target to generate assembly for a file
 rkipc/common/socket_server/socket.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/socket_server/socket.c.s
 .PHONY : rkipc/common/socket_server/socket.c.s
 
 rkipc/common/storage/storage.o: rkipc/common/storage/storage.c.o
@@ -887,7 +887,7 @@ rkipc/common/storage/storage.o: rkipc/common/storage/storage.c.o
 
 # target to build an object file
 rkipc/common/storage/storage.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.o
 .PHONY : rkipc/common/storage/storage.c.o
 
 rkipc/common/storage/storage.i: rkipc/common/storage/storage.c.i
@@ -896,7 +896,7 @@ rkipc/common/storage/storage.i: rkipc/common/storage/storage.c.i
 
 # target to preprocess a source file
 rkipc/common/storage/storage.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.i
 .PHONY : rkipc/common/storage/storage.c.i
 
 rkipc/common/storage/storage.s: rkipc/common/storage/storage.c.s
@@ -905,7 +905,7 @@ rkipc/common/storage/storage.s: rkipc/common/storage/storage.c.s
 
 # target to generate assembly for a file
 rkipc/common/storage/storage.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/storage/storage.c.s
 .PHONY : rkipc/common/storage/storage.c.s
 
 rkipc/common/system/system.o: rkipc/common/system/system.c.o
@@ -914,7 +914,7 @@ rkipc/common/system/system.o: rkipc/common/system/system.c.o
 
 # target to build an object file
 rkipc/common/system/system.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.o
 .PHONY : rkipc/common/system/system.c.o
 
 rkipc/common/system/system.i: rkipc/common/system/system.c.i
@@ -923,7 +923,7 @@ rkipc/common/system/system.i: rkipc/common/system/system.c.i
 
 # target to preprocess a source file
 rkipc/common/system/system.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.i
 .PHONY : rkipc/common/system/system.c.i
 
 rkipc/common/system/system.s: rkipc/common/system/system.c.s
@@ -932,7 +932,7 @@ rkipc/common/system/system.s: rkipc/common/system/system.c.s
 
 # target to generate assembly for a file
 rkipc/common/system/system.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/common/system/system.c.s
 .PHONY : rkipc/common/system/system.c.s
 
 rkipc/src/rv1106_dual_ipc/audio/audio.o: rkipc/src/rv1106_dual_ipc/audio/audio.c.o
@@ -941,7 +941,7 @@ rkipc/src/rv1106_dual_ipc/audio/audio.o: rkipc/src/rv1106_dual_ipc/audio/audio.c
 
 # target to build an object file
 rkipc/src/rv1106_dual_ipc/audio/audio.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.o
 .PHONY : rkipc/src/rv1106_dual_ipc/audio/audio.c.o
 
 rkipc/src/rv1106_dual_ipc/audio/audio.i: rkipc/src/rv1106_dual_ipc/audio/audio.c.i
@@ -950,7 +950,7 @@ rkipc/src/rv1106_dual_ipc/audio/audio.i: rkipc/src/rv1106_dual_ipc/audio/audio.c
 
 # target to preprocess a source file
 rkipc/src/rv1106_dual_ipc/audio/audio.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.i
 .PHONY : rkipc/src/rv1106_dual_ipc/audio/audio.c.i
 
 rkipc/src/rv1106_dual_ipc/audio/audio.s: rkipc/src/rv1106_dual_ipc/audio/audio.c.s
@@ -959,7 +959,7 @@ rkipc/src/rv1106_dual_ipc/audio/audio.s: rkipc/src/rv1106_dual_ipc/audio/audio.c
 
 # target to generate assembly for a file
 rkipc/src/rv1106_dual_ipc/audio/audio.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/audio/audio.c.s
 .PHONY : rkipc/src/rv1106_dual_ipc/audio/audio.c.s
 
 rkipc/src/rv1106_dual_ipc/video/video.o: rkipc/src/rv1106_dual_ipc/video/video.c.o
@@ -968,7 +968,7 @@ rkipc/src/rv1106_dual_ipc/video/video.o: rkipc/src/rv1106_dual_ipc/video/video.c
 
 # target to build an object file
 rkipc/src/rv1106_dual_ipc/video/video.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.o
 .PHONY : rkipc/src/rv1106_dual_ipc/video/video.c.o
 
 rkipc/src/rv1106_dual_ipc/video/video.i: rkipc/src/rv1106_dual_ipc/video/video.c.i
@@ -977,7 +977,7 @@ rkipc/src/rv1106_dual_ipc/video/video.i: rkipc/src/rv1106_dual_ipc/video/video.c
 
 # target to preprocess a source file
 rkipc/src/rv1106_dual_ipc/video/video.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.i
 .PHONY : rkipc/src/rv1106_dual_ipc/video/video.c.i
 
 rkipc/src/rv1106_dual_ipc/video/video.s: rkipc/src/rv1106_dual_ipc/video/video.c.s
@@ -986,7 +986,7 @@ rkipc/src/rv1106_dual_ipc/video/video.s: rkipc/src/rv1106_dual_ipc/video/video.c
 
 # target to generate assembly for a file
 rkipc/src/rv1106_dual_ipc/video/video.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/rkipc/src/rv1106_dual_ipc/video/video.c.s
 .PHONY : rkipc/src/rv1106_dual_ipc/video/video.c.s
 
 src/Audio.o: src/Audio.c.o
@@ -995,7 +995,7 @@ src/Audio.o: src/Audio.c.o
 
 # target to build an object file
 src/Audio.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.o
 .PHONY : src/Audio.c.o
 
 src/Audio.i: src/Audio.c.i
@@ -1004,7 +1004,7 @@ src/Audio.i: src/Audio.c.i
 
 # target to preprocess a source file
 src/Audio.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.i
 .PHONY : src/Audio.c.i
 
 src/Audio.s: src/Audio.c.s
@@ -1013,7 +1013,7 @@ src/Audio.s: src/Audio.c.s
 
 # target to generate assembly for a file
 src/Audio.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio.c.s
 .PHONY : src/Audio.c.s
 
 src/Audio_coder.o: src/Audio_coder.c.o
@@ -1022,7 +1022,7 @@ src/Audio_coder.o: src/Audio_coder.c.o
 
 # target to build an object file
 src/Audio_coder.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.o
 .PHONY : src/Audio_coder.c.o
 
 src/Audio_coder.i: src/Audio_coder.c.i
@@ -1031,7 +1031,7 @@ src/Audio_coder.i: src/Audio_coder.c.i
 
 # target to preprocess a source file
 src/Audio_coder.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.i
 .PHONY : src/Audio_coder.c.i
 
 src/Audio_coder.s: src/Audio_coder.c.s
@@ -1040,7 +1040,7 @@ src/Audio_coder.s: src/Audio_coder.c.s
 
 # target to generate assembly for a file
 src/Audio_coder.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Audio_coder.c.s
 .PHONY : src/Audio_coder.c.s
 
 src/Camera.o: src/Camera.c.o
@@ -1049,7 +1049,7 @@ src/Camera.o: src/Camera.c.o
 
 # target to build an object file
 src/Camera.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.o
 .PHONY : src/Camera.c.o
 
 src/Camera.i: src/Camera.c.i
@@ -1058,7 +1058,7 @@ src/Camera.i: src/Camera.c.i
 
 # target to preprocess a source file
 src/Camera.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.i
 .PHONY : src/Camera.c.i
 
 src/Camera.s: src/Camera.c.s
@@ -1067,7 +1067,7 @@ src/Camera.s: src/Camera.c.s
 
 # target to generate assembly for a file
 src/Camera.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Camera.c.s
 .PHONY : src/Camera.c.s
 
 src/Capture.o: src/Capture.c.o
@@ -1076,7 +1076,7 @@ src/Capture.o: src/Capture.c.o
 
 # target to build an object file
 src/Capture.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.o
 .PHONY : src/Capture.c.o
 
 src/Capture.i: src/Capture.c.i
@@ -1085,7 +1085,7 @@ src/Capture.i: src/Capture.c.i
 
 # target to preprocess a source file
 src/Capture.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.i
 .PHONY : src/Capture.c.i
 
 src/Capture.s: src/Capture.c.s
@@ -1094,7 +1094,7 @@ src/Capture.s: src/Capture.c.s
 
 # target to generate assembly for a file
 src/Capture.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Capture.c.s
 .PHONY : src/Capture.c.s
 
 src/Com.o: src/Com.c.o
@@ -1103,7 +1103,7 @@ src/Com.o: src/Com.c.o
 
 # target to build an object file
 src/Com.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.o
 .PHONY : src/Com.c.o
 
 src/Com.i: src/Com.c.i
@@ -1112,7 +1112,7 @@ src/Com.i: src/Com.c.i
 
 # target to preprocess a source file
 src/Com.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.i
 .PHONY : src/Com.c.i
 
 src/Com.s: src/Com.c.s
@@ -1121,7 +1121,7 @@ src/Com.s: src/Com.c.s
 
 # target to generate assembly for a file
 src/Com.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Com.c.s
 .PHONY : src/Com.c.s
 
 src/Flash.o: src/Flash.c.o
@@ -1130,7 +1130,7 @@ src/Flash.o: src/Flash.c.o
 
 # target to build an object file
 src/Flash.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.o
 .PHONY : src/Flash.c.o
 
 src/Flash.i: src/Flash.c.i
@@ -1139,7 +1139,7 @@ src/Flash.i: src/Flash.c.i
 
 # target to preprocess a source file
 src/Flash.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.i
 .PHONY : src/Flash.c.i
 
 src/Flash.s: src/Flash.c.s
@@ -1148,7 +1148,7 @@ src/Flash.s: src/Flash.c.s
 
 # target to generate assembly for a file
 src/Flash.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Flash.c.s
 .PHONY : src/Flash.c.s
 
 src/I2c.o: src/I2c.c.o
@@ -1157,7 +1157,7 @@ src/I2c.o: src/I2c.c.o
 
 # target to build an object file
 src/I2c.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.o
 .PHONY : src/I2c.c.o
 
 src/I2c.i: src/I2c.c.i
@@ -1166,7 +1166,7 @@ src/I2c.i: src/I2c.c.i
 
 # target to preprocess a source file
 src/I2c.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.i
 .PHONY : src/I2c.c.i
 
 src/I2c.s: src/I2c.c.s
@@ -1175,7 +1175,7 @@ src/I2c.s: src/I2c.c.s
 
 # target to generate assembly for a file
 src/I2c.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/I2c.c.s
 .PHONY : src/I2c.c.s
 
 src/MW_Common.o: src/MW_Common.c.o
@@ -1184,7 +1184,7 @@ src/MW_Common.o: src/MW_Common.c.o
 
 # target to build an object file
 src/MW_Common.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.o
 .PHONY : src/MW_Common.c.o
 
 src/MW_Common.i: src/MW_Common.c.i
@@ -1193,7 +1193,7 @@ src/MW_Common.i: src/MW_Common.c.i
 
 # target to preprocess a source file
 src/MW_Common.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.i
 .PHONY : src/MW_Common.c.i
 
 src/MW_Common.s: src/MW_Common.c.s
@@ -1202,7 +1202,7 @@ src/MW_Common.s: src/MW_Common.c.s
 
 # target to generate assembly for a file
 src/MW_Common.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MW_Common.c.s
 .PHONY : src/MW_Common.c.s
 
 src/Misc.o: src/Misc.c.o
@@ -1211,7 +1211,7 @@ src/Misc.o: src/Misc.c.o
 
 # target to build an object file
 src/Misc.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.o
 .PHONY : src/Misc.c.o
 
 src/Misc.i: src/Misc.c.i
@@ -1220,7 +1220,7 @@ src/Misc.i: src/Misc.c.i
 
 # target to preprocess a source file
 src/Misc.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.i
 .PHONY : src/Misc.c.i
 
 src/Misc.s: src/Misc.c.s
@@ -1229,7 +1229,7 @@ src/Misc.s: src/Misc.c.s
 
 # target to generate assembly for a file
 src/Misc.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Misc.c.s
 .PHONY : src/Misc.c.s
 
 src/MotionDetect.o: src/MotionDetect.c.o
@@ -1238,7 +1238,7 @@ src/MotionDetect.o: src/MotionDetect.c.o
 
 # target to build an object file
 src/MotionDetect.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.o
 .PHONY : src/MotionDetect.c.o
 
 src/MotionDetect.i: src/MotionDetect.c.i
@@ -1247,7 +1247,7 @@ src/MotionDetect.i: src/MotionDetect.c.i
 
 # target to preprocess a source file
 src/MotionDetect.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.i
 .PHONY : src/MotionDetect.c.i
 
 src/MotionDetect.s: src/MotionDetect.c.s
@@ -1256,7 +1256,7 @@ src/MotionDetect.s: src/MotionDetect.c.s
 
 # target to generate assembly for a file
 src/MotionDetect.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionDetect.c.s
 .PHONY : src/MotionDetect.c.s
 
 src/MotionTrack.o: src/MotionTrack.c.o
@@ -1265,7 +1265,7 @@ src/MotionTrack.o: src/MotionTrack.c.o
 
 # target to build an object file
 src/MotionTrack.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.o
 .PHONY : src/MotionTrack.c.o
 
 src/MotionTrack.i: src/MotionTrack.c.i
@@ -1274,7 +1274,7 @@ src/MotionTrack.i: src/MotionTrack.c.i
 
 # target to preprocess a source file
 src/MotionTrack.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.i
 .PHONY : src/MotionTrack.c.i
 
 src/MotionTrack.s: src/MotionTrack.c.s
@@ -1283,7 +1283,7 @@ src/MotionTrack.s: src/MotionTrack.c.s
 
 # target to generate assembly for a file
 src/MotionTrack.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/MotionTrack.c.s
 .PHONY : src/MotionTrack.c.s
 
 src/Motor.o: src/Motor.c.o
@@ -1292,7 +1292,7 @@ src/Motor.o: src/Motor.c.o
 
 # target to build an object file
 src/Motor.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.o
 .PHONY : src/Motor.c.o
 
 src/Motor.i: src/Motor.c.i
@@ -1301,7 +1301,7 @@ src/Motor.i: src/Motor.c.i
 
 # target to preprocess a source file
 src/Motor.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.i
 .PHONY : src/Motor.c.i
 
 src/Motor.s: src/Motor.c.s
@@ -1310,7 +1310,7 @@ src/Motor.s: src/Motor.c.s
 
 # target to generate assembly for a file
 src/Motor.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Motor.c.s
 .PHONY : src/Motor.c.s
 
 src/QrCode.o: src/QrCode.c.o
@@ -1319,7 +1319,7 @@ src/QrCode.o: src/QrCode.c.o
 
 # target to build an object file
 src/QrCode.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.o
 .PHONY : src/QrCode.c.o
 
 src/QrCode.i: src/QrCode.c.i
@@ -1328,7 +1328,7 @@ src/QrCode.i: src/QrCode.c.i
 
 # target to preprocess a source file
 src/QrCode.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.i
 .PHONY : src/QrCode.c.i
 
 src/QrCode.s: src/QrCode.c.s
@@ -1337,7 +1337,7 @@ src/QrCode.s: src/QrCode.c.s
 
 # target to generate assembly for a file
 src/QrCode.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/QrCode.c.s
 .PHONY : src/QrCode.c.s
 
 src/Sys.o: src/Sys.c.o
@@ -1346,7 +1346,7 @@ src/Sys.o: src/Sys.c.o
 
 # target to build an object file
 src/Sys.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.o
 .PHONY : src/Sys.c.o
 
 src/Sys.i: src/Sys.c.i
@@ -1355,7 +1355,7 @@ src/Sys.i: src/Sys.c.i
 
 # target to preprocess a source file
 src/Sys.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.i
 .PHONY : src/Sys.c.i
 
 src/Sys.s: src/Sys.c.s
@@ -1364,7 +1364,7 @@ src/Sys.s: src/Sys.c.s
 
 # target to generate assembly for a file
 src/Sys.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Sys.c.s
 .PHONY : src/Sys.c.s
 
 src/Wdt.o: src/Wdt.c.o
@@ -1373,7 +1373,7 @@ src/Wdt.o: src/Wdt.c.o
 
 # target to build an object file
 src/Wdt.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.o
 .PHONY : src/Wdt.c.o
 
 src/Wdt.i: src/Wdt.c.i
@@ -1382,7 +1382,7 @@ src/Wdt.i: src/Wdt.c.i
 
 # target to preprocess a source file
 src/Wdt.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.i
 .PHONY : src/Wdt.c.i
 
 src/Wdt.s: src/Wdt.c.s
@@ -1391,7 +1391,7 @@ src/Wdt.s: src/Wdt.c.s
 
 # target to generate assembly for a file
 src/Wdt.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wdt.c.s
 .PHONY : src/Wdt.c.s
 
 src/Wifi.o: src/Wifi.c.o
@@ -1400,7 +1400,7 @@ src/Wifi.o: src/Wifi.c.o
 
 # target to build an object file
 src/Wifi.c.o:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.o
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.o
 .PHONY : src/Wifi.c.o
 
 src/Wifi.i: src/Wifi.c.i
@@ -1409,7 +1409,7 @@ src/Wifi.i: src/Wifi.c.i
 
 # target to preprocess a source file
 src/Wifi.c.i:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.i
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.i
 .PHONY : src/Wifi.c.i
 
 src/Wifi.s: src/Wifi.c.s
@@ -1418,7 +1418,7 @@ src/Wifi.s: src/Wifi.c.s
 
 # target to generate assembly for a file
 src/Wifi.c.s:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.s
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(MAKE) -f libmpp/CMakeFiles/mpp.dir/build.make libmpp/CMakeFiles/mpp.dir/src/Wifi.c.s
 .PHONY : src/Wifi.c.s
 
 # Help Target
@@ -1585,6 +1585,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Middleware/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Middleware/cmake-build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

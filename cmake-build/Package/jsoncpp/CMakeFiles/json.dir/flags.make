@@ -6,5 +6,5 @@ CXX_FLAGS =   -o3 -w -Wno-psabi
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/Package/jsoncpp/include 
+CXX_INCLUDES = -I/home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/Package/jsoncpp/include 
 

@@ -6,75 +6,75 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/Protocol/gb28181/sdk_port/NetSocketSd
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/CustomContainer.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/NetSocketSDK.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/sdk_port/NetSocketSdkShim.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/sdk_port/NetSocketSdkShim.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/Protocol/gb28181/sdk_port/SysHelperShim.cpp.o
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/SysHelper.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/App/Protocol/gb28181/sdk_port/SysHelperShim.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/App/Protocol/gb28181/sdk_port/SysHelperShim.cpp
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.cpp.o
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.cpp.o
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.cpp.o
  ../third_party/platform_sdk_port/CommonFile/CommonLib/uuid.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.cpp.o
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/TVTXMLParse.cpp.o
  ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/SysHelper.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/TVTXMLParse.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/TVTXMLParse.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/SysHelper.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/TVTXMLParse.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/TVTXMLParse.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp.o
  ../App/Protocol/gb28181/WarningDisable.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/tinyxml2.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp.o
- ../App/Protocol/gb28181/GB28181ClientSDK.h
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/CustomContainer.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181ClientSDK.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/NetSocketSDK.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GB28181ClientSDK.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/PFHelper.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/CustomContainer.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/NetSocketSDK.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipStackSDK.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/RtspParser.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.h
@@ -82,289 +82,289 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/Comm
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.cpp.o
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.cpp.o
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/GBTime.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/Rtsp/GBMANSRTSP.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp.o
  ../third_party/gb_sip/install/include/osipparser2/osip_const.h
  ../third_party/gb_sip/install/include/osipparser2/osip_list.h
  ../third_party/gb_sip/install/include/osipparser2/osip_port.h
  ../third_party/gb_sip/install/include/osipparser2/osip_uri.h
  ../third_party/gb_sip/install/include/osipparser2/sdp_message.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/gb_sip/install/include/osipparser2/osip_const.h
  ../third_party/gb_sip/install/include/osipparser2/osip_list.h
  ../third_party/gb_sip/install/include/osipparser2/osip_uri.h
  ../third_party/gb_sip/install/include/osipparser2/sdp_message.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/gbutil.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpMessage.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SDP/SdpUtil.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/StreamRequestManager.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/ShareSDK.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/SubscribeManager.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer3_Abstract/MarkupSTL.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/gbutil.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/Iframe_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_reset.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/base_proco.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/broadcast_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/catalog_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/config_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_status_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_upgrade_result_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/guard_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/home_position_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/keepalive_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/media_status_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_notify.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/mobile_position_sub.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/preset_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/ptz_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_index_response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/record_query.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/response.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/teleboot_control.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp.o
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml.hpp
  ../third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/rapidxml/rapidxml_print.hpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/slothxml.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/zoom_control.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp.o
- ../App/Protocol/gb28181/GB28181Defs.h
- ../App/Protocol/gb28181/WarningDisable.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/base_type_define.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.h
+ ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.h
 App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.cpp.o
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Interlocked.h
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/Lock.h
@@ -372,6 +372,6 @@ App/CMakeFiles/gb28181_client_sdk_port.dir/__/third_party/platform_sdk_port/Comm
  ../third_party/platform_sdk_port/CommonFile/Common/Layer2_Platform/Linux/tvt_type.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/SipDefs.h
  ../third_party/platform_sdk_port/CommonFile/CommonLib/WarningDisable.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.h
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.cpp
- /home/lhy/share/ipc/RK/temp/lhy/0310/rk/rc0240-yuanshi/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/ResponseWaiter.h
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.cpp
+ /home/lhy/share/ipc/RK/temp/lhy/0313/rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/waiter/WaiterManager.h
