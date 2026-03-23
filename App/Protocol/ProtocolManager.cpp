@@ -6205,7 +6205,8 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
         } else {
 
-            ret = Storage_Module_SeekTime(session.storage_handle, (int)cmd->Npt);
+            const int tz_offset_sec = 8 * 3600;
+            ret = Storage_Module_SeekTime(session.storage_handle, (int)cmd->Npt + tz_offset_sec);
 
             if (ret == 0) {
 
@@ -9625,9 +9626,9 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
         return ret;
 
     }
-    const int startSec = (int)input->StartTime;
-
-    const int endSec = (int)input->EndTime;
+    const int tz_offset_sec = 8 * 3600;
+    const int startSec = (int)input->StartTime + tz_offset_sec;
+    const int endSec = (int)input->EndTime + tz_offset_sec;
 
 
 
@@ -10581,7 +10582,6 @@ void ProtocolManager::SetGbMediaPlayInfoResponder(GbMediaPlayInfoResponder respo
 }
 
 void ProtocolManager::SetGbTimeSyncHook(GbTimeSyncHook hook, void* userData)
-
 {
 
     m_gb_time_sync_hook = hook;
@@ -10590,17 +10590,12 @@ void ProtocolManager::SetGbTimeSyncHook(GbTimeSyncHook hook, void* userData)
 
 }
 
-
-
 void ProtocolManager::SetGbBroadcastPcmCallback(GB28181BroadcastBridge::PcmFrameCallback cb, void* userData)
-
 {
 
     m_broadcast.SetPcmFrameCallback(cb, userData);
 
 }
-
-
 
 void ProtocolManager::BindGbClientSdk(GB28181ClientSDK* sdk)
 
