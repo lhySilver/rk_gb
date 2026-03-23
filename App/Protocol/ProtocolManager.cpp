@@ -6073,6 +6073,14 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
         }
 
+        if (cmd->Type == kPlayStop) {
+
+            HandleGbStopStreamRequest(handle, NULL);
+
+            return 0;
+
+        }
+
 
 
         printf("[ProtocolManager] gb play control ignored(no replay session) gb=%s handle=%p type=%d\n",
@@ -6093,6 +6101,50 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
     const float speed = cmd->Scale;
 
+    auto markReplayAcked = [&]() {
+
+        std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+
+        if (m_gb_replay_session.active &&
+
+            m_gb_replay_session.stream_handle != NULL &&
+
+            (handle == NULL || handle == m_gb_replay_session.stream_handle)) {
+
+            m_gb_replay_session.acked = true;
+
+            printf("[ProtocolManager] gb replay control acked type=%s gb=%s handle=%p storage=%d cmd=%d\n",
+
+                   m_gb_replay_session.download ? "download" : "playback",
+
+                   m_gb_replay_session.gb_code.c_str(),
+
+                   m_gb_replay_session.stream_handle,
+
+                   m_gb_replay_session.storage_handle,
+
+                   (int)cmd->Type);
+
+        }
+
+    };
+
+    auto resumeReplay = [&]() -> int {
+
+        const int resumeRet = session.download ? Storage_Module_PauseDownload(session.storage_handle, false)
+
+                                               : Storage_Module_PausePlaybackOnFile(session.storage_handle, false);
+
+        if (resumeRet == 0) {
+
+            markReplayAcked();
+
+        }
+
+        return resumeRet;
+
+    };
+
 
 
     switch (cmd->Type) {
@@ -6107,35 +6159,19 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
     case kPlayStart:
 
-        ret = session.download ? Storage_Module_PauseDownload(session.storage_handle, false)
+        if (!session.download && speed > 0.0f) {
 
-                               : Storage_Module_PausePlaybackOnFile(session.storage_handle, false);
+            ret = Storage_Module_SetPlaybackSpeed(session.storage_handle, speed);
 
-        if (ret == 0) {
+            if (ret != 0) {
 
-            std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
-
-            if (m_gb_replay_session.active &&
-
-                m_gb_replay_session.stream_handle != NULL &&
-
-                (handle == NULL || handle == m_gb_replay_session.stream_handle)) {
-
-                m_gb_replay_session.acked = true;
-
-                printf("[ProtocolManager] gb replay play-start acked type=%s gb=%s handle=%p storage=%d\n",
-
-                       m_gb_replay_session.download ? "download" : "playback",
-
-                       m_gb_replay_session.gb_code.c_str(),
-
-                       m_gb_replay_session.stream_handle,
-
-                       m_gb_replay_session.storage_handle);
+                break;
 
             }
 
         }
+
+        ret = resumeReplay();
 
         break;
 
@@ -6143,7 +6179,21 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
     case kPlaySlow:
 
-        ret = -53;
+        if (session.download || speed <= 0.0f) {
+
+            ret = -53;
+
+            break;
+
+        }
+
+        ret = Storage_Module_SetPlaybackSpeed(session.storage_handle, speed);
+
+        if (ret == 0) {
+
+            ret = resumeReplay();
+
+        }
 
         break;
 
@@ -6157,7 +6207,21 @@ int ProtocolManager::HandleGbPlayControl(StreamHandle handle, const PlayCtrlCmd*
 
             ret = Storage_Module_SeekTime(session.storage_handle, (int)cmd->Npt);
 
+            if (ret == 0) {
+
+                ret = resumeReplay();
+
+            }
+
         }
+
+        break;
+
+    case kPlayStop:
+
+        HandleGbStopStreamRequest(handle, session.gb_code.c_str());
+
+        ret = 0;
 
         break;
 
@@ -9561,9 +9625,9 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
         return ret;
 
     }
-    const int startSec = (int)input->StartTime + 28800;
+    const int startSec = (int)input->StartTime;
 
-    const int endSec = (int)input->EndTime + 28800;
+    const int endSec = (int)input->EndTime;
 
 
 
@@ -10757,5 +10821,3 @@ int ProtocolManager::OnGbMediaPlayInfoRespond(StreamHandle handle, const MediaIn
 }
 
 }
-
-

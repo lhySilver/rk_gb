@@ -29,6 +29,10 @@ std::string GetNptTime(std::string& time)
 
 bool RtspParser::StringToCmd(const std::string& input, std::string& cseq,  PlayCtrlCmd* cmd  )
 {
+        if(cmd == NULL){
+            return false;
+        }
+
         CGBMANSRTSPReq   req;
         if(!req.parseFromStr((char*)input.c_str(),  input.length())){
             return false;
@@ -42,10 +46,14 @@ bool RtspParser::StringToCmd(const std::string& input, std::string& cseq,  PlayC
            if(!scale.empty())  {
 
                float s = (float)atof(scale.c_str());
-               if(   s > 1) {
+               if( s > 1.001f ) {
                     cmd->Type =   kPlayFast;
-               }else{
+               }else if( s > 0.0f && s < 0.999f ) {
                      cmd->Type  = kPlaySlow;
+               }else if( s >= 0.999f && s <= 1.001f ) {
+                     cmd->Type  = kPlayStart;
+               }else{
+                     return false;
                }
                 cmd->Scale = s;
 
@@ -53,6 +61,11 @@ bool RtspParser::StringToCmd(const std::string& input, std::string& cseq,  PlayC
            }
 
            std::string npt = req.GetRangeStr();
+           if( npt.empty()){
+               cmd->Type  = kPlayStart;
+               return true;
+           }
+
            std::string npt_time = GetNptTime(npt);
 
            if( npt_time.empty()){
@@ -75,7 +88,7 @@ bool RtspParser::StringToCmd(const std::string& input, std::string& cseq,  PlayC
        }
 
        if( req.Method() == "TEARDOWN"){
-           cmd->Type = kPlayStart;
+           cmd->Type = kPlayStop;
            return true;
        }
            return false;
@@ -99,6 +112,11 @@ void RtspParser::CmdToString(const PlayCtrlCmd* cmd, std::string& result)
                        req.Method("PAUSE");
                        req.PushHeader("PauseTime","now");
                         result = req.ToStr();
+                    }   return;
+           case kPlayStop:
+                    {
+                       req.Method("TEARDOWN");
+                       result = req.ToStr();
                     }   return;
            default:
                       req.Method("PLAY");
