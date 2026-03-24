@@ -20,6 +20,10 @@ public:
     int QueryCapabilities(std::string& outJson);
     void SubscribeChange();
 
+    static GbRegisterParam BuildDefaultGbRegisterConfig();
+    static int LoadOrCreateGbRegisterConfig(GbRegisterParam& out);
+    static int UpdateGbRegisterConfig(const GbRegisterParam& param);
+
     void SetMockConfig(const ProtocolExternalConfig& cfg);
 
 private:

@@ -4609,17 +4609,96 @@ const ProtocolExternalConfig& ProtocolManager::GetConfig() const
 
 int ProtocolManager::SetGbRegisterConfig(const GbRegisterParam& param)
 {
-    m_cfg.gb_register = param;
+    printf("[ProtocolManager] module=config event=gb_register_set_start trace=manager error=0 started=%d\n",
+           m_started ? 1 : 0);
+
+    const int persistRet = LocalConfigProvider::UpdateGbRegisterConfig(param);
+    if (persistRet != 0) {
+        printf("[ProtocolManager] module=config event=gb_register_set_fail trace=manager error=%d stage=persist started=%d\n",
+               persistRet,
+               m_started ? 1 : 0);
+        return persistRet;
+    }
+
+    GbRegisterParam latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
+    int loadRet = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
+    if (m_provider.get() != NULL) {
+        ProtocolExternalConfig refreshed;
+        const int pullRet = m_provider->PullLatest(refreshed);
+        if (pullRet == 0) {
+            latest = refreshed.gb_register;
+            loadRet = 0;
+        }
+    }
+
+    const bool reloadGbLifecycle = (m_cfg.gb_register.enabled != latest.enabled) ||
+                                   (m_cfg.gb_register.server_ip != latest.server_ip) ||
+                                   (m_cfg.gb_register.server_port != latest.server_port) ||
+                                   (m_cfg.gb_register.device_id != latest.device_id) ||
+                                   (m_cfg.gb_register.username != latest.username) ||
+                                   (m_cfg.gb_register.password != latest.password);
+
+    m_cfg.gb_register = latest;
+    m_gb_device_name = m_cfg.gb_register.device_name;
+
+    if (!m_started) {
+        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=cache_only started=0 enabled=%d gb=%s:%d\n",
+               loadRet,
+               m_cfg.gb_register.enabled != 0 ? 1 : 0,
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return 0;
+    }
+
+    if (!reloadGbLifecycle) {
+        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=noop started=1 enabled=%d gb=%s:%d\n",
+               loadRet,
+               m_cfg.gb_register.enabled != 0 ? 1 : 0,
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return 0;
+    }
+
+    StopGbClientLifecycle();
+    if (m_cfg.gb_register.enabled != 0) {
+        const int startRet = StartGbClientLifecycle();
+        if (startRet != 0) {
+            printf("[ProtocolManager] module=config event=gb_register_set_fail trace=manager error=%d stage=gb_restart started=1\n",
+                   startRet);
+            return startRet;
+        }
+        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=gb_restart started=1 enabled=1 gb=%s:%d\n",
+               loadRet,
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return 0;
+    }
+
+    printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=gb_disable started=1 enabled=0 gb=%s:%d\n",
+           loadRet,
+           m_cfg.gb_register.server_ip.c_str(),
+           m_cfg.gb_register.server_port);
     return 0;
 }
 
 GbRegisterParam ProtocolManager::GetGbRegisterConfig() const
 {
-    if (m_cfg.gb_register.server_ip.empty()) {
-        GbRegisterParam default_param;
-        return default_param;
+    GbRegisterParam latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
+    const int ret = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
+    if (ret == 0) {
+        return latest;
     }
-    return m_cfg.gb_register;
+
+    printf("[ProtocolManager] module=config event=gb_register_get_fallback trace=manager error=%d started=%d\n",
+           ret,
+           m_started ? 1 : 0);
+
+    if (!m_cfg.gb_register.server_ip.empty()) {
+        return m_cfg.gb_register;
+    }
+
+    latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
+    return latest;
 }
 
 

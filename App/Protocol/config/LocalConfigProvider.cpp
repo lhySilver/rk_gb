@@ -150,6 +150,106 @@ bool EnsureDirectoryExists(const char* dir)
     return true;
 }
 
+protocol::GbRegisterParam BuildDefaultGbRegisterParam()
+{
+    protocol::GbRegisterParam param;
+    param.enabled = 1;
+    param.server_ip = "183.252.186.165";
+    param.server_port = 15566;
+    param.device_id = "35010101001320124879";
+    param.device_name = "IPC";
+    param.username = "35010000002000000001";
+    param.password = "CG939Xvv";
+    return param;
+}
+
+void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const protocol::GbRegisterParam& source)
+{
+    target.enabled = (source.enabled != 0) ? 1 : 0;
+    target.username = source.username;
+    target.server_ip = source.server_ip;
+    target.server_port = source.server_port;
+    target.device_id = source.device_id;
+    target.password = source.password;
+}
+
+int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
+{
+    if (param.enabled != 0 && (param.server_ip.empty() || param.server_port <= 0)) {
+        return -1;
+    }
+    return 0;
+}
+
+void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
+{
+    cfg.version = "v1-default";
+
+    cfg.gb_register = BuildDefaultGbRegisterParam();
+
+    cfg.gb_live.transport = "udp";
+    cfg.gb_live.target_ip = "127.0.0.1";
+    cfg.gb_live.target_port = 30000;
+    cfg.gb_live.video_stream_id = "main";
+    cfg.gb_live.video_codec = "h265";
+    cfg.gb_live.audio_codec = "g711a";
+    cfg.gb_live.mtu = 1200;
+    cfg.gb_live.payload_type = 96;
+    cfg.gb_live.ssrc = 0;
+    cfg.gb_live.clock_rate = 90000;
+    cfg.gb_video.main_codec = "H.265";
+    cfg.gb_video.main_resolution = "3840x1080";
+    cfg.gb_video.main_fps = 25;
+    cfg.gb_video.main_bitrate_kbps = 2048;
+    cfg.gb_video.sub_codec = "H.265";
+    cfg.gb_video.sub_resolution = "640x360";
+    cfg.gb_video.sub_fps = 15;
+    cfg.gb_video.sub_bitrate_kbps = 512;
+    cfg.gb_image.flip_mode = "close";
+
+    cfg.gat_register.server_ip = "127.0.0.1";
+    cfg.gat_register.server_port = 80;
+    cfg.gat_register.scheme = "http";
+    cfg.gat_register.base_path = "";
+    cfg.gat_register.device_id = "34020000001320000001";
+    cfg.gat_register.username = "admin";
+    cfg.gat_register.password = "admin";
+    cfg.gat_register.auth_method = "digest";
+    cfg.gat_register.listen_port = 18080;
+    cfg.gat_register.expires_sec = 3600;
+    cfg.gat_register.keepalive_interval_sec = 60;
+    cfg.gat_register.max_retry = 3;
+    cfg.gat_register.request_timeout_ms = 5000;
+    cfg.gat_register.retry_backoff_policy = "5,10,30";
+    cfg.gat_upload.queue_dir = "/tmp/gat1400_queue";
+    cfg.gat_upload.max_pending_count = 200;
+    cfg.gat_upload.replay_interval_sec = 15;
+    cfg.gat_upload.enable_apes_post_compat = 0;
+
+    cfg.gb_talk.codec = "g711a";
+    cfg.gb_talk.recv_port = 30003;
+    cfg.gb_talk.sample_rate = 8000;
+    cfg.gb_talk.jitter_buffer_ms = 80;
+    cfg.gb_reboot.cooldown_sec = 60;
+    cfg.gb_reboot.require_auth_level = 1;
+    cfg.gb_upgrade.url_whitelist.clear();
+    cfg.gb_upgrade.max_package_mb = 128;
+    cfg.gb_upgrade.verify_mode = "md5";
+    cfg.gb_upgrade.timeout_sec = 120;
+
+    cfg.gb_broadcast.input_mode = "stream";
+    cfg.gb_broadcast.codec = "g711a";
+    cfg.gb_broadcast.recv_port = 30001;
+    cfg.gb_broadcast.file_cache_dir = "/tmp";
+    cfg.gb_broadcast.transport = "tcp";
+
+    cfg.gb_listen.transport = "udp";
+    cfg.gb_listen.target_ip = "127.0.0.1";
+    cfg.gb_listen.target_port = 30002;
+    cfg.gb_listen.codec = "g711a";
+    cfg.gb_listen.sample_rate = 8000;
+}
+
 bool LoadLocalConfigFile(protocol::ProtocolExternalConfig& cfg)
 {
     if (access(kLocalGbConfigFile, F_OK) != 0) {
@@ -439,79 +539,50 @@ LocalConfigProvider::~LocalConfigProvider()
 {
 }
 
+GbRegisterParam LocalConfigProvider::BuildDefaultGbRegisterConfig()
+{
+    return BuildDefaultGbRegisterParam();
+}
+
+int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
+{
+    ProtocolExternalConfig cfg;
+    InitDefaultLocalConfig(cfg);
+    if (!LoadLocalConfigFile(cfg)) {
+        const int saveRet = SaveLocalConfigFile(cfg);
+        out = cfg.gb_register;
+        return saveRet;
+    }
+
+    cfg.version = "v1-local-file";
+    out = cfg.gb_register;
+    return 0;
+}
+
+int LocalConfigProvider::UpdateGbRegisterConfig(const GbRegisterParam& param)
+{
+    ProtocolExternalConfig cfg;
+    InitDefaultLocalConfig(cfg);
+    if (!LoadLocalConfigFile(cfg)) {
+        const int saveRet = SaveLocalConfigFile(cfg);
+        if (saveRet != 0) {
+            return saveRet;
+        }
+    }
+
+    ApplyGbRegisterEditableFields(cfg.gb_register, param);
+    const int check = ValidateGbRegisterEditableFields(cfg.gb_register);
+    if (check != 0) {
+        return check;
+    }
+
+    cfg.version = "v1-local-file";
+    return SaveLocalConfigFile(cfg);
+}
+
 void LocalConfigProvider::InitDefaultConfig()
 {
-    m_cached_cfg.version = "v1-default";
-
-    m_cached_cfg.gb_register.enabled = 1;
-    m_cached_cfg.gb_register.server_ip = "183.252.186.165";
-    m_cached_cfg.gb_register.server_port = 15566;
-    m_cached_cfg.gb_register.device_id = "35010101001320124879";
-    m_cached_cfg.gb_register.device_name = "IPC";
-    m_cached_cfg.gb_register.username = "35010000002000000001";
-    m_cached_cfg.gb_register.password = "CG939Xvv";
-
-    m_cached_cfg.gb_live.transport = "udp";
-    m_cached_cfg.gb_live.target_ip = "127.0.0.1";
-    m_cached_cfg.gb_live.target_port = 30000;
-    m_cached_cfg.gb_live.video_stream_id = "main";
-    m_cached_cfg.gb_live.video_codec = "h265";
-    m_cached_cfg.gb_live.audio_codec = "g711a";
-    m_cached_cfg.gb_live.mtu = 1200;
-    m_cached_cfg.gb_live.payload_type = 96;
-    m_cached_cfg.gb_live.ssrc = 0;
-    m_cached_cfg.gb_live.clock_rate = 90000;
-    m_cached_cfg.gb_video.main_codec = "H.265";
-    m_cached_cfg.gb_video.main_resolution = "3840x1080";
-    m_cached_cfg.gb_video.main_fps = 25;
-    m_cached_cfg.gb_video.main_bitrate_kbps = 2048;
-    m_cached_cfg.gb_video.sub_codec = "H.265";
-    m_cached_cfg.gb_video.sub_resolution = "640x360";
-    m_cached_cfg.gb_video.sub_fps = 15;
-    m_cached_cfg.gb_video.sub_bitrate_kbps = 512;
-    m_cached_cfg.gb_image.flip_mode = "close";
-
-    m_cached_cfg.gat_register.server_ip = "127.0.0.1";
-    m_cached_cfg.gat_register.server_port = 80;
-    m_cached_cfg.gat_register.scheme = "http";
-    m_cached_cfg.gat_register.base_path = "";
-    m_cached_cfg.gat_register.device_id = "34020000001320000001";
-    m_cached_cfg.gat_register.username = "admin";
-    m_cached_cfg.gat_register.password = "admin";
-    m_cached_cfg.gat_register.auth_method = "digest";
-    m_cached_cfg.gat_register.listen_port = 18080;
-    m_cached_cfg.gat_register.expires_sec = 3600;
-    m_cached_cfg.gat_register.keepalive_interval_sec = 60;
-    m_cached_cfg.gat_register.max_retry = 3;
-    m_cached_cfg.gat_register.request_timeout_ms = 5000;
-    m_cached_cfg.gat_register.retry_backoff_policy = "5,10,30";
-    m_cached_cfg.gat_upload.queue_dir = "/tmp/gat1400_queue";
-    m_cached_cfg.gat_upload.max_pending_count = 200;
-    m_cached_cfg.gat_upload.replay_interval_sec = 15;
-    m_cached_cfg.gat_upload.enable_apes_post_compat = 0;
-
-    m_cached_cfg.gb_talk.codec = "g711a";
-    m_cached_cfg.gb_talk.recv_port = 30003;
-    m_cached_cfg.gb_talk.sample_rate = 8000;
-    m_cached_cfg.gb_talk.jitter_buffer_ms = 80;
-    m_cached_cfg.gb_reboot.cooldown_sec = 60;
-    m_cached_cfg.gb_reboot.require_auth_level = 1;
-    m_cached_cfg.gb_upgrade.url_whitelist.clear();
-    m_cached_cfg.gb_upgrade.max_package_mb = 128;
-    m_cached_cfg.gb_upgrade.verify_mode = "md5";
-    m_cached_cfg.gb_upgrade.timeout_sec = 120;
-
-    m_cached_cfg.gb_broadcast.input_mode = "stream";
-    m_cached_cfg.gb_broadcast.codec = "g711a";
-    m_cached_cfg.gb_broadcast.recv_port = 30001;
-    m_cached_cfg.gb_broadcast.file_cache_dir = "/tmp";
-    m_cached_cfg.gb_broadcast.transport = "tcp";
-
-    m_cached_cfg.gb_listen.transport = "udp";
-    m_cached_cfg.gb_listen.target_ip = "127.0.0.1";
-    m_cached_cfg.gb_listen.target_port = 30002;
-    m_cached_cfg.gb_listen.codec = "g711a";
-    m_cached_cfg.gb_listen.sample_rate = 8000;
+    InitDefaultLocalConfig(m_cached_cfg);
 }
 
 int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
