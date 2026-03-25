@@ -4767,6 +4767,88 @@ int ProtocolManager::RestartGbRegisterService()
     return 0;
 }
 
+int ProtocolManager::SetGatRegisterConfig(const GatRegisterParam& param)
+{
+    printf("[ProtocolManager] module=config event=gat_register_set_start trace=manager error=0 started=%d\n",
+           m_started ? 1 : 0);
+
+    const int persistRet = LocalConfigProvider::UpdateGatRegisterConfig(param);
+    if (persistRet != 0) {
+        printf("[ProtocolManager] module=config event=gat_register_set_fail trace=manager error=%d stage=persist started=%d\n",
+               persistRet,
+               m_started ? 1 : 0);
+        return persistRet;
+    }
+
+    GatRegisterParam latest = LocalConfigProvider::BuildDefaultGatRegisterConfig();
+    const int loadRet = LocalConfigProvider::LoadOrCreateGatRegisterConfig(latest);
+    printf("[ProtocolManager] module=config event=gat_register_set_success trace=manager error=%d stage=persist started=%d gat=%s://%s:%d listen=%d\n",
+           loadRet,
+           m_started ? 1 : 0,
+           latest.scheme.c_str(),
+           latest.server_ip.c_str(),
+           latest.server_port,
+           latest.listen_port);
+    return 0;
+}
+
+GatRegisterParam ProtocolManager::GetGatRegisterConfig() const
+{
+    GatRegisterParam latest = LocalConfigProvider::BuildDefaultGatRegisterConfig();
+    const int ret = LocalConfigProvider::LoadOrCreateGatRegisterConfig(latest);
+    if (ret != 0) {
+        printf("[ProtocolManager] module=config event=gat_register_get_default trace=manager error=%d started=%d\n",
+               ret,
+               m_started ? 1 : 0);
+    }
+    return latest;
+}
+
+int ProtocolManager::RestartGatRegisterService()
+{
+    printf("[ProtocolManager] module=config event=gat_register_restart_start trace=manager error=0 started=%d\n",
+           m_started ? 1 : 0);
+
+    GatRegisterParam latest = LocalConfigProvider::BuildDefaultGatRegisterConfig();
+    const int loadRet = LocalConfigProvider::LoadOrCreateGatRegisterConfig(latest);
+    if (loadRet != 0) {
+        printf("[ProtocolManager] module=config event=gat_register_restart_fail trace=manager error=%d stage=load_flash started=%d\n",
+               loadRet,
+               m_started ? 1 : 0);
+        return loadRet;
+    }
+
+    m_cfg.gat_register = latest;
+
+    if (!m_started || m_gat_client.get() == NULL) {
+        printf("[ProtocolManager] module=config event=gat_register_restart_success trace=manager error=0 stage=cache_only started=%d gat=%s://%s:%d listen=%d\n",
+               m_started ? 1 : 0,
+               m_cfg.gat_register.scheme.c_str(),
+               m_cfg.gat_register.server_ip.c_str(),
+               m_cfg.gat_register.server_port,
+               m_cfg.gat_register.listen_port);
+        return 0;
+    }
+
+    const int reloadRet = m_gat_client->Reload(m_cfg, m_cfg.gb_register);
+    if (reloadRet != 0) {
+        printf("[ProtocolManager] module=config event=gat_register_restart_fail trace=manager error=%d stage=gat_reload started=1 gat=%s://%s:%d listen=%d\n",
+               reloadRet,
+               m_cfg.gat_register.scheme.c_str(),
+               m_cfg.gat_register.server_ip.c_str(),
+               m_cfg.gat_register.server_port,
+               m_cfg.gat_register.listen_port);
+        return reloadRet;
+    }
+
+    printf("[ProtocolManager] module=config event=gat_register_restart_success trace=manager error=0 stage=gat_reload started=1 gat=%s://%s:%d listen=%d\n",
+           m_cfg.gat_register.scheme.c_str(),
+           m_cfg.gat_register.server_ip.c_str(),
+           m_cfg.gat_register.server_port,
+           m_cfg.gat_register.listen_port);
+    return 0;
+}
+
 
 
 int ProtocolManager::PushLiveVideoEsFrame(const uint8_t* data,

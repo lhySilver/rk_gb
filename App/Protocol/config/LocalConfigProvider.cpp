@@ -13,9 +13,33 @@
 namespace
 {
 
-const char* kLocalGbConfigDir = "/userdata/conf/Config";
-const char* kLocalGbConfigFile = "/userdata/conf/Config/gb28181.ini";
+const char* kLegacyLocalGbConfigFile = "/userdata/conf/Config/gb28181.ini";
+const char* kLocalConfigDir = "/userdata/conf/Config/GB";
+const char* kLocalGbConfigFile = "/userdata/conf/Config/GB/gb28181.ini";
 const char* kLocalGbConfigSection = "gb28181";
+const char* kLocalGatConfigFile = "/userdata/conf/Config/GB/gat1400.ini";
+const char* kLocalGatConfigSection = "gat1400";
+
+enum LocalConfigLoadSource
+{
+    kLocalConfigLoadNone = 0,
+    kLocalConfigLoadCurrent = 1,
+    kLocalConfigLoadLegacy = 2
+};
+
+struct LocalConfigSyncState
+{
+    LocalConfigLoadSource gb_source;
+    LocalConfigLoadSource gat_source;
+    int gb_sync_ret;
+    int gat_sync_ret;
+
+    LocalConfigSyncState()
+        : gb_source(kLocalConfigLoadNone),
+          gat_source(kLocalConfigLoadNone),
+          gb_sync_ret(0),
+          gat_sync_ret(0) {}
+};
 
 std::string JoinConfigList(const std::vector<std::string>& values)
 {
@@ -163,6 +187,26 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     return param;
 }
 
+protocol::GatRegisterParam BuildDefaultGatRegisterParam()
+{
+    protocol::GatRegisterParam param;
+    param.server_ip = "183.252.186.166";
+    param.server_port = 33855;
+    param.scheme = "http";
+    param.base_path = "";
+    param.device_id = "35010200001190000010";
+    param.username = "admin";
+    param.password = "Dz8h6kM9";
+    param.auth_method = "digest";
+    param.listen_port = 18080;
+    param.expires_sec = 3600;
+    param.keepalive_interval_sec = 60;
+    param.max_retry = 3;
+    param.request_timeout_ms = 5000;
+    param.retry_backoff_policy = "5,10,30";
+    return param;
+}
+
 void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const protocol::GbRegisterParam& source)
 {
     target.enabled = (source.enabled != 0) ? 1 : 0;
@@ -178,6 +222,33 @@ int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
     if (param.enabled != 0 && (param.server_ip.empty() || param.server_port <= 0)) {
         return -1;
     }
+    return 0;
+}
+
+void ApplyGatRegisterEditableFields(protocol::GatRegisterParam& target, const protocol::GatRegisterParam& source)
+{
+    target = source;
+}
+
+int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
+{
+    if ((param.scheme != "http" && param.scheme != "https") ||
+        param.server_ip.empty() || param.server_port <= 0) {
+        return -1;
+    }
+
+    if (param.listen_port <= 0) {
+        return -2;
+    }
+
+    if (param.keepalive_interval_sec <= 0 || param.max_retry <= 0) {
+        return -3;
+    }
+
+    if (param.request_timeout_ms <= 0) {
+        return -4;
+    }
+
     return 0;
 }
 
@@ -207,20 +278,7 @@ void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
     cfg.gb_video.sub_bitrate_kbps = 512;
     cfg.gb_image.flip_mode = "close";
 
-    cfg.gat_register.server_ip = "183.252.186.166";
-    cfg.gat_register.server_port = 33855;
-    cfg.gat_register.scheme = "http";
-    cfg.gat_register.base_path = "";
-    cfg.gat_register.device_id = "35010200001190000010";
-    cfg.gat_register.username = "admin";
-    cfg.gat_register.password = "Dz8h6kM9";
-    cfg.gat_register.auth_method = "digest";
-    cfg.gat_register.listen_port = 18080;
-    cfg.gat_register.expires_sec = 3600;
-    cfg.gat_register.keepalive_interval_sec = 60;
-    cfg.gat_register.max_retry = 3;
-    cfg.gat_register.request_timeout_ms = 5000;
-    cfg.gat_register.retry_backoff_policy = "5,10,30";
+    cfg.gat_register = BuildDefaultGatRegisterParam();
     cfg.gat_upload.queue_dir = "/tmp/gat1400_queue";
     cfg.gat_upload.max_pending_count = 200;
     cfg.gat_upload.replay_interval_sec = 15;
@@ -250,49 +308,126 @@ void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
     cfg.gb_listen.sample_rate = 8000;
 }
 
-bool LoadLocalConfigFile(protocol::ProtocolExternalConfig& cfg)
+bool ReadIniString(CInifile& ini,
+                   const char* section,
+                   const char* key,
+                   const char* path,
+                   std::string& out)
 {
-    if (access(kLocalGbConfigFile, F_OK) != 0) {
+    char value[256] = {0};
+    if (ini.read_profile_string(section, key, value, sizeof(value), path) != 0) {
+        return false;
+    }
+    out = value;
+    return true;
+}
+
+bool ReadIniInt(CInifile& ini,
+                const char* section,
+                const char* key,
+                const char* path,
+                int& out)
+{
+    char value[256] = {0};
+    if (ini.read_profile_string(section, key, value, sizeof(value), path) != 0) {
+        return false;
+    }
+    out = atoi(value);
+    return true;
+}
+
+bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& out)
+{
+    if (path == NULL || access(path, F_OK) != 0) {
         return false;
     }
 
     CInifile ini;
-    char value[256] = {0};
-    if (ini.read_profile_string(kLocalGbConfigSection, "enable", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.enabled = (atoi(value) != 0) ? 1 : 0;
+    int ivalue = 0;
+    if (ReadIniInt(ini, kLocalGbConfigSection, "enable", path, ivalue)) {
+        out.enabled = (ivalue != 0) ? 1 : 0;
     }
-
-    memset(value, 0, sizeof(value));
-    if (ini.read_profile_string(kLocalGbConfigSection, "username", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.username = value;
-    }
-
-    memset(value, 0, sizeof(value));
-    if (ini.read_profile_string(kLocalGbConfigSection, "server_ip", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.server_ip = value;
-    }
-
-    memset(value, 0, sizeof(value));
-    if (ini.read_profile_string(kLocalGbConfigSection, "server_port", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.server_port = atoi(value);
-    }
-
-    memset(value, 0, sizeof(value));
-    if (ini.read_profile_string(kLocalGbConfigSection, "device_id", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.device_id = value;
-    }
-
-    memset(value, 0, sizeof(value));
-    if (ini.read_profile_string(kLocalGbConfigSection, "password", value, sizeof(value), kLocalGbConfigFile) == 0) {
-        cfg.gb_register.password = value;
-    }
-
+    ReadIniString(ini, kLocalGbConfigSection, "username", path, out.username);
+    ReadIniString(ini, kLocalGbConfigSection, "server_ip", path, out.server_ip);
+    ReadIniInt(ini, kLocalGbConfigSection, "server_port", path, out.server_port);
+    ReadIniString(ini, kLocalGbConfigSection, "device_id", path, out.device_id);
+    ReadIniString(ini, kLocalGbConfigSection, "password", path, out.password);
     return true;
 }
 
-int SaveLocalConfigFile(const protocol::ProtocolExternalConfig& cfg)
+bool LoadGatRegisterConfigFromFile(const char* path, protocol::GatRegisterParam& out)
 {
-    if (!EnsureDirectoryExists(kLocalGbConfigDir)) {
+    if (path == NULL || access(path, F_OK) != 0) {
+        return false;
+    }
+
+    CInifile ini;
+    ReadIniString(ini, kLocalGatConfigSection, "scheme", path, out.scheme);
+    ReadIniString(ini, kLocalGatConfigSection, "server_ip", path, out.server_ip);
+    ReadIniInt(ini, kLocalGatConfigSection, "server_port", path, out.server_port);
+    ReadIniString(ini, kLocalGatConfigSection, "base_path", path, out.base_path);
+    ReadIniString(ini, kLocalGatConfigSection, "device_id", path, out.device_id);
+    ReadIniString(ini, kLocalGatConfigSection, "username", path, out.username);
+    ReadIniString(ini, kLocalGatConfigSection, "password", path, out.password);
+    ReadIniString(ini, kLocalGatConfigSection, "auth_method", path, out.auth_method);
+    ReadIniInt(ini, kLocalGatConfigSection, "listen_port", path, out.listen_port);
+    ReadIniInt(ini, kLocalGatConfigSection, "expires_sec", path, out.expires_sec);
+    ReadIniInt(ini, kLocalGatConfigSection, "keepalive_interval_sec", path, out.keepalive_interval_sec);
+    ReadIniInt(ini, kLocalGatConfigSection, "max_retry", path, out.max_retry);
+    ReadIniInt(ini, kLocalGatConfigSection, "request_timeout_ms", path, out.request_timeout_ms);
+    ReadIniString(ini, kLocalGatConfigSection, "retry_backoff_policy", path, out.retry_backoff_policy);
+    return true;
+}
+
+bool LoadLegacyGatRegisterConfigFromFile(const char* path, protocol::GatRegisterParam& out)
+{
+    if (path == NULL || access(path, F_OK) != 0) {
+        return false;
+    }
+
+    CInifile ini;
+    ReadIniString(ini, kLocalGbConfigSection, "gat_scheme", path, out.scheme);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_server_ip", path, out.server_ip);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_server_port", path, out.server_port);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_base_path", path, out.base_path);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_device_id", path, out.device_id);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_username", path, out.username);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_password", path, out.password);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_auth_method", path, out.auth_method);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_listen_port", path, out.listen_port);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_expires_sec", path, out.expires_sec);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_keepalive_interval_sec", path, out.keepalive_interval_sec);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_max_retry", path, out.max_retry);
+    ReadIniInt(ini, kLocalGbConfigSection, "gat_request_timeout_ms", path, out.request_timeout_ms);
+    ReadIniString(ini, kLocalGbConfigSection, "gat_retry_backoff_policy", path, out.retry_backoff_policy);
+    return true;
+}
+
+LocalConfigLoadSource LoadExistingGbRegisterConfig(protocol::GbRegisterParam& out)
+{
+    if (LoadGbRegisterConfigFromFile(kLocalGbConfigFile, out)) {
+        return kLocalConfigLoadCurrent;
+    }
+    if (LoadGbRegisterConfigFromFile(kLegacyLocalGbConfigFile, out)) {
+        return kLocalConfigLoadLegacy;
+    }
+    return kLocalConfigLoadNone;
+}
+
+LocalConfigLoadSource LoadExistingGatRegisterConfig(protocol::GatRegisterParam& out)
+{
+    if (LoadGatRegisterConfigFromFile(kLocalGatConfigFile, out)) {
+        return kLocalConfigLoadCurrent;
+    }
+    if (LoadLegacyGatRegisterConfigFromFile(kLegacyLocalGbConfigFile, out)) {
+        return kLocalConfigLoadLegacy;
+    }
+    return kLocalConfigLoadNone;
+}
+
+int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
+{
+    if (!EnsureDirectoryExists(kLocalConfigDir)) {
         return -1;
     }
 
@@ -302,12 +437,12 @@ int SaveLocalConfigFile(const protocol::ProtocolExternalConfig& cfg)
     }
 
     fprintf(fp, "[%s]\n", kLocalGbConfigSection);
-    fprintf(fp, "enable=%d\n", cfg.gb_register.enabled != 0 ? 1 : 0);
-    fprintf(fp, "username=%s\n", cfg.gb_register.username.c_str());
-    fprintf(fp, "server_ip=%s\n", cfg.gb_register.server_ip.c_str());
-    fprintf(fp, "server_port=%d\n", cfg.gb_register.server_port);
-    fprintf(fp, "device_id=%s\n", cfg.gb_register.device_id.c_str());
-    fprintf(fp, "password=%s\n", cfg.gb_register.password.c_str());
+    fprintf(fp, "enable=%d\n", param.enabled != 0 ? 1 : 0);
+    fprintf(fp, "username=%s\n", param.username.c_str());
+    fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
+    fprintf(fp, "server_port=%d\n", param.server_port);
+    fprintf(fp, "device_id=%s\n", param.device_id.c_str());
+    fprintf(fp, "password=%s\n", param.password.c_str());
 
     const int flushRet = fflush(fp);
     const int closeRet = fclose(fp);
@@ -316,6 +451,71 @@ int SaveLocalConfigFile(const protocol::ProtocolExternalConfig& cfg)
     }
 
     return 0;
+}
+
+int SaveLocalGatConfigFile(const protocol::GatRegisterParam& param)
+{
+    if (!EnsureDirectoryExists(kLocalConfigDir)) {
+        return -1;
+    }
+
+    FILE* fp = fopen(kLocalGatConfigFile, "w");
+    if (fp == NULL) {
+        return -2;
+    }
+
+    fprintf(fp, "[%s]\n", kLocalGatConfigSection);
+    fprintf(fp, "scheme=%s\n", param.scheme.c_str());
+    fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
+    fprintf(fp, "server_port=%d\n", param.server_port);
+    fprintf(fp, "base_path=%s\n", param.base_path.c_str());
+    fprintf(fp, "device_id=%s\n", param.device_id.c_str());
+    fprintf(fp, "username=%s\n", param.username.c_str());
+    fprintf(fp, "password=%s\n", param.password.c_str());
+    fprintf(fp, "auth_method=%s\n", param.auth_method.c_str());
+    fprintf(fp, "listen_port=%d\n", param.listen_port);
+    fprintf(fp, "expires_sec=%d\n", param.expires_sec);
+    fprintf(fp, "keepalive_interval_sec=%d\n", param.keepalive_interval_sec);
+    fprintf(fp, "max_retry=%d\n", param.max_retry);
+    fprintf(fp, "request_timeout_ms=%d\n", param.request_timeout_ms);
+    fprintf(fp, "retry_backoff_policy=%s\n", param.retry_backoff_policy.c_str());
+
+    const int flushRet = fflush(fp);
+    const int closeRet = fclose(fp);
+    if (flushRet != 0 || closeRet != 0) {
+        return -3;
+    }
+
+    return 0;
+}
+
+const char* DescribeLocalConfigSource(LocalConfigLoadSource source)
+{
+    switch (source) {
+        case kLocalConfigLoadCurrent:
+            return "current";
+        case kLocalConfigLoadLegacy:
+            return "legacy";
+        default:
+            return "default";
+    }
+}
+
+LocalConfigSyncState SyncLocalConfigFiles(protocol::ProtocolExternalConfig& cfg)
+{
+    LocalConfigSyncState state;
+
+    state.gb_source = LoadExistingGbRegisterConfig(cfg.gb_register);
+    if (state.gb_source != kLocalConfigLoadCurrent) {
+        state.gb_sync_ret = SaveLocalGbConfigFile(cfg.gb_register);
+    }
+
+    state.gat_source = LoadExistingGatRegisterConfig(cfg.gat_register);
+    if (state.gat_source != kLocalConfigLoadCurrent) {
+        state.gat_sync_ret = SaveLocalGatConfigFile(cfg.gat_register);
+    }
+
+    return state;
 }
 
 }
@@ -328,18 +528,25 @@ LocalConfigProvider::LocalConfigProvider(const std::string& sourceTag)
 {
     InitDefaultConfig();
     ProtocolExternalConfig next = m_cached_cfg;
-    if (LoadLocalConfigFile(next)) {
-        m_cached_cfg = next;
+    const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
+    m_cached_cfg = next;
+    if (sync.gb_source != kLocalConfigLoadNone || sync.gat_source != kLocalConfigLoadNone) {
         m_cached_cfg.version = "v1-local-file";
-        printf("[Protocol][Config] module=config event=config_file_load_success trace=provider path=%s tag=%s\n",
+        printf("[Protocol][Config] module=config event=config_file_load_success trace=provider gb_path=%s gb_source=%s gb_ret=%d gat_path=%s gat_source=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
+               DescribeLocalConfigSource(sync.gb_source),
+               sync.gb_sync_ret,
+               kLocalGatConfigFile,
+               DescribeLocalConfigSource(sync.gat_source),
+               sync.gat_sync_ret,
                m_source_tag.c_str());
     } else {
-        const int saveRet = SaveLocalConfigFile(m_cached_cfg);
-        printf("[Protocol][Config] module=config event=config_file_init trace=provider path=%s tag=%s ret=%d\n",
+        printf("[Protocol][Config] module=config event=config_file_init trace=provider gb_path=%s gb_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
-               m_source_tag.c_str(),
-               saveRet);
+               sync.gb_sync_ret,
+               kLocalGatConfigFile,
+               sync.gat_sync_ret,
+               m_source_tag.c_str());
     }
 }
 
@@ -354,38 +561,53 @@ GbRegisterParam LocalConfigProvider::BuildDefaultGbRegisterConfig()
 
 int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
 {
-    ProtocolExternalConfig cfg;
-    InitDefaultLocalConfig(cfg);
-    if (!LoadLocalConfigFile(cfg)) {
-        const int saveRet = SaveLocalConfigFile(cfg);
-        out = cfg.gb_register;
-        return saveRet;
+    out = BuildDefaultGbRegisterConfig();
+    const LocalConfigLoadSource source = LoadExistingGbRegisterConfig(out);
+    if (source == kLocalConfigLoadCurrent) {
+        return 0;
     }
-
-    cfg.version = "v1-local-file";
-    out = cfg.gb_register;
-    return 0;
+    return SaveLocalGbConfigFile(out);
 }
 
 int LocalConfigProvider::UpdateGbRegisterConfig(const GbRegisterParam& param)
 {
-    ProtocolExternalConfig cfg;
-    InitDefaultLocalConfig(cfg);
-    if (!LoadLocalConfigFile(cfg)) {
-        const int saveRet = SaveLocalConfigFile(cfg);
-        if (saveRet != 0) {
-            return saveRet;
-        }
-    }
-
-    ApplyGbRegisterEditableFields(cfg.gb_register, param);
-    const int check = ValidateGbRegisterEditableFields(cfg.gb_register);
+    GbRegisterParam next = BuildDefaultGbRegisterConfig();
+    LoadExistingGbRegisterConfig(next);
+    ApplyGbRegisterEditableFields(next, param);
+    const int check = ValidateGbRegisterEditableFields(next);
     if (check != 0) {
         return check;
     }
 
-    cfg.version = "v1-local-file";
-    return SaveLocalConfigFile(cfg);
+    return SaveLocalGbConfigFile(next);
+}
+
+GatRegisterParam LocalConfigProvider::BuildDefaultGatRegisterConfig()
+{
+    return BuildDefaultGatRegisterParam();
+}
+
+int LocalConfigProvider::LoadOrCreateGatRegisterConfig(GatRegisterParam& out)
+{
+    out = BuildDefaultGatRegisterConfig();
+    const LocalConfigLoadSource source = LoadExistingGatRegisterConfig(out);
+    if (source == kLocalConfigLoadCurrent) {
+        return 0;
+    }
+    return SaveLocalGatConfigFile(out);
+}
+
+int LocalConfigProvider::UpdateGatRegisterConfig(const GatRegisterParam& param)
+{
+    GatRegisterParam next = BuildDefaultGatRegisterConfig();
+    LoadExistingGatRegisterConfig(next);
+    ApplyGatRegisterEditableFields(next, param);
+    const int check = ValidateGatRegisterEditableFields(next);
+    if (check != 0) {
+        return check;
+    }
+
+    return SaveLocalGatConfigFile(next);
 }
 
 void LocalConfigProvider::InitDefaultConfig()
@@ -396,15 +618,19 @@ void LocalConfigProvider::InitDefaultConfig()
 int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
 {
     ProtocolExternalConfig next = m_cached_cfg;
-    if (LoadLocalConfigFile(next)) {
+    const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
+    if (sync.gb_source != kLocalConfigLoadNone || sync.gat_source != kLocalConfigLoadNone) {
         next.version = "v1-local-file";
         m_cached_cfg = next;
-    } else {
-        const int saveRet = SaveLocalConfigFile(m_cached_cfg);
-        printf("[Protocol][Config] module=config event=config_file_missing trace=provider path=%s tag=%s ret=%d\n",
+    }
+
+    if (sync.gb_source == kLocalConfigLoadNone || sync.gat_source == kLocalConfigLoadNone) {
+        printf("[Protocol][Config] module=config event=config_file_missing trace=provider gb_path=%s gb_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
-               m_source_tag.c_str(),
-               saveRet);
+               sync.gb_sync_ret,
+               kLocalGatConfigFile,
+               sync.gat_sync_ret,
+               m_source_tag.c_str());
     }
 
     out = m_cached_cfg;
@@ -427,14 +653,24 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
     }
 
     m_cached_cfg = cfg;
-    const int saveRet = SaveLocalConfigFile(m_cached_cfg);
-    if (saveRet != 0) {
+    const int saveGbRet = SaveLocalGbConfigFile(m_cached_cfg.gb_register);
+    if (saveGbRet != 0) {
         printf("[Protocol][Config] module=config event=config_apply_fail trace=provider error=%d source=local stage=persist version=%s tag=%s path=%s\n",
-               saveRet,
+               saveGbRet,
                cfg.version.c_str(),
                m_source_tag.c_str(),
                kLocalGbConfigFile);
-        return saveRet;
+        return saveGbRet;
+    }
+
+    const int saveGatRet = SaveLocalGatConfigFile(m_cached_cfg.gat_register);
+    if (saveGatRet != 0) {
+        printf("[Protocol][Config] module=config event=config_apply_fail trace=provider error=%d source=local stage=persist version=%s tag=%s path=%s\n",
+               saveGatRet,
+               cfg.version.c_str(),
+               m_source_tag.c_str(),
+               kLocalGatConfigFile);
+        return saveGatRet;
     }
 
     printf("[Protocol][Config] module=config event=config_apply_success trace=provider error=0 source=local version=%s tag=%s\n",

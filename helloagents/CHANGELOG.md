@@ -26,6 +26,7 @@
 
 ### 变更
 - 更新 `helloagents/wiki/overview.md`，将 ZeroConfig 纳入模块索引，并明确“零配置”在项目语境下是“免现场手工录参”而非“零出厂预置”。
+- 根据 issue38 于 2026-03-25 的最新评论，把本地注册配置目录统一迁到 `/userdata/conf/Config/GB/`：`gb28181.ini` 改为新路径，新增独立 `gat1400.ini`，并补齐 GAT1400 的 `Get/Set/Restart` 风格 flash 配置接口；首次加载会兼容迁移旧的 `/userdata/conf/Config/gb28181.ini`。
 - 补齐 GAT1400 `LowerGAT1400SDK` 运行时导出层，复用主程序内 `ProtocolManager/GAT1400ClientService`，对业务侧开放 `START/STOP/REGISTER/POST_*`、订阅观察者和自定义 HTTP 透传入口。
 - 补齐 GAT1400 P0 传输与恢复能力：新增 `scheme/base_path/request_timeout_ms` 地址模型、`retry_backoff_policy` 注册退避参数，以及 `queue_dir/max_pending_count/replay_interval_sec` 失败补传队列配置。
 - 将 `POST /VIID/APEs` 收口为显式兼容扩展开关 `gat_upload_enable_apes_post_compat`，默认关闭，并补齐配置读写、校验和热加载。

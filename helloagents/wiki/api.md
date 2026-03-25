@@ -37,7 +37,7 @@
 ### GB28181 本地注册配置接口
 
 #### `GetGbRegisterConfig()`
-**描述:** 从 `/userdata/conf/Config/gb28181.ini` 读取 GB28181 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
+**描述:** 从 `/userdata/conf/Config/GB/gb28181.ini` 读取 GB28181 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
 
 #### `SetGbRegisterConfig()`
 **描述:** 只写入 GB28181 注册配置到 flash，不直接修改运行中的 GB 注册生命周期。
@@ -51,6 +51,24 @@
 - `SetGbRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGbRegisterService()`
 - `RestartGbRegisterService()` 在 `ProtocolManager` 未启动时只刷新缓存；已启动时会结合当前生命周期状态和 `enabled` 决定是否停/启 GB 服务
 - `ProtocolManager::Start()` 前会先执行一次 `ReloadExternalConfig()`，保证 `Init()` 之后、`Start()` 之前写入 flash 的配置不会被旧缓存覆盖
+
+### GAT1400 本地注册配置接口
+
+#### `GetGatRegisterConfig()`
+**描述:** 从 `/userdata/conf/Config/GB/gat1400.ini` 读取 GAT1400 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
+
+#### `SetGatRegisterConfig()`
+**描述:** 只写入 GAT1400 注册配置到 flash，不直接修改运行中的 GAT1400 生命周期。
+
+#### `RestartGatRegisterService()`
+**描述:** 从 flash 重新读取 GAT1400 注册配置，并在 `ProtocolManager` 已启动时调用 `m_gat_client->Reload(...)` 使新配置生效；未启动时只刷新缓存。
+
+**当前约束:**
+- 当前仅持久化 `GatRegisterParam`：`scheme`、`server_ip`、`server_port`、`base_path`、`device_id`、`username`、`password`、`auth_method`、`listen_port`、`expires_sec`、`keepalive_interval_sec`、`max_retry`、`request_timeout_ms`、`retry_backoff_policy`
+- `gat_upload`、`gat_capture` 等其他 1400 协议项不写入本地 `ini`
+- `SetGatRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGatRegisterService()`
+- `RestartGatRegisterService()` 在 `ProtocolManager` 已启动且 `m_gat_client` 已构造时会复用现有 `Reload()` 逻辑决定是否热更新或重启本地 1400 服务
+- 首次切换到新目录时，会兼容读取旧的 `/userdata/conf/Config/gb28181.ini` 中历史 `gat_*` 字段，并迁移生成新的 `gat1400.ini`
 
 ### ProtocolManager 核心回调
 

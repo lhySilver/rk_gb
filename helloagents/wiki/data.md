@@ -40,9 +40,9 @@
 | `username` | `std::string` | 注册用户名 / 接入编码 |
 | `password` | `std::string` | 注册密码 |
 
-**说明:** 当前 `gb28181.ini` 只持久化上述 6 个注册字段；`device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gb_reboot`、`gat_*` 等其余协议项统一使用代码默认值，不再落本地 `ini`。
+**说明:** 当前 `gb28181.ini` 只持久化上述 6 个注册字段；`device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gb_reboot` 等其余 GB 协议项统一使用代码默认值，不再落本地 `ini`。
 
-### `GatRegisterParam`
+### `GatRegisterParam` 本地持久化子集
 
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
@@ -53,6 +53,8 @@
 | `listen_port` | `int` | 本地订阅 HTTP 服务端口 |
 | `request_timeout_ms` | `int` | 对上 HTTP 请求超时 |
 | `retry_backoff_policy` | `std::string` | 注册失败后的退避序列，逗号分隔秒数 |
+
+**说明:** 当前 `gat1400.ini` 只持久化 `GatRegisterParam`；`gat_upload`、`gat_capture` 等其余 1400 协议项统一使用代码默认值或 HTTP 配置链路，不落本地 `ini`。
 
 ### `GatUploadParam`
 
@@ -76,9 +78,29 @@
 | `server_port` | 接入端口 |
 | `device_id` | 设备编码 |
 | `password` | 设备密码 |
-| `image_flip_mode` | GB 画面翻转配置，`close` 为正常，非 `close` 值会映射为设备 `RA_180` 翻转 |
 
-默认路径: `/userdata/conf/Config/gb28181.ini`
+默认路径: `/userdata/conf/Config/GB/gb28181.ini`
+
+### `gat1400.ini`
+
+| 键名 | 说明 |
+|------|------|
+| `scheme` | 对上请求协议 |
+| `server_ip` | 平台地址 |
+| `server_port` | 平台端口 |
+| `base_path` | 统一 URI 前缀 |
+| `device_id` | 设备标识 |
+| `username` | 认证用户名 |
+| `password` | 认证密码 |
+| `auth_method` | 认证方式 |
+| `listen_port` | 本地订阅 HTTP 监听端口 |
+| `expires_sec` | 注册有效期 |
+| `keepalive_interval_sec` | 保活周期 |
+| `max_retry` | 最大重试次数 |
+| `request_timeout_ms` | HTTP 超时 |
+| `retry_backoff_policy` | 注册退避序列 |
+
+默认路径: `/userdata/conf/Config/GB/gat1400.ini`
 
 ### 白皮书字段映射
 
@@ -265,7 +287,8 @@
 ## 索引与关联
 
 - 配置来源: `HttpConfigProvider -> ProtocolExternalConfig -> ProtocolManager / GAT1400ClientService`
-- 本地配置: `/userdata/conf/Config/gb28181.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
+- 本地配置: `/userdata/conf/Config/GB/gb28181.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
+- 本地配置: `/userdata/conf/Config/GB/gat1400.ini -> LocalConfigProvider -> GetGatRegisterConfig()/SetGatRegisterConfig()/RestartGatRegisterService() -> ProtocolManager::Start()/GAT1400 lifecycle`
 - 实时流关联: `GbLiveSession -> GB28181RtpPsSender`
 - 回放关联: `GbReplaySession -> Storage_Module_*`
 - 订阅关联: `m_subscriptions -> observer 回调 -> 上层业务`

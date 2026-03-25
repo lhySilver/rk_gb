@@ -23,6 +23,9 @@ public:
     static GbRegisterParam BuildDefaultGbRegisterConfig();
     static int LoadOrCreateGbRegisterConfig(GbRegisterParam& out);
     static int UpdateGbRegisterConfig(const GbRegisterParam& param);
+    static GatRegisterParam BuildDefaultGatRegisterConfig();
+    static int LoadOrCreateGatRegisterConfig(GatRegisterParam& out);
+    static int UpdateGatRegisterConfig(const GatRegisterParam& param);
 
     void SetMockConfig(const ProtocolExternalConfig& cfg);
 
