@@ -257,7 +257,7 @@
 |------|------|
 | `CONNECT_PARAM_S` | `LowerGAT1400SDK` 启动时传入的对端地址模型，包含 `GBCode/ip/port` |
 | `REGIST_PARAM_S` | `LowerGAT1400SDK` 启动时传入的注册认证参数，包含 `expires/username/password/auth` |
-| `CSofia::GetProtocolManager()` | 主程序导出的轻量访问口，用于把业务 SDK 调用桥接到当前进程已启动的 `ProtocolManager` |
+| `ProtocolManager::Instance()` | 进程内唯一协议入口；主程序和 `LowerGAT1400SDK` 都通过它访问当前运行中的 `ProtocolManager`，不再经过 `CSofia` 转发。 |
 | `LOWER_1400_SET_1400INHTTPCMD(url, method, format, content)` | 运行时透传模型；`url` 可为空、相对路径或绝对 URL，`format` 决定默认资源路径和响应解析方式；当前会拒绝 `/VIAS/*`，并对 `POST /VIID/APEs` 应用兼容开关 |
 
 ### `GAT_1400_*`

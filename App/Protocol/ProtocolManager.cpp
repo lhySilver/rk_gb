@@ -1,4 +1,4 @@
-﻿#include "ProtocolManager.h"
+#include "ProtocolManager.h"
 #include "gat1400/GAT1400ClientService.h"
 #include "ProtocolLog.h"
 
@@ -3188,6 +3188,36 @@ namespace protocol
 
 {
 
+namespace
+{
+
+ProtocolManager*& GetProtocolManagerSingletonStorage()
+{
+    static ProtocolManager* instance = NULL;
+    return instance;
+}
+
+std::once_flag& GetProtocolManagerSingletonOnce()
+{
+    static std::once_flag once;
+    return once;
+}
+
+}
+
+ProtocolManager& ProtocolManager::Instance()
+{
+    std::call_once(GetProtocolManagerSingletonOnce(), []() {
+        GetProtocolManagerSingletonStorage() = new ProtocolManager();
+    });
+    return *GetProtocolManagerSingletonStorage();
+}
+
+ProtocolManager* ProtocolManager::InstanceIfCreated()
+{
+    return GetProtocolManagerSingletonStorage();
+}
+
 
 
 void* ProtocolManager::GbUpgradeApplyThread(void* arg)
@@ -3430,6 +3460,7 @@ int ProtocolManager::Start()
 
 
     if (m_cfg.gb_register.enabled != 0) {
+        BindGbClientSdk();
         ret = StartGbClientLifecycle();
 
         if (ret != 0) {
@@ -10839,39 +10870,23 @@ void ProtocolManager::SetGbBroadcastPcmCallback(GB28181BroadcastBridge::PcmFrame
 
 }
 
-void ProtocolManager::BindGbClientSdk(GB28181ClientSDK* sdk)
+void ProtocolManager::BindGbClientSdk()
 
 {
 
 #if PROTOCOL_HAS_GB28181_CLIENT_SDK
 
-    GB28181ClientSDK* oldSdk = NULL;
+    GB28181ClientSDK* sdk = NULL;
 
     {
 
         std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
 
-        oldSdk = m_gb_client_sdk;
+        if (m_gb_client_sdk == NULL) {
+            m_gb_client_sdk = new GB28181ClientSDK;
+        }
 
-    }
-
-
-
-    if (oldSdk != NULL && oldSdk != sdk) {
-
-        StopGbClientLifecycle();
-
-        oldSdk->SetReceiver(NULL);
-
-    }
-
-
-
-    {
-
-        std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
-
-        m_gb_client_sdk = sdk;
+        sdk = m_gb_client_sdk;
 
     }
 
@@ -10881,7 +10896,7 @@ void ProtocolManager::BindGbClientSdk(GB28181ClientSDK* sdk)
 
         SetGbMediaPlayInfoResponder(NULL, NULL);
 
-        printf("[ProtocolManager] bind gb sdk null, receiver unbound\n");
+        printf("[ProtocolManager] bind owned gb sdk failed, receiver unbound\n");
 
         return;
 
@@ -10893,25 +10908,9 @@ void ProtocolManager::BindGbClientSdk(GB28181ClientSDK* sdk)
 
     SetGbMediaPlayInfoResponder(&ProtocolManager::OnGbMediaPlayInfoRespond, this);
 
-    printf("[ProtocolManager] bind gb sdk success, receiver attached\n");
-
-
-
-    if (m_started) {
-
-        const int ret = StartGbClientLifecycle();
-
-        if (ret != 0) {
-
-            printf("[ProtocolManager] bind gb sdk lifecycle start failed: %d\n", ret);
-
-        }
-
-    }
+    printf("[ProtocolManager] bind owned gb sdk success, receiver attached\n");
 
 #else
-
-    (void)sdk;
 
     m_gb_client_sdk = NULL;
 
@@ -10950,6 +10949,8 @@ void ProtocolManager::UnbindGbClientSdk()
     if (oldSdk != NULL) {
 
         oldSdk->SetReceiver(NULL);
+
+        delete oldSdk;
 
     }
 

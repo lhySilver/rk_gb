@@ -1,15 +1,8 @@
 #include "Main.h"
 
+#include "Protocol/ProtocolManager.h"
 #include "ProduceNew/Produce.h"
 #include "ProduceNew/NetWifi.h"
-
-#ifndef PROTOCOL_HAS_GB28181_CLIENT_SDK
-#define PROTOCOL_HAS_GB28181_CLIENT_SDK 1
-#endif
-
-#if PROTOCOL_HAS_GB28181_CLIENT_SDK
-#include "GB28181ClientSDK.h"
-#endif
 
 
 extern int TestModuleV2_start();
@@ -40,30 +33,17 @@ static void *do_audio_test(void *args)
 PATTERN_SINGLETON_IMPLEMENT(CSofia)
 
 CSofia::CSofia()
-	: m_gbClientSdk(NULL)
 {
 }
 
 CSofia::~CSofia()
 {
-#if PROTOCOL_HAS_GB28181_CLIENT_SDK
-	if (m_gbClientSdk != NULL)
+	protocol::ProtocolManager* protocolManager = protocol::ProtocolManager::InstanceIfCreated();
+	if (protocolManager != NULL)
 	{
-		m_protocolManager.UnbindGbClientSdk();
-		delete m_gbClientSdk;
-		m_gbClientSdk = NULL;
+		protocolManager->Stop();
+		protocolManager->UnInit();
 	}
-#endif
-}
-
-protocol::ProtocolManager* CSofia::GetProtocolManager()
-{
-	return &m_protocolManager;
-}
-
-const protocol::ProtocolManager* CSofia::GetProtocolManager() const
-{
-	return &m_protocolManager;
 }
 
 void CSofia::StartLocalRuntimeServices()
@@ -92,10 +72,10 @@ bool CSofia::preStart()
 	IConfigManager::instance()->saveFile();
 
 	IEventManager::instance()->attach(IEventManager::Proc(&CSofia::onAppEvent, this));
-	
+
 	// 存储模块初始化
 	g_StorageManager->Init();
-#if 0  
+#if 0
     //重定向log到SD卡文件tuya.log
     FILE *std_fp;
     if((std_fp = fopen("/mnt/sdcard/tuya.log","w+")) == NULL){
@@ -111,7 +91,7 @@ bool CSofia::preStart()
     }
     fclose(std_fp);
 #endif
-	
+
 	return true;
 }
 
@@ -125,7 +105,7 @@ bool CSofia::start()
 		g_AVManager.AudioInit();
 		// 启动提示语音播报模块
 		g_AudioPrompt.start();
-		
+
 		// 指示灯模块启动
 		g_IndicatorLight.start();
 		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
@@ -136,7 +116,7 @@ bool CSofia::start()
 		START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/motor_gpio.ko", NULL);
 		g_PtzHandle.start();
 		#endif
-		
+
 		AppErr("start aging test ........\n");
 		CreateDetachedThread((char*)"do_audio_test",do_audio_test, (void *)NULL, true);
 		return true;
@@ -261,14 +241,14 @@ bool CSofia::start()
 		g_AVManager.AudioInit();
 		// 启动提示语音播报模块
 		g_AudioPrompt.start();
-		
+
 		// 指示灯模块启动
 		g_IndicatorLight.start();
 		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
 		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
 //		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_EPI_INDICATOR_LIGHT_ALWAYS_OFF);
 
-		#if 0	
+		#if 0
 		START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/motor_gpio.ko", NULL);
 		g_PtzHandle.start();
 		#endif
@@ -287,14 +267,14 @@ bool CSofia::start()
 		// 启动网络管理模块
 		//g_NetConfigHook.Init();
 		g_NetWifi.Init();
-	
+
 		g_NetWifi.SetWifi("TP-LINK_5G_EDDB", "DGIOT0202", "192.168.1.188", "192.168.1.1", "255.255.255.0");
 		while (0 == g_NetWifi.GetWifiConnetStatus())
 		{
 			AppInfo("wait=========================>>>network...\n");
 			sleep(1);
 		}
-		
+
 		// ???????
 		g_Camera;
 		// 初始化onvif server
@@ -303,29 +283,16 @@ bool CSofia::start()
 		// 启动tuya
 		//g_TuyaHandle.start();
 		// Start protocol manager (GB28181/GAT1400/broadcast/listen)
-		if (0 != m_protocolManager.Init(PROTOCOL_CONFIG_ENDPOINT))
+		protocol::ProtocolManager& protocolManager = protocol::ProtocolManager::Instance();
+		if (0 != protocolManager.Init(PROTOCOL_CONFIG_ENDPOINT))
 		{
 			AppErr("ProtocolManager Init failed\n");
 		}
 		else
 		{
-#if PROTOCOL_HAS_GB28181_CLIENT_SDK
-			if (m_gbClientSdk == NULL)
-			{
-				m_gbClientSdk = new GB28181ClientSDK;
-			}
-
-			m_protocolManager.BindGbClientSdk(m_gbClientSdk);
-#endif
-
-			if (0 != m_protocolManager.Start())
+			if (0 != protocolManager.Start())
 			{
 				AppErr("ProtocolManager Start failed\n");
-#if PROTOCOL_HAS_GB28181_CLIENT_SDK
-				m_protocolManager.UnbindGbClientSdk();
-				delete m_gbClientSdk;
-				m_gbClientSdk = NULL;
-#endif
 			}
 		}
 		StartLocalRuntimeServices();
@@ -432,9 +399,9 @@ void CSofia::OnCheckButton_Produce(Param wParam)
 				g_iKeyboardReport ++;
 				s_iLastTime = iNowTime;
 			}
-			
+
 		}
-		
+
 		numTime = 0;
 	}
 
@@ -452,15 +419,12 @@ void CSofia::onAppEvent(std::string code, int index, appEventAction action, cons
 	if ("UpgradeReleaseResource" == code)
 	{
 		AppErr("ProtocolManager stop for upgrade\n");
-#if PROTOCOL_HAS_GB28181_CLIENT_SDK
-		m_protocolManager.UnbindGbClientSdk();
-		if (m_gbClientSdk != NULL)
+		protocol::ProtocolManager* protocolManager = protocol::ProtocolManager::InstanceIfCreated();
+		if (protocolManager != NULL)
 		{
-			delete m_gbClientSdk;
-			m_gbClientSdk = NULL;
+			protocolManager->Stop();
+			protocolManager->UnInit();
 		}
-#endif
-		m_protocolManager.Stop();
 	}
 }
 

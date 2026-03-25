@@ -22,6 +22,8 @@
 
 ## 注意事项
 - `LocalConfigProvider` 现在会优先读取 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；文件不存在时使用代码默认值自动生成，并兼容把旧的 `/userdata/conf/Config/gb28181.ini` 迁移到新目录。
+- `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。
+- `GB28181ClientSDK` 的创建、绑定、释放现全部下沉到 `ProtocolManager` 私有生命周期中；`CSofia` 不再持有 SDK 指针，也不再负责 `Bind/Unbind`。
 - `GetGbRegisterConfig()` 现在始终直接读取 `/userdata/conf/Config/GB/gb28181.ini`；即使 `ProtocolManager::Init()` 之前被外部模块调用，也会先按默认值补齐配置文件再返回结果。
 - `SetGbRegisterConfig()` 只负责把 issue38 约定的 6 个外部可编辑字段写回 flash：`enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password`；`device_name`、`expires_sec` 等其余注册参数继续沿用代码默认值。
 - 新增 `RestartGbRegisterService()` 作为单独的 GB 服务重载入口；它会从 flash 重新读取注册配置，并根据 `ProtocolManager` 当前是否已启动、GB 生命周期是否正在运行以及 `enabled` 新值决定只刷新缓存、停服或重启注册。

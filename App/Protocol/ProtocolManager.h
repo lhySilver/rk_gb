@@ -1,4 +1,4 @@
-﻿#ifndef __PROTOCOL_MANAGER_H__
+#ifndef __PROTOCOL_MANAGER_H__
 
 #define __PROTOCOL_MANAGER_H__
 
@@ -52,6 +52,10 @@ class ProtocolManager : public ProtocolService
 
 public:
 
+    static ProtocolManager& Instance();
+
+    static ProtocolManager* InstanceIfCreated();
+
     typedef int (*GbMediaPlayInfoResponder)(StreamHandle handle, const MediaInfo* info, void* userData);
 
     struct GbTimeSyncInfo
@@ -72,8 +76,6 @@ public:
     typedef int (*GbTimeSyncHook)(const GbTimeSyncInfo& info, void* userData);
 
 
-
-    ProtocolManager();
 
     ~ProtocolManager();
 
@@ -179,10 +181,6 @@ public:
 
 
 
-    void BindGbClientSdk(GB28181ClientSDK* sdk);
-
-    void UnbindGbClientSdk();
-
     GAT1400ClientService* GetGatClientService();
 
     const GAT1400ClientService* GetGatClientService() const;
@@ -196,6 +194,14 @@ public:
 
 
 private:
+
+    ProtocolManager();
+    ProtocolManager(const ProtocolManager&);
+    ProtocolManager& operator=(const ProtocolManager&);
+
+    void BindGbClientSdk();
+
+    void UnbindGbClientSdk();
 
     struct GbReplaySession
 

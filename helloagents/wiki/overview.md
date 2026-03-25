@@ -52,7 +52,7 @@
 
 - `RK/` 基本是交叉编译工具链目录，不是 IPC 业务代码主体。
 - `rk_gb/` 是主项目目录，构建入口为 `rk_gb/CMakeLists.txt`，可执行程序主体在 `rk_gb/App/`。
-- 协议统一从 `CSofia -> ProtocolManager` 启动。
+- 协议统一由 `CSofia` 在正常启动路径中调用 `ProtocolManager::Instance().Init()/Start()` 拉起；外部模块也统一直接访问 `ProtocolManager::Instance()`。
 - GB28181 已形成注册、实时流、回放、下载、广播、升级重启等主要闭环；对讲、远程抓拍和订阅链路另有专项审查文档持续跟踪。
 - GAT1400 已具备客户端、订阅、本地 HTTP 服务、失败补传和 lower SDK 导出能力，但设备时间同步已统一收口到 GB28181。
 - 终端产品验收不能只看国标，必须同时回到 `终端需求说明书.pdf`、`终端需求白皮书.pdf` 和 `测试用例.xlsx`。

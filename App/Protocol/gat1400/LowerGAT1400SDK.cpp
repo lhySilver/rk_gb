@@ -7,27 +7,19 @@ namespace protocol
 class ProtocolManager
 {
 public:
+    static ProtocolManager& Instance();
     const ProtocolExternalConfig& GetConfig() const;
     GAT1400ClientService* GetGatClientService();
     const GAT1400ClientService* GetGatClientService() const;
 };
 }
 
-class CSofia
-{
-public:
-    static CSofia* instance();
-    protocol::ProtocolManager* GetProtocolManager();
-    const protocol::ProtocolManager* GetProtocolManager() const;
-};
-
 namespace
 {
 
 protocol::ProtocolManager* GetProtocolManagerInstance()
 {
-    CSofia* app = CSofia::instance();
-    return app != NULL ? app->GetProtocolManager() : NULL;
+    return &protocol::ProtocolManager::Instance();
 }
 
 protocol::GAT1400ClientService* GetGatClientServiceInstance()
