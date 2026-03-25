@@ -3344,6 +3344,14 @@ int ProtocolManager::Start()
 
     }
 
+    if (m_provider.get() != NULL) {
+        const int reloadRet = ReloadExternalConfig();
+        if (reloadRet != 0) {
+            printf("[ProtocolManager] reload config before start failed: %d\n", reloadRet);
+            return reloadRet;
+        }
+    }
+
 
 
     int ret = m_rtp_ps_sender.Init(m_cfg.gb_live);
@@ -4621,63 +4629,13 @@ int ProtocolManager::SetGbRegisterConfig(const GbRegisterParam& param)
     }
 
     GbRegisterParam latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
-    int loadRet = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
-    if (m_provider.get() != NULL) {
-        ProtocolExternalConfig refreshed;
-        const int pullRet = m_provider->PullLatest(refreshed);
-        if (pullRet == 0) {
-            latest = refreshed.gb_register;
-            loadRet = 0;
-        }
-    }
-
-    const bool reloadGbLifecycle = (m_cfg.gb_register.enabled != latest.enabled) ||
-                                   (m_cfg.gb_register.server_ip != latest.server_ip) ||
-                                   (m_cfg.gb_register.server_port != latest.server_port) ||
-                                   (m_cfg.gb_register.device_id != latest.device_id) ||
-                                   (m_cfg.gb_register.username != latest.username) ||
-                                   (m_cfg.gb_register.password != latest.password);
-
-    m_cfg.gb_register = latest;
-    m_gb_device_name = m_cfg.gb_register.device_name;
-
-    if (!m_started) {
-        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=cache_only started=0 enabled=%d gb=%s:%d\n",
-               loadRet,
-               m_cfg.gb_register.enabled != 0 ? 1 : 0,
-               m_cfg.gb_register.server_ip.c_str(),
-               m_cfg.gb_register.server_port);
-        return 0;
-    }
-
-    if (!reloadGbLifecycle) {
-        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=noop started=1 enabled=%d gb=%s:%d\n",
-               loadRet,
-               m_cfg.gb_register.enabled != 0 ? 1 : 0,
-               m_cfg.gb_register.server_ip.c_str(),
-               m_cfg.gb_register.server_port);
-        return 0;
-    }
-
-    StopGbClientLifecycle();
-    if (m_cfg.gb_register.enabled != 0) {
-        const int startRet = StartGbClientLifecycle();
-        if (startRet != 0) {
-            printf("[ProtocolManager] module=config event=gb_register_set_fail trace=manager error=%d stage=gb_restart started=1\n",
-                   startRet);
-            return startRet;
-        }
-        printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=gb_restart started=1 enabled=1 gb=%s:%d\n",
-               loadRet,
-               m_cfg.gb_register.server_ip.c_str(),
-               m_cfg.gb_register.server_port);
-        return 0;
-    }
-
-    printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=gb_disable started=1 enabled=0 gb=%s:%d\n",
+    const int loadRet = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
+    printf("[ProtocolManager] module=config event=gb_register_set_success trace=manager error=%d stage=persist started=%d enabled=%d gb=%s:%d\n",
            loadRet,
-           m_cfg.gb_register.server_ip.c_str(),
-           m_cfg.gb_register.server_port);
+           m_started ? 1 : 0,
+           latest.enabled != 0 ? 1 : 0,
+           latest.server_ip.c_str(),
+           latest.server_port);
     return 0;
 }
 
@@ -4685,20 +4643,68 @@ GbRegisterParam ProtocolManager::GetGbRegisterConfig() const
 {
     GbRegisterParam latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
     const int ret = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
-    if (ret == 0) {
-        return latest;
+    if (ret != 0) {
+        printf("[ProtocolManager] module=config event=gb_register_get_default trace=manager error=%d started=%d\n",
+               ret,
+               m_started ? 1 : 0);
     }
+    return latest;
+}
 
-    printf("[ProtocolManager] module=config event=gb_register_get_fallback trace=manager error=%d started=%d\n",
-           ret,
+int ProtocolManager::RestartGbRegisterService()
+{
+    printf("[ProtocolManager] module=config event=gb_register_restart_start trace=manager error=0 started=%d\n",
            m_started ? 1 : 0);
 
-    if (!m_cfg.gb_register.server_ip.empty()) {
-        return m_cfg.gb_register;
+    GbRegisterParam latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
+    const int loadRet = LocalConfigProvider::LoadOrCreateGbRegisterConfig(latest);
+    if (loadRet != 0) {
+        printf("[ProtocolManager] module=config event=gb_register_restart_fail trace=manager error=%d stage=load_flash started=%d\n",
+               loadRet,
+               m_started ? 1 : 0);
+        return loadRet;
     }
 
-    latest = LocalConfigProvider::BuildDefaultGbRegisterConfig();
-    return latest;
+    const bool wasLifecycleRunning = m_gb_heartbeat_running.load() || m_gb_client_started || m_gb_client_registered;
+
+    m_cfg.gb_register = latest;
+    m_gb_device_name = m_cfg.gb_register.device_name;
+
+    if (!m_started) {
+        printf("[ProtocolManager] module=config event=gb_register_restart_success trace=manager error=0 stage=cache_only started=0 enabled=%d gb=%s:%d\n",
+               m_cfg.gb_register.enabled != 0 ? 1 : 0,
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return 0;
+    }
+
+    if (wasLifecycleRunning) {
+        StopGbClientLifecycle();
+    }
+
+    if (m_cfg.gb_register.enabled == 0) {
+        printf("[ProtocolManager] module=config event=gb_register_restart_success trace=manager error=0 stage=%s started=1 enabled=0 gb=%s:%d\n",
+               wasLifecycleRunning ? "gb_disable" : "gb_skip",
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return 0;
+    }
+
+    const int startRet = StartGbClientLifecycle();
+    if (startRet != 0) {
+        printf("[ProtocolManager] module=config event=gb_register_restart_fail trace=manager error=%d stage=%s started=1 enabled=1 gb=%s:%d\n",
+               startRet,
+               wasLifecycleRunning ? "gb_restart" : "gb_start",
+               m_cfg.gb_register.server_ip.c_str(),
+               m_cfg.gb_register.server_port);
+        return startRet;
+    }
+
+    printf("[ProtocolManager] module=config event=gb_register_restart_success trace=manager error=0 stage=%s started=1 enabled=1 gb=%s:%d\n",
+           wasLifecycleRunning ? "gb_restart" : "gb_start",
+           m_cfg.gb_register.server_ip.c_str(),
+           m_cfg.gb_register.server_port);
+    return 0;
 }
 
 

@@ -69,6 +69,7 @@
 - 修复 GB28181 广播通知 `MESSAGE` 在 `OnNotify()` 中被重复应答的问题，改为单次返回携带 XML 的最终响应，并保留 `400/403` 失败语义与诊断日志。
 - 修复 GB28181 配置仅停留在代码默认值的问题，新增 `/userdata/conf/Config/gb28181.ini` 本地配置落盘、缺省自动生成和开关控制能力。
 - 修复 issue38 国标注册配置接口只改内存不改文件的问题：`GetGbRegisterConfig()` / `SetGbRegisterConfig()` 现已直接走 `gb28181.ini`，支持 `init` 前访问、缺省自动生成，并在运行中对国标注册配置即时生效；根据最新评论约束，`gb28181.ini` 当前只持久化 6 个国标注册字段，其余协议项固定在代码中。
+- 根据 issue38 于 2026-03-25 的最新评论，继续拆分 GB 注册配置生效路径：`GetGbRegisterConfig()` 只读 flash，`SetGbRegisterConfig()` 只写 flash，新增 `RestartGbRegisterService()` 单独负责从 flash 重载并按运行态停/启 GB 服务；`ProtocolManager::Start()` 前也会先刷新一次本地配置，避免 `init` 后、`start` 前仍使用旧缓存。
 - 修复 GB 画面翻转配置未接入设备主配置链路的问题，改为复用 `CFG_CAMERA_PARAM.rotateAttr` 并将 `image_flip_mode` 持久化到 `gb28181.ini`。
 - 修复 GB 远程重启控制缺少冷却保护的问题，新增基于 `gb_reboot.cooldown_sec` 的防抖限制。
 - 修正 GB28181 实时流在 TCP 协商场景下的 SIP / 媒体建立时序。

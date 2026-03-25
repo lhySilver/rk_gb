@@ -265,7 +265,7 @@
 ## 索引与关联
 
 - 配置来源: `HttpConfigProvider -> ProtocolExternalConfig -> ProtocolManager / GAT1400ClientService`
-- 本地配置: `/userdata/conf/Config/gb28181.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()`
+- 本地配置: `/userdata/conf/Config/gb28181.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
 - 实时流关联: `GbLiveSession -> GB28181RtpPsSender`
 - 回放关联: `GbReplaySession -> Storage_Module_*`
 - 订阅关联: `m_subscriptions -> observer 回调 -> 上层业务`

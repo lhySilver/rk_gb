@@ -37,15 +37,20 @@
 ### GB28181 本地注册配置接口
 
 #### `GetGbRegisterConfig()`
-**描述:** 读取 GB28181 注册配置；若 `ProtocolManager::Init()` 之前调用，会先按默认值补齐 `/userdata/conf/Config/gb28181.ini` 后返回。
+**描述:** 从 `/userdata/conf/Config/gb28181.ini` 读取 GB28181 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
 
 #### `SetGbRegisterConfig()`
-**描述:** 写入 GB28181 注册配置并按差异重载注册生命周期。
+**描述:** 只写入 GB28181 注册配置到 flash，不直接修改运行中的 GB 注册生命周期。
+
+#### `RestartGbRegisterService()`
+**描述:** 从 flash 重新读取 GB28181 注册配置，并按当前运行状态与 `enabled` 决定只刷新缓存、停止 GB 服务或重新启动注册生命周期。
 
 **当前约束:**
 - 当前仅持久化 `enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password` 6 个注册字段
 - `device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gat_*` 等其他协议项不再写入本地 `ini`
-- 运行中调用后会先落盘，再按差异重载 GB 注册状态，而不是只修改内存副本
+- `SetGbRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGbRegisterService()`
+- `RestartGbRegisterService()` 在 `ProtocolManager` 未启动时只刷新缓存；已启动时会结合当前生命周期状态和 `enabled` 决定是否停/启 GB 服务
+- `ProtocolManager::Start()` 前会先执行一次 `ReloadExternalConfig()`，保证 `Init()` 之后、`Start()` 之前写入 flash 的配置不会被旧缓存覆盖
 
 ### ProtocolManager 核心回调
 

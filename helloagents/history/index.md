@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603251045 | issue38_gb_register_restart_split | 修复 | ✅已完成 | [2026-03/202603251045_issue38_gb_register_restart_split](2026-03/202603251045_issue38_gb_register_restart_split/) |
 | 202603250855 | zero_config_kb | 轻量迭代 | ✅已完成 | [2026-03/202603250855_zero_config_kb](2026-03/202603250855_zero_config_kb/) |
 | 202603241926 | gat_disable_time_sync | 修复 | ✅已完成 | [2026-03/202603241926_gat_disable_time_sync](2026-03/202603241926_gat_disable_time_sync/) |
 | 202603241433 | issue38_gb_ini_trim | 修复 | ✅已完成 | [2026-03/202603241433_issue38_gb_ini_trim](2026-03/202603241433_issue38_gb_ini_trim/) |
@@ -43,6 +44,7 @@
 
 ### 2026-03
 
+- [202603251045_issue38_gb_register_restart_split](2026-03/202603251045_issue38_gb_register_restart_split/) - 按 issue38 2026-03-25 最新评论将 GB 注册配置接口拆成“flash 读写”和“显式重启服务”两步
 - [202603250855_zero_config_kb](2026-03/202603250855_zero_config_kb/) - 将终端白皮书中的“零配置 / 注册重定向”整理为独立知识库专题，沉淀装维闭环、出厂预置、重定向注册报文要求和验收清单
 - [202603241926_gat_disable_time_sync](2026-03/202603241926_gat_disable_time_sync/) - 禁用 GAT1400 主动校时，统一由 GB28181 负责设备时间同步
 - [202603241433_issue38_gb_ini_trim](2026-03/202603241433_issue38_gb_ini_trim/) - 根据 issue38 最新评论把 `gb28181.ini` 收缩为 6 个国标注册字段，其余协议项改回代码固定默认值

@@ -101,6 +101,7 @@ public:
 
     int SetGbRegisterConfig(const GbRegisterParam& param);
     GbRegisterParam GetGbRegisterConfig() const;
+    int RestartGbRegisterService();
 
 
 
