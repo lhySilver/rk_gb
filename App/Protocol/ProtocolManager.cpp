@@ -4013,7 +4013,7 @@ int ProtocolManager::StartGbClientLifecycle()
 
     int ret = RegisterGbClient(false);
 
-    if (ret != 0) {
+    if (ret != 0 && ret != -113) {
 
         StopGbClientLifecycle();
 
@@ -4034,6 +4034,26 @@ int ProtocolManager::StartGbClientLifecycle()
         }
 
         m_gb_heartbeat_thread = std::thread(&ProtocolManager::GbHeartbeatLoop, this);
+
+    }
+
+
+
+    if (ret == -113) {
+
+        int retryDelaySec = m_cfg.gb_keepalive.interval_sec;
+
+        if (retryDelaySec <= 0) {
+
+            retryDelaySec = 60;
+
+        }
+
+        printf("[ProtocolManager] gb register initial failed ret=%d note=defer_retry delay=%d\n",
+
+               ret,
+
+               retryDelaySec);
 
     }
 
@@ -4522,6 +4542,7 @@ void ProtocolManager::GbHeartbeatLoop()
 
     int failedCount = 0;
     int elapsedSec = 0;
+    int registerElapsedSec = 0;
 
     while (m_gb_heartbeat_running.load()) {
 
@@ -4531,6 +4552,45 @@ void ProtocolManager::GbHeartbeatLoop()
         }
 
         ++elapsedSec;
+
+        if (!m_gb_client_registered) {
+
+            ++registerElapsedSec;
+
+            if (registerElapsedSec < intervalSec) {
+
+                continue;
+
+            }
+
+            registerElapsedSec = 0;
+
+            const int regRet = RegisterGbClient(false);
+
+            if (regRet == 0) {
+
+                failedCount = 0;
+                elapsedSec = 0;
+
+                printf("[ProtocolManager] gb register recover by background retry delay=%d\n",
+
+                       intervalSec);
+
+            } else {
+
+                printf("[ProtocolManager] gb register retry deferred ret=%d delay=%d\n",
+
+                       regRet,
+
+                       intervalSec);
+
+            }
+
+            continue;
+
+        }
+
+        registerElapsedSec = 0;
 
         if (m_gb_client_registered && m_gb_register_success_ms > 0 && m_gb_register_expires_sec > 0) {
             const uint32_t leadSec = ResolveGbRegisterRefreshLeadSec(m_gb_register_expires_sec);

@@ -26,6 +26,8 @@
 - `SetGbRegisterConfig()` 只负责把 issue38 约定的 6 个外部可编辑字段写回 flash：`enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password`；`device_name`、`expires_sec` 等其余注册参数继续沿用代码默认值。
 - 新增 `RestartGbRegisterService()` 作为单独的 GB 服务重载入口；它会从 flash 重新读取注册配置，并根据 `ProtocolManager` 当前是否已启动、GB 生命周期是否正在运行以及 `enabled` 新值决定只刷新缓存、停服或重启注册。
 - `ProtocolManager::Start()` 在真正拉起 RTP/广播/监听/注册链路前，会先执行一次 `ReloadExternalConfig()`，确保 `Init()` 之后、`Start()` 之前通过 `SetGbRegisterConfig()` 落盘的新值会被带入运行态。
+- `StartGbClientLifecycle()` 现在把“SDK 已启动但首次 `Register()` 失败”的场景视为可恢复错误：生命周期不会直接退出，而是打印 `note=defer_retry` 日志并继续保留后台线程。
+- `GbHeartbeatLoop()` 在未注册态下会按 `gb_keepalive.interval_sec` 节奏重试注册；只有 `server_ip/server_port/device_id` 这类静态配置校验失败时，GB 生命周期才会立即返回错误。
 - 当前 `gb28181.ini` 只保留 6 个国标注册字段；`image_flip_mode`、`gb_talk`、`gb_reboot`、`gb_upgrade`、`gb_broadcast`、`gb_listen`、`gat_*` 等其余协议项都不再写入本地 ini，而是固定使用代码默认值。
 - `gb_register.enabled` 为 `0` 时，`ProtocolManager` 会跳过 GB client 生命周期启动与重注册，但 GAT1400 相关配置校验和生命周期不受影响。
 - `GAT1400` 的 `GetTime()`/`GET_SYNCTIME` 当前已禁用为 no-op；设备时间统一由 GB28181 校时链路负责，启动阶段只打印 `event=get_time note=disabled` 作为诊断标记。
