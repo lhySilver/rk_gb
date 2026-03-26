@@ -1,6 +1,7 @@
 #include "ProtocolManager.h"
 #include "gat1400/GAT1400ClientService.h"
 #include "ProtocolLog.h"
+#include "ProtocolFeatureSwitch.h"
 
 
 
@@ -22,14 +23,6 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
-
-
-
-#ifndef PROTOCOL_HAS_GB28181_CLIENT_SDK
-
-#define PROTOCOL_HAS_GB28181_CLIENT_SDK 0
-
-#endif
 
 
 
@@ -1581,13 +1574,17 @@ static std::string ResolveGbDeviceName(const protocol::ProtocolExternalConfig& c
 
 static std::string ResolveGbManufacturerName(const protocol::ProtocolExternalConfig& cfg)
 {
-    (void)cfg;
+    if (!cfg.gb_register.manufacturer.empty()) {
+        return cfg.gb_register.manufacturer;
+    }
     return "IPC";
 }
 
 static std::string ResolveGbModelName(const protocol::ProtocolExternalConfig& cfg)
 {
-    (void)cfg;
+    if (!cfg.gb_register.model.empty()) {
+        return cfg.gb_register.model;
+    }
     return "RC0240";
 }
 
@@ -2391,6 +2388,66 @@ static bool IsGbSdkSuccess(int ret)
 
 }
 
+static bool IsGbRecoverableRegisterRet(int ret)
+{
+    return ret == -113 || ret == -114 || ret == -115;
+}
+
+static int ResolveGbRegisterRetryDelaySec(const protocol::ProtocolExternalConfig& cfg,
+                                          int regRet,
+                                          int zeroConfigFormalFailCount)
+{
+    int delaySec = cfg.gb_keepalive.interval_sec;
+    if (delaySec <= 0) {
+        delaySec = 60;
+    }
+
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (regRet == -114) {
+        return (zeroConfigFormalFailCount >= 3) ? 60 : 30;
+    }
+    if (regRet == -115) {
+        return 30;
+    }
+#else
+    (void)regRet;
+    (void)zeroConfigFormalFailCount;
+#endif
+
+    return delaySec;
+}
+
+#if PROTOCOL_HAS_GB28181_CLIENT_SDK
+static const char* ResolveGbRegisterFailureStage(int sdkRet)
+{
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (sdkRet == kGbRegistFormalFail) {
+        return "formal";
+    }
+    if (sdkRet == kGbRegistRedirectFail) {
+        return "redirect";
+    }
+    if (sdkRet == kGbRegistRedirectInvalid) {
+        return "redirect_invalid";
+    }
+#endif
+    return "standard";
+}
+
+static int MapGbRegisterFailureCode(int sdkRet)
+{
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (sdkRet == kGbRegistFormalFail) {
+        return -114;
+    }
+    if (sdkRet == kGbRegistRedirectFail || sdkRet == kGbRegistRedirectInvalid) {
+        return -115;
+    }
+#endif
+    return -113;
+}
+#endif
+
 
 
 static bool LooksLikeGbCode(const std::string& text)
@@ -2419,6 +2476,36 @@ static bool LooksLikeGbCode(const std::string& text)
 
     return true;
 
+}
+
+static std::string ResolveGbZeroConfigStringCode(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (!cfg.gb_register.string_code.empty()) {
+        return cfg.gb_register.string_code;
+    }
+    if (!cfg.gb_register.device_id.empty()) {
+        return cfg.gb_register.device_id;
+    }
+    return cfg.gb_register.username;
+}
+
+static std::string ResolveGbZeroConfigRedirectServerId(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (!cfg.gb_register.redirect_server_id.empty()) {
+        return cfg.gb_register.redirect_server_id;
+    }
+    if (LooksLikeGbCode(cfg.gb_register.username)) {
+        return cfg.gb_register.username;
+    }
+    return cfg.gb_register.redirect_domain;
+}
+
+static std::string ResolveGbZeroConfigRedirectDomain(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (!cfg.gb_register.redirect_domain.empty()) {
+        return cfg.gb_register.redirect_domain;
+    }
+    return ResolveGbZeroConfigRedirectServerId(cfg);
 }
 
 
@@ -2519,6 +2606,24 @@ static std::string BuildConfigDiffSummary(const protocol::ProtocolExternalConfig
     AppendConfigDiff(diff, "gb.register.device_name", before.gb_register.device_name, after.gb_register.device_name);
 
     AppendConfigDiff(diff, "gb.register.expires_sec", before.gb_register.expires_sec, after.gb_register.expires_sec);
+
+    AppendConfigDiff(diff, "gb.register.string_code", before.gb_register.string_code, after.gb_register.string_code);
+
+    AppendConfigDiff(diff, "gb.register.mac_address", before.gb_register.mac_address, after.gb_register.mac_address);
+
+    AppendConfigDiff(diff, "gb.register.line_id", before.gb_register.line_id, after.gb_register.line_id);
+
+    AppendConfigDiff(diff, "gb.register.redirect_domain", before.gb_register.redirect_domain, after.gb_register.redirect_domain);
+
+    AppendConfigDiff(diff, "gb.register.redirect_server_id", before.gb_register.redirect_server_id, after.gb_register.redirect_server_id);
+
+    AppendConfigDiff(diff, "gb.register.custom_protocol_version",
+                     before.gb_register.custom_protocol_version,
+                     after.gb_register.custom_protocol_version);
+
+    AppendConfigDiff(diff, "gb.register.manufacturer", before.gb_register.manufacturer, after.gb_register.manufacturer);
+
+    AppendConfigDiff(diff, "gb.register.model", before.gb_register.model, after.gb_register.model);
 
     AppendConfigDiff(diff, "gb.keepalive.interval_sec", before.gb_keepalive.interval_sec, after.gb_keepalive.interval_sec);
 
@@ -3640,9 +3745,29 @@ int ProtocolManager::ReloadExternalConfig()
 
                                    (m_cfg.gb_register.device_id != latest.gb_register.device_id) ||
 
+                                   (m_cfg.gb_register.device_name != latest.gb_register.device_name) ||
+
+                                   (m_cfg.gb_register.expires_sec != latest.gb_register.expires_sec) ||
+
                                    (m_cfg.gb_register.username != latest.gb_register.username) ||
 
-                                   (m_cfg.gb_register.password != latest.gb_register.password);
+                                   (m_cfg.gb_register.password != latest.gb_register.password) ||
+
+                                   (m_cfg.gb_register.string_code != latest.gb_register.string_code) ||
+
+                                   (m_cfg.gb_register.mac_address != latest.gb_register.mac_address) ||
+
+                                   (m_cfg.gb_register.line_id != latest.gb_register.line_id) ||
+
+                                   (m_cfg.gb_register.redirect_domain != latest.gb_register.redirect_domain) ||
+
+                                   (m_cfg.gb_register.redirect_server_id != latest.gb_register.redirect_server_id) ||
+
+                                   (m_cfg.gb_register.custom_protocol_version != latest.gb_register.custom_protocol_version) ||
+
+                                   (m_cfg.gb_register.manufacturer != latest.gb_register.manufacturer) ||
+
+                                   (m_cfg.gb_register.model != latest.gb_register.model);
 
     const bool applyMediaConfig = (m_cfg.gb_video.main_codec != latest.gb_video.main_codec) ||
 
@@ -3966,6 +4091,10 @@ int ProtocolManager::StartGbClientLifecycle()
 
         std::string localGbCode = m_cfg.gb_register.device_id;
 
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+        localGbCode = ResolveGbZeroConfigStringCode(m_cfg);
+#endif
+
         if (localGbCode.empty()) {
 
             localGbCode = m_cfg.gb_register.username;
@@ -4044,7 +4173,7 @@ int ProtocolManager::StartGbClientLifecycle()
 
     int ret = RegisterGbClient(false);
 
-    if (ret != 0 && ret != -113) {
+    if (ret != 0 && !IsGbRecoverableRegisterRet(ret)) {
 
         StopGbClientLifecycle();
 
@@ -4070,15 +4199,9 @@ int ProtocolManager::StartGbClientLifecycle()
 
 
 
-    if (ret == -113) {
-
-        int retryDelaySec = m_cfg.gb_keepalive.interval_sec;
-
-        if (retryDelaySec <= 0) {
-
-            retryDelaySec = 60;
-
-        }
+    if (IsGbRecoverableRegisterRet(ret)) {
+        const int retryDelaySec = ResolveGbRegisterRetryDelaySec(
+            m_cfg, ret, ret == -114 ? 1 : 0);
 
         printf("[ProtocolManager] gb register initial failed ret=%d note=defer_retry delay=%d\n",
 
@@ -4273,12 +4396,44 @@ int ProtocolManager::RegisterGbClient(bool force)
 
 
     std::string localGbCode = m_cfg.gb_register.device_id;
+    std::string connectGbCode;
+    std::string connectGbDomain;
+    std::string authUser;
+    std::string registerLocalName;
+    const std::string deviceName = ResolveGbDeviceName(m_cfg, m_gb_device_name);
+    const std::string manufacturer = ResolveGbManufacturerName(m_cfg);
+    const std::string model = ResolveGbModelName(m_cfg);
 
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    localGbCode = ResolveGbZeroConfigStringCode(m_cfg);
+    connectGbCode = ResolveGbZeroConfigRedirectServerId(m_cfg);
+    connectGbDomain = ResolveGbZeroConfigRedirectDomain(m_cfg);
+    authUser = localGbCode;
+    registerLocalName = localGbCode;
+#else
     if (localGbCode.empty()) {
 
         localGbCode = m_cfg.gb_register.username;
 
     }
+
+    connectGbCode = localGbCode;
+    if (LooksLikeGbCode(m_cfg.gb_register.username) && m_cfg.gb_register.username != localGbCode) {
+
+        connectGbCode = m_cfg.gb_register.username;
+
+    }
+
+    authUser = m_cfg.gb_register.username;
+
+    if (authUser.empty() || authUser == connectGbCode) {
+
+        authUser = localGbCode;
+
+    }
+
+    registerLocalName = localGbCode;
+#endif
 
 
 
@@ -4292,25 +4447,15 @@ int ProtocolManager::RegisterGbClient(bool force)
 
     }
 
-
-
-    std::string connectGbCode = localGbCode;
-
-    if (LooksLikeGbCode(m_cfg.gb_register.username) && m_cfg.gb_register.username != localGbCode) {
-
-        connectGbCode = m_cfg.gb_register.username;
-
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (connectGbCode.empty()) {
+        printf("[ProtocolManager] gb register failed, invalid redirect target domain=%s server_id=%s\n",
+               connectGbDomain.c_str(),
+               m_cfg.gb_register.redirect_server_id.c_str());
+        m_gb_client_registered = false;
+        return -111;
     }
-
-
-
-    std::string authUser = m_cfg.gb_register.username;
-
-    if (authUser.empty() || authUser == connectGbCode) {
-
-        authUser = localGbCode;
-
-    }
+#endif
 
 
 
@@ -4327,6 +4472,20 @@ int ProtocolManager::RegisterGbClient(bool force)
     CopyBounded(registerParam.username, sizeof(registerParam.username), authUser);
 
     CopyBounded(registerParam.password, sizeof(registerParam.password), m_cfg.gb_register.password);
+    CopyBounded(registerParam.local_name, sizeof(registerParam.local_name), registerLocalName);
+    CopyBounded(registerParam.device_name, sizeof(registerParam.device_name), deviceName);
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    registerParam.use_zero_config = true;
+    CopyBounded(registerParam.auth_username, sizeof(registerParam.auth_username), authUser);
+    CopyBounded(registerParam.string_code, sizeof(registerParam.string_code), localGbCode);
+    CopyBounded(registerParam.mac_address, sizeof(registerParam.mac_address), m_cfg.gb_register.mac_address);
+    CopyBounded(registerParam.line_id, sizeof(registerParam.line_id), m_cfg.gb_register.line_id);
+    CopyBounded(registerParam.manufacturer, sizeof(registerParam.manufacturer), manufacturer);
+    CopyBounded(registerParam.model, sizeof(registerParam.model), model);
+    CopyBounded(registerParam.custom_protocol_version,
+                sizeof(registerParam.custom_protocol_version),
+                m_cfg.gb_register.custom_protocol_version);
+#endif
 
 
 
@@ -4339,20 +4498,29 @@ int ProtocolManager::RegisterGbClient(bool force)
     connectParam.port = (uint16_t)m_cfg.gb_register.server_port;
 
     CopyBounded(connectParam.GBCode, sizeof(connectParam.GBCode), connectGbCode);
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    CopyBounded(connectParam.server_id, sizeof(connectParam.server_id), connectGbCode);
+    CopyBounded(connectParam.server_domain, sizeof(connectParam.server_domain), connectGbDomain);
+#endif
 
 
 
     const int regRet = m_gb_client_sdk->Register(&registerParam, &connectParam);
 
     if (!IsGbSdkSuccess(regRet)) {
+        const int mappedRet = MapGbRegisterFailureCode(regRet);
 
         m_gb_client_registered = false;
         m_gb_register_success_ms = 0;
         m_gb_register_expires_sec = 0;
 
-        printf("[ProtocolManager] gb register failed ret=%d local=%s server=%s:%u connectGb=%s user=%s pass=%s\n",
+        printf("[ProtocolManager] gb register failed ret=%d sdk_ret=%d stage=%s local=%s server=%s:%u connectGb=%s domain=%s user=%s pass=%s\n",
+
+               mappedRet,
 
                regRet,
+
+               ResolveGbRegisterFailureStage(regRet),
 
                localGbCode.c_str(),
 
@@ -4362,11 +4530,13 @@ int ProtocolManager::RegisterGbClient(bool force)
 
                connectGbCode.c_str(),
 
+               connectGbDomain.c_str(),
+
                authUser.c_str(),
 
                MaskSecret(m_cfg.gb_register.password).c_str());
 
-        return -113;
+        return mappedRet;
 
     }
 
@@ -4383,7 +4553,7 @@ int ProtocolManager::RegisterGbClient(bool force)
                localGbCode.c_str());
     }
 
-    printf("[ProtocolManager] gb register ok local=%s server=%s:%u connectGb=%s expires=%u user=%s refresh_at_ms=%llu\n",
+    printf("[ProtocolManager] gb register ok local=%s server=%s:%u connectGb=%s domain=%s expires=%u user=%s zero_cfg=%d refresh_at_ms=%llu\n",
 
            localGbCode.c_str(),
 
@@ -4393,9 +4563,12 @@ int ProtocolManager::RegisterGbClient(bool force)
 
            connectGbCode.c_str(),
 
+           connectGbDomain.c_str(),
+
            (unsigned int)registerParam.expires,
 
            authUser.c_str(),
+           registerParam.use_zero_config ? 1 : 0,
            (unsigned long long)(m_gb_register_success_ms +
                (uint64_t)((registerParam.expires > ResolveGbRegisterRefreshLeadSec(registerParam.expires))
                               ? (registerParam.expires - ResolveGbRegisterRefreshLeadSec(registerParam.expires))
@@ -4574,6 +4747,44 @@ void ProtocolManager::GbHeartbeatLoop()
     int failedCount = 0;
     int elapsedSec = 0;
     int registerElapsedSec = 0;
+    int registerRetryDelaySec = intervalSec;
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    int zeroConfigFormalFailCount = 0;
+    bool zeroConfigResetRedirectBeforeRetry = false;
+#endif
+
+    auto resetRegisterRetryState = [&]() {
+        registerRetryDelaySec = intervalSec;
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+        zeroConfigFormalFailCount = 0;
+        zeroConfigResetRedirectBeforeRetry = false;
+#endif
+    };
+
+    auto noteRegisterFailure = [&](int regRet) -> int {
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+        if (regRet == -114) {
+            const int formalFailCount = ++zeroConfigFormalFailCount;
+            registerRetryDelaySec = ResolveGbRegisterRetryDelaySec(m_cfg, regRet, formalFailCount);
+            if (formalFailCount >= 3) {
+                zeroConfigFormalFailCount = 0;
+                zeroConfigResetRedirectBeforeRetry = true;
+            } else {
+                zeroConfigResetRedirectBeforeRetry = false;
+            }
+            return formalFailCount;
+        }
+
+        zeroConfigFormalFailCount = 0;
+        zeroConfigResetRedirectBeforeRetry = false;
+        registerRetryDelaySec = ResolveGbRegisterRetryDelaySec(m_cfg, regRet, 0);
+        return 0;
+#else
+        (void)regRet;
+        registerRetryDelaySec = intervalSec;
+        return 0;
+#endif
+    };
 
     while (m_gb_heartbeat_running.load()) {
 
@@ -4588,32 +4799,56 @@ void ProtocolManager::GbHeartbeatLoop()
 
             ++registerElapsedSec;
 
-            if (registerElapsedSec < intervalSec) {
+            if (registerElapsedSec < registerRetryDelaySec) {
 
                 continue;
 
             }
 
             registerElapsedSec = 0;
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+            if (zeroConfigResetRedirectBeforeRetry) {
+                {
+                    std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
+                    if (m_gb_client_sdk != NULL && m_gb_client_started) {
+                        m_gb_client_sdk->ResetZeroConfigState();
+                    }
+                }
+                zeroConfigResetRedirectBeforeRetry = false;
+                printf("[ProtocolManager] gb zero config reset redirect target before retry\n");
+            }
+#endif
 
             const int regRet = RegisterGbClient(false);
+            const int lastRetryDelaySec = registerRetryDelaySec;
 
             if (regRet == 0) {
 
                 failedCount = 0;
                 elapsedSec = 0;
+                resetRegisterRetryState();
 
                 printf("[ProtocolManager] gb register recover by background retry delay=%d\n",
 
-                       intervalSec);
+                       lastRetryDelaySec);
 
             } else {
+                const int formalFailCount = noteRegisterFailure(regRet);
 
-                printf("[ProtocolManager] gb register retry deferred ret=%d delay=%d\n",
+                printf("[ProtocolManager] gb register retry deferred ret=%d delay=%d formal_fail=%d reset_redirect=%d\n",
 
                        regRet,
 
-                       intervalSec);
+                       registerRetryDelaySec,
+
+                       formalFailCount,
+
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+                       zeroConfigResetRedirectBeforeRetry ? 1 : 0
+#else
+                       0
+#endif
+                );
 
             }
 
@@ -4622,6 +4857,7 @@ void ProtocolManager::GbHeartbeatLoop()
         }
 
         registerElapsedSec = 0;
+        resetRegisterRetryState();
 
         if (m_gb_client_registered && m_gb_register_success_ms > 0 && m_gb_register_expires_sec > 0) {
             const uint32_t leadSec = ResolveGbRegisterRefreshLeadSec(m_gb_register_expires_sec);
@@ -4631,11 +4867,22 @@ void ProtocolManager::GbHeartbeatLoop()
             if (GetSteadyNowMs() >= nextRefreshMs) {
                 const int refreshRet = RegisterGbClient(true);
                 if (refreshRet == 0) {
+                    resetRegisterRetryState();
                     printf("[ProtocolManager] gb register refresh ok expires=%u lead=%u\n",
                            m_gb_register_expires_sec,
                            leadSec);
                 } else {
-                    printf("[ProtocolManager] gb register refresh failed ret=%d\n", refreshRet);
+                    const int formalFailCount = noteRegisterFailure(refreshRet);
+                    printf("[ProtocolManager] gb register refresh failed ret=%d next_delay=%d formal_fail=%d reset_redirect=%d\n",
+                           refreshRet,
+                           registerRetryDelaySec,
+                           formalFailCount,
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+                           zeroConfigResetRedirectBeforeRetry ? 1 : 0
+#else
+                           0
+#endif
+                    );
                 }
             }
         }
@@ -4679,10 +4926,22 @@ void ProtocolManager::GbHeartbeatLoop()
                 printf("[ProtocolManager] gb heartbeat recover by register\n");
 
                 failedCount = 0;
+                resetRegisterRetryState();
 
             } else {
+                const int formalFailCount = noteRegisterFailure(regRet);
 
-                printf("[ProtocolManager] gb heartbeat recover failed ret=%d\n", regRet);
+                failedCount = 0;
+                printf("[ProtocolManager] gb heartbeat recover failed ret=%d next_delay=%d formal_fail=%d reset_redirect=%d\n",
+                       regRet,
+                       registerRetryDelaySec,
+                       formalFailCount,
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+                       zeroConfigResetRedirectBeforeRetry ? 1 : 0
+#else
+                       0
+#endif
+                );
 
             }
 

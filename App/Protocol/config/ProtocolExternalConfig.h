@@ -17,8 +17,24 @@ struct GbRegisterParam
     std::string username;
     std::string password;
     int expires_sec;
+    std::string string_code;
+    std::string mac_address;
+    std::string line_id;
+    std::string redirect_domain;
+    std::string redirect_server_id;
+    std::string custom_protocol_version;
+    std::string manufacturer;
+    std::string model;
 
-    GbRegisterParam() : enabled(1), server_port(0), device_name("IPC"), expires_sec(3600) {}
+    GbRegisterParam()
+        : enabled(1),
+          server_port(0),
+          device_name("IPC"),
+          expires_sec(3600),
+          line_id("1"),
+          custom_protocol_version("1.0"),
+          manufacturer("IPC"),
+          model("RC0240") {}
 };
 
 struct GbKeepaliveParam

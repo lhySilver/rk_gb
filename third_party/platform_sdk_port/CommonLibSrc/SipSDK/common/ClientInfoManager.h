@@ -33,11 +33,20 @@ public:
     std::string  to;
     std::string  route;
 	std::string  contact;
+    bool UseZeroConfigHeaders;
+    std::string DisplayName;
+    std::string StringCode;
+    std::string MacAddress;
+    std::string LineId;
+    std::string Manufacturer;
+    std::string Model;
+    std::string CustomProtocolVersion;
     ClientInfo(){
         clientId = g_client_id.Increment();
         RegId = -1;
         Reg_flag =  false;
         auth_flag = false;
+        UseZeroConfigHeaders = false;
     }
     void SetFromeAndTo( )  {
         char temp[256] = {0};

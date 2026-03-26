@@ -16,6 +16,7 @@ public:
 
 
     int Register(const GBRegistParam* messge, const ConnectParam* param);
+    void ResetZeroConfigState();
 
 	char* GetTime();
     int Logout();

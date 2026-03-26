@@ -1,4 +1,5 @@
 ﻿#include "GBClientImpl.h"
+#include "ProtocolFeatureSwitch.h"
 
 
 #include "SipStackSDK.h"
@@ -34,6 +35,177 @@
 
 
 #include "PFHelper.h"
+
+
+namespace {
+
+static bool HasText(const char* value)
+{
+    return value != NULL && value[0] != '\0';
+}
+
+static void CopyText(char* dest, size_t dest_len, const char* src)
+{
+    if (dest == NULL || dest_len == 0) {
+        return;
+    }
+    memset(dest, 0, dest_len);
+    if (!HasText(src)) {
+        return;
+    }
+    snprintf(dest, dest_len, "%s", src);
+}
+
+static const char* ResolveSipRemoteName(const ConnectParam* connect)
+{
+    if (connect == NULL) {
+        return "";
+    }
+    if (HasText(connect->server_id)) {
+        return connect->server_id;
+    }
+    if (HasText(connect->GBCode)) {
+        return connect->GBCode;
+    }
+    if (HasText(connect->server_domain)) {
+        return connect->server_domain;
+    }
+    return "";
+}
+
+static void PrepareSipRegisterParam(SipRegistParam* sip_param,
+                                    const GBRegistParam* gb_param,
+                                    const char* auth_user,
+                                    const char* local_name,
+                                    bool new_reg,
+                                    bool auth_flag,
+                                    bool zero_config_headers)
+{
+    if (sip_param == NULL || gb_param == NULL) {
+        return;
+    }
+
+    memset(sip_param, 0, sizeof(*sip_param));
+    sip_param->new_reg = new_reg;
+    sip_param->auth_flag = auth_flag;
+    sip_param->use_zero_config_headers = zero_config_headers;
+    sip_param->expires = gb_param->expires;
+    sip_param->user_name = const_cast<char*>(HasText(auth_user) ? auth_user : gb_param->username);
+    sip_param->password = const_cast<char*>(gb_param->password);
+    sip_param->local_name = const_cast<char*>(local_name);
+    sip_param->display_name = const_cast<char*>(gb_param->device_name);
+    sip_param->string_code = const_cast<char*>(gb_param->string_code);
+    sip_param->mac_address = const_cast<char*>(gb_param->mac_address);
+    sip_param->line_id = const_cast<char*>(gb_param->line_id);
+    sip_param->manufacturer = const_cast<char*>(gb_param->manufacturer);
+    sip_param->model = const_cast<char*>(gb_param->model);
+    sip_param->custom_protocol_version = const_cast<char*>(gb_param->custom_protocol_version);
+}
+
+static void PrepareSipConnectParam(SipConnectParam* sip_connect, ConnectParam* connect)
+{
+    if (sip_connect == NULL || connect == NULL) {
+        return;
+    }
+
+    memset(sip_connect, 0, sizeof(*sip_connect));
+    sip_connect->ip = connect->ip;
+    sip_connect->port = connect->port;
+    sip_connect->sip_code = const_cast<char*>(ResolveSipRemoteName(connect));
+}
+
+static bool ExtractRedirectTarget(const SipData* response, ConnectParam* connect, std::string& device_id)
+{
+    if (response == NULL || connect == NULL) {
+        return false;
+    }
+
+    if (HasText(response->messgae.ServerIp)) {
+        CopyText(connect->ip, sizeof(connect->ip), response->messgae.ServerIp);
+    }
+    if (response->messgae.ServerPort > 0 && response->messgae.ServerPort <= 65535) {
+        connect->port = (uint16_t)response->messgae.ServerPort;
+    }
+    if (HasText(response->messgae.ServerDomain)) {
+        CopyText(connect->server_domain, sizeof(connect->server_domain), response->messgae.ServerDomain);
+    }
+    if (HasText(response->messgae.ServerId)) {
+        CopyText(connect->server_id, sizeof(connect->server_id), response->messgae.ServerId);
+    }
+
+    const char* remote_name = HasText(response->messgae.ServerId) ?
+                              response->messgae.ServerId :
+                              response->messgae.ServerDomain;
+    if (HasText(remote_name)) {
+        CopyText(connect->GBCode, sizeof(connect->GBCode), remote_name);
+    }
+
+    if (HasText(response->messgae.DeviceId)) {
+        device_id.assign(response->messgae.DeviceId);
+    }
+
+    return HasText(connect->ip) && connect->port > 0 && HasText(connect->GBCode);
+}
+
+static int RunRegisterStage(SipUserAgentClient* sip_client,
+                            SipRegistParam* sip_regist_param,
+                            SipConnectParam* sip_connect_param,
+                            int timeout,
+                            SipReponseCode expect_code,
+                            SipData** output)
+{
+    if (sip_client == NULL || sip_regist_param == NULL || sip_connect_param == NULL) {
+        return kGbNullPointer;
+    }
+
+    SipData* result = NULL;
+    if (kSipSuccess != sip_client->Register(sip_regist_param, sip_connect_param, timeout, &result)) {
+        return kGbRegistFail;
+    }
+
+    if (result != NULL && result->messgae.code == expect_code) {
+        if (output != NULL) {
+            *output = result;
+        } else {
+            sip_client->FreeSipResult(result);
+        }
+        return kGb28181Success;
+    }
+
+    if (result == NULL || result->messgae.code != kUnauthorized) {
+        if (result == NULL) {
+            return kGbFail;
+        }
+        sip_client->FreeSipResult(result);
+        return kGbResponseCodeError;
+    }
+
+    sip_client->FreeSipResult(result);
+
+    sip_regist_param->new_reg = false;
+    sip_regist_param->auth_flag = true;
+    if (kSipSuccess != sip_client->Register(sip_regist_param, sip_connect_param, timeout, &result)) {
+        return kGbRegistFail;
+    }
+
+    if (result != NULL && result->messgae.code == expect_code) {
+        if (output != NULL) {
+            *output = result;
+        } else {
+            sip_client->FreeSipResult(result);
+        }
+        return kGb28181Success;
+    }
+
+    if (result == NULL) {
+        return kGbFail;
+    }
+
+    sip_client->FreeSipResult(result);
+    return kGbResponseCodeError;
+}
+
+}
 
 
 
@@ -103,6 +275,10 @@ CGBClientImpl::CGBClientImpl()
 
 
       m_catalog_sub.sn = 0;
+
+      m_zero_config_formal_target_valid = false;
+      memset(&m_zero_config_formal_connect, 0, sizeof(m_zero_config_formal_connect));
+      memset(m_zero_config_formal_device_id, 0, sizeof(m_zero_config_formal_device_id));
 
 
 
@@ -295,8 +471,16 @@ void CGBClientImpl::Stop()
 
 
      m_sip_client->Stop();
+     ResetZeroConfigState();
 
 
+}
+
+void CGBClientImpl::ResetZeroConfigState()
+{
+    m_zero_config_formal_target_valid = false;
+    memset(&m_zero_config_formal_connect, 0, sizeof(m_zero_config_formal_connect));
+    memset(m_zero_config_formal_device_id, 0, sizeof(m_zero_config_formal_device_id));
 }
 
 
@@ -309,176 +493,156 @@ int CGBClientImpl::Register(const GBRegistParam* gb_param, const ConnectParam* g
 {
 
 
-    memset(m_sip_regist_param,0, sizeof(*m_sip_regist_param));
-
-
-    memset(m_sip_connect_param,0, sizeof(*m_sip_connect_param));
-
-
     memcpy(m_gb_regist_param,gb_param,  sizeof(GBRegistParam));
 
 
     memcpy(m_gb_connect, gb_connect,  sizeof(ConnectParam));
 
 
-    SipData*     result = NULL;
-
-
     int timeout = 3000;
 
 
-
-
-
-    m_sip_regist_param->new_reg = true;
-
-
-    // Keep all long-lived SIP parameter pointers backed by the SDK-owned copies.
-    m_sip_regist_param->user_name = m_gb_regist_param->username;
-
-
-    m_sip_regist_param->password = m_gb_regist_param->password;
-
-
-    m_sip_regist_param->expires = m_gb_regist_param->expires;
-
-
-    m_sip_regist_param->auth_flag = false;
-
-
-
-
-
-
-
-
-    m_sip_connect_param->ip = m_gb_connect->ip;
-
-
-    m_sip_connect_param->port = m_gb_connect->port;
-
-
-    m_sip_connect_param->sip_code = m_gb_connect->GBCode;
-
-
-	m_strIP = m_gb_connect->ip;
-
-
-
-
-
-   if( kSipSuccess != m_sip_client->Register(m_sip_regist_param, m_sip_connect_param, timeout , &result)) {
-
-
-       return kGbRegistFail;
-
-
-   }
-
-
-
-
-
-   if (result && result->messgae.code == kSuccessRequest) {
-
-
-	   m_sip_client->FreeSipResult(result);
-
-
-	   return kGb28181Success;
-
-
-   }
-
-
-
-
-
-   if( !result || result->messgae.code  != kUnauthorized   ) {
-
-
-        goto finally;
-
-
-   }
-
-
-
-
-
-   m_sip_client->FreeSipResult(result);
-
-
-
-
-
-    m_sip_regist_param->new_reg = false;
-
-
-    m_sip_regist_param->auth_flag = true;
-
-
-
-
-
-    if( kSipSuccess != m_sip_client->Register(m_sip_regist_param, m_sip_connect_param, timeout , &result)) {
-
-
-           return kGbRegistFail;
-
-
+    auto run_register = [&](ConnectParam* connect,
+                            const char* auth_user,
+                            const char* local_name,
+                            bool zero_config_headers,
+                            SipReponseCode expect_code,
+                            SipData** output) -> int {
+        PrepareSipRegisterParam(m_sip_regist_param,
+                                m_gb_regist_param,
+                                auth_user,
+                                local_name,
+                                true,
+                                false,
+                                zero_config_headers);
+        PrepareSipConnectParam(m_sip_connect_param, connect);
+        m_strIP = connect->ip;
+        return RunRegisterStage(m_sip_client,
+                                m_sip_regist_param,
+                                m_sip_connect_param,
+                                timeout,
+                                expect_code,
+                                output);
+    };
+
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (m_gb_regist_param->use_zero_config) {
+        std::string formalDeviceId = m_zero_config_formal_device_id;
+        if (m_zero_config_formal_target_valid && !formalDeviceId.empty()) {
+            SipData* formalResult = NULL;
+            const int formalRet = run_register(&m_zero_config_formal_connect,
+                                               formalDeviceId.c_str(),
+                                               formalDeviceId.c_str(),
+                                               false,
+                                               kSuccessRequest,
+                                               &formalResult);
+            if (formalRet != kGb28181Success) {
+                if (formalResult != NULL) {
+                    m_sip_client->FreeSipResult(formalResult);
+                }
+                return kGbRegistFormalFail;
+            }
+
+            if (formalResult != NULL && formalResult->messgae.Date != NULL) {
+                m_dateStr = formalResult->messgae.Date;
+            }
+            if (formalResult != NULL) {
+                m_sip_client->FreeSipResult(formalResult);
+            }
+            memcpy(m_gb_connect, &m_zero_config_formal_connect, sizeof(*m_gb_connect));
+            m_xml_parser->m_local_code = formalDeviceId;
+            return kGb28181Success;
+        }
+
+        ConnectParam formalConnect;
+        memcpy(&formalConnect, m_gb_connect, sizeof(formalConnect));
+
+        SipData* redirectResult = NULL;
+        const int redirectRet = run_register(m_gb_connect,
+                                             m_gb_regist_param->auth_username,
+                                             m_gb_regist_param->local_name,
+                                             true,
+                                             kMovedTemporarily,
+                                             &redirectResult);
+        if (redirectRet != kGb28181Success) {
+            if (redirectResult != NULL) {
+                m_sip_client->FreeSipResult(redirectResult);
+            }
+            return kGbRegistRedirectFail;
+        }
+
+        if (!ExtractRedirectTarget(redirectResult, &formalConnect, formalDeviceId)) {
+            if (redirectResult != NULL) {
+                m_sip_client->FreeSipResult(redirectResult);
+            }
+            return kGbRegistRedirectInvalid;
+        }
+
+        if (redirectResult != NULL) {
+            m_sip_client->FreeSipResult(redirectResult);
+        }
+
+        if (formalDeviceId.empty()) {
+            return kGbRegistRedirectInvalid;
+        }
+
+        m_zero_config_formal_target_valid = true;
+        memcpy(&m_zero_config_formal_connect, &formalConnect, sizeof(m_zero_config_formal_connect));
+        CopyText(m_zero_config_formal_device_id, sizeof(m_zero_config_formal_device_id), formalDeviceId.c_str());
+
+        SipData* formalResult = NULL;
+        const int formalRet = run_register(&m_zero_config_formal_connect,
+                                           formalDeviceId.c_str(),
+                                           formalDeviceId.c_str(),
+                                           false,
+                                           kSuccessRequest,
+                                           &formalResult);
+        if (formalRet != kGb28181Success) {
+            if (formalResult != NULL) {
+                m_sip_client->FreeSipResult(formalResult);
+            }
+            return kGbRegistFormalFail;
+        }
+
+        if (formalResult != NULL && formalResult->messgae.Date != NULL) {
+            m_dateStr = formalResult->messgae.Date;
+        }
+        if (formalResult != NULL) {
+            m_sip_client->FreeSipResult(formalResult);
+        }
+
+        memcpy(m_gb_connect, &m_zero_config_formal_connect, sizeof(*m_gb_connect));
+        m_xml_parser->m_local_code = formalDeviceId;
+        return kGb28181Success;
+    }
+#endif
+
+    SipData* result = NULL;
+    const int standardRet = run_register(m_gb_connect,
+                                         m_gb_regist_param->username,
+                                         m_gb_regist_param->local_name,
+                                         false,
+                                         kSuccessRequest,
+                                         &result);
+    if (standardRet != kGb28181Success) {
+        if (result != NULL) {
+            m_sip_client->FreeSipResult(result);
+        }
+        return standardRet;
     }
 
-
-
-
-
-   if(  !result || result->messgae.code  != kSuccessRequest   ) {
-
-
-             goto finally;
-
-
+    if (result != NULL && result->messgae.Date != NULL) {
+        m_dateStr = result->messgae.Date;
+    }
+    if (result != NULL) {
+        m_sip_client->FreeSipResult(result);
     }
 
-
-   if (result->messgae.Date)
-
-
-   {
-
-
-	   m_dateStr = result->messgae.Date;
-
-
-   }
-
-
-   m_sip_client->FreeSipResult(result);
-
-
-   return kGb28181Success;
-
-
-
-
-
-finally:
-
-
-    if(!result) {
-
-
-          return kGbFail;
-
-
+    if (HasText(m_gb_regist_param->local_name)) {
+        m_xml_parser->m_local_code = m_gb_regist_param->local_name;
     }
 
-
-    m_sip_client->FreeSipResult(result);
-
-
-          return kGbResponseCodeError;
+    return kGb28181Success;
 
 
 }

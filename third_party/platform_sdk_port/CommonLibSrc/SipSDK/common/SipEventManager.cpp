@@ -97,6 +97,93 @@ static bool ResolveOutboundLocalSipIp(const char* remote_ip, int remote_port, st
     return true;
 }
 
+static void SetHeaderIfNotEmpty(osip_message_t* msg, const char* name, const std::string& value)
+{
+    if (msg == NULL || name == NULL || value.empty()) {
+        return;
+    }
+    osip_message_set_header(msg, name, value.c_str());
+}
+
+static bool ReadHeaderValue(osip_message_t* message, const char* name, std::string& out)
+{
+    if (message == NULL || name == NULL) {
+        return false;
+    }
+
+    osip_header_t* header = NULL;
+    if (osip_message_header_get_byname(message, name, 0, &header) >= 0 &&
+        header != NULL &&
+        header->hvalue != NULL &&
+        header->hvalue[0] != '\0') {
+        out = header->hvalue;
+        return true;
+    }
+    return false;
+}
+
+static void FillRegisterResponseFields(osip_message_t* message, SipMessage* output)
+{
+    if (message == NULL || output == NULL) {
+        return;
+    }
+
+    std::string value;
+    if (ReadHeaderValue(message, "ServerDomain", value)) {
+        CSipUtil::memcpy_safe(&(output->ServerDomain), value);
+    }
+    if (ReadHeaderValue(message, "ServerId", value) || ReadHeaderValue(message, "ServerID", value)) {
+        CSipUtil::memcpy_safe(&(output->ServerId), value);
+    }
+    if (ReadHeaderValue(message, "ServerIp", value) || ReadHeaderValue(message, "ServerIP", value)) {
+        CSipUtil::memcpy_safe(&(output->ServerIp), value);
+    }
+    if (ReadHeaderValue(message, "deviceId", value) ||
+        ReadHeaderValue(message, "DeviceId", value) ||
+        ReadHeaderValue(message, "DeviceID", value)) {
+        CSipUtil::memcpy_safe(&(output->DeviceId), value);
+    }
+    if (ReadHeaderValue(message, "ServerPort", value)) {
+        output->ServerPort = atoi(value.c_str());
+    }
+
+    osip_contact_t* contact = NULL;
+    if (osip_message_get_contact(message, 0, &contact) == OSIP_SUCCESS &&
+        contact != NULL &&
+        contact->url != NULL) {
+        char* raw_contact = NULL;
+        if (osip_contact_to_str(contact, &raw_contact) == OSIP_SUCCESS && raw_contact != NULL) {
+            CSipUtil::memcpy_safe(&(output->Contact), std::string(raw_contact));
+            osip_free(raw_contact);
+        }
+
+        if (output->ServerId == NULL && contact->url->username != NULL) {
+            CSipUtil::memcpy_safe(&(output->ServerId), std::string(contact->url->username));
+        }
+        if (output->ServerIp == NULL && contact->url->host != NULL) {
+            CSipUtil::memcpy_safe(&(output->ServerIp), std::string(contact->url->host));
+        }
+        if (output->ServerPort <= 0 && contact->url->port != NULL) {
+            output->ServerPort = atoi(contact->url->port);
+        }
+    }
+}
+
+static void SetZeroConfigRegisterHeaders(osip_message_t* msg, const ClientInfo* client_info)
+{
+    if (msg == NULL || client_info == NULL || !client_info->UseZeroConfigHeaders) {
+        return;
+    }
+
+    SetHeaderIfNotEmpty(msg, "Mac", client_info->MacAddress);
+    SetHeaderIfNotEmpty(msg, "StringCode", client_info->StringCode);
+    SetHeaderIfNotEmpty(msg, "Line", client_info->LineId);
+    SetHeaderIfNotEmpty(msg, "Manufacturer", client_info->Manufacturer);
+    SetHeaderIfNotEmpty(msg, "Model", client_info->Model);
+    SetHeaderIfNotEmpty(msg, "Name", client_info->DisplayName);
+    SetHeaderIfNotEmpty(msg, "CustomProtocolVersion", client_info->CustomProtocolVersion);
+}
+
 void FreeSipData(SipData* data)
 {
     if(!data) {
@@ -119,12 +206,32 @@ void FreeSipData(SipData* data)
         free(data->messgae.From);
     }
 
+    if(data->messgae.Contact){
+        free(data->messgae.Contact);
+    }
+
     if(data->messgae.reason_phrase){
         free(data->messgae.reason_phrase);
     }
 
+    if(data->messgae.ServerDomain){
+        free(data->messgae.ServerDomain);
+    }
+
+    if(data->messgae.ServerId){
+        free(data->messgae.ServerId);
+    }
+
+    if(data->messgae.ServerIp){
+        free(data->messgae.ServerIp);
+    }
+
     if(data->messgae.Subject){
         free(data->messgae.Subject);
+    }
+
+    if(data->messgae.DeviceId){
+        free(data->messgae.DeviceId);
     }
 
     if(data->messgae.To){
@@ -980,6 +1087,8 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                         << " attempts=" << attempt);
        }
 
+        SetZeroConfigRegisterHeaders(pMsg, client_info);
+
         CResponseWaiter *pCond = NULL;
         if( result ) {
 
@@ -1552,6 +1661,10 @@ SipData* CSipEventManager::GetSipData(bool isRequest, const eXosip_event_t *even
             CSipUtil::memcpy_safe( &(data->messgae.To) ,temp);
             osip_free(temp);
         }
+    }
+
+    if (!isRequest) {
+        FillRegisterResponseFields(pMessage, &(data->messgae));
     }
 
     osip_body_t *pBody = NULL;

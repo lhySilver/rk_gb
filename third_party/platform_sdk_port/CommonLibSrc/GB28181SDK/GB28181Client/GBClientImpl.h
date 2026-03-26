@@ -67,6 +67,7 @@ public:
 
 
     int Register(const GBRegistParam* messge, const ConnectParam* param);//?????????
+    void ResetZeroConfigState();
 
     int Logout();//???
 
@@ -255,6 +256,10 @@ public:
 	std::string m_dateStr;
 
 	std::string m_strIP;
+
+    bool m_zero_config_formal_target_valid;
+    ConnectParam m_zero_config_formal_connect;
+    char m_zero_config_formal_device_id[STR_LEN];
 
 	CSubscribeInfo                  m_catalog_sub;
 

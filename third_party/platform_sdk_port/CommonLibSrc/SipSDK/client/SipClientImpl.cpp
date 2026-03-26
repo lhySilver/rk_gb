@@ -62,6 +62,9 @@ int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectPa
 {
     m_client_info->auth_flag = message->auth_flag;
 
+    if (message->local_name != NULL && message->local_name[0] != '\0') {
+        m_client_info->local_name = message->local_name;
+    }
     m_client_info->Username = message->user_name;
     m_client_info->Password = message->password;
     m_client_info->Expire = message->expires;
@@ -69,11 +72,21 @@ int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectPa
     m_client_info->RemotePort= info->port;
     m_client_info->RemoteSipSrvName = info->sip_code;
     m_client_info->new_reg = message->new_reg;
+    m_client_info->UseZeroConfigHeaders = message->use_zero_config_headers;
+    m_client_info->DisplayName = (message->display_name != NULL) ? message->display_name : "";
+    m_client_info->StringCode = (message->string_code != NULL) ? message->string_code : "";
+    m_client_info->MacAddress = (message->mac_address != NULL) ? message->mac_address : "";
+    m_client_info->LineId = (message->line_id != NULL) ? message->line_id : "";
+    m_client_info->Manufacturer = (message->manufacturer != NULL) ? message->manufacturer : "";
+    m_client_info->Model = (message->model != NULL) ? message->model : "";
+    m_client_info->CustomProtocolVersion =
+        (message->custom_protocol_version != NULL) ? message->custom_protocol_version : "";
     m_client_info->SetFromeAndTo();
 
     TVT_LOG_INFO("sip client register prepare"
                  << " new_reg=" << (m_client_info->new_reg ? 1 : 0)
                  << " auth=" << (m_client_info->auth_flag ? 1 : 0)
+                 << " zero_cfg=" << (m_client_info->UseZeroConfigHeaders ? 1 : 0)
                  << " user=" << m_client_info->Username
                  << " local_name=" << m_client_info->local_name
                  << " local=" << m_client_info->LocalIp << ":" << m_client_info->LocalPort

@@ -34,6 +34,11 @@ int GB28181ClientSDK::Register(const GBRegistParam* regist_param, const ConnectP
      return m_client_Impl->Register(regist_param, connect_param);
 }
 
+void GB28181ClientSDK::ResetZeroConfigState()
+{
+    m_client_Impl->ResetZeroConfigState();
+}
+
 char* GB28181ClientSDK::GetTime()
 {	
 	if (m_client_Impl->m_dateStr.empty()) {

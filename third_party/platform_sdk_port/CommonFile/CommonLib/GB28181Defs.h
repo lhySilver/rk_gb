@@ -53,7 +53,10 @@ enum GB28181ErrorCode
      kGbInfoFail,
 	 kGbByeFail,
 	 kGbSubScribeFail,
-	 kGbSubHandleNotExist
+	 kGbSubHandleNotExist,
+     kGbRegistRedirectFail,
+     kGbRegistFormalFail,
+     kGbRegistRedirectInvalid
 };
 
 //协议版本
@@ -76,14 +79,26 @@ struct ConnectParam
     char   GBCode[GB_ID_LEN];
     char   ip[IP_LEN];
     uint16_t     port;
+    char   server_domain[STR_LEN];
+    char   server_id[GB_ID_LEN];
 };
 
 //注册信息
 struct GBRegistParam
 {
+    bool         use_zero_config;
     uint32_t     expires;
     char    username[STR_LEN];
     char    password[STR_LEN];
+    char    auth_username[STR_LEN];
+    char    local_name[STR_LEN];
+    char    device_name[STR_LEN];
+    char    string_code[STR_LEN];
+    char    mac_address[STR_LEN];
+    char    line_id[STR_LEN];
+    char    manufacturer[STR_LEN];
+    char    model[STR_LEN];
+    char    custom_protocol_version[STR_LEN];
 };
 
 //针对查询条件和回复的信息结构，带*号为必填内容，其它为可选填内容

@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603261707 | gb_zero_config_macro_switch | 开发 | ✅已完成 | [2026-03/202603261707_gb_zero_config_macro_switch](2026-03/202603261707_gb_zero_config_macro_switch/) |
 | 202603251749 | sip_response_peer_match_order | 轻量迭代 | ✅已完成 | [2026-03/202603251749_sip_response_peer_match_order](2026-03/202603251749_sip_response_peer_match_order/) |
 | 202603251654 | issue38_drop_legacy_gb_config | 轻量迭代 | ✅已完成 | [2026-03/202603251654_issue38_drop_legacy_gb_config](2026-03/202603251654_issue38_drop_legacy_gb_config/) |
 | 202603251549 | protocol_manager_singleton | 轻量迭代 | ✅已完成 | [2026-03/202603251549_protocol_manager_singleton](2026-03/202603251549_protocol_manager_singleton/) |
@@ -49,6 +50,7 @@
 
 ### 2026-03
 
+- [202603261707_gb_zero_config_macro_switch](2026-03/202603261707_gb_zero_config_macro_switch/) - 增加 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关，补齐零配置配置字段、SIP `302` 重定向注册事务和 `30s / 3次 / 1min` 后台重试状态机
 - [202603251749_sip_response_peer_match_order](2026-03/202603251749_sip_response_peer_match_order/) - 调整 SipSDK 响应事件的 client 匹配顺序，优先使用 `event->response`，避免设备心跳等自发请求收到响应时误打 `sip peer match failed`
 - [202603251654_issue38_drop_legacy_gb_config](2026-03/202603251654_issue38_drop_legacy_gb_config/) - 按 issue38 2026-03-25 最新评论移除旧 `/userdata/conf/Config/gb28181.ini` 兼容，只保留 `GB/` 目录下单份 GB/GAT 本地配置
 - [202603251549_protocol_manager_singleton](2026-03/202603251549_protocol_manager_singleton/) - 将 `ProtocolManager` 收口为进程内唯一协议入口，并把 `GB28181ClientSDK` 生命周期下沉到 `ProtocolManager` 内部

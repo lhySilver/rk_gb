@@ -1,4 +1,5 @@
 ﻿#include "LocalConfigProvider.h"
+#include "ProtocolFeatureSwitch.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -95,14 +96,18 @@ std::vector<std::string> SplitConfigList(const std::string& input)
 
 std::string BuildConfigLogSummary(const protocol::ProtocolExternalConfig& cfg)
 {
-    char buffer[512] = {0};
+    char buffer[768] = {0};
     snprintf(buffer,
              sizeof(buffer),
-             "version=%s gb_enable=%d gb=%s:%d live=%s/%s:%d flip=%s gat=%s://%s:%d%s listen=%d timeout=%d queue=%s apes_post_compat=%d talk=%s/%d/%d broadcast=%s/%d listen=%s/%s:%d",
+             "version=%s gb_enable=%d gb=%s:%d gb_id=%s string=%s redirect=%s/%s live=%s/%s:%d flip=%s gat=%s://%s:%d%s listen=%d timeout=%d queue=%s apes_post_compat=%d talk=%s/%d/%d broadcast=%s/%d listen=%s/%s:%d",
              cfg.version.c_str(),
              cfg.gb_register.enabled,
              cfg.gb_register.server_ip.c_str(),
              cfg.gb_register.server_port,
+             cfg.gb_register.device_id.c_str(),
+             cfg.gb_register.string_code.c_str(),
+             cfg.gb_register.redirect_server_id.c_str(),
+             cfg.gb_register.redirect_domain.c_str(),
              cfg.gb_live.transport.c_str(),
              cfg.gb_live.target_ip.c_str(),
              cfg.gb_live.target_port,
@@ -182,6 +187,13 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     param.device_name = "IPC";
     param.username = "35010000002000000001";
     param.password = "YjrvNBUy";
+    param.string_code = param.device_id;
+    param.line_id = "1";
+    param.redirect_domain = param.username;
+    param.redirect_server_id = param.username;
+    param.custom_protocol_version = "1.0";
+    param.manufacturer = "IPC";
+    param.model = "RC0240";
     return param;
 }
 
@@ -207,12 +219,8 @@ protocol::GatRegisterParam BuildDefaultGatRegisterParam()
 
 void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const protocol::GbRegisterParam& source)
 {
+    target = source;
     target.enabled = (source.enabled != 0) ? 1 : 0;
-    target.username = source.username;
-    target.server_ip = source.server_ip;
-    target.server_port = source.server_port;
-    target.device_id = source.device_id;
-    target.password = source.password;
 }
 
 int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
@@ -220,6 +228,15 @@ int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
     if (param.enabled != 0 && (param.server_ip.empty() || param.server_port <= 0)) {
         return -1;
     }
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    if (param.enabled != 0 && param.string_code.empty()) {
+        return -2;
+    }
+
+    if (param.enabled != 0 && param.redirect_server_id.empty()) {
+        return -3;
+    }
+#endif
     return 0;
 }
 
@@ -349,7 +366,17 @@ bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& o
     ReadIniString(ini, kLocalGbConfigSection, "server_ip", path, out.server_ip);
     ReadIniInt(ini, kLocalGbConfigSection, "server_port", path, out.server_port);
     ReadIniString(ini, kLocalGbConfigSection, "device_id", path, out.device_id);
+    ReadIniString(ini, kLocalGbConfigSection, "device_name", path, out.device_name);
     ReadIniString(ini, kLocalGbConfigSection, "password", path, out.password);
+    ReadIniInt(ini, kLocalGbConfigSection, "expires_sec", path, out.expires_sec);
+    ReadIniString(ini, kLocalGbConfigSection, "string_code", path, out.string_code);
+    ReadIniString(ini, kLocalGbConfigSection, "mac_address", path, out.mac_address);
+    ReadIniString(ini, kLocalGbConfigSection, "line_id", path, out.line_id);
+    ReadIniString(ini, kLocalGbConfigSection, "redirect_domain", path, out.redirect_domain);
+    ReadIniString(ini, kLocalGbConfigSection, "redirect_server_id", path, out.redirect_server_id);
+    ReadIniString(ini, kLocalGbConfigSection, "custom_protocol_version", path, out.custom_protocol_version);
+    ReadIniString(ini, kLocalGbConfigSection, "manufacturer", path, out.manufacturer);
+    ReadIniString(ini, kLocalGbConfigSection, "model", path, out.model);
     return true;
 }
 
@@ -410,7 +437,17 @@ int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
     fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
     fprintf(fp, "server_port=%d\n", param.server_port);
     fprintf(fp, "device_id=%s\n", param.device_id.c_str());
+    fprintf(fp, "device_name=%s\n", param.device_name.c_str());
     fprintf(fp, "password=%s\n", param.password.c_str());
+    fprintf(fp, "expires_sec=%d\n", param.expires_sec);
+    fprintf(fp, "string_code=%s\n", param.string_code.c_str());
+    fprintf(fp, "mac_address=%s\n", param.mac_address.c_str());
+    fprintf(fp, "line_id=%s\n", param.line_id.c_str());
+    fprintf(fp, "redirect_domain=%s\n", param.redirect_domain.c_str());
+    fprintf(fp, "redirect_server_id=%s\n", param.redirect_server_id.c_str());
+    fprintf(fp, "custom_protocol_version=%s\n", param.custom_protocol_version.c_str());
+    fprintf(fp, "manufacturer=%s\n", param.manufacturer.c_str());
+    fprintf(fp, "model=%s\n", param.model.c_str());
 
     const int flushRet = fflush(fp);
     const int closeRet = fclose(fp);
@@ -652,6 +689,18 @@ int LocalConfigProvider::Validate(const ProtocolExternalConfig& cfg)
             LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
             return -1;
         }
+
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+        if (cfg.gb_register.string_code.empty()) {
+            LogConfigValidateFail(cfg, -27, "gb_register_string_code");
+            return -27;
+        }
+
+        if (cfg.gb_register.redirect_server_id.empty()) {
+            LogConfigValidateFail(cfg, -28, "gb_register_redirect_server_id");
+            return -28;
+        }
+#endif
 
         if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
             LogConfigValidateFail(cfg, -2, "gb_live_transport");

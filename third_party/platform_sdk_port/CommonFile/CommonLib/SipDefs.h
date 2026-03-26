@@ -47,6 +47,7 @@ enum SipReponseCode
 
     kOperationFail = 199,
     kSuccessRequest = 200,
+    kMovedTemporarily = 302,
     kBadRequest = 400,
     kUnauthorized = 401,
     kForbidden = 403,
@@ -117,9 +118,18 @@ struct NetAddress
 
     bool                 new_reg;
     bool                 auth_flag;
+    bool                 use_zero_config_headers;
     unsigned int      expires;
     char*               user_name;
     char*               password;
+    char*               local_name;
+    char*               display_name;
+    char*               string_code;
+    char*               mac_address;
+    char*               line_id;
+    char*               manufacturer;
+    char*               model;
+    char*               custom_protocol_version;
 
 };
 
@@ -144,7 +154,13 @@ struct NetAddress
      char*  Event;
      char*  From;
      char*  To;
+     char*  Contact;
      char*  reason_phrase;
+     char*  ServerDomain;
+     char*  ServerId;
+     char*  ServerIp;
+     int    ServerPort;
+     char*  DeviceId;
 
      SipContentType  content_type;
      char*   content;

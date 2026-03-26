@@ -76,10 +76,10 @@
 
 | 检查项 | 白皮书要求 | 当前代码事实 | 审核结论 |
 |--------|------------|--------------|----------|
-| 首次重定向注册身份 | 注册前无 SIPID，`From/To` 的 SIPID 位置填写 `StringCode` | 当前仓库检索未直接看到 `StringCode` 显式组包路径 | ❗需在 SDK 注册链路抓包确认 |
-| 首次 REGISTER 扩展头 | 需携带 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` | App 层和当前可检索 SDK 代码未见这些字段的显式头拼装逻辑 | ❗知识库已明确列为高风险联调项 |
-| 鉴权流程 | `REGISTER -> 401 -> Authorization REGISTER -> 302 Moved`，正式平台注册后再次 `401/Authorization/200 OK` | 当前仓库有常规 Digest 注册与广播协商能力，但未检索到显式 `302` 重定向专用逻辑 | ⚠️可能在 SDK 黑盒中实现，需结合抓包确认 |
-| 重试策略 | 重定向后注册失败睡眠 `30s` 重试；失败 `3` 次后睡眠 `1min` 并重新获取重定向地址；未注册成功不得中断 | 当前仓库未见与白皮书一致的明确重定向重试状态机说明 | ❗需要联调和代码补查 |
+| 首次重定向注册身份 | 注册前无 SIPID，`From/To` 的 SIPID 位置填写 `StringCode` | `ProtocolManager + GBClientImpl + SipClientImpl` 已在宏开启时把首次零配置 `REGISTER` 的本地身份切到 `StringCode`，收到 `302` 后再切到平台返回的 `deviceId` | ⚠️代码已落地，待抓包确认 |
+| 首次 REGISTER 扩展头 | 需携带 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` | `SipEventManager::SetZeroConfigRegisterHeaders()` 已补齐这些扩展头，只在宏开启且零配置首包时发送 | ⚠️代码已落地，待抓包确认 |
+| 鉴权流程 | `REGISTER -> 401 -> Authorization REGISTER -> 302 Moved`，正式平台注册后再次 `401/Authorization/200 OK` | `GBClientImpl::Register()` 已显式实现单次零配置事务：`401 -> 302 -> 正式平台注册 -> 401 -> 200` | ⚠️代码已落地，待联调确认 |
+| 重试策略 | 重定向后注册失败睡眠 `30s` 重试；失败 `3` 次后睡眠 `1min` 并重新获取重定向地址；未注册成功不得中断 | `ProtocolManager::GbHeartbeatLoop()` 已实现正式平台注册失败 `30s` 重试、连续 `3` 次失败后 `1min` + `ResetZeroConfigState()` 重新获取重定向地址 | ⚠️代码已落地，待联调确认 |
 
 #### A.16 报文字段最小核对清单
 - 第一次重定向 REGISTER：`From/To/Contact/CSeq/Call-ID/Via/Expires`
@@ -122,6 +122,8 @@
 - `P1`: 多码流能力是否以白皮书“三码流及以上”为最终验收口径
 
 ## 代码整改清单
+
+- 2026-03-26: “注册重定向扩展头与身份切换”和“注册重定向重试状态机”两项已完成代码落地，当前剩余重点转为抓包联调确认和 `A.19` 设备信息扩展补齐。
 
 ### P0 | 必须优先整改
 

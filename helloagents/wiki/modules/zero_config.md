@@ -7,7 +7,7 @@
 - **职责:** 维护零配置定义、装维流程、出厂预配置、注册重定向协议要求和验收要点
 - **状态:** ✅已建立专题
 - **适用范围:** 装维扫码绑定、首次上电自动接入、重定向注册、正式平台注册、二维码/串码/CMEI 标识
-- **最后更新:** 2026-03-25
+- **最后更新:** 2026-03-26
 
 ## 输入基线
 - **产品需求:** `/home/jerry/silver/需求白皮书.pdf`
@@ -88,6 +88,18 @@
 - 默认接入方式是重定向注册。
 - 同时允许通过设备 Web 界面登录后，手工录入方式接入平台，作为兜底方案。
 
+## 当前代码落点
+- 已新增编译期开关 `PROTOCOL_ENABLE_GB_ZERO_CONFIG`，默认关闭；构建时传 `-DPROTOCOL_ENABLE_GB_ZERO_CONFIG=1` 才进入零配置流程。
+- 宏开启时，`LocalConfigProvider` / `HttpConfigProvider` 会持久化并校验 `StringCode`、`Mac`、`Line`、`redirect_domain`、`redirect_server_id`、`CustomProtocolVersion`、`manufacturer`、`model`。
+- `SipEventManager` 已在首次零配置 `REGISTER` 时补齐 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` 扩展头，并解析 `302` 返回的 `Contact/ServerDomain/ServerId/ServerIp/ServerPort/deviceId`。
+- `GBClientImpl::Register` 已实现单次零配置事务：`StringCode -> 401 -> 302 -> 正式平台注册 -> 401 -> 200`，且会缓存正式平台目标用于后续直接重注册。
+- `ProtocolManager::GbHeartbeatLoop` 已实现外层重试节奏：正式平台注册失败 `30 秒` 重试，连续 `3 次` 失败后等待 `1 分钟` 并通过 `ResetZeroConfigState()` 重新获取重定向地址。
+- 宏关闭时仍走原有标准国标注册路径，不发送零配置扩展头，也不进入 `302` 重定向流程。
+
+## 当前缺口
+- `A.19` 设备信息查询扩展仍未补齐，`DeviceInfo` 还没有 `StringCode/Mac/Line/CustomProtocolVersion/DeviceCapabilityList`。
+- 现阶段只做了代码级和翻译单元级编译验证，仍需要真实平台抓包确认首次 `REGISTER` 扩展头、`302` 返回字段和 `deviceId` 身份切换完全符合白皮书。
+
 ## 设备侧实现清单
 
 ### P0 必须具备
@@ -126,4 +138,5 @@
 - 若后续要改动注册链路，应同时回看 `helloagents/wiki/modules/terminal_requirements.md` 中的整体需求矩阵与 `helloagents/wiki/modules/gb28181.md` 中的实现映射。
 
 ## 变更历史
+- 2026-03-26: 补齐 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关、零配置配置模型、`302` 重定向注册事务和 `30s / 3次 / 1min` 外层重试状态机，默认保持标准国标流程不变
 - 2026-03-25: 新增零配置专题文档，沉淀定义澄清、装维闭环、预配置项、注册重定向协议要求和设备 / 平台验收清单

@@ -1,4 +1,5 @@
 ﻿#include "HttpConfigProvider.h"
+#include "ProtocolFeatureSwitch.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -427,6 +428,13 @@ void HttpConfigProvider::InitDefaultConfig()
     m_cached_cfg.gb_register.device_name = "IPC";
     m_cached_cfg.gb_register.username = "35010000002000000001";
     m_cached_cfg.gb_register.password = "CG939Xvv";
+    m_cached_cfg.gb_register.string_code = m_cached_cfg.gb_register.device_id;
+    m_cached_cfg.gb_register.line_id = "1";
+    m_cached_cfg.gb_register.redirect_domain = m_cached_cfg.gb_register.username;
+    m_cached_cfg.gb_register.redirect_server_id = m_cached_cfg.gb_register.username;
+    m_cached_cfg.gb_register.custom_protocol_version = "1.0";
+    m_cached_cfg.gb_register.manufacturer = "IPC";
+    m_cached_cfg.gb_register.model = "RC0240";
 
     m_cached_cfg.gb_live.transport = "udp";
     m_cached_cfg.gb_live.target_ip = "127.0.0.1";
@@ -522,9 +530,20 @@ std::string HttpConfigProvider::ToMinimalJson(const ProtocolExternalConfig& cfg)
     json += "\"gb_register_server_ip\":\"" + cfg.gb_register.server_ip + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.server_port);
     json += "\"gb_register_server_port\":" + std::string(tmp) + ",";
+    json += "\"gb_register_device_id\":\"" + cfg.gb_register.device_id + "\",";
     json += "\"gb_register_device_name\":\"" + cfg.gb_register.device_name + "\",";
+    json += "\"gb_register_username\":\"" + cfg.gb_register.username + "\",";
+    json += "\"gb_register_password\":\"" + cfg.gb_register.password + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.expires_sec);
     json += "\"gb_register_expires_sec\":" + std::string(tmp) + ",";
+    json += "\"gb_register_string_code\":\"" + cfg.gb_register.string_code + "\",";
+    json += "\"gb_register_mac_address\":\"" + cfg.gb_register.mac_address + "\",";
+    json += "\"gb_register_line_id\":\"" + cfg.gb_register.line_id + "\",";
+    json += "\"gb_register_redirect_domain\":\"" + cfg.gb_register.redirect_domain + "\",";
+    json += "\"gb_register_redirect_server_id\":\"" + cfg.gb_register.redirect_server_id + "\",";
+    json += "\"gb_register_custom_protocol_version\":\"" + cfg.gb_register.custom_protocol_version + "\",";
+    json += "\"gb_register_manufacturer\":\"" + cfg.gb_register.manufacturer + "\",";
+    json += "\"gb_register_model\":\"" + cfg.gb_register.model + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_keepalive.interval_sec);
     json += "\"gb_keepalive_interval_sec\":" + std::string(tmp) + ",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_keepalive.timeout_sec);
@@ -682,11 +701,44 @@ int HttpConfigProvider::PullLatest(ProtocolExternalConfig& out)
     if (FindIntField(body, "gb_register_server_port", ivalue)) {
         next.gb_register.server_port = ivalue;
     }
+    if (FindStringField(body, "gb_register_device_id", value)) {
+        next.gb_register.device_id = value;
+    }
     if (FindStringField(body, "gb_register_device_name", value)) {
         next.gb_register.device_name = value;
     }
+    if (FindStringField(body, "gb_register_username", value)) {
+        next.gb_register.username = value;
+    }
+    if (FindStringField(body, "gb_register_password", value)) {
+        next.gb_register.password = value;
+    }
     if (FindIntField(body, "gb_register_expires_sec", ivalue)) {
         next.gb_register.expires_sec = ivalue;
+    }
+    if (FindStringField(body, "gb_register_string_code", value)) {
+        next.gb_register.string_code = value;
+    }
+    if (FindStringField(body, "gb_register_mac_address", value)) {
+        next.gb_register.mac_address = value;
+    }
+    if (FindStringField(body, "gb_register_line_id", value)) {
+        next.gb_register.line_id = value;
+    }
+    if (FindStringField(body, "gb_register_redirect_domain", value)) {
+        next.gb_register.redirect_domain = value;
+    }
+    if (FindStringField(body, "gb_register_redirect_server_id", value)) {
+        next.gb_register.redirect_server_id = value;
+    }
+    if (FindStringField(body, "gb_register_custom_protocol_version", value)) {
+        next.gb_register.custom_protocol_version = value;
+    }
+    if (FindStringField(body, "gb_register_manufacturer", value)) {
+        next.gb_register.manufacturer = value;
+    }
+    if (FindStringField(body, "gb_register_model", value)) {
+        next.gb_register.model = value;
     }
     if (FindIntField(body, "gb_keepalive_interval_sec", ivalue)) {
         next.gb_keepalive.interval_sec = ivalue;
@@ -963,6 +1015,18 @@ int HttpConfigProvider::Validate(const ProtocolExternalConfig& cfg)
             LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
             return -1;
         }
+
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+        if (cfg.gb_register.string_code.empty()) {
+            LogConfigValidateFail(cfg, -27, "gb_register_string_code");
+            return -27;
+        }
+
+        if (cfg.gb_register.redirect_server_id.empty()) {
+            LogConfigValidateFail(cfg, -28, "gb_register_redirect_server_id");
+            return -28;
+        }
+#endif
 
         if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
             LogConfigValidateFail(cfg, -2, "gb_live_transport");
