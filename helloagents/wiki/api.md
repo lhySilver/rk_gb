@@ -37,7 +37,7 @@
 ### GB28181 本地注册配置接口
 
 #### `GetGbRegisterConfig()`
-**描述:** 从 `/userdata/conf/Config/GB/gb28181.ini` 读取 GB28181 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
+**描述:** 从 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/zero_config.ini` 读取 GB28181 注册配置；若文件不存在，会先按默认值补齐后返回，不依赖 `ProtocolManager` 当前缓存。
 
 #### `SetGbRegisterConfig()`
 **描述:** 只写入 GB28181 注册配置到 flash，不直接修改运行中的 GB 注册生命周期。
@@ -47,6 +47,8 @@
 
 **当前约束:**
 - 当前仅持久化 `enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password` 6 个注册字段
+- 零配置字段 `string_code`、`mac_address`、`line_id`、`redirect_domain`、`redirect_server_id`、`custom_protocol_version`、`manufacturer`、`model` 独立持久化到 `zero_config.ini`
+- 当编译期开启 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 且 `zero_config.ini` 缺失时，flash 读取链路会记录错误日志；其中 `RestartGbRegisterService()` 与 `ProtocolManager::Init()/Start()` 会返回错误，`GetGbRegisterConfig()` 则会保留当前“记录日志后回落默认结构”的接口语义
 - `device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gat_*` 等其他协议项不再写入本地 `ini`
 - `SetGbRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGbRegisterService()`
 - `RestartGbRegisterService()` 在 `ProtocolManager` 未启动时只刷新缓存；已启动时会结合当前生命周期状态和 `enabled` 决定是否停/启 GB 服务
@@ -68,7 +70,7 @@
 - `gat_upload`、`gat_capture` 等其他 1400 协议项不写入本地 `ini`
 - `SetGatRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGatRegisterService()`
 - `RestartGatRegisterService()` 在 `ProtocolManager` 已启动且 `m_gat_client` 已构造时会复用现有 `Reload()` 逻辑决定是否热更新或重启本地 1400 服务
-- 当前本地注册配置只认 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/gat1400.ini` 两个新路径；旧的 `/userdata/conf/Config/gb28181.ini` 不再作为读取或迁移来源
+- 当前本地注册配置只认 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini` 三个新路径；旧的 `/userdata/conf/Config/gb28181.ini` 不再作为读取或迁移来源
 
 ### ProtocolManager 核心回调
 

@@ -42,6 +42,21 @@
 
 **说明:** 当前 `gb28181.ini` 只持久化上述 6 个注册字段；`device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gb_reboot` 等其余 GB 协议项统一使用代码默认值，不再落本地 `ini`。
 
+### `GbRegisterParam` 零配置持久化子集
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| `string_code` | `std::string` | 首次重定向注册使用的设备身份 |
+| `mac_address` | `std::string` | 首次重定向注册扩展头 `Mac` |
+| `line_id` | `std::string` | 首次重定向注册扩展头 `Line` |
+| `redirect_domain` | `std::string` | 重定向接入域 |
+| `redirect_server_id` | `std::string` | 重定向接入服务器标识 |
+| `custom_protocol_version` | `std::string` | 首次重定向注册扩展头 `CustomProtocolVersion` |
+| `manufacturer` | `std::string` | 首次重定向注册扩展头 `Manufacturer` |
+| `model` | `std::string` | 首次重定向注册扩展头 `Model` |
+
+**说明:** 当前 `zero_config.ini` 只持久化上述 8 个零配置字段；当编译期开启 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 且文件缺失时，`LocalConfigProvider` 会直接记录日志并返回错误，不做兼容迁移或自动补文件。
+
 ### `GatRegisterParam` 本地持久化子集
 
 | 字段名 | 类型 | 说明 |
@@ -80,6 +95,21 @@
 | `password` | 设备密码 |
 
 默认路径: `/userdata/conf/Config/GB/gb28181.ini`
+
+### `zero_config.ini`
+
+| 键名 | 说明 |
+|------|------|
+| `string_code` | 首次重定向注册设备身份 |
+| `mac_address` | 设备 MAC |
+| `line_id` | 线路标识 |
+| `redirect_domain` | 重定向域 |
+| `redirect_server_id` | 重定向服务器 ID |
+| `custom_protocol_version` | 自定义协议版本 |
+| `manufacturer` | 厂商名称 |
+| `model` | 设备型号 |
+
+默认路径: `/userdata/conf/Config/GB/zero_config.ini`
 
 ### `gat1400.ini`
 
@@ -287,7 +317,7 @@
 ## 索引与关联
 
 - 配置来源: `HttpConfigProvider -> ProtocolExternalConfig -> ProtocolManager / GAT1400ClientService`
-- 本地配置: `/userdata/conf/Config/GB/gb28181.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
+- 本地配置: `/userdata/conf/Config/GB/gb28181.ini + /userdata/conf/Config/GB/zero_config.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
 - 本地配置: `/userdata/conf/Config/GB/gat1400.ini -> LocalConfigProvider -> GetGatRegisterConfig()/SetGatRegisterConfig()/RestartGatRegisterService() -> ProtocolManager::Start()/GAT1400 lifecycle`
 - 实时流关联: `GbLiveSession -> GB28181RtpPsSender`
 - 回放关联: `GbReplaySession -> Storage_Module_*`

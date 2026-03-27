@@ -10,7 +10,7 @@
 - 代码规范: 历史 C/C++ 风格为主，增量修改以现有风格为准
 - 命名约定: 类/结构体多为大驼峰；函数和成员命名混用历史风格；协议配置结构集中在 `App/Protocol/config/ProtocolExternalConfig.h`
 - 模块边界: `App/Protocol/*` 为业务桥接层，`third_party/platform_sdk_port/*` 为移植后的协议 SDK/通用库，`RK/` 为工具链目录，不属于业务源码
-- 配置来源: 协议配置优先从本地 HTTP 配置服务 `http://127.0.0.1:18080/openapi/v1/ipc/protocol` 拉取；GB28181 / GAT1400 注册核心参数同时支持 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`
+- 配置来源: 协议配置优先从本地 HTTP 配置服务 `http://127.0.0.1:18080/openapi/v1/ipc/protocol` 拉取；GB28181 / GAT1400 注册核心参数同时支持 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`
 - 交叉编译环境与输出目录尽量隔离，避免污染同机其他 SoC 工程
 - SIP/媒体协商相关修复优先保持行为兼容，先做最小变更
 - 涉及 GB28181 行为差异的修复或新功能，先对照 `helloagents/wiki/modules/gb28181-2022-baseline.md`、`helloagents/wiki/modules/protocol.md` 与 `helloagents/wiki/modules/terminal_requirements.md`

@@ -90,7 +90,7 @@
 
 ## 当前代码落点
 - 已新增编译期开关 `PROTOCOL_ENABLE_GB_ZERO_CONFIG`，默认关闭；构建时传 `-DPROTOCOL_ENABLE_GB_ZERO_CONFIG=1` 才进入零配置流程。
-- 宏开启时，`LocalConfigProvider` / `HttpConfigProvider` 会持久化并校验 `StringCode`、`Mac`、`Line`、`redirect_domain`、`redirect_server_id`、`CustomProtocolVersion`、`manufacturer`、`model`。
+- 宏开启时，`LocalConfigProvider` / `HttpConfigProvider` 会持久化并校验 `StringCode`、`Mac`、`Line`、`redirect_domain`、`redirect_server_id`、`CustomProtocolVersion`、`manufacturer`、`model`；其中本地 flash 已拆成独立 `/userdata/conf/Config/GB/zero_config.ini`，若文件缺失则直接记录日志并返回错误，不做兼容迁移。
 - `SipEventManager` 已在首次零配置 `REGISTER` 时补齐 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` 扩展头，并解析 `302` 返回的 `Contact/ServerDomain/ServerId/ServerIp/ServerPort/deviceId`。
 - `GBClientImpl::Register` 已实现单次零配置事务：`StringCode -> 401 -> 302 -> 正式平台注册 -> 401 -> 200`，且会缓存正式平台目标用于后续直接重注册。
 - `ProtocolManager::GbHeartbeatLoop` 已实现外层重试节奏：正式平台注册失败 `30 秒` 重试，连续 `3 次` 失败后等待 `1 分钟` 并通过 `ResetZeroConfigState()` 重新获取重定向地址。
@@ -104,7 +104,7 @@
 ## 设备侧实现清单
 
 ### P0 必须具备
-- 能从本地配置中读取并持久化 `StringCode`、重定向地址、端口、域、`SIPID`、接入口令。
+- 能从本地配置中读取并持久化 `StringCode`、重定向地址、端口、域、`SIPID`、接入口令；当前设备侧本地落盘拆成 `gb28181.ini` 保存标准注册字段、`zero_config.ini` 保存零配置扩展字段。
 - 首次上电和重启后，自动走重定向注册闭环，无需人工点击。
 - 首次 REGISTER 使用 `StringCode` 身份，并带齐 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion`。
 - 能正确解析 `302 Moved` 返回的正式平台信息，并切换到 `deviceId` 完成正式注册。
@@ -139,6 +139,7 @@
 - 若后续要改动注册链路，应同时回看 `helloagents/wiki/modules/terminal_requirements.md` 中的整体需求矩阵与 `helloagents/wiki/modules/gb28181.md` 中的实现映射。
 
 ## 变更历史
+- 2026-03-27: 将零配置字段从 `gb28181.ini` 拆到独立 `zero_config.ini`；宏开启且文件缺失时直接记录日志并返回错误，不做兼容迁移
 - 2026-03-27: 补齐 `DeviceInfo` 的 `A.19` 扩展身份字段和最小能力清单节点，按真实实现回报 `FrameMirror/MultiStream/Upgrade/Alarm` 等缺陷
 - 2026-03-26: 补齐 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关、零配置配置模型、`302` 重定向注册事务和 `30s / 3次 / 1min` 外层重试状态机，默认保持标准国标流程不变
 - 2026-03-25: 新增零配置专题文档，沉淀定义澄清、装维闭环、预配置项、注册重定向协议要求和设备 / 平台验收清单

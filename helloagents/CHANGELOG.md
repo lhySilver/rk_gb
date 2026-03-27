@@ -25,6 +25,7 @@
 - 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
 
 ### 变更
+- 将零配置字段 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 从 `gb28181.ini` 拆到独立 `/userdata/conf/Config/GB/zero_config.ini`；当编译期开启 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 且缺少该文件时，配置加载会直接记录日志并返回错误，不再做兼容迁移或自动生成。
 - 更新 `helloagents/wiki/modules/zero_config.md`、`helloagents/wiki/modules/gb28181.md`、`helloagents/wiki/modules/terminal_requirements.md`、`helloagents/wiki/api.md`、`helloagents/wiki/data.md`，同步 `DeviceInfo` 的 `A.19` 扩展字段、最小能力清单和剩余真实缺陷。
 - 为 GB28181 增加 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关，构建时可显式切换“标准国标注册”和“零配置重定向注册”两条链路，默认保持现网标准流程不变。
 - 调整 SipSDK 的响应侧 client 匹配顺序：`GetClientInfo()` 处理响应事件时改为优先使用 `event->response` 匹配对端，再回退到 `event->request`，避免心跳等自发 `MESSAGE` 收到响应时先把本机 `From` 误判成 peer 而频繁打印 `sip peer match failed`。

@@ -21,10 +21,10 @@
 - GB28181 远程抓拍与目录订阅专项审查记录见 [`gb28181-snapshot-subscribe-review.md`](gb28181-snapshot-subscribe-review.md)。
 
 ## 注意事项
-- `LocalConfigProvider` 现在只读取 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；文件不存在时使用代码默认值自动生成，不再兼容旧的 `/userdata/conf/Config/gb28181.ini`。
+- `LocalConfigProvider` 现在读取 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；其中 `gb28181.ini` / `gat1400.ini` 缺失时仍可按默认值自动生成，但在编译期开启 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 时，若 `zero_config.ini` 缺失则会直接记录日志并返回错误，不再兼容旧的 `/userdata/conf/Config/gb28181.ini` 路径，也不自动迁移。
 - `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。
 - `GB28181ClientSDK` 的创建、绑定、释放现全部下沉到 `ProtocolManager` 私有生命周期中；`CSofia` 不再持有 SDK 指针，也不再负责 `Bind/Unbind`。
-- `GetGbRegisterConfig()` 现在始终直接读取 `/userdata/conf/Config/GB/gb28181.ini`；即使 `ProtocolManager::Init()` 之前被外部模块调用，也会先按默认值补齐配置文件再返回结果。
+- `GetGbRegisterConfig()` 现在始终直接读取 `/userdata/conf/Config/GB/gb28181.ini + zero_config.ini`；即使 `ProtocolManager::Init()` 之前被外部模块调用，也会先按默认值补齐配置文件再返回结果。
 - `SetGbRegisterConfig()` 只负责把 issue38 约定的 6 个外部可编辑字段写回 flash：`enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password`；`device_name`、`expires_sec` 等其余注册参数继续沿用代码默认值。
 - 新增 `RestartGbRegisterService()` 作为单独的 GB 服务重载入口；它会从 flash 重新读取注册配置，并根据 `ProtocolManager` 当前是否已启动、GB 生命周期是否正在运行以及 `enabled` 新值决定只刷新缓存、停服或重启注册。
 - 新增 `GetGatRegisterConfig()` / `SetGatRegisterConfig()` / `RestartGatRegisterService()`；语义与 GB 接口保持一致，分别负责“只读 flash”“只写 flash”和“显式把 `gat1400.ini` 重载到运行态”。
@@ -32,6 +32,7 @@
 - `StartGbClientLifecycle()` 现在把“SDK 已启动但首次 `Register()` 失败”的场景视为可恢复错误：生命周期不会直接退出，而是打印 `note=defer_retry` 日志并继续保留后台线程。
 - `GbHeartbeatLoop()` 在未注册态下会按 `gb_keepalive.interval_sec` 节奏重试注册；只有 `server_ip/server_port/device_id` 这类静态配置校验失败时，GB 生命周期才会立即返回错误。
 - 当前 `gb28181.ini` 只保留 6 个国标注册字段；`image_flip_mode`、`gb_talk`、`gb_reboot`、`gb_upgrade`、`gb_broadcast`、`gb_listen` 等其余 GB 协议项都不再写入本地 ini，而是固定使用代码默认值。
+- 当前 `zero_config.ini` 独立持久化 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 8 个零配置字段，不再和 `gb28181.ini` 混存。
 - 当前 `gat1400.ini` 只持久化 `GatRegisterParam`；`gat_upload`、`gat_capture` 等其他 1400 相关参数继续使用代码默认值或 HTTP 配置链路。
 - `gb_register.enabled` 为 `0` 时，`ProtocolManager` 会跳过 GB client 生命周期启动与重注册，但 GAT1400 相关配置校验和生命周期不受影响。
 - `GAT1400` 的 `GetTime()`/`GET_SYNCTIME` 当前已禁用为 no-op；设备时间统一由 GB28181 校时链路负责，启动阶段只打印 `event=get_time note=disabled` 作为诊断标记。

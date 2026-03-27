@@ -17,6 +17,8 @@ namespace
 const char* kLocalConfigDir = "/userdata/conf/Config/GB";
 const char* kLocalGbConfigFile = "/userdata/conf/Config/GB/gb28181.ini";
 const char* kLocalGbConfigSection = "gb28181";
+const char* kLocalZeroConfigFile = "/userdata/conf/Config/GB/zero_config.ini";
+const char* kLocalZeroConfigSection = "zero_config";
 const char* kLocalGatConfigFile = "/userdata/conf/Config/GB/gat1400.ini";
 const char* kLocalGatConfigSection = "gat1400";
 
@@ -29,16 +31,55 @@ enum LocalConfigLoadSource
 struct LocalConfigSyncState
 {
     LocalConfigLoadSource gb_source;
+    LocalConfigLoadSource zero_source;
     LocalConfigLoadSource gat_source;
     int gb_sync_ret;
+    int zero_sync_ret;
     int gat_sync_ret;
 
     LocalConfigSyncState()
         : gb_source(kLocalConfigLoadNone),
+          zero_source(kLocalConfigLoadNone),
           gat_source(kLocalConfigLoadNone),
           gb_sync_ret(0),
+          zero_sync_ret(0),
           gat_sync_ret(0) {}
 };
+
+int RequiredZeroConfigFileError()
+{
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    return -29;
+#else
+    return 0;
+#endif
+}
+
+bool IsZeroConfigFileRequired()
+{
+#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool IsZeroConfigFileMissing(const LocalConfigSyncState& state)
+{
+    return IsZeroConfigFileRequired() && state.zero_source != kLocalConfigLoadCurrent;
+}
+
+void LogZeroConfigFileMissing(const char* tag)
+{
+    if (!IsZeroConfigFileRequired()) {
+        return;
+    }
+
+    printf("[Protocol][Config] module=config event=zero_config_file_missing trace=provider error=%d path=%s tag=%s\n",
+           RequiredZeroConfigFileError(),
+           kLocalZeroConfigFile,
+           tag != NULL ? tag : "");
+}
 
 std::string JoinConfigList(const std::vector<std::string>& values)
 {
@@ -366,18 +407,27 @@ bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& o
     ReadIniString(ini, kLocalGbConfigSection, "server_ip", path, out.server_ip);
     ReadIniInt(ini, kLocalGbConfigSection, "server_port", path, out.server_port);
     ReadIniString(ini, kLocalGbConfigSection, "device_id", path, out.device_id);
-    ReadIniString(ini, kLocalGbConfigSection, "device_name", path, out.device_name);
     ReadIniString(ini, kLocalGbConfigSection, "password", path, out.password);
-    ReadIniInt(ini, kLocalGbConfigSection, "expires_sec", path, out.expires_sec);
-    ReadIniString(ini, kLocalGbConfigSection, "string_code", path, out.string_code);
-    ReadIniString(ini, kLocalGbConfigSection, "mac_address", path, out.mac_address);
-    ReadIniString(ini, kLocalGbConfigSection, "line_id", path, out.line_id);
-    ReadIniString(ini, kLocalGbConfigSection, "redirect_domain", path, out.redirect_domain);
-    ReadIniString(ini, kLocalGbConfigSection, "redirect_server_id", path, out.redirect_server_id);
-    ReadIniString(ini, kLocalGbConfigSection, "custom_protocol_version", path, out.custom_protocol_version);
-    ReadIniString(ini, kLocalGbConfigSection, "manufacturer", path, out.manufacturer);
-    ReadIniString(ini, kLocalGbConfigSection, "model", path, out.model);
     return true;
+}
+
+bool LoadGbZeroConfigFromFile(const char* path, protocol::GbRegisterParam& out)
+{
+    if (path == NULL || access(path, F_OK) != 0) {
+        return false;
+    }
+
+    CInifile ini;
+    bool loaded = false;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "string_code", path, out.string_code) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "mac_address", path, out.mac_address) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "line_id", path, out.line_id) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "redirect_domain", path, out.redirect_domain) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "redirect_server_id", path, out.redirect_server_id) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "custom_protocol_version", path, out.custom_protocol_version) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "manufacturer", path, out.manufacturer) || loaded;
+    loaded = ReadIniString(ini, kLocalZeroConfigSection, "model", path, out.model) || loaded;
+    return loaded;
 }
 
 bool LoadGatRegisterConfigFromFile(const char* path, protocol::GatRegisterParam& out)
@@ -412,6 +462,14 @@ LocalConfigLoadSource LoadExistingGbRegisterConfig(protocol::GbRegisterParam& ou
     return kLocalConfigLoadNone;
 }
 
+LocalConfigLoadSource LoadExistingGbZeroConfig(protocol::GbRegisterParam& out)
+{
+    if (LoadGbZeroConfigFromFile(kLocalZeroConfigFile, out)) {
+        return kLocalConfigLoadCurrent;
+    }
+    return kLocalConfigLoadNone;
+}
+
 LocalConfigLoadSource LoadExistingGatRegisterConfig(protocol::GatRegisterParam& out)
 {
     if (LoadGatRegisterConfigFromFile(kLocalGatConfigFile, out)) {
@@ -437,9 +495,29 @@ int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
     fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
     fprintf(fp, "server_port=%d\n", param.server_port);
     fprintf(fp, "device_id=%s\n", param.device_id.c_str());
-    fprintf(fp, "device_name=%s\n", param.device_name.c_str());
     fprintf(fp, "password=%s\n", param.password.c_str());
-    fprintf(fp, "expires_sec=%d\n", param.expires_sec);
+
+    const int flushRet = fflush(fp);
+    const int closeRet = fclose(fp);
+    if (flushRet != 0 || closeRet != 0) {
+        return -3;
+    }
+
+    return 0;
+}
+
+int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
+{
+    if (!EnsureDirectoryExists(kLocalConfigDir)) {
+        return -1;
+    }
+
+    FILE* fp = fopen(kLocalZeroConfigFile, "w");
+    if (fp == NULL) {
+        return -2;
+    }
+
+    fprintf(fp, "[%s]\n", kLocalZeroConfigSection);
     fprintf(fp, "string_code=%s\n", param.string_code.c_str());
     fprintf(fp, "mac_address=%s\n", param.mac_address.c_str());
     fprintf(fp, "line_id=%s\n", param.line_id.c_str());
@@ -513,6 +591,11 @@ LocalConfigSyncState SyncLocalConfigFiles(protocol::ProtocolExternalConfig& cfg)
         state.gb_sync_ret = SaveLocalGbConfigFile(cfg.gb_register);
     }
 
+    state.zero_source = LoadExistingGbZeroConfig(cfg.gb_register);
+    if (IsZeroConfigFileMissing(state)) {
+        state.zero_sync_ret = RequiredZeroConfigFileError();
+    }
+
     state.gat_source = LoadExistingGatRegisterConfig(cfg.gat_register);
     if (state.gat_source != kLocalConfigLoadCurrent) {
         state.gat_sync_ret = SaveLocalGatConfigFile(cfg.gat_register);
@@ -533,20 +616,29 @@ LocalConfigProvider::LocalConfigProvider(const std::string& sourceTag)
     ProtocolExternalConfig next = m_cached_cfg;
     const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
     m_cached_cfg = next;
-    if (sync.gb_source != kLocalConfigLoadNone || sync.gat_source != kLocalConfigLoadNone) {
+    if (IsZeroConfigFileMissing(sync)) {
+        LogZeroConfigFileMissing(m_source_tag.c_str());
+    } else if (sync.gb_source != kLocalConfigLoadNone ||
+               sync.zero_source != kLocalConfigLoadNone ||
+               sync.gat_source != kLocalConfigLoadNone) {
         m_cached_cfg.version = "v1-local-file";
-        printf("[Protocol][Config] module=config event=config_file_load_success trace=provider gb_path=%s gb_source=%s gb_ret=%d gat_path=%s gat_source=%s gat_ret=%d tag=%s\n",
+        printf("[Protocol][Config] module=config event=config_file_load_success trace=provider gb_path=%s gb_source=%s gb_ret=%d zero_path=%s zero_source=%s zero_ret=%d gat_path=%s gat_source=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
                DescribeLocalConfigSource(sync.gb_source),
                sync.gb_sync_ret,
+               kLocalZeroConfigFile,
+               DescribeLocalConfigSource(sync.zero_source),
+               sync.zero_sync_ret,
                kLocalGatConfigFile,
                DescribeLocalConfigSource(sync.gat_source),
                sync.gat_sync_ret,
                m_source_tag.c_str());
     } else {
-        printf("[Protocol][Config] module=config event=config_file_init trace=provider gb_path=%s gb_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
+        printf("[Protocol][Config] module=config event=config_file_init trace=provider gb_path=%s gb_ret=%d zero_path=%s zero_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
                sync.gb_sync_ret,
+               kLocalZeroConfigFile,
+               sync.zero_sync_ret,
                kLocalGatConfigFile,
                sync.gat_sync_ret,
                m_source_tag.c_str());
@@ -565,24 +657,40 @@ GbRegisterParam LocalConfigProvider::BuildDefaultGbRegisterConfig()
 int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
 {
     out = BuildDefaultGbRegisterConfig();
-    const LocalConfigLoadSource source = LoadExistingGbRegisterConfig(out);
-    if (source == kLocalConfigLoadCurrent) {
-        return 0;
+    const LocalConfigLoadSource gbSource = LoadExistingGbRegisterConfig(out);
+    const LocalConfigLoadSource zeroSource = LoadExistingGbZeroConfig(out);
+    if (gbSource != kLocalConfigLoadCurrent) {
+        const int saveGbRet = SaveLocalGbConfigFile(out);
+        if (saveGbRet != 0) {
+            return saveGbRet;
+        }
     }
-    return SaveLocalGbConfigFile(out);
+
+    if (IsZeroConfigFileRequired() && zeroSource != kLocalConfigLoadCurrent) {
+        LogZeroConfigFileMissing("LoadOrCreateGbRegisterConfig");
+        return RequiredZeroConfigFileError();
+    }
+
+    return 0;
 }
 
 int LocalConfigProvider::UpdateGbRegisterConfig(const GbRegisterParam& param)
 {
     GbRegisterParam next = BuildDefaultGbRegisterConfig();
     LoadExistingGbRegisterConfig(next);
+    LoadExistingGbZeroConfig(next);
     ApplyGbRegisterEditableFields(next, param);
     const int check = ValidateGbRegisterEditableFields(next);
     if (check != 0) {
         return check;
     }
 
-    return SaveLocalGbConfigFile(next);
+    const int saveGbRet = SaveLocalGbConfigFile(next);
+    if (saveGbRet != 0) {
+        return saveGbRet;
+    }
+
+    return SaveLocalGbZeroConfigFile(next);
 }
 
 GatRegisterParam LocalConfigProvider::BuildDefaultGatRegisterConfig()
@@ -622,15 +730,26 @@ int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
 {
     ProtocolExternalConfig next = m_cached_cfg;
     const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
-    if (sync.gb_source != kLocalConfigLoadNone || sync.gat_source != kLocalConfigLoadNone) {
+    if (IsZeroConfigFileMissing(sync)) {
+        LogZeroConfigFileMissing(m_source_tag.c_str());
+        return RequiredZeroConfigFileError();
+    }
+
+    if (sync.gb_source != kLocalConfigLoadNone ||
+        sync.zero_source != kLocalConfigLoadNone ||
+        sync.gat_source != kLocalConfigLoadNone) {
         next.version = "v1-local-file";
         m_cached_cfg = next;
     }
 
-    if (sync.gb_source == kLocalConfigLoadNone || sync.gat_source == kLocalConfigLoadNone) {
-        printf("[Protocol][Config] module=config event=config_file_missing trace=provider gb_path=%s gb_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
+    if (sync.gb_source == kLocalConfigLoadNone ||
+        sync.zero_source == kLocalConfigLoadNone ||
+        sync.gat_source == kLocalConfigLoadNone) {
+        printf("[Protocol][Config] module=config event=config_file_missing trace=provider gb_path=%s gb_ret=%d zero_path=%s zero_ret=%d gat_path=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
                sync.gb_sync_ret,
+               kLocalZeroConfigFile,
+               sync.zero_sync_ret,
                kLocalGatConfigFile,
                sync.gat_sync_ret,
                m_source_tag.c_str());
@@ -664,6 +783,16 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
                m_source_tag.c_str(),
                kLocalGbConfigFile);
         return saveGbRet;
+    }
+
+    const int saveZeroRet = SaveLocalGbZeroConfigFile(m_cached_cfg.gb_register);
+    if (saveZeroRet != 0) {
+        printf("[Protocol][Config] module=config event=config_apply_fail trace=provider error=%d source=local stage=persist version=%s tag=%s path=%s\n",
+               saveZeroRet,
+               cfg.version.c_str(),
+               m_source_tag.c_str(),
+               kLocalZeroConfigFile);
+        return saveZeroRet;
     }
 
     const int saveGatRet = SaveLocalGatConfigFile(m_cached_cfg.gat_register);
