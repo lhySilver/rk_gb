@@ -25,6 +25,7 @@
 - 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
 
 ### 变更
+- 更新 `helloagents/wiki/modules/zero_config.md`、`helloagents/wiki/modules/gb28181.md`、`helloagents/wiki/modules/terminal_requirements.md`、`helloagents/wiki/api.md`、`helloagents/wiki/data.md`，同步 `DeviceInfo` 的 `A.19` 扩展字段、最小能力清单和剩余真实缺陷。
 - 为 GB28181 增加 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关，构建时可显式切换“标准国标注册”和“零配置重定向注册”两条链路，默认保持现网标准流程不变。
 - 调整 SipSDK 的响应侧 client 匹配顺序：`GetClientInfo()` 处理响应事件时改为优先使用 `event->response` 匹配对端，再回退到 `event->request`，避免心跳等自发 `MESSAGE` 收到响应时先把本机 `From` 误判成 peer 而频繁打印 `sip peer match failed`。
 - 根据 issue38 于 2026-03-25 08:50:22 的最新评论，移除本地协议配置对旧 `/userdata/conf/Config/gb28181.ini` 的兼容读取/迁移逻辑，只保留 `/userdata/conf/Config/GB/gb28181.ini` 与 `/userdata/conf/Config/GB/gat1400.ini` 两个新路径。
@@ -51,6 +52,7 @@
 - 为 triage 增加失败状态和空结果状态落盘，统一本地回归与线上排障时的状态语义。
 
 ### 修复
+- 修复 GB28181 `DeviceInfo` 查询应答只回基础字段的问题：补齐 `StringCode/Mac/Line/CustomProtocolVersion`，并新增 `DeviceCapabilityList/ProtocolFunctionList` 最小嵌套 XML 节点，按真实实现回报多码流、图像翻转、升级和告警缺陷。
 - 补齐 GB28181 零配置注册闭环：新增 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 配置承载，补上首次 `REGISTER` 扩展头、`302` 平台字段解析、`401 -> 302 -> 401 -> 200` 单次事务，以及 `30s / 3次 / 1min / 重新获取重定向地址` 的后台重试状态机。
 - 修复 `cc1: error: too many filenames given` 的构建阻塞问题。
 - 修复 `GB28181RtpPsSender.cpp` 因 `mpeg-ps.h` / `rtp-payload.h` / `rtp-profile.h` 缺失导致的交叉编译失败。

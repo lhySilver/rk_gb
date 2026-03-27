@@ -5,6 +5,194 @@
 
 namespace slothxml {
 
+device_capability_list_t::device_capability_list_t()
+{
+    __skip_PositionCapability = false;
+    __xml_has_PositionCapability = false;
+
+    __skip_AlarmOutCapability = false;
+    __xml_has_AlarmOutCapability = false;
+
+    __skip_MICCapability = false;
+    __xml_has_MICCapability = false;
+
+    __skip_SpeakerCapability = false;
+    __xml_has_SpeakerCapability = false;
+
+    __skip_ImagingCapability = false;
+    __xml_has_ImagingCapability = false;
+
+    __skip_StreamPeramCapability = false;
+    __xml_has_StreamPeramCapability = false;
+
+    __skip_SupplyLightCapability = false;
+    __xml_has_SupplyLightCapability = false;
+}
+
+device_capability_list_t& device_capability_list_t::operator=(const device_capability_list_t& obj_val)
+{
+    this->PositionCapability = obj_val.PositionCapability;
+    this->AlarmOutCapability = obj_val.AlarmOutCapability;
+    this->MICCapability = obj_val.MICCapability;
+    this->SpeakerCapability = obj_val.SpeakerCapability;
+    this->ImagingCapability = obj_val.ImagingCapability;
+    this->StreamPeramCapability = obj_val.StreamPeramCapability;
+    this->SupplyLightCapability = obj_val.SupplyLightCapability;
+    return *this;
+}
+
+bool device_capability_list_t::operator==(const device_capability_list_t& obj_val) const
+{
+    if (!(this->PositionCapability == obj_val.PositionCapability)) return false;
+    if (!(this->AlarmOutCapability == obj_val.AlarmOutCapability)) return false;
+    if (!(this->MICCapability == obj_val.MICCapability)) return false;
+    if (!(this->SpeakerCapability == obj_val.SpeakerCapability)) return false;
+    if (!(this->ImagingCapability == obj_val.ImagingCapability)) return false;
+    if (!(this->StreamPeramCapability == obj_val.StreamPeramCapability)) return false;
+    if (!(this->SupplyLightCapability == obj_val.SupplyLightCapability)) return false;
+    return true;
+}
+
+bool device_capability_list_t::encode(xml_document_t& doc, xml_element_t& xml_val) const
+{
+    do
+    {
+        if (!__skip_PositionCapability && !encode_field(PositionCapability, "PositionCapability", doc, xml_val)) break;
+        if (!__skip_AlarmOutCapability && !encode_field(AlarmOutCapability, "AlarmOutCapability", doc, xml_val)) break;
+        if (!__skip_MICCapability && !encode_field(MICCapability, "MICCapability", doc, xml_val)) break;
+        if (!__skip_SpeakerCapability && !encode_field(SpeakerCapability, "SpeakerCapability", doc, xml_val)) break;
+        if (!__skip_ImagingCapability && !encode_field(ImagingCapability, "ImagingCapability", doc, xml_val)) break;
+        if (!__skip_StreamPeramCapability && !encode_field(StreamPeramCapability, "StreamPeramCapability", doc, xml_val)) break;
+        if (!__skip_SupplyLightCapability && !encode_field(SupplyLightCapability, "SupplyLightCapability", doc, xml_val)) break;
+
+        return true;
+    } while (0);
+
+    return false;
+}
+
+bool device_capability_list_t::decode(const xml_element_t& xml_val)
+{
+    do
+    {
+        if (!decode_field(xml_val, "PositionCapability", PositionCapability, __xml_has_PositionCapability)) break;
+        if (!decode_field(xml_val, "AlarmOutCapability", AlarmOutCapability, __xml_has_AlarmOutCapability)) break;
+        if (!decode_field(xml_val, "MICCapability", MICCapability, __xml_has_MICCapability)) break;
+        if (!decode_field(xml_val, "SpeakerCapability", SpeakerCapability, __xml_has_SpeakerCapability)) break;
+        if (!decode_field(xml_val, "ImagingCapability", ImagingCapability, __xml_has_ImagingCapability)) break;
+        if (!decode_field(xml_val, "StreamPeramCapability", StreamPeramCapability, __xml_has_StreamPeramCapability)) break;
+        if (!decode_field(xml_val, "SupplyLightCapability", SupplyLightCapability, __xml_has_SupplyLightCapability)) break;
+
+        return true;
+    } while (0);
+
+    return false;
+}
+
+bool encode(const device_capability_list_t& obj_val, xml_document_t& doc, xml_element_t& xml_val)
+{
+    return obj_val.encode(doc, xml_val);
+}
+
+bool decode(const xml_element_t& xml_val, device_capability_list_t& obj_val)
+{
+    return obj_val.decode(xml_val);
+}
+
+protocol_function_list_t::protocol_function_list_t()
+{
+    __skip_BroadcastCapability = false;
+    __xml_has_BroadcastCapability = false;
+
+    __skip_FrameMirrorCapability = false;
+    __xml_has_FrameMirrorCapability = false;
+
+    __skip_MultiStreamCapability = false;
+    __xml_has_MultiStreamCapability = false;
+
+    __skip_OSDCapability = false;
+    __xml_has_OSDCapability = false;
+
+    __skip_DeviceUpgradeCapability = false;
+    __xml_has_DeviceUpgradeCapability = false;
+
+    __skip_AlarmCapability = false;
+    __xml_has_AlarmCapability = false;
+
+    __skip_BroadcastTcpActiveCapability = false;
+    __xml_has_BroadcastTcpActiveCapability = false;
+}
+
+protocol_function_list_t& protocol_function_list_t::operator=(const protocol_function_list_t& obj_val)
+{
+    this->BroadcastCapability = obj_val.BroadcastCapability;
+    this->FrameMirrorCapability = obj_val.FrameMirrorCapability;
+    this->MultiStreamCapability = obj_val.MultiStreamCapability;
+    this->OSDCapability = obj_val.OSDCapability;
+    this->DeviceUpgradeCapability = obj_val.DeviceUpgradeCapability;
+    this->AlarmCapability = obj_val.AlarmCapability;
+    this->BroadcastTcpActiveCapability = obj_val.BroadcastTcpActiveCapability;
+    return *this;
+}
+
+bool protocol_function_list_t::operator==(const protocol_function_list_t& obj_val) const
+{
+    if (!(this->BroadcastCapability == obj_val.BroadcastCapability)) return false;
+    if (!(this->FrameMirrorCapability == obj_val.FrameMirrorCapability)) return false;
+    if (!(this->MultiStreamCapability == obj_val.MultiStreamCapability)) return false;
+    if (!(this->OSDCapability == obj_val.OSDCapability)) return false;
+    if (!(this->DeviceUpgradeCapability == obj_val.DeviceUpgradeCapability)) return false;
+    if (!(this->AlarmCapability == obj_val.AlarmCapability)) return false;
+    if (!(this->BroadcastTcpActiveCapability == obj_val.BroadcastTcpActiveCapability)) return false;
+    return true;
+}
+
+bool protocol_function_list_t::encode(xml_document_t& doc, xml_element_t& xml_val) const
+{
+    do
+    {
+        if (!__skip_BroadcastCapability && !encode_field(BroadcastCapability, "BroadcastCapability", doc, xml_val)) break;
+        if (!__skip_FrameMirrorCapability && !encode_field(FrameMirrorCapability, "FrameMirrorCapability", doc, xml_val)) break;
+        if (!__skip_MultiStreamCapability && !encode_field(MultiStreamCapability, "MultiStreamCapability", doc, xml_val)) break;
+        if (!__skip_OSDCapability && !encode_field(OSDCapability, "OSDCapability", doc, xml_val)) break;
+        if (!__skip_DeviceUpgradeCapability && !encode_field(DeviceUpgradeCapability, "DeviceUpgradeCapability", doc, xml_val)) break;
+        if (!__skip_AlarmCapability && !encode_field(AlarmCapability, "AlarmCapability", doc, xml_val)) break;
+        if (!__skip_BroadcastTcpActiveCapability && !encode_field(BroadcastTcpActiveCapability, "BroadcastTcpActiveCapability", doc, xml_val)) break;
+
+        return true;
+    } while (0);
+
+    return false;
+}
+
+bool protocol_function_list_t::decode(const xml_element_t& xml_val)
+{
+    do
+    {
+        if (!decode_field(xml_val, "BroadcastCapability", BroadcastCapability, __xml_has_BroadcastCapability)) break;
+        if (!decode_field(xml_val, "FrameMirrorCapability", FrameMirrorCapability, __xml_has_FrameMirrorCapability)) break;
+        if (!decode_field(xml_val, "MultiStreamCapability", MultiStreamCapability, __xml_has_MultiStreamCapability)) break;
+        if (!decode_field(xml_val, "OSDCapability", OSDCapability, __xml_has_OSDCapability)) break;
+        if (!decode_field(xml_val, "DeviceUpgradeCapability", DeviceUpgradeCapability, __xml_has_DeviceUpgradeCapability)) break;
+        if (!decode_field(xml_val, "AlarmCapability", AlarmCapability, __xml_has_AlarmCapability)) break;
+        if (!decode_field(xml_val, "BroadcastTcpActiveCapability", BroadcastTcpActiveCapability, __xml_has_BroadcastTcpActiveCapability)) break;
+
+        return true;
+    } while (0);
+
+    return false;
+}
+
+bool encode(const protocol_function_list_t& obj_val, xml_document_t& doc, xml_element_t& xml_val)
+{
+    return obj_val.encode(doc, xml_val);
+}
+
+bool decode(const xml_element_t& xml_val, protocol_function_list_t& obj_val)
+{
+    return obj_val.decode(xml_val);
+}
+
 device_info_t::device_info_t()
 {
     __skip_CmdType = false;
@@ -38,6 +226,24 @@ device_info_t::device_info_t()
 
     __skip_Firmware = false;
     __xml_has_Firmware = false;
+
+    __skip_StringCode = false;
+    __xml_has_StringCode = false;
+
+    __skip_Mac = false;
+    __xml_has_Mac = false;
+
+    __skip_Line = false;
+    __xml_has_Line = false;
+
+    __skip_CustomProtocolVersion = false;
+    __xml_has_CustomProtocolVersion = false;
+
+    __skip_DeviceCapabilityList = false;
+    __xml_has_DeviceCapabilityList = false;
+
+    __skip_ProtocolFunctionList = false;
+    __xml_has_ProtocolFunctionList = false;
 }
 
 device_info_t& device_info_t::operator=(const device_info_t& obj_val)
@@ -52,6 +258,12 @@ device_info_t& device_info_t::operator=(const device_info_t& obj_val)
     this->Manufacturer = obj_val.Manufacturer;
     this->Model = obj_val.Model;
     this->Firmware = obj_val.Firmware;
+    this->StringCode = obj_val.StringCode;
+    this->Mac = obj_val.Mac;
+    this->Line = obj_val.Line;
+    this->CustomProtocolVersion = obj_val.CustomProtocolVersion;
+    this->DeviceCapabilityList = obj_val.DeviceCapabilityList;
+    this->ProtocolFunctionList = obj_val.ProtocolFunctionList;
     return *this;
 }
 
@@ -67,6 +279,12 @@ bool device_info_t::operator==(const device_info_t& obj_val) const
     if (!(this->Manufacturer == obj_val.Manufacturer)) return false;
     if (!(this->Model == obj_val.Model)) return false;
     if (!(this->Firmware == obj_val.Firmware)) return false;
+    if (!(this->StringCode == obj_val.StringCode)) return false;
+    if (!(this->Mac == obj_val.Mac)) return false;
+    if (!(this->Line == obj_val.Line)) return false;
+    if (!(this->CustomProtocolVersion == obj_val.CustomProtocolVersion)) return false;
+    if (!(this->DeviceCapabilityList == obj_val.DeviceCapabilityList)) return false;
+    if (!(this->ProtocolFunctionList == obj_val.ProtocolFunctionList)) return false;
     return true;
 }
 
@@ -84,6 +302,12 @@ bool device_info_t::encode(xml_document_t& doc, xml_element_t& xml_val) const
         if (!__skip_Manufacturer && !encode_field(Manufacturer, "Manufacturer", doc, xml_val)) break;
         if (!__skip_Model && !encode_field(Model, "Model", doc, xml_val)) break;
         if (!__skip_Firmware && !encode_field(Firmware, "Firmware", doc, xml_val)) break;
+        if (!__skip_StringCode && !encode_field(StringCode, "StringCode", doc, xml_val)) break;
+        if (!__skip_Mac && !encode_field(Mac, "Mac", doc, xml_val)) break;
+        if (!__skip_Line && !encode_field(Line, "Line", doc, xml_val)) break;
+        if (!__skip_CustomProtocolVersion && !encode_field(CustomProtocolVersion, "CustomProtocolVersion", doc, xml_val)) break;
+        if (!__skip_DeviceCapabilityList && !encode_field(DeviceCapabilityList, "DeviceCapabilityList", doc, xml_val)) break;
+        if (!__skip_ProtocolFunctionList && !encode_field(ProtocolFunctionList, "ProtocolFunctionList", doc, xml_val)) break;
 
         return true;
     } while (0);
@@ -105,6 +329,12 @@ bool device_info_t::decode(const xml_element_t& xml_val)
         if (!decode_field(xml_val, "Manufacturer", Manufacturer, __xml_has_Manufacturer)) break;
         if (!decode_field(xml_val, "Model", Model, __xml_has_Model)) break;
         if (!decode_field(xml_val, "Firmware", Firmware, __xml_has_Firmware)) break;
+        if (!decode_field(xml_val, "StringCode", StringCode, __xml_has_StringCode)) break;
+        if (!decode_field(xml_val, "Mac", Mac, __xml_has_Mac)) break;
+        if (!decode_field(xml_val, "Line", Line, __xml_has_Line)) break;
+        if (!decode_field(xml_val, "CustomProtocolVersion", CustomProtocolVersion, __xml_has_CustomProtocolVersion)) break;
+        if (!decode_field(xml_val, "DeviceCapabilityList", DeviceCapabilityList, __xml_has_DeviceCapabilityList)) break;
+        if (!decode_field(xml_val, "ProtocolFunctionList", ProtocolFunctionList, __xml_has_ProtocolFunctionList)) break;
 
         return true;
     } while (0);

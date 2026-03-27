@@ -1,10 +1,35 @@
 ﻿{
     "structs": 
     [
-	  
+        {
+            "type": "device_capability_list_t",
+            "members":
+            [
+                ["string", "PositionCapability"],
+                ["string", "AlarmOutCapability"],
+                ["string", "MICCapability"],
+                ["string", "SpeakerCapability"],
+                ["string", "ImagingCapability"],
+                ["string", "StreamPeramCapability"],
+                ["string", "SupplyLightCapability"]
+            ]
+        },
+        {
+            "type": "protocol_function_list_t",
+            "members":
+            [
+                ["string", "BroadcastCapability"],
+                ["string", "FrameMirrorCapability"],
+                ["string", "MultiStreamCapability"],
+                ["string", "OSDCapability"],
+                ["string", "DeviceUpgradeCapability"],
+                ["string", "AlarmCapability"],
+                ["string", "BroadcastTcpActiveCapability"]
+            ]
+        },
         {
             "type": "device_info_t",
-            "members": 
+            "members":
             [
                
                 ["string", "CmdType"],
@@ -16,8 +41,13 @@
                 ["uint32_t", "Channel"],
                 ["string", "Manufacturer"],
                 ["string", "Model"],
-                ["string", "Firmware"]	     
-                          
+                ["string", "Firmware"],
+                ["string", "StringCode"],
+                ["string", "Mac"],
+                ["string", "Line"],
+                ["string", "CustomProtocolVersion"],
+                ["device_capability_list_t", "DeviceCapabilityList"],
+                ["protocol_function_list_t", "ProtocolFunctionList"]
             ]
         }
     ]

@@ -7,7 +7,7 @@
 - **职责:** 维护终端侧产品需求、测试用例、当前实现之间的对齐关系
 - **状态:** ✅已建立基线
 - **适用范围:** 注册重定向、注册/保活、实时点播、终端控制、语音广播/对讲、视频参数/图像参数、设备信息查询、远程升级等终端侧能力
-- **最后更新:** 2026-03-23
+- **最后更新:** 2026-03-27
 
 ## 输入基线
 - **产品需求:** `/home/jerry/silver/终端需求白皮书.pdf`
@@ -24,7 +24,7 @@
 
 | 需求域 | 白皮书依据 | 测试用例 | 当前实现 / 知识库映射 | 对齐结论 |
 |--------|------------|----------|------------------------|----------|
-| 注册重定向 | `4.7.2`、`A.16` | `2-3` | 白皮书要求先以串码/预置口令向重定向服务器注册，再依据 `302 Moved` 跳转到正式平台；当前仓库检索未直接看到 `StringCode`、`Mac`、`CustomProtocolVersion` 这些扩展字段的显式组包逻辑 | ⚠️需专项联调确认 |
+| 注册重定向 | `4.7.2`、`A.16` | `2-3` | `ProtocolManager + GBClientImpl + SipEventManager` 已补齐 `StringCode/Mac/Line/CustomProtocolVersion` 扩展头、`401 -> 302 -> 正式平台注册 -> 401 -> 200` 单次事务和 `30s / 3次 / 1min` 外层重试 | ⚠️代码已落地，待专项联调确认 |
 | 注册 / 鉴权 / 保活 | `4.7.3`、`4.9.1.4` | `4`、`45` | `GbRegisterParam`、`GbKeepaliveParam`、注册/保活主链已存在，默认心跳参数 `60s / 3次` 与白皮书一致 | ✅基础能力已对齐 |
 | 实时视音频点播 | `4.7.4` | `5-8` | `HandleGbLiveStreamRequest -> GB28181RtpPsSender` 已形成点播闭环 | ⚠️能力已具备，但白皮书要求同平台注册平台不少于 `3` 路视频流，当前 `GbMultiStreamParam.stream_count` 默认仅 `2` |
 | 终端设备控制 | `4.7.5` | `15-21` | `HandleGbDeviceControl` 覆盖 PTZ、布防/撤防、报警复位、参数配置、升级、重启等入口 | ⚠️审核时需区分“无需应答”和“必须回执执行结果”的控制类型 |
@@ -32,7 +32,7 @@
 | 语音对讲 | `4.7.6.2` | `24` | 白皮书定义“语音对讲 = 实时点播 + 语音广播”组合流程；当前 App 层仍以广播桥 + 监听桥组合完成，不应简单等同独立双向对讲协议栈 | ⚠️能力模型已说明，联调时需按组合流程验证 |
 | 图像 / OSD / 视频参数 / 夜视 | `4.7.7`-`4.7.16`、`A.13`-`A.15` | `25-35`、`39-47` | `gb_video`、`gb_image`、`gb_osd`、配置查询/配置应用链路已存在；`ImageFlip` 已做运行时映射 | ⚠️部分对齐，`44` 明确写明“暂未做音频配置”，`46` 写明“国标文档没有提到可查询配置” |
 | 视频告警 | `4.7.15`、`A.11` | `36-37` | 测试用例已引用白皮书 `A.11`；知识库已补齐字段级审核清单，代码已接通本地视频报警最小闭环，但设备类扩展告警仍未实现 | ⚠️部分对齐，仍需补设备类告警事件源 |
-| 设备信息查询 | `4.7.17`、`A.19` | `38` | `ResponseGbQueryDeviceInfo` 目前回填 `name/type/manufacturer/model/firmware/channel`；`DeviceInfo` 结构体本身不含 `StringCode/Mac/CustomProtocolVersion/DeviceCapabilityList` | ❗存在结构缺口 |
+| 设备信息查询 | `4.7.17`、`A.19` | `38` | `ResponseGbQueryDeviceInfo` 已回填基础字段、`StringCode/Mac/Line/CustomProtocolVersion`，并通过 XML 嵌套节点回 `DeviceCapabilityList/ProtocolFunctionList` 的最小真实能力集 | ⚠️结构已补齐，仍需平台核对语义 |
 | 多码流 | `4.7.9` | `43` | 白皮书要求三码流或以上；当前配置模型仅有 `GbMultiStreamParam.stream_count=2`，且未见完整对外配置入口 | ❗与产品要求不一致 |
 | 远程升级 | `4.6.5`、`A.12` | `48` | `HandleGbDeviceUpgradeControl`、包下载校验、升级结果通知、重启后补报链路已存在 | ✅实现链路完整 |
 
@@ -47,13 +47,13 @@
 - `VoiceFlowMode=1` 的 `TCP active` 广播没有独立显式用例，应在公网联调场景单独验证
 - 白皮书 `A.16` 中注册重定向失败后的重试节奏、重新获取重定向地址的闭环，当前用例未覆盖失败重试次数与间隔
 - `A.14/A.15` 扩展的 `LocalPort/Domain/SipIp/SipPort/SipId/Password/ChannelList` 没有在当前用例中逐项核验
-- `A.19` 扩展的 `StringCode/Mac/CustomProtocolVersion/DeviceCapabilityList` 没有独立字段级用例
+- `A.19` 扩展字段和能力节点已经代码落地，但现有用例仍缺少逐字段断言与能力字符串语义校验
 
 ## 当前明确缺口
 - `CfgBasicParam` / `BasicSetting` 只覆盖 `DeviceName`、`Expiration`、`HeartBeatInterval`、`HeartBeatcount`，没有承载白皮书扩展的 `VoiceFlowMode`、`LocalPort`、`Domain`、`SipIp`、`SipPort`、`SipId`、`Password`、`ChannelList`
-- `DeviceInfo` 结构体只覆盖基础 7 字段，不包含 `A.19` 扩展字段
-- `GbMultiStreamParam.stream_count` 默认值为 `2`，与白皮书 `4.7.9` “三码流或以上”不一致
-- 当前代码检索没有直接暴露白皮书 `A.16` 所要求的 `StringCode/Mac/CustomProtocolVersion` 注册扩展字段组包路径，需要在 SDK 注册链路联调时重点确认
+- `GbMultiStreamParam.stream_count` 默认值为 `2`，与白皮书 `4.7.9` “三码流或以上”不一致；当前 `DeviceInfo` 已如实回 `2/Defect:StreamNum2`
+- `A.19` 设备信息查询虽然已经补齐结构与最小能力清单，但平台是否强校验更完整的附录 `G` 子项仍待确认
+- 注册重定向与 `DeviceInfo` 扩展目前只做了代码级和翻译单元级编译验证，仍需真实平台抓包核对
 
 ## 字段级审核清单
 
@@ -93,12 +93,12 @@
 | 检查项 | 白皮书要求 | 当前代码事实 | 审核结论 |
 |--------|------------|--------------|----------|
 | 基础设备信息 | `DeviceName/Result/Manufacturer/Model/Firmware/Channel` | `ResponseGbQueryDeviceInfo` 已回填这些基础字段 | ✅基础字段已具备 |
-| 扩展身份字段 | `StringCode/Mac/Line/CustomProtocolVersion` 必选 | `DeviceInfo` 结构体没有这些字段 | ❗结构体层面不支持 |
-| 设备能力清单 | `DeviceCapabilityList` 至少承载 `PositionCapability/AlarmOutCapability/MICCapability/SpeakerCapability/ImagingCapability/StreamPeramCapability/SupplyLightCapability` 等 | 当前仓库未检索到 `DeviceCapabilityList` 或相关 capability 字段/序列化逻辑 | ❗当前未实现 |
-| 协议功能清单 | `ProtocolFunctionList` 应能表达 `BroadcastCapability/ROICapability/FrameMirrorCapability/MultiStreamCapability/OSDCapability/DeviceUpgradeCapability/AlarmCapability/BroadcastTcpActiveCapability` 等 | 当前仓库未见对应字段和编码逻辑 | ❗当前未实现 |
-| 多码流能力声明 | 附录 `G` 明确“码流数少于 3 个”属于缺陷 `StreamNum` | 当前 `GbMultiStreamParam.stream_count=2` | ❗与白皮书能力声明直接冲突 |
-| TCP 主动广播能力声明 | 附录 `G` 单独列出 `BroadcastTcpActiveCapability` | 当前广播链路已支持 `TCP active`，但设备信息查询应答没有能力字段可回 | ⚠️运行态能力存在，设备能力应答缺失 |
-| 告警能力声明 | 附录 `G` 要求 `AlarmCapability` 能描述 `NotAlarmReset`、`NotIndependentAlarm` 等缺陷 | 当前设备信息查询应答没有能力列表，也没有对白皮书告警能力做结构化回报 | ⚠️实现缺口明确 |
+| 扩展身份字段 | `StringCode/Mac/Line/CustomProtocolVersion` 必选 | `DeviceInfo` 结构体、`device_info` XML 和 `ResponseGbQueryDeviceInfo` 已补齐这些字段 | ✅结构已具备 |
+| 设备能力清单 | `DeviceCapabilityList` 至少承载 `PositionCapability/AlarmOutCapability/MICCapability/SpeakerCapability/ImagingCapability/StreamPeramCapability/SupplyLightCapability` 等 | 当前已按嵌套 XML 节点回最小设备能力子集，并以 `0/1/2 + Defect:/Type:` 语义编码 | ✅最小闭环已具备 |
+| 协议功能清单 | `ProtocolFunctionList` 应能表达 `BroadcastCapability/ROICapability/FrameMirrorCapability/MultiStreamCapability/OSDCapability/DeviceUpgradeCapability/AlarmCapability/BroadcastTcpActiveCapability` 等 | 当前已回最小协议功能子集：广播、图像翻转、多码流、OSD、升级、告警、广播 `TCP active` | ✅最小闭环已具备 |
+| 多码流能力声明 | 附录 `G` 明确“码流数少于 3 个”属于缺陷 `StreamNum` | 当前 `GbMultiStreamParam.stream_count=2`，`DeviceInfo` 已回 `2/Defect:StreamNum2` | ⚠️已按真实缺陷回报，产品能力仍不达标 |
+| TCP 主动广播能力声明 | 附录 `G` 单独列出 `BroadcastTcpActiveCapability` | 当前广播链路已支持 `TCP active`，`DeviceInfo` 已显式回该能力 | ✅能力回报已具备 |
+| 告警能力声明 | 附录 `G` 要求 `AlarmCapability` 能描述 `NotAlarmReset`、`NotIndependentAlarm` 等缺陷 | 当前 `DeviceInfo` 已回 `2/Defect:NotIndependentAlarm`；设备类扩展告警事件源和更细粒度缺陷仍未补齐 | ⚠️最小缺陷表达已具备 |
 
 #### A.19 / 附录 G 当前项目最相关能力项
 - `BroadcastCapability`: 应回答语音广播是否支持、是否存在远程不可控缺陷
@@ -112,7 +112,7 @@
 ## 白皮书内部待确认项
 - `A.11.2` 的设备报警扩展码写成 `900-904`，而 `A.11.3` 报文注释写成 `6-10`，两处冲突
 - `A.15` 中 `VoiceFlowMode` 说明写成 `0=UDP，1=TCP`，而 `A.14` 写成 `0=UDP，1=TCP主动拉流`，联调应以 `A.1` 的“TCP 主动拉流模式语音广播”作为最终口径
-- `A.19` 中 `DeviceCapabilityList` 和 `ProtocolFunctionList` 结构很重，当前仓库完全未见相应数据结构，需明确平台是否把这些字段作为强校验项
+- `A.19` 中 `DeviceCapabilityList` 和 `ProtocolFunctionList` 已按最小真实子集落地，但平台是否要求更完整的附录 `G` 子项、以及是否严格校验节点顺序和缺陷语义，仍需联调确认
 
 ## 联调优先级
 - `P0`: 注册重定向首包是否携带 `Mac/StringCode/CustomProtocolVersion`，以及 `From/To` 是否使用 `StringCode`
@@ -123,6 +123,7 @@
 
 ## 代码整改清单
 
+- 2026-03-27: `A.19` 设备信息扩展和最小能力清单已完成代码落地，当前剩余重点转为平台抓包确认和更完整附录 `G` 子项的必要性确认。
 - 2026-03-26: “注册重定向扩展头与身份切换”和“注册重定向重试状态机”两项已完成代码落地，当前剩余重点转为抓包联调确认和 `A.19` 设备信息扩展补齐。
 
 ### P0 | 必须优先整改
@@ -131,8 +132,8 @@
 |--------|------|----------|----------|
 | 注册重定向扩展头与身份切换 | 首次重定向 `REGISTER` 带 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion`，且 `From/To` 使用 `StringCode`；正式平台注册后再切回 `deviceId` | `rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/HttpConfigProvider.cpp`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 抓包比对白皮书 `A.16` 的“请求消息1/2”和正式平台注册报文 |
 | 注册重定向重试状态机 | 落实“失败 `30s` 重试，失败 `3` 次后 `1min` 并重新获取重定向地址”的闭环 | 优先定位 `GB28181` 注册生命周期实现，候选入口：`rk_gb/App/Protocol/ProtocolManager.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp` | 人工构造 401/302/注册失败场景，观察日志与抓包中的重试节奏 |
-| 设备信息查询应答扩展 | 把 `StringCode/Mac/Line/CustomProtocolVersion` 及最小能力清单补到 `DeviceInfo` 应答 | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp` | 触发 `DeviceInfo` 查询，核对白皮书 `A.19` 必填扩展字段和 XML 结构 |
-| 能力清单最小闭环 | 最少补齐 `BroadcastCapability`、`FrameMirrorCapability`、`MultiStreamCapability`、`OSDCapability`、`DeviceUpgradeCapability`、`AlarmCapability`、`BroadcastTcpActiveCapability` | 同上 `DeviceInfo` 编码链路，外加 `rk_gb/App/Protocol/config/ProtocolExternalConfig.h` 和运行时能力采集点 | 平台查询设备信息后核对 capability 字段；同时对照附录 `G` 能力字符串格式 |
+| 设备信息查询应答扩展 | 已于 `2026-03-27` 完成代码落地：`StringCode/Mac/Line/CustomProtocolVersion` 和最小能力清单已补到 `DeviceInfo` 应答 | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp` | 触发 `DeviceInfo` 查询，核对白皮书 `A.19` 必填扩展字段和 XML 结构 |
+| 能力清单最小闭环 | 已于 `2026-03-27` 完成代码落地：当前最少回 `BroadcastCapability`、`FrameMirrorCapability`、`MultiStreamCapability`、`OSDCapability`、`DeviceUpgradeCapability`、`AlarmCapability`、`BroadcastTcpActiveCapability` | 同上 `DeviceInfo` 编码链路，外加 `rk_gb/App/Protocol/config/ProtocolExternalConfig.h` 和运行时能力采集点 | 平台查询设备信息后核对 capability 字段；同时对照附录 `G` 能力字符串格式 |
 | 基础参数查询/配置扩展 | 把 `VoiceFlowMode/LocalPort/Domain/SipIp/SipPort/SipId/Password/ChannelList` 纳入查询/配置闭环，`VoiceFlowMode` 映射到广播 `UDP/TCP active` | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/HttpConfigProvider.cpp`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 平台下发 `DeviceConfig`、设备回 `ConfigDownload`，核对 `A.14/A.15` 扩展字段完整性 |
 
 ### P1 | 第二阶段整改
@@ -170,6 +171,7 @@
 - 审核告警改动时，必须同时核对“扩展编码是否已和平台对齐”“是否需要报警复位”“是否已接入真实设备事件源”
 
 ## 变更历史
+- 2026-03-27: 补齐 `DeviceInfo` 的 `A.19` 扩展身份字段与最小能力清单，更新 `A.19/附录 G` 的代码事实和剩余缺口判断
 - 2026-03-23: 继续补充代码整改清单，按优先级拆出影响文件、整改目标和验证路径
 - 2026-03-23: 继续细化 `A.11`、`A.16`、`A.19` 和附录 `G` 的字段级审核清单，补充白皮书内部不一致项和联调优先级
 - 2026-03-23: 基于 `终端需求白皮书.pdf` 和 `测试用例.xlsx` 建立终端需求-测试-实现对齐基线

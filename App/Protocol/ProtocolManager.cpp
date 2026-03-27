@@ -1598,6 +1598,142 @@ static unsigned int ResolveGbVideoChannelCount()
     return 1U;
 }
 
+static void AppendGbCapabilitySegment(std::string& value, const std::string& segment)
+{
+    if (segment.empty()) {
+        return;
+    }
+    if (!value.empty()) {
+        value.push_back('/');
+    }
+    value += segment;
+}
+
+static std::string BuildGbCapabilityValue(char baseState,
+                                          const std::vector<std::string>& defects,
+                                          const std::string& type)
+{
+    std::string value;
+    value.push_back(baseState);
+    for (std::vector<std::string>::const_iterator it = defects.begin(); it != defects.end(); ++it) {
+        AppendGbCapabilitySegment(value, "Defect:" + *it);
+    }
+    if (!type.empty()) {
+        AppendGbCapabilitySegment(value, "Type:" + type);
+    }
+    return value;
+}
+
+static std::string BuildGbPositionCapabilityValue()
+{
+    return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbAlarmOutCapabilityValue()
+{
+    return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbMicCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (cfg.gb_listen.codec.empty() || cfg.gb_listen.sample_rate <= 0) {
+        return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+    }
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbSpeakerCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (cfg.gb_broadcast.codec.empty()) {
+        return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+    }
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbImagingCapabilityValue()
+{
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "1");
+}
+
+static std::string BuildGbStreamParamCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (cfg.gb_video.main_codec.empty() || cfg.gb_video.main_resolution.empty()) {
+        return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+    }
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbSupplyLightCapabilityValue()
+{
+    return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbBroadcastCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    if (cfg.gb_broadcast.codec.empty()) {
+        return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+    }
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbFrameMirrorCapabilityValue()
+{
+    std::vector<std::string> defects;
+    defects.push_back("NotFlipHorizontal");
+    defects.push_back("NotFlipVertically");
+    defects.push_back("MirrorFlip");
+    return BuildGbCapabilityValue('2', defects, "");
+}
+
+static std::string BuildGbMultiStreamCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    const int streamCount = cfg.gb_multistream.stream_count;
+    if (streamCount <= 0) {
+        return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
+    }
+    if (streamCount < 3) {
+        char buffer[32] = {0};
+        snprintf(buffer, sizeof(buffer), "StreamNum%d", streamCount);
+        std::vector<std::string> defects;
+        defects.push_back(buffer);
+        return BuildGbCapabilityValue('2', defects, "");
+    }
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
+static std::string BuildGbOsdCapabilityValue()
+{
+    std::vector<std::string> defects;
+    defects.push_back("NotWeekEnable");
+    defects.push_back("NotBlinkEnable");
+    defects.push_back("NotTranslucentEnable");
+    defects.push_back("TextNum1");
+    return BuildGbCapabilityValue('2', defects, "");
+}
+
+static std::string BuildGbDeviceUpgradeCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+{
+    std::vector<std::string> defects;
+    const std::string verifyMode = ToLowerCopy(TrimWhitespaceCopy(cfg.gb_upgrade.verify_mode));
+    if (verifyMode.empty() || verifyMode == "none") {
+        defects.push_back("NotFirmwareCheck");
+    }
+    defects.push_back("NotVersionBack");
+    return BuildGbCapabilityValue(defects.empty() ? '1' : '2', defects, "");
+}
+
+static std::string BuildGbAlarmCapabilityValue()
+{
+    std::vector<std::string> defects;
+    defects.push_back("NotIndependentAlarm");
+    return BuildGbCapabilityValue('2', defects, "");
+}
+
+static std::string BuildGbBroadcastTcpActiveCapabilityValue()
+{
+    return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
+}
+
 
 
 static bool IsConfigTypeRequested(const QueryParam* param, ConfigType type)
@@ -8332,6 +8468,11 @@ int ProtocolManager::ResponseGbQueryDeviceInfo(ResponseHandle handle, const Quer
     const std::string model = ResolveGbModelName(m_cfg);
     const std::string deviceType = ResolveGbDeviceTypeName();
     const unsigned int videoChannelCount = ResolveGbVideoChannelCount();
+    const std::string stringCode = ResolveGbZeroConfigStringCode(m_cfg);
+    const std::string lineId = m_cfg.gb_register.line_id.empty() ? "0" : m_cfg.gb_register.line_id;
+    const std::string customProtocolVersion = m_cfg.gb_register.custom_protocol_version.empty()
+                                                  ? "1.0"
+                                                  : m_cfg.gb_register.custom_protocol_version;
 
     CopyBounded(info.GBCode, sizeof(info.GBCode), gbCode);
     CopyBounded(info.device_name, sizeof(info.device_name), deviceName);
@@ -8339,6 +8480,54 @@ int ProtocolManager::ResponseGbQueryDeviceInfo(ResponseHandle handle, const Quer
     CopyBounded(info.manufacturer, sizeof(info.manufacturer), manufacturer);
     CopyBounded(info.model, sizeof(info.model), model);
     CopyBounded(info.firmware, sizeof(info.firmware), m_cfg.version);
+    CopyBounded(info.string_code, sizeof(info.string_code), stringCode);
+    CopyBounded(info.mac_address, sizeof(info.mac_address), m_cfg.gb_register.mac_address);
+    CopyBounded(info.line_id, sizeof(info.line_id), lineId);
+    CopyBounded(info.custom_protocol_version,
+                sizeof(info.custom_protocol_version),
+                customProtocolVersion);
+    CopyBounded(info.device_capability_list.PositionCapability,
+                sizeof(info.device_capability_list.PositionCapability),
+                BuildGbPositionCapabilityValue());
+    CopyBounded(info.device_capability_list.AlarmOutCapability,
+                sizeof(info.device_capability_list.AlarmOutCapability),
+                BuildGbAlarmOutCapabilityValue());
+    CopyBounded(info.device_capability_list.MICCapability,
+                sizeof(info.device_capability_list.MICCapability),
+                BuildGbMicCapabilityValue(m_cfg));
+    CopyBounded(info.device_capability_list.SpeakerCapability,
+                sizeof(info.device_capability_list.SpeakerCapability),
+                BuildGbSpeakerCapabilityValue(m_cfg));
+    CopyBounded(info.device_capability_list.ImagingCapability,
+                sizeof(info.device_capability_list.ImagingCapability),
+                BuildGbImagingCapabilityValue());
+    CopyBounded(info.device_capability_list.StreamPeramCapability,
+                sizeof(info.device_capability_list.StreamPeramCapability),
+                BuildGbStreamParamCapabilityValue(m_cfg));
+    CopyBounded(info.device_capability_list.SupplyLightCapability,
+                sizeof(info.device_capability_list.SupplyLightCapability),
+                BuildGbSupplyLightCapabilityValue());
+    CopyBounded(info.protocol_function_list.BroadcastCapability,
+                sizeof(info.protocol_function_list.BroadcastCapability),
+                BuildGbBroadcastCapabilityValue(m_cfg));
+    CopyBounded(info.protocol_function_list.FrameMirrorCapability,
+                sizeof(info.protocol_function_list.FrameMirrorCapability),
+                BuildGbFrameMirrorCapabilityValue());
+    CopyBounded(info.protocol_function_list.MultiStreamCapability,
+                sizeof(info.protocol_function_list.MultiStreamCapability),
+                BuildGbMultiStreamCapabilityValue(m_cfg));
+    CopyBounded(info.protocol_function_list.OSDCapability,
+                sizeof(info.protocol_function_list.OSDCapability),
+                BuildGbOsdCapabilityValue());
+    CopyBounded(info.protocol_function_list.DeviceUpgradeCapability,
+                sizeof(info.protocol_function_list.DeviceUpgradeCapability),
+                BuildGbDeviceUpgradeCapabilityValue(m_cfg));
+    CopyBounded(info.protocol_function_list.AlarmCapability,
+                sizeof(info.protocol_function_list.AlarmCapability),
+                BuildGbAlarmCapabilityValue());
+    CopyBounded(info.protocol_function_list.BroadcastTcpActiveCapability,
+                sizeof(info.protocol_function_list.BroadcastTcpActiveCapability),
+                BuildGbBroadcastTcpActiveCapabilityValue());
     info.video_channel_num = videoChannelCount;
     info.result = true;
 
@@ -8354,14 +8543,25 @@ int ProtocolManager::ResponseGbQueryDeviceInfo(ResponseHandle handle, const Quer
 
 
 
-    printf("[ProtocolManager] module=gb28181 event=device_info_response trace=manager error=0 gb=%s name=%s type=%s manufacturer=%s model=%s firmware=%s channel=%u\n",
+    printf("[ProtocolManager] module=gb28181 event=device_info_response trace=manager error=0 gb=%s name=%s type=%s manufacturer=%s model=%s firmware=%s channel=%u string_code=%s mac=%s line=%s custom=%s device_caps=%s/%s/%s protocol_caps=%s/%s/%s/%s\n",
            info.GBCode,
            info.device_name,
            info.device_type,
            info.manufacturer,
            info.model,
            info.firmware,
-           info.video_channel_num);
+           info.video_channel_num,
+           info.string_code,
+           info.mac_address,
+           info.line_id,
+           info.custom_protocol_version,
+           info.device_capability_list.MICCapability,
+           info.device_capability_list.SpeakerCapability,
+           info.device_capability_list.StreamPeramCapability,
+           info.protocol_function_list.BroadcastCapability,
+           info.protocol_function_list.FrameMirrorCapability,
+           info.protocol_function_list.MultiStreamCapability,
+           info.protocol_function_list.BroadcastTcpActiveCapability);
 
     const int ret = m_gb_client_sdk->ResponseDeviceInfo(handle, &info);
 

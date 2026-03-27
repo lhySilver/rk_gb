@@ -8,6 +8,112 @@
 
 namespace slothxml {
 
+struct device_capability_list_t
+{
+    std::string PositionCapability;
+    std::string AlarmOutCapability;
+    std::string MICCapability;
+    std::string SpeakerCapability;
+    std::string ImagingCapability;
+    std::string StreamPeramCapability;
+    std::string SupplyLightCapability;
+
+    void skip_PositionCapability() { __skip_PositionCapability = true; }
+    void skip_AlarmOutCapability() { __skip_AlarmOutCapability = true; }
+    void skip_MICCapability() { __skip_MICCapability = true; }
+    void skip_SpeakerCapability() { __skip_SpeakerCapability = true; }
+    void skip_ImagingCapability() { __skip_ImagingCapability = true; }
+    void skip_StreamPeramCapability() { __skip_StreamPeramCapability = true; }
+    void skip_SupplyLightCapability() { __skip_SupplyLightCapability = true; }
+
+    bool xml_has_PositionCapability() const { return __xml_has_PositionCapability; }
+    bool xml_has_AlarmOutCapability() const { return __xml_has_AlarmOutCapability; }
+    bool xml_has_MICCapability() const { return __xml_has_MICCapability; }
+    bool xml_has_SpeakerCapability() const { return __xml_has_SpeakerCapability; }
+    bool xml_has_ImagingCapability() const { return __xml_has_ImagingCapability; }
+    bool xml_has_StreamPeramCapability() const { return __xml_has_StreamPeramCapability; }
+    bool xml_has_SupplyLightCapability() const { return __xml_has_SupplyLightCapability; }
+
+    device_capability_list_t();
+    device_capability_list_t& operator=(const device_capability_list_t& obj_val);
+    bool operator==(const device_capability_list_t& obj_val) const;
+    bool encode(xml_document_t& doc, xml_element_t& xml_val) const;
+    bool decode(const xml_element_t& xml_val);
+
+private:
+    bool __skip_PositionCapability;
+    bool __skip_AlarmOutCapability;
+    bool __skip_MICCapability;
+    bool __skip_SpeakerCapability;
+    bool __skip_ImagingCapability;
+    bool __skip_StreamPeramCapability;
+    bool __skip_SupplyLightCapability;
+
+    bool __xml_has_PositionCapability;
+    bool __xml_has_AlarmOutCapability;
+    bool __xml_has_MICCapability;
+    bool __xml_has_SpeakerCapability;
+    bool __xml_has_ImagingCapability;
+    bool __xml_has_StreamPeramCapability;
+    bool __xml_has_SupplyLightCapability;
+};
+
+bool encode(const device_capability_list_t& obj_val, xml_document_t& doc, xml_element_t& xml_val);
+bool decode(const xml_element_t& xml_val, device_capability_list_t& obj_val);
+
+struct protocol_function_list_t
+{
+    std::string BroadcastCapability;
+    std::string FrameMirrorCapability;
+    std::string MultiStreamCapability;
+    std::string OSDCapability;
+    std::string DeviceUpgradeCapability;
+    std::string AlarmCapability;
+    std::string BroadcastTcpActiveCapability;
+
+    void skip_BroadcastCapability() { __skip_BroadcastCapability = true; }
+    void skip_FrameMirrorCapability() { __skip_FrameMirrorCapability = true; }
+    void skip_MultiStreamCapability() { __skip_MultiStreamCapability = true; }
+    void skip_OSDCapability() { __skip_OSDCapability = true; }
+    void skip_DeviceUpgradeCapability() { __skip_DeviceUpgradeCapability = true; }
+    void skip_AlarmCapability() { __skip_AlarmCapability = true; }
+    void skip_BroadcastTcpActiveCapability() { __skip_BroadcastTcpActiveCapability = true; }
+
+    bool xml_has_BroadcastCapability() const { return __xml_has_BroadcastCapability; }
+    bool xml_has_FrameMirrorCapability() const { return __xml_has_FrameMirrorCapability; }
+    bool xml_has_MultiStreamCapability() const { return __xml_has_MultiStreamCapability; }
+    bool xml_has_OSDCapability() const { return __xml_has_OSDCapability; }
+    bool xml_has_DeviceUpgradeCapability() const { return __xml_has_DeviceUpgradeCapability; }
+    bool xml_has_AlarmCapability() const { return __xml_has_AlarmCapability; }
+    bool xml_has_BroadcastTcpActiveCapability() const { return __xml_has_BroadcastTcpActiveCapability; }
+
+    protocol_function_list_t();
+    protocol_function_list_t& operator=(const protocol_function_list_t& obj_val);
+    bool operator==(const protocol_function_list_t& obj_val) const;
+    bool encode(xml_document_t& doc, xml_element_t& xml_val) const;
+    bool decode(const xml_element_t& xml_val);
+
+private:
+    bool __skip_BroadcastCapability;
+    bool __skip_FrameMirrorCapability;
+    bool __skip_MultiStreamCapability;
+    bool __skip_OSDCapability;
+    bool __skip_DeviceUpgradeCapability;
+    bool __skip_AlarmCapability;
+    bool __skip_BroadcastTcpActiveCapability;
+
+    bool __xml_has_BroadcastCapability;
+    bool __xml_has_FrameMirrorCapability;
+    bool __xml_has_MultiStreamCapability;
+    bool __xml_has_OSDCapability;
+    bool __xml_has_DeviceUpgradeCapability;
+    bool __xml_has_AlarmCapability;
+    bool __xml_has_BroadcastTcpActiveCapability;
+};
+
+bool encode(const protocol_function_list_t& obj_val, xml_document_t& doc, xml_element_t& xml_val);
+bool decode(const xml_element_t& xml_val, protocol_function_list_t& obj_val);
+
 struct device_info_t
 {
     std::string CmdType;
@@ -20,6 +126,12 @@ struct device_info_t
     std::string Manufacturer;
     std::string Model;
     std::string Firmware;
+    std::string StringCode;
+    std::string Mac;
+    std::string Line;
+    std::string CustomProtocolVersion;
+    device_capability_list_t DeviceCapabilityList;
+    protocol_function_list_t ProtocolFunctionList;
 
     void skip_CmdType() { __skip_CmdType = true; }
     void skip_SN() { __skip_SN = true; }
@@ -31,6 +143,12 @@ struct device_info_t
     void skip_Manufacturer() { __skip_Manufacturer = true; }
     void skip_Model() { __skip_Model = true; }
     void skip_Firmware() { __skip_Firmware = true; }
+    void skip_StringCode() { __skip_StringCode = true; }
+    void skip_Mac() { __skip_Mac = true; }
+    void skip_Line() { __skip_Line = true; }
+    void skip_CustomProtocolVersion() { __skip_CustomProtocolVersion = true; }
+    void skip_DeviceCapabilityList() { __skip_DeviceCapabilityList = true; }
+    void skip_ProtocolFunctionList() { __skip_ProtocolFunctionList = true; }
 
     bool xml_has_CmdType() const { return __xml_has_CmdType; }
     bool xml_has_SN() const { return __xml_has_SN; }
@@ -42,6 +160,12 @@ struct device_info_t
     bool xml_has_Manufacturer() const { return __xml_has_Manufacturer; }
     bool xml_has_Model() const { return __xml_has_Model; }
     bool xml_has_Firmware() const { return __xml_has_Firmware; }
+    bool xml_has_StringCode() const { return __xml_has_StringCode; }
+    bool xml_has_Mac() const { return __xml_has_Mac; }
+    bool xml_has_Line() const { return __xml_has_Line; }
+    bool xml_has_CustomProtocolVersion() const { return __xml_has_CustomProtocolVersion; }
+    bool xml_has_DeviceCapabilityList() const { return __xml_has_DeviceCapabilityList; }
+    bool xml_has_ProtocolFunctionList() const { return __xml_has_ProtocolFunctionList; }
 
     device_info_t();
     device_info_t& operator=(const device_info_t& obj_val);
@@ -60,6 +184,12 @@ private:
     bool __skip_Manufacturer;
     bool __skip_Model;
     bool __skip_Firmware;
+    bool __skip_StringCode;
+    bool __skip_Mac;
+    bool __skip_Line;
+    bool __skip_CustomProtocolVersion;
+    bool __skip_DeviceCapabilityList;
+    bool __skip_ProtocolFunctionList;
 
     bool __xml_has_CmdType;
     bool __xml_has_SN;
@@ -71,6 +201,12 @@ private:
     bool __xml_has_Manufacturer;
     bool __xml_has_Model;
     bool __xml_has_Firmware;
+    bool __xml_has_StringCode;
+    bool __xml_has_Mac;
+    bool __xml_has_Line;
+    bool __xml_has_CustomProtocolVersion;
+    bool __xml_has_DeviceCapabilityList;
+    bool __xml_has_ProtocolFunctionList;
 };
 
 bool encode(const device_info_t& obj_val, xml_document_t& doc, xml_element_t& xml_val);

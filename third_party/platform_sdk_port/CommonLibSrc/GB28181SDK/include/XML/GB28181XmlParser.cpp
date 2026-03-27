@@ -929,6 +929,24 @@ void CGB28181XmlParser::PackDeviceInfoResponse(int sn ,const DeviceInfo* device_
         info.Channel = device_info->video_channel_num;
         info.Manufacturer = device_info->manufacturer;
         info.Model = device_info->model;
+        info.StringCode = device_info->string_code;
+        info.Mac = device_info->mac_address;
+        info.Line = device_info->line_id;
+        info.CustomProtocolVersion = device_info->custom_protocol_version;
+        info.DeviceCapabilityList.PositionCapability = device_info->device_capability_list.PositionCapability;
+        info.DeviceCapabilityList.AlarmOutCapability = device_info->device_capability_list.AlarmOutCapability;
+        info.DeviceCapabilityList.MICCapability = device_info->device_capability_list.MICCapability;
+        info.DeviceCapabilityList.SpeakerCapability = device_info->device_capability_list.SpeakerCapability;
+        info.DeviceCapabilityList.ImagingCapability = device_info->device_capability_list.ImagingCapability;
+        info.DeviceCapabilityList.StreamPeramCapability = device_info->device_capability_list.StreamPeramCapability;
+        info.DeviceCapabilityList.SupplyLightCapability = device_info->device_capability_list.SupplyLightCapability;
+        info.ProtocolFunctionList.BroadcastCapability = device_info->protocol_function_list.BroadcastCapability;
+        info.ProtocolFunctionList.FrameMirrorCapability = device_info->protocol_function_list.FrameMirrorCapability;
+        info.ProtocolFunctionList.MultiStreamCapability = device_info->protocol_function_list.MultiStreamCapability;
+        info.ProtocolFunctionList.OSDCapability = device_info->protocol_function_list.OSDCapability;
+        info.ProtocolFunctionList.DeviceUpgradeCapability = device_info->protocol_function_list.DeviceUpgradeCapability;
+        info.ProtocolFunctionList.AlarmCapability = device_info->protocol_function_list.AlarmCapability;
+        info.ProtocolFunctionList.BroadcastTcpActiveCapability = device_info->protocol_function_list.BroadcastTcpActiveCapability;
         info.Result = device_info->result ? "OK": "ERROR" ;
         if (!slothxml::encode(info, RESPONSE, result)) {
                 result = "";
@@ -950,6 +968,52 @@ bool CGB28181XmlParser::UnPackDeviceInfoResponse(const std::string &xml_str, int
     GBUtil::memcpy_safe( device_info->firmware, STR_LEN , info.Firmware);
     GBUtil::memcpy_safe( device_info->manufacturer, STR_LEN , info.Manufacturer);
     GBUtil::memcpy_safe( device_info->model, STR_LEN , info.Model);
+    GBUtil::memcpy_safe( device_info->string_code, STR_LEN , info.StringCode);
+    GBUtil::memcpy_safe( device_info->mac_address, STR_LEN , info.Mac);
+    GBUtil::memcpy_safe( device_info->line_id, STR_LEN , info.Line);
+    GBUtil::memcpy_safe( device_info->custom_protocol_version, STR_LEN , info.CustomProtocolVersion);
+    GBUtil::memcpy_safe( device_info->device_capability_list.PositionCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.PositionCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.AlarmOutCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.AlarmOutCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.MICCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.MICCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.SpeakerCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.SpeakerCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.ImagingCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.ImagingCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.StreamPeramCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.StreamPeramCapability);
+    GBUtil::memcpy_safe( device_info->device_capability_list.SupplyLightCapability,
+                         STR_LEN,
+                         info.DeviceCapabilityList.SupplyLightCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.BroadcastCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.BroadcastCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.FrameMirrorCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.FrameMirrorCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.MultiStreamCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.MultiStreamCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.OSDCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.OSDCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.DeviceUpgradeCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.DeviceUpgradeCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.AlarmCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.AlarmCapability);
+    GBUtil::memcpy_safe( device_info->protocol_function_list.BroadcastTcpActiveCapability,
+                         STR_LEN,
+                         info.ProtocolFunctionList.BroadcastTcpActiveCapability);
 
     if(  !info.Result.compare("OK") ) {
         device_info->result = true;

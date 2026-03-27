@@ -103,6 +103,28 @@ struct GBRegistParam
 
 //针对查询条件和回复的信息结构，带*号为必填内容，其它为可选填内容
 
+struct DeviceCapabilityInfo
+{
+    char    PositionCapability[STR_LEN];
+    char    AlarmOutCapability[STR_LEN];
+    char    MICCapability[STR_LEN];
+    char    SpeakerCapability[STR_LEN];
+    char    ImagingCapability[STR_LEN];
+    char    StreamPeramCapability[STR_LEN];
+    char    SupplyLightCapability[STR_LEN];
+};
+
+struct ProtocolFunctionInfo
+{
+    char    BroadcastCapability[STR_LEN];
+    char    FrameMirrorCapability[STR_LEN];
+    char    MultiStreamCapability[STR_LEN];
+    char    OSDCapability[STR_LEN];
+    char    DeviceUpgradeCapability[STR_LEN];
+    char    AlarmCapability[STR_LEN];
+    char    BroadcastTcpActiveCapability[STR_LEN];
+};
+
 //设备信息
 struct DeviceInfo
 {
@@ -112,6 +134,12 @@ struct DeviceInfo
     char    manufacturer[STR_LEN];	                                     //设备生产商
     char    model[STR_LEN];				                    //设备型号
     char    firmware[STR_LEN];			                            //设备固件版本
+    char    string_code[STR_LEN];
+    char    mac_address[STR_LEN];
+    char    line_id[STR_LEN];
+    char    custom_protocol_version[STR_LEN];
+    DeviceCapabilityInfo device_capability_list;
+    ProtocolFunctionInfo protocol_function_list;
     unsigned int video_channel_num;
     bool    result;								   //是否查询成功 *
 };

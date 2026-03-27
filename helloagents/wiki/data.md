@@ -163,7 +163,7 @@
 
 | 白皮书对象 | 当前结构 | 现状 |
 |------------|----------|------|
-| `A.19 DeviceInfo` 扩展字段 `StringCode` / `Mac` / `CustomProtocolVersion` / `DeviceCapabilityList` | `DeviceInfo` | ❗`GB28181Defs.h` 中 `DeviceInfo` 仅含 `GBCode`、`device_name`、`device_type`、`manufacturer`、`model`、`firmware`、`video_channel_num`、`result` |
+| `A.19 DeviceInfo` 扩展字段 `StringCode` / `Mac` / `Line` / `CustomProtocolVersion` / `DeviceCapabilityList` / `ProtocolFunctionList` | `DeviceInfo` | ✅`GB28181Defs.h` 已补齐扩展身份字段、最小设备能力子集和最小协议功能子集；当前仍按真实实现保留 `StreamNum2`、图像翻转、升级回滚、独立告警等缺陷表达 |
 | `A.14/A.15 BasicParam` 扩展字段 `VoiceFlowMode` / `LocalPort` / `Domain` / `SipIp` / `SipPort` / `SipId` / `Password` / `ChannelList` | `CfgBasicParam` / `BasicSetting` | ❗当前结构仅覆盖 `DeviceName`、`Expiration`、`HeartBeatInterval`、`HeartBeatcount` |
 
 ---
