@@ -25,6 +25,7 @@
 - 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
 
 ### 变更
+- 补充 `helloagents/wiki/modules/gb28181.md` 中的 GB28181 OSD 对接说明，明确当前 OSD 获取/设置联调已通、实际生效路径为 `GB28181ClientReceiverAdapter -> ProtocolManager -> Capture/rk_osd_*`，并标注 `DevInterface` 的 OSD 四个虚接口尚未作为当前 GB OSD 正式入口使用。
 - 将 GB28181 “标准国标 / 零配置” 切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，并同步补齐 `HttpConfigProvider` 的 `gb_register_mode` 字段；`register_mode=standard` 时忽略 `zero_config.ini` 缺失，`register_mode=zero_config` 时按零配置流程校验与启动。
 - 将零配置字段 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 从 `gb28181.ini` 拆到独立 `/userdata/conf/Config/GB/zero_config.ini`；当 `register_mode=zero_config` 且缺少该文件时，配置加载会直接记录日志并返回错误，不再做兼容迁移或自动生成。
 - 根据 `zero_config.txt` 提供的零配置 `302` 接入参数，更新代码内置默认入口值；覆盖 `redirect_server_id/server_ip/server_port/string_code/password/mac_address`，并保持 `register_mode=standard` 默认行为不变。
