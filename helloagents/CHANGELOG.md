@@ -25,6 +25,7 @@
 - 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
 
 ### 变更
+- 补齐 GB28181 白皮书 `OSDConfig` 设备侧兼容：`ConfigDownload + OSDConfig` 现可返回 `<OSDConfig>`，`DeviceConfig + OSDConfig` 现可映射到 `gb_osd.time_enabled/time_format/position/text_template` 并下沉到 `rk_osd_*`；同时明确当前设备仅支持 1 条文本项，`TimeType=1` 仅做协议保留与回显。
 - 补充 `helloagents/wiki/modules/gb28181.md` 中的 GB28181 OSD 对接说明，明确当前 OSD 获取/设置联调已通、实际生效路径为 `GB28181ClientReceiverAdapter -> ProtocolManager -> Capture/rk_osd_*`，并标注 `DevInterface` 的 OSD 四个虚接口尚未作为当前 GB OSD 正式入口使用。
 - 将 GB28181 “标准国标 / 零配置” 切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，并同步补齐 `HttpConfigProvider` 的 `gb_register_mode` 字段；`register_mode=standard` 时忽略 `zero_config.ini` 缺失，`register_mode=zero_config` 时按零配置流程校验与启动。
 - 将零配置字段 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 从 `gb28181.ini` 拆到独立 `/userdata/conf/Config/GB/zero_config.ini`；当 `register_mode=zero_config` 且缺少该文件时，配置加载会直接记录日志并返回错误，不再做兼容迁移或自动生成。
@@ -57,6 +58,7 @@
 - 为 triage 增加失败状态和空结果状态落盘，统一本地回归与线上排障时的状态语义。
 
 ### 修复
+- 修复 GB28181 平台按白皮书 `OSDConfig` 查询/设置前端 OSD 时设备侧不识别的问题，避免 `ConfigDownload` 返回空配置和 `DeviceConfig` 因无已解析配置项落到 `-82`。
 - 修复 GB28181 `DeviceInfo` 查询应答只回基础字段的问题：补齐 `StringCode/Mac/Line/CustomProtocolVersion`，并新增 `DeviceCapabilityList/ProtocolFunctionList` 最小嵌套 XML 节点，按真实实现回报多码流、图像翻转、升级和告警缺陷。
 - 补齐 GB28181 零配置注册闭环：新增 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 配置承载，补上首次 `REGISTER` 扩展头、`302` 平台字段解析、`401 -> 302 -> 401 -> 200` 单次事务，以及 `30s / 3次 / 1min / 重新获取重定向地址` 的后台重试状态机。
 - 修复 `cc1: error: too many filenames given` 的构建阻塞问题。

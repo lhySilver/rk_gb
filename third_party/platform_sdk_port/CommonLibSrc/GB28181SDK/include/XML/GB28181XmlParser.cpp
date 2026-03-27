@@ -65,6 +65,164 @@
 #define PTZ_CMD_SCAN_SET	0x8A
 using namespace std;
 
+namespace
+{
+
+static bool ParseUnsignedValue(const std::string& text, unsigned int* value)
+{
+    if (value == NULL || text.empty()) {
+        return false;
+    }
+
+    char* end = NULL;
+    unsigned long parsed = strtoul(text.c_str(), &end, 10);
+    if (end == text.c_str()) {
+        return false;
+    }
+
+    *value = (unsigned int)parsed;
+    return true;
+}
+
+static bool ReadMarkupUnsigned(CMarkupSTL& xml,
+                               const char* name,
+                               unsigned int* value,
+                               bool required,
+                               unsigned int defaultValue = 0)
+{
+    if (!xml.FindElem(name)) {
+        if (!required && value != NULL) {
+            *value = defaultValue;
+        }
+        return !required;
+    }
+
+    return ParseUnsignedValue(xml.GetData(), value);
+}
+
+static void CopyMarkupText(char* dest, size_t destSize, const std::string& text)
+{
+    if (dest == NULL || destSize == 0) {
+        return;
+    }
+
+    memset(dest, 0, destSize);
+    if (!text.empty()) {
+        strncpy(dest, text.c_str(), destSize - 1);
+    }
+}
+
+static std::string BuildOsdConfigXml(const CfgOsdConfig& osd)
+{
+    CMarkupSTL markup;
+    markup.AddElem("OSDConfig");
+    if (!markup.IntoElem()) {
+        return "";
+    }
+
+    markup.AddElem("Length", (int)osd.Length);
+    markup.AddElem("Width", (int)osd.Width);
+    markup.AddElem("TimeX", (int)osd.TimeX);
+    markup.AddElem("TimeY", (int)osd.TimeY);
+    markup.AddElem("TimeEnable", (int)osd.TimeEnable);
+    markup.AddElem("TimeType", (int)osd.TimeType);
+    markup.AddElem("TextEnable", (int)osd.TextEnable);
+    markup.AddElem("SumNum", (int)osd.SumNum);
+
+    const unsigned int itemCount = (osd.SumNum > MAX_OSD_TEXT_NUM) ? MAX_OSD_TEXT_NUM : osd.SumNum;
+    for (unsigned int index = 0; index < itemCount; ++index) {
+        markup.AddElem("Item");
+        if (!markup.IntoElem()) {
+            continue;
+        }
+
+        markup.AddElem("Text", osd.Item[index].Text);
+        markup.AddElem("X", (int)osd.Item[index].X);
+        markup.AddElem("Y", (int)osd.Item[index].Y);
+        markup.OutOfElem();
+    }
+
+    markup.OutOfElem();
+    return markup.GetDoc();
+}
+
+static bool InjectXmlBeforeClosingTag(std::string& xml, const std::string& payload, const char* closingTag)
+{
+    if (payload.empty() || closingTag == NULL || closingTag[0] == '\0') {
+        return false;
+    }
+
+    const std::string tag = closingTag;
+    const std::string::size_type pos = xml.rfind(tag);
+    if (pos == std::string::npos) {
+        return false;
+    }
+
+    xml.insert(pos, payload);
+    return true;
+}
+
+static bool ParseOsdConfigElement(const std::string& xml_str, OsdSetting* setting)
+{
+    if (setting == NULL) {
+        return false;
+    }
+
+    memset(setting, 0, sizeof(*setting));
+    setting->TimeEnable = 1;
+    setting->TextEnable = 1;
+
+    CMarkupSTL markup;
+    if (!markup.SetDoc(xml_str.c_str(), xml_str.size()) ||
+        !markup.FindElem(CONTROL) ||
+        !markup.IntoElem() ||
+        !markup.FindElem("OSDConfig") ||
+        !markup.IntoElem()) {
+        return false;
+    }
+
+    if (!ReadMarkupUnsigned(markup, "Length", &setting->Length, true) ||
+        !ReadMarkupUnsigned(markup, "Width", &setting->Width, true) ||
+        !ReadMarkupUnsigned(markup, "TimeX", &setting->TimeX, true) ||
+        !ReadMarkupUnsigned(markup, "TimeY", &setting->TimeY, true) ||
+        !ReadMarkupUnsigned(markup, "TimeEnable", &setting->TimeEnable, false, 1) ||
+        !ReadMarkupUnsigned(markup, "TimeType", &setting->TimeType, false, 0) ||
+        !ReadMarkupUnsigned(markup, "TextEnable", &setting->TextEnable, false, 1) ||
+        !ReadMarkupUnsigned(markup, "SumNum", &setting->SumNum, false, 0)) {
+        return false;
+    }
+
+    unsigned int itemIndex = 0;
+    while (itemIndex < MAX_OSD_TEXT_NUM && markup.FindElem("Item")) {
+        if (!markup.IntoElem()) {
+            break;
+        }
+
+        if (markup.FindElem("Text")) {
+            CopyMarkupText(setting->Item[itemIndex].Text,
+                           sizeof(setting->Item[itemIndex].Text),
+                           markup.GetData());
+        }
+        if (markup.FindElem("X")) {
+            (void)ParseUnsignedValue(markup.GetData(), &setting->Item[itemIndex].X);
+        }
+        if (markup.FindElem("Y")) {
+            (void)ParseUnsignedValue(markup.GetData(), &setting->Item[itemIndex].Y);
+        }
+
+        markup.OutOfElem();
+        ++itemIndex;
+    }
+
+    if (setting->SumNum == 0 && itemIndex > 0) {
+        setting->SumNum = itemIndex;
+    }
+
+    return true;
+}
+
+} // namespace
+
 ControlType GetControlType( ProtocolType  type )
 {
     switch( (int)type ){
@@ -1352,10 +1510,11 @@ bool CGB28181XmlParser::UnPackKeepalive(const std::string &xml_str, std::string&
 int CGB28181XmlParser::PackConfigDownloadQuery(const ConfigDownloadQuery* param, std::string &result)
 {
     slothxml::config_query_t query;
-    int i = 0;
     std::vector<std::string>  configtype;
-    //   BasicParam/VideoParamOpt/SVACEncodeConfig/SVACDecodeConfig
-    for(;   i < (int)param->Num;  i++   ) {
+    const unsigned int maxTypeNum = sizeof(param->Type) / sizeof(param->Type[0]);
+    const unsigned int queryCount = (param->Num < maxTypeNum) ? param->Num : maxTypeNum;
+    //   BasicParam/VideoParamOpt/SVACEncodeConfig/SVACDecodeConfig/OSDConfig
+    for (unsigned int i = 0; i < queryCount; ++i) {
 
           if ( param->Type[i] == kBasicParam) {
               configtype.push_back("BasicParam");
@@ -1371,6 +1530,10 @@ int CGB28181XmlParser::PackConfigDownloadQuery(const ConfigDownloadQuery* param,
 
           if ( param->Type[i] == kSVACDecodeConfig) {
               configtype.push_back("SVACDecodeConfig");
+          }
+
+          if ( param->Type[i] == kOsdConfig) {
+              configtype.push_back("OSDConfig");
           }
     }
     std::string buffer;
@@ -1395,8 +1558,13 @@ bool CGB28181XmlParser::UnPackConfigDownloadQuery(const std::string &xml_str, in
     }
     std::vector<std::string>  configtype;
     SplitString(query.ConfigType, configtype, "/");
-    param->query_descri.config_param.Num = configtype.size();
-	for (int i = 0; i < (int)configtype.size(); i++)
+    const unsigned int maxTypeNum =
+        sizeof(param->query_descri.config_param.Type) / sizeof(param->query_descri.config_param.Type[0]);
+    const unsigned int queryCount = (configtype.size() < maxTypeNum) ?
+        (unsigned int)configtype.size() : maxTypeNum;
+    param->query_descri.config_param.Num = queryCount;
+    memset(param->query_descri.config_param.Type, 0, sizeof(param->query_descri.config_param.Type));
+	for (unsigned int i = 0; i < queryCount; i++)
 	{
 		if (configtype[i] == "BasicParam")
 		{
@@ -1414,6 +1582,14 @@ bool CGB28181XmlParser::UnPackConfigDownloadQuery(const std::string &xml_str, in
 		{
 			param->query_descri.config_param.Type[i] = kSVACDecodeConfig;
 		}
+		else if (configtype[i] == "OSDConfig")
+		{
+			param->query_descri.config_param.Type[i] = kOsdConfig;
+		}
+		else
+		{
+			param->query_descri.config_param.Type[i] = kUnknow;
+		}
 	}
 
 
@@ -1426,6 +1602,8 @@ bool CGB28181XmlParser::UnPackConfigDownloadQuery(const std::string &xml_str, in
 void CGB28181XmlParser::PackConfigDownloadResponse(int sn,const DeviceConfigDownload* param, std::string &result)
 {
 	slothxml::configdownload_response_t config;
+    std::string osdConfigXml;
+    bool hasOsdConfig = false;
 	config.DeviceID = param->GBCode;
 	config.CmdType = "ConfigDownload";
 	config.SN = sn;
@@ -1469,6 +1647,10 @@ void CGB28181XmlParser::PackConfigDownloadResponse(int sn,const DeviceConfigDown
 				}
 			case kSVACDecodeConfig:
 				break;
+            case kOsdConfig:
+                osdConfigXml = BuildOsdConfigXml(param->CfgParam[i].UnionCfgParam.CfgOsd);
+                hasOsdConfig = !osdConfigXml.empty();
+                break;
 			default:
 				break;
 		}
@@ -1513,6 +1695,11 @@ void CGB28181XmlParser::PackConfigDownloadResponse(int sn,const DeviceConfigDown
 	if (!slothxml::encode(config, RESPONSE, result)) {
 		result = "";
 	}
+
+    if (!result.empty() && hasOsdConfig &&
+        !InjectXmlBeforeClosingTag(result, osdConfigXml, "</Response>")) {
+        result = "";
+    }
 }
 
 bool CGB28181XmlParser::UnPackConfigDownloadResponse(const std::string &xml_str, int& sn, QueryParam* param)
@@ -2350,6 +2537,15 @@ bool CGB28181XmlParser::UnPackConfigControl(const std::string &xml_str, int& sn 
 	if (control.xml_has_SVACEncodeConfig())
 	{
 	}
+    OsdSetting osdSetting;
+    if (ParseOsdConfigElement(xml_str, &osdSetting))
+    {
+        SettingParam osdConfigParam;
+        memset(&osdConfigParam, 0, sizeof(SettingParam));
+        osdConfigParam.SetType = kOsdSetting;
+        osdConfigParam.unionSetParam.Osd = osdSetting;
+        configParamVector.push_back(osdConfigParam);
+    }
 	int num = configParamVector.size();
 	cmd.control_param.config_set_param.Num = num;
 	cmd.control_param.config_set_param.arySetParam = new SettingParam[num];
@@ -2368,8 +2564,11 @@ bool CGB28181XmlParser::UnPackConfigControl(const std::string &xml_str, int& sn 
 		case kImageSetting:
 			cmd.control_param.config_set_param.arySetParam[i] = configParamVector[i];
 			break;
+        case kOsdSetting:
+            cmd.control_param.config_set_param.arySetParam[i] = configParamVector[i];
+            break;
 		}
-	}	
+	}
 	return true;
 }
 

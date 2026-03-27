@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603271815 | gb28181_osdconfig_compat | 修复 | ✅已完成 | [2026-03/202603271815_gb28181_osdconfig_compat](2026-03/202603271815_gb28181_osdconfig_compat/) |
 | 202603271028 | gb_runtime_register_mode | 轻量迭代 | ✅已完成 | [2026-03/202603271028_gb_runtime_register_mode](2026-03/202603271028_gb_runtime_register_mode/) |
 | 202603270956 | zero_config_ini_split | 轻量迭代 | ✅已完成 | [2026-03/202603270956_zero_config_ini_split](2026-03/202603270956_zero_config_ini_split/) |
 | 202603270915 | gb_device_info_capability_alignment | 开发 | ✅已完成 | [2026-03/202603270915_gb_device_info_capability_alignment](2026-03/202603270915_gb_device_info_capability_alignment/) |
@@ -53,6 +54,7 @@
 
 ### 2026-03
 
+- [202603271815_gb28181_osdconfig_compat](2026-03/202603271815_gb28181_osdconfig_compat/) - 补齐白皮书 `OSDConfig` 的 GB28181 设备侧兼容，支持查询回包和设置落地，并明确 OSD 真实能力边界
 - [202603271028_gb_runtime_register_mode](2026-03/202603271028_gb_runtime_register_mode/) - 将 GB28181 “标准国标 / 零配置” 切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，并移除构建链路中的零配置宏依赖
 - [202603270956_zero_config_ini_split](2026-03/202603270956_zero_config_ini_split/) - 将零配置字段从 `gb28181.ini` 拆到独立 `zero_config.ini`，并在宏开启且文件缺失时直接报错返回
 - [202603270915_gb_device_info_capability_alignment](2026-03/202603270915_gb_device_info_capability_alignment/) - 补齐 `DeviceInfo` 的 `A.19` 扩展身份字段和最小能力清单节点，并按真实实现回报当前缺陷

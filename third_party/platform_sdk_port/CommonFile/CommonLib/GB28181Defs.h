@@ -552,7 +552,8 @@ enum ConfigType
     kBasicParam,            //基本参数配置
     kVideoParamOpt,       //视频参数配置范围
     kSVACEncodeConfig,  //SVAC编码配置
-    kSVACDecodeConfig   //SVAC解码配置
+    kSVACDecodeConfig,  //SVAC解码配置
+    kOsdConfig          //前端OSD配置
 };
 
 //配置查询条件描述
@@ -624,6 +625,42 @@ struct CfgVideoParamOpt
 struct ImageSetting
 {
     char FlipMode[32];                 //???????????
+};
+
+#define MAX_OSD_TEXT_NUM 8
+#define OSD_TEXT_LEN 64
+
+struct OsdTextItem
+{
+    char Text[OSD_TEXT_LEN];
+    unsigned int X;
+    unsigned int Y;
+};
+
+struct CfgOsdConfig
+{
+    unsigned int Length;
+    unsigned int Width;
+    unsigned int TimeX;
+    unsigned int TimeY;
+    unsigned int TimeEnable;
+    unsigned int TimeType;
+    unsigned int TextEnable;
+    unsigned int SumNum;
+    OsdTextItem Item[MAX_OSD_TEXT_NUM];
+};
+
+struct OsdSetting
+{
+    unsigned int Length;
+    unsigned int Width;
+    unsigned int TimeX;
+    unsigned int TimeY;
+    unsigned int TimeEnable;
+    unsigned int TimeType;
+    unsigned int TextEnable;
+    unsigned int SumNum;
+    OsdTextItem Item[MAX_OSD_TEXT_NUM];
 };
 
 //?????????????
@@ -748,17 +785,19 @@ union  UnionConfigParam
         CfgVideoParamOpt   CfgVideoOpt;		//视频参数配置范围
         CfgSVACDecode     CfgDecode;				//SVAC解码配置
         CfgSVACEncode     CfgEncode;				//SVAC编码配置
+        CfgOsdConfig      CfgOsd;                //前端OSD配置
 };
 
 
 
 //配置设置参数的联合体
 union UnionSettingParam
-{	
+{
     BasicSetting              Basic;			            //基本参数设置
     SVACDecodeSetting   DecodeSetting;		    //SVAC解码设置
     SVACEncodeSetting    EncodeSetting;		    //SVAC编码设置
     ImageSetting            Image;                  //???????????
+    OsdSetting              Osd;                    //前端OSD设置
 };
 
 
@@ -776,7 +815,8 @@ enum SettingType
     kBasicSetting,
     kEncodeSetting,
     kDecodeSetting,
-    kImageSetting
+    kImageSetting,
+    kOsdSetting
 };
 
 //进行设备配置设置的参数
