@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 
 #include <time.h>
@@ -2605,6 +2606,44 @@ static bool LooksLikeGbCode(const std::string& text)
 
 }
 
+static bool LooksLikeZeroConfigStringCode(const std::string& text)
+
+{
+
+    if (text.empty()) {
+
+        return false;
+
+    }
+
+
+
+    for (size_t i = 0; i < text.size(); ++i) {
+
+        const unsigned char ch = static_cast<unsigned char>(text[i]);
+        if (!std::isalnum(ch)) {
+
+            return false;
+
+        }
+
+    }
+
+
+
+    return true;
+
+}
+
+static bool IsValidGbLocalIdentity(const std::string& text, bool useZeroConfig)
+
+{
+
+    return useZeroConfig ? LooksLikeZeroConfigStringCode(text)
+                         : LooksLikeGbCode(text);
+
+}
+
 static std::string ResolveGbZeroConfigStringCode(const protocol::ProtocolExternalConfig& cfg)
 {
     if (!cfg.gb_register.string_code.empty()) {
@@ -4234,9 +4273,11 @@ int ProtocolManager::StartGbClientLifecycle()
 
 
 
-        if (!LooksLikeGbCode(localGbCode)) {
+        if (!IsValidGbLocalIdentity(localGbCode, useZeroConfig)) {
 
-            printf("[ProtocolManager] gb start failed, invalid local code=%s\n", localGbCode.c_str());
+            printf("[ProtocolManager] gb start failed, invalid local identity=%s mode=%s\n",
+                   localGbCode.c_str(),
+                   useZeroConfig ? "zero_config" : "standard");
 
             return -101;
 
@@ -4571,9 +4612,11 @@ int ProtocolManager::RegisterGbClient(bool force)
 
 
 
-    if (!LooksLikeGbCode(localGbCode)) {
+    if (!IsValidGbLocalIdentity(localGbCode, useZeroConfig)) {
 
-        printf("[ProtocolManager] gb register failed, invalid local code=%s\n", localGbCode.c_str());
+        printf("[ProtocolManager] gb register failed, invalid local identity=%s mode=%s\n",
+               localGbCode.c_str(),
+               useZeroConfig ? "zero_config" : "standard");
 
         m_gb_client_registered = false;
 

@@ -92,6 +92,7 @@
 - `gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关；`zero_config.ini` 继续只承载 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 这些零配置专属入口字段，不承担模式判定职责，也不保存 `302` 返回的正式平台 `ServerIp/ServerPort/ServerDomain/ServerId/deviceId`。
 - `LocalConfigProvider` / `HttpConfigProvider` 已内置一组零配置 `302` 接入默认入口参数，用于在本地文件或远端配置尚未覆盖时提供 `redirect_server_id/server_ip/server_port/string_code/password/mac_address` 的缺省值；当前仍保持 `register_mode=standard` 默认行为，不会因为这组默认值自动切到零配置流程。
 - `register_mode=zero_config` 时，`LocalConfigProvider` / `HttpConfigProvider` 会校验 `StringCode`、`redirect_server_id` 等关键字段，且本地 flash 中 `/userdata/conf/Config/GB/zero_config.ini` 缺失时会直接记录日志并返回错误，不做兼容迁移；`register_mode=standard` 时忽略该文件缺失。
+- `ProtocolManager` 启动零配置链路时，现已将 `StringCode` 校验与标准国标编码校验拆开：标准国标仍要求本地身份满足纯数字 GB 编码，零配置 `StringCode` 则允许 `C044...` 这类字母数字串码，只要能作为安全的 SIP 身份使用即可。
 - `SipEventManager` 已在首次零配置 `REGISTER` 时补齐 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` 扩展头，并解析 `302` 返回的 `Contact/ServerDomain/ServerId/ServerIp/ServerPort/deviceId`。
 - `GBClientImpl::Register` 已实现单次零配置事务：`StringCode -> 401 -> 302 -> 正式平台注册 -> 401 -> 200`，且只会在 `GBClientImpl` 进程内缓存正式平台目标，用于同一轮进程存活期间的后续直接重注册，不会写入 flash。
 - `CGBClientImpl::Stop()` 会调用 `ResetZeroConfigState()` 清空这份正式平台内存缓存；进程退出或设备重启后同样会失效，下次启动零配置流程时，`ProtocolManager` 仍基于 flash 中保存的入口参数重新发起 `302` 获取正式平台注册信息。
@@ -142,6 +143,7 @@
 - 若后续要改动注册链路，应同时回看 `helloagents/wiki/modules/terminal_requirements.md` 中的整体需求矩阵与 `helloagents/wiki/modules/gb28181.md` 中的实现映射。
 
 ## 变更历史
+- 2026-03-27: 修复 issue40：零配置启动时不再把 `StringCode` 误按纯数字国标编码校验，允许 `C044...` 这类字母数字串码通过本地身份检查
 - 2026-03-27: 根据最新零配置 `302` 接入参数，更新代码内置默认入口值；覆盖 `redirect_server_id/server_ip/server_port/string_code/password/mac_address`，但不改变 `register_mode` 默认值
 - 2026-03-27: 明确零配置 `302` 返回的正式平台参数只保存在 SDK 进程内存，不写入 flash；`Stop` / 进程重启 / 设备重启后清空，下次启动重新通过重定向获取
 - 2026-03-27: 将“标准国标 / 零配置”切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，`zero_config.ini` 只保留零配置扩展字段
