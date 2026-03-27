@@ -1,15 +1,20 @@
 ﻿#ifndef __PROTOCOL_EXTERNAL_CONFIG_H__
 #define __PROTOCOL_EXTERNAL_CONFIG_H__
 
+#include <cctype>
 #include <string>
 #include <vector>
 
 namespace protocol
 {
 
+static const char* const kGbRegisterModeStandard = "standard";
+static const char* const kGbRegisterModeZeroConfig = "zero_config";
+
 struct GbRegisterParam
 {
     int enabled;
+    std::string register_mode;
     std::string server_ip;
     int server_port;
     std::string device_id;
@@ -28,6 +33,7 @@ struct GbRegisterParam
 
     GbRegisterParam()
         : enabled(1),
+          register_mode(kGbRegisterModeStandard),
           server_port(0),
           device_name("IPC"),
           expires_sec(3600),
@@ -36,6 +42,46 @@ struct GbRegisterParam
           manufacturer("IPC"),
           model("RC0240") {}
 };
+
+inline std::string NormalizeGbRegisterMode(const std::string& value)
+{
+    size_t begin = 0;
+    while (begin < value.size() &&
+           std::isspace(static_cast<unsigned char>(value[begin])) != 0) {
+        ++begin;
+    }
+
+    size_t end = value.size();
+    while (end > begin &&
+           std::isspace(static_cast<unsigned char>(value[end - 1])) != 0) {
+        --end;
+    }
+
+    if (begin >= end) {
+        return kGbRegisterModeStandard;
+    }
+
+    std::string normalized;
+    normalized.reserve(end - begin);
+    for (size_t i = begin; i < end; ++i) {
+        normalized.push_back(static_cast<char>(
+            std::tolower(static_cast<unsigned char>(value[i]))));
+    }
+    return normalized;
+}
+
+inline bool IsValidGbRegisterMode(const std::string& value)
+{
+    const std::string normalized = NormalizeGbRegisterMode(value);
+    return normalized == kGbRegisterModeStandard ||
+           normalized == kGbRegisterModeZeroConfig;
+}
+
+inline bool IsGbRegisterModeZeroConfig(const GbRegisterParam& param)
+{
+    return NormalizeGbRegisterMode(param.register_mode) ==
+           kGbRegisterModeZeroConfig;
+}
 
 struct GbKeepaliveParam
 {

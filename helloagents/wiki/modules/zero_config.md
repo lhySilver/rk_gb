@@ -89,13 +89,13 @@
 - 同时允许通过设备 Web 界面登录后，手工录入方式接入平台，作为兜底方案。
 
 ## 当前代码落点
-- 已新增编译期开关 `PROTOCOL_ENABLE_GB_ZERO_CONFIG`，默认关闭；构建时传 `-DPROTOCOL_ENABLE_GB_ZERO_CONFIG=1` 才进入零配置流程。
-- 宏开启时，`LocalConfigProvider` / `HttpConfigProvider` 会持久化并校验 `StringCode`、`Mac`、`Line`、`redirect_domain`、`redirect_server_id`、`CustomProtocolVersion`、`manufacturer`、`model`；其中本地 flash 已拆成独立 `/userdata/conf/Config/GB/zero_config.ini`，若文件缺失则直接记录日志并返回错误，不做兼容迁移。
+- `gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关；`zero_config.ini` 继续只承载 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 这些零配置专属字段，不承担模式判定职责。
+- `register_mode=zero_config` 时，`LocalConfigProvider` / `HttpConfigProvider` 会校验 `StringCode`、`redirect_server_id` 等关键字段，且本地 flash 中 `/userdata/conf/Config/GB/zero_config.ini` 缺失时会直接记录日志并返回错误，不做兼容迁移；`register_mode=standard` 时忽略该文件缺失。
 - `SipEventManager` 已在首次零配置 `REGISTER` 时补齐 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion` 扩展头，并解析 `302` 返回的 `Contact/ServerDomain/ServerId/ServerIp/ServerPort/deviceId`。
 - `GBClientImpl::Register` 已实现单次零配置事务：`StringCode -> 401 -> 302 -> 正式平台注册 -> 401 -> 200`，且会缓存正式平台目标用于后续直接重注册。
 - `ProtocolManager::GbHeartbeatLoop` 已实现外层重试节奏：正式平台注册失败 `30 秒` 重试，连续 `3 次` 失败后等待 `1 分钟` 并通过 `ResetZeroConfigState()` 重新获取重定向地址。
 - `ProtocolManager::ResponseGbQueryDeviceInfo` 已补齐 `StringCode/Mac/Line/CustomProtocolVersion`，并按白皮书 `A.19/附录 G` 回最小真实能力节点：`DeviceCapabilityList` 与 `ProtocolFunctionList`。
-- 宏关闭时仍走原有标准国标注册路径，不发送零配置扩展头，也不进入 `302` 重定向流程。
+- `register_mode=standard` 时仍走原有标准国标注册路径，不发送零配置扩展头，也不进入 `302` 重定向流程。
 
 ## 当前缺口
 - `A.19` 虽已完成代码落地，但当前只回最小真实能力子集；平台若强校验更完整的 `DeviceCapabilityList/ProtocolFunctionList`，仍需按平台口径继续补字段。
@@ -139,6 +139,7 @@
 - 若后续要改动注册链路，应同时回看 `helloagents/wiki/modules/terminal_requirements.md` 中的整体需求矩阵与 `helloagents/wiki/modules/gb28181.md` 中的实现映射。
 
 ## 变更历史
+- 2026-03-27: 将“标准国标 / 零配置”切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，`zero_config.ini` 只保留零配置扩展字段
 - 2026-03-27: 将零配置字段从 `gb28181.ini` 拆到独立 `zero_config.ini`；宏开启且文件缺失时直接记录日志并返回错误，不做兼容迁移
 - 2026-03-27: 补齐 `DeviceInfo` 的 `A.19` 扩展身份字段和最小能力清单节点，按真实实现回报 `FrameMirror/MultiStream/Upgrade/Alarm` 等缺陷
 - 2026-03-26: 补齐 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 编译期开关、零配置配置模型、`302` 重定向注册事务和 `30s / 3次 / 1min` 外层重试状态机，默认保持标准国标流程不变

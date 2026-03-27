@@ -1,5 +1,4 @@
 ﻿#include "HttpConfigProvider.h"
-#include "ProtocolFeatureSwitch.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -422,6 +421,7 @@ void HttpConfigProvider::InitDefaultConfig()
     m_cached_cfg.version = "v1-default";
 
     m_cached_cfg.gb_register.enabled = 1;
+    m_cached_cfg.gb_register.register_mode = kGbRegisterModeStandard;
     m_cached_cfg.gb_register.server_ip = "183.252.186.165";
     m_cached_cfg.gb_register.server_port = 15566;
     m_cached_cfg.gb_register.device_id = "35010101001320124879";
@@ -527,6 +527,7 @@ std::string HttpConfigProvider::ToMinimalJson(const ProtocolExternalConfig& cfg)
     json += "\"version\":\"" + cfg.version + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.enabled);
     json += "\"gb_register_enabled\":" + std::string(tmp) + ",";
+    json += "\"gb_register_mode\":\"" + NormalizeGbRegisterMode(cfg.gb_register.register_mode) + "\",";
     json += "\"gb_register_server_ip\":\"" + cfg.gb_register.server_ip + "\",";
     snprintf(tmp, sizeof(tmp), "%d", cfg.gb_register.server_port);
     json += "\"gb_register_server_port\":" + std::string(tmp) + ",";
@@ -694,6 +695,9 @@ int HttpConfigProvider::PullLatest(ProtocolExternalConfig& out)
 
     if (FindIntField(body, "gb_register_enabled", ivalue)) {
         next.gb_register.enabled = (ivalue != 0) ? 1 : 0;
+    }
+    if (FindStringField(body, "gb_register_mode", value)) {
+        next.gb_register.register_mode = NormalizeGbRegisterMode(value);
     }
     if (FindStringField(body, "gb_register_server_ip", value)) {
         next.gb_register.server_ip = value;
@@ -991,8 +995,12 @@ int HttpConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
         return check;
     }
 
+    ProtocolExternalConfig normalized = cfg;
+    normalized.gb_register.register_mode =
+        NormalizeGbRegisterMode(normalized.gb_register.register_mode);
+
     std::string resp;
-    const int rc = HttpPostJson(BuildUrl("/config"), ToMinimalJson(cfg), resp);
+    const int rc = HttpPostJson(BuildUrl("/config"), ToMinimalJson(normalized), resp);
     if (rc != 0) {
         printf("[Protocol][Config] module=config event=config_apply_fail trace=provider error=%d endpoint=%s stage=push_remote version=%s\n",
                rc,
@@ -1004,29 +1012,34 @@ int HttpConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
                cfg.version.c_str());
     }
 
-    m_cached_cfg = cfg;
+    m_cached_cfg = normalized;
     return 0;
 }
 
 int HttpConfigProvider::Validate(const ProtocolExternalConfig& cfg)
 {
+    if (!IsValidGbRegisterMode(cfg.gb_register.register_mode)) {
+        LogConfigValidateFail(cfg, -30, "gb_register_mode");
+        return -30;
+    }
+
     if (cfg.gb_register.enabled != 0) {
         if (cfg.gb_register.server_ip.empty() || cfg.gb_register.server_port <= 0) {
             LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
             return -1;
         }
 
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
-        if (cfg.gb_register.string_code.empty()) {
+        if (IsGbRegisterModeZeroConfig(cfg.gb_register) &&
+            cfg.gb_register.string_code.empty()) {
             LogConfigValidateFail(cfg, -27, "gb_register_string_code");
             return -27;
         }
 
-        if (cfg.gb_register.redirect_server_id.empty()) {
+        if (IsGbRegisterModeZeroConfig(cfg.gb_register) &&
+            cfg.gb_register.redirect_server_id.empty()) {
             LogConfigValidateFail(cfg, -28, "gb_register_redirect_server_id");
             return -28;
         }
-#endif
 
         if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
             LogConfigValidateFail(cfg, -2, "gb_live_transport");
@@ -1188,6 +1201,8 @@ void HttpConfigProvider::SubscribeChange()
 void HttpConfigProvider::SetMockConfig(const ProtocolExternalConfig& cfg)
 {
     m_cached_cfg = cfg;
+    m_cached_cfg.gb_register.register_mode =
+        NormalizeGbRegisterMode(m_cached_cfg.gb_register.register_mode);
 }
 
 }

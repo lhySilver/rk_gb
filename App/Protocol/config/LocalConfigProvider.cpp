@@ -1,5 +1,4 @@
 ﻿#include "LocalConfigProvider.h"
-#include "ProtocolFeatureSwitch.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -46,35 +45,28 @@ struct LocalConfigSyncState
           gat_sync_ret(0) {}
 };
 
+const int kZeroConfigFileMissingError = -29;
+const int kInvalidGbRegisterModeError = -30;
+
 int RequiredZeroConfigFileError()
 {
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
-    return -29;
-#else
-    return 0;
-#endif
+    return kZeroConfigFileMissingError;
 }
 
-bool IsZeroConfigFileRequired()
+bool IsZeroConfigFileRequired(const protocol::GbRegisterParam& param)
 {
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
-    return true;
-#else
-    return false;
-#endif
+    return protocol::IsGbRegisterModeZeroConfig(param);
 }
 
-bool IsZeroConfigFileMissing(const LocalConfigSyncState& state)
+bool IsZeroConfigFileMissing(const LocalConfigSyncState& state,
+                             const protocol::GbRegisterParam& param)
 {
-    return IsZeroConfigFileRequired() && state.zero_source != kLocalConfigLoadCurrent;
+    return IsZeroConfigFileRequired(param) &&
+           state.zero_source != kLocalConfigLoadCurrent;
 }
 
 void LogZeroConfigFileMissing(const char* tag)
 {
-    if (!IsZeroConfigFileRequired()) {
-        return;
-    }
-
     printf("[Protocol][Config] module=config event=zero_config_file_missing trace=provider error=%d path=%s tag=%s\n",
            RequiredZeroConfigFileError(),
            kLocalZeroConfigFile,
@@ -140,9 +132,10 @@ std::string BuildConfigLogSummary(const protocol::ProtocolExternalConfig& cfg)
     char buffer[768] = {0};
     snprintf(buffer,
              sizeof(buffer),
-             "version=%s gb_enable=%d gb=%s:%d gb_id=%s string=%s redirect=%s/%s live=%s/%s:%d flip=%s gat=%s://%s:%d%s listen=%d timeout=%d queue=%s apes_post_compat=%d talk=%s/%d/%d broadcast=%s/%d listen=%s/%s:%d",
+             "version=%s gb_enable=%d gb_mode=%s gb=%s:%d gb_id=%s string=%s redirect=%s/%s live=%s/%s:%d flip=%s gat=%s://%s:%d%s listen=%d timeout=%d queue=%s apes_post_compat=%d talk=%s/%d/%d broadcast=%s/%d listen=%s/%s:%d",
              cfg.version.c_str(),
              cfg.gb_register.enabled,
+             protocol::NormalizeGbRegisterMode(cfg.gb_register.register_mode).c_str(),
              cfg.gb_register.server_ip.c_str(),
              cfg.gb_register.server_port,
              cfg.gb_register.device_id.c_str(),
@@ -222,6 +215,7 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
 {
     protocol::GbRegisterParam param;
     param.enabled = 1;
+    param.register_mode = protocol::kGbRegisterModeStandard;
     param.server_ip = "183.252.186.165";
     param.server_port = 15566;
     param.device_id = "35010101001320124929";
@@ -262,22 +256,30 @@ void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const prot
 {
     target = source;
     target.enabled = (source.enabled != 0) ? 1 : 0;
+    target.register_mode = protocol::NormalizeGbRegisterMode(source.register_mode);
 }
 
 int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
 {
+    if (!protocol::IsValidGbRegisterMode(param.register_mode)) {
+        return kInvalidGbRegisterModeError;
+    }
+
     if (param.enabled != 0 && (param.server_ip.empty() || param.server_port <= 0)) {
         return -1;
     }
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
-    if (param.enabled != 0 && param.string_code.empty()) {
+
+    if (param.enabled != 0 &&
+        protocol::IsGbRegisterModeZeroConfig(param) &&
+        param.string_code.empty()) {
         return -2;
     }
 
-    if (param.enabled != 0 && param.redirect_server_id.empty()) {
+    if (param.enabled != 0 &&
+        protocol::IsGbRegisterModeZeroConfig(param) &&
+        param.redirect_server_id.empty()) {
         return -3;
     }
-#endif
     return 0;
 }
 
@@ -403,11 +405,13 @@ bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& o
     if (ReadIniInt(ini, kLocalGbConfigSection, "enable", path, ivalue)) {
         out.enabled = (ivalue != 0) ? 1 : 0;
     }
+    ReadIniString(ini, kLocalGbConfigSection, "register_mode", path, out.register_mode);
     ReadIniString(ini, kLocalGbConfigSection, "username", path, out.username);
     ReadIniString(ini, kLocalGbConfigSection, "server_ip", path, out.server_ip);
     ReadIniInt(ini, kLocalGbConfigSection, "server_port", path, out.server_port);
     ReadIniString(ini, kLocalGbConfigSection, "device_id", path, out.device_id);
     ReadIniString(ini, kLocalGbConfigSection, "password", path, out.password);
+    out.register_mode = protocol::NormalizeGbRegisterMode(out.register_mode);
     return true;
 }
 
@@ -491,6 +495,7 @@ int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
 
     fprintf(fp, "[%s]\n", kLocalGbConfigSection);
     fprintf(fp, "enable=%d\n", param.enabled != 0 ? 1 : 0);
+    fprintf(fp, "register_mode=%s\n", protocol::NormalizeGbRegisterMode(param.register_mode).c_str());
     fprintf(fp, "username=%s\n", param.username.c_str());
     fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
     fprintf(fp, "server_port=%d\n", param.server_port);
@@ -592,7 +597,7 @@ LocalConfigSyncState SyncLocalConfigFiles(protocol::ProtocolExternalConfig& cfg)
     }
 
     state.zero_source = LoadExistingGbZeroConfig(cfg.gb_register);
-    if (IsZeroConfigFileMissing(state)) {
+    if (IsZeroConfigFileMissing(state, cfg.gb_register)) {
         state.zero_sync_ret = RequiredZeroConfigFileError();
     }
 
@@ -616,7 +621,7 @@ LocalConfigProvider::LocalConfigProvider(const std::string& sourceTag)
     ProtocolExternalConfig next = m_cached_cfg;
     const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
     m_cached_cfg = next;
-    if (IsZeroConfigFileMissing(sync)) {
+    if (IsZeroConfigFileMissing(sync, m_cached_cfg.gb_register)) {
         LogZeroConfigFileMissing(m_source_tag.c_str());
     } else if (sync.gb_source != kLocalConfigLoadNone ||
                sync.zero_source != kLocalConfigLoadNone ||
@@ -666,7 +671,7 @@ int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
         }
     }
 
-    if (IsZeroConfigFileRequired() && zeroSource != kLocalConfigLoadCurrent) {
+    if (IsZeroConfigFileRequired(out) && zeroSource != kLocalConfigLoadCurrent) {
         LogZeroConfigFileMissing("LoadOrCreateGbRegisterConfig");
         return RequiredZeroConfigFileError();
     }
@@ -730,7 +735,7 @@ int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
 {
     ProtocolExternalConfig next = m_cached_cfg;
     const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
-    if (IsZeroConfigFileMissing(sync)) {
+    if (IsZeroConfigFileMissing(sync, next.gb_register)) {
         LogZeroConfigFileMissing(m_source_tag.c_str());
         return RequiredZeroConfigFileError();
     }
@@ -774,7 +779,10 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
         return check;
     }
 
-    m_cached_cfg = cfg;
+    ProtocolExternalConfig normalized = cfg;
+    normalized.gb_register.register_mode =
+        protocol::NormalizeGbRegisterMode(normalized.gb_register.register_mode);
+    m_cached_cfg = normalized;
     const int saveGbRet = SaveLocalGbConfigFile(m_cached_cfg.gb_register);
     if (saveGbRet != 0) {
         printf("[Protocol][Config] module=config event=config_apply_fail trace=provider error=%d source=local stage=persist version=%s tag=%s path=%s\n",
@@ -813,23 +821,28 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
 
 int LocalConfigProvider::Validate(const ProtocolExternalConfig& cfg)
 {
+    if (!protocol::IsValidGbRegisterMode(cfg.gb_register.register_mode)) {
+        LogConfigValidateFail(cfg, kInvalidGbRegisterModeError, "gb_register_mode");
+        return kInvalidGbRegisterModeError;
+    }
+
     if (cfg.gb_register.enabled != 0) {
         if (cfg.gb_register.server_ip.empty() || cfg.gb_register.server_port <= 0) {
             LogConfigValidateFail(cfg, -1, "gb_register_endpoint");
             return -1;
         }
 
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
-        if (cfg.gb_register.string_code.empty()) {
+        if (protocol::IsGbRegisterModeZeroConfig(cfg.gb_register) &&
+            cfg.gb_register.string_code.empty()) {
             LogConfigValidateFail(cfg, -27, "gb_register_string_code");
             return -27;
         }
 
-        if (cfg.gb_register.redirect_server_id.empty()) {
+        if (protocol::IsGbRegisterModeZeroConfig(cfg.gb_register) &&
+            cfg.gb_register.redirect_server_id.empty()) {
             LogConfigValidateFail(cfg, -28, "gb_register_redirect_server_id");
             return -28;
         }
-#endif
 
         if (cfg.gb_live.transport != "udp" && cfg.gb_live.transport != "tcp") {
             LogConfigValidateFail(cfg, -2, "gb_live_transport");
@@ -993,6 +1006,8 @@ void LocalConfigProvider::SubscribeChange()
 void LocalConfigProvider::SetMockConfig(const ProtocolExternalConfig& cfg)
 {
     m_cached_cfg = cfg;
+    m_cached_cfg.gb_register.register_mode =
+        protocol::NormalizeGbRegisterMode(m_cached_cfg.gb_register.register_mode);
 }
 
 }

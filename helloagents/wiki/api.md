@@ -46,9 +46,9 @@
 **描述:** 从 flash 重新读取 GB28181 注册配置，并按当前运行状态与 `enabled` 决定只刷新缓存、停止 GB 服务或重新启动注册生命周期。
 
 **当前约束:**
-- 当前仅持久化 `enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password` 6 个注册字段
+- 当前 `gb28181.ini` 仅持久化 `enabled`、`register_mode`、`username`、`server_ip`、`server_port`、`device_id`、`password` 7 个注册字段，其中 `register_mode` 取值为 `standard` 或 `zero_config`
 - 零配置字段 `string_code`、`mac_address`、`line_id`、`redirect_domain`、`redirect_server_id`、`custom_protocol_version`、`manufacturer`、`model` 独立持久化到 `zero_config.ini`
-- 当编译期开启 `PROTOCOL_ENABLE_GB_ZERO_CONFIG` 且 `zero_config.ini` 缺失时，flash 读取链路会记录错误日志；其中 `RestartGbRegisterService()` 与 `ProtocolManager::Init()/Start()` 会返回错误，`GetGbRegisterConfig()` 则会保留当前“记录日志后回落默认结构”的接口语义
+- 当 `register_mode=zero_config` 且 `zero_config.ini` 缺失时，flash 读取链路会记录错误日志；其中 `RestartGbRegisterService()` 与 `ProtocolManager::Init()/Start()` 会返回错误，`GetGbRegisterConfig()` 则会保留当前“记录日志后回落默认结构”的接口语义
 - `device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gat_*` 等其他协议项不再写入本地 `ini`
 - `SetGbRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGbRegisterService()`
 - `RestartGbRegisterService()` 在 `ProtocolManager` 未启动时只刷新缓存；已启动时会结合当前生命周期状态和 `enabled` 决定是否停/启 GB 服务

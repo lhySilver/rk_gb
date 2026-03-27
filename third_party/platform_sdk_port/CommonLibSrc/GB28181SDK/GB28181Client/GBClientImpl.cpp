@@ -525,7 +525,6 @@ int CGBClientImpl::Register(const GBRegistParam* gb_param, const ConnectParam* g
                                 output);
     };
 
-#if PROTOCOL_ENABLE_GB_ZERO_CONFIG
     if (m_gb_regist_param->use_zero_config) {
         std::string formalDeviceId = m_zero_config_formal_device_id;
         if (m_zero_config_formal_target_valid && !formalDeviceId.empty()) {
@@ -615,7 +614,6 @@ int CGBClientImpl::Register(const GBRegistParam* gb_param, const ConnectParam* g
         m_xml_parser->m_local_code = formalDeviceId;
         return kGb28181Success;
     }
-#endif
 
     SipData* result = NULL;
     const int standardRet = run_register(m_gb_connect,
