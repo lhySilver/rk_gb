@@ -357,6 +357,30 @@ private:
 
     };
 
+    struct GbMediaSenderRuntime
+
+    {
+
+        GB28181RtpPsSender sender;
+
+        uint32_t current_ssrc;
+
+        int current_port;
+
+
+
+        GbMediaSenderRuntime()
+
+            : current_ssrc(0),
+
+              current_port(0)
+
+        {
+
+        }
+
+    };
+
     struct GbBroadcastSession
 
     {
@@ -613,6 +637,12 @@ private:
 
     void StopGbLiveCapture();
 
+    GbMediaSenderRuntime* GetGbMediaSenderRuntime(StreamRequestType requestType);
+
+    const GbMediaSenderRuntime* GetGbMediaSenderRuntime(StreamRequestType requestType) const;
+
+    void ResetGbMediaSenderRuntime(StreamRequestType requestType);
+
     void ClearGbReplaySessionState();
 
     void ClearGbBroadcastSessionState();
@@ -644,7 +674,9 @@ private:
 
     GB28181ListenBridge m_listen;
 
-    GB28181RtpPsSender m_rtp_ps_sender;
+    GbMediaSenderRuntime m_gb_live_media_runtime;
+
+    GbMediaSenderRuntime m_gb_replay_media_runtime;
 
     GB28181ClientReceiverAdapter m_gb_receiver;
 
@@ -704,9 +736,6 @@ private:
 
     GbTalkSession m_gb_talk_session;
 
-    uint32_t m_gb_current_media_ssrc;
-    int m_gb_current_media_port;
-
     bool m_gb_live_capture_started;
 
 
@@ -722,7 +751,6 @@ private:
 
 
 #endif
-
 
 
 

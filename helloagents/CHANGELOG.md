@@ -58,6 +58,7 @@
 - 为 triage 增加失败状态和空结果状态落盘，统一本地回归与线上排障时的状态语义。
 
 ### 修复
+- 修复 GB28181 实时预览与录像回放/下载共用同一 RTP/PS sender 导致的互斥问题，改为 live/replay 独立 sender、独立 SSRC/local port，并将停流收口到按 handle 精确命中，支持 `1` 路实时预览与 `1` 路回放/下载同时运行。
 - 修复 GB28181 平台按白皮书 `OSDConfig` 查询/设置前端 OSD 时设备侧不识别的问题，避免 `ConfigDownload` 返回空配置和 `DeviceConfig` 因无已解析配置项落到 `-82`。
 - 修复 GB28181 `DeviceInfo` 查询应答只回基础字段的问题：补齐 `StringCode/Mac/Line/CustomProtocolVersion`，并新增 `DeviceCapabilityList/ProtocolFunctionList` 最小嵌套 XML 节点，按真实实现回报多码流、图像翻转、升级和告警缺陷。
 - 补齐 GB28181 零配置注册闭环：新增 `StringCode/Mac/Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 配置承载，补上首次 `REGISTER` 扩展头、`302` 平台字段解析、`401 -> 302 -> 401 -> 200` 单次事务，以及 `30s / 3次 / 1min / 重新获取重定向地址` 的后台重试状态机。

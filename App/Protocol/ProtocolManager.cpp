@@ -2310,6 +2310,14 @@ static const char* StreamRequestTypeName(StreamRequestType type)
 
 }
 
+static bool IsGbReplayRequestType(StreamRequestType type)
+
+{
+
+    return type == kPlayback || type == kDownload;
+
+}
+
 
 
 static const char* QueryTypeName(QueryType type)
@@ -3679,7 +3687,11 @@ void* ProtocolManager::GbUpgradeApplyThread(void* arg)
 
 ProtocolManager::ProtocolManager()
 
-    : m_gb_receiver(this),
+    : m_gb_live_media_runtime(),
+
+      m_gb_replay_media_runtime(),
+
+      m_gb_receiver(this),
 
       m_gat_client(new GAT1400ClientService()),
 
@@ -3709,9 +3721,6 @@ ProtocolManager::ProtocolManager()
 
       m_gb_mobile_position_subscribe_handle(NULL),
 
-      m_gb_current_media_ssrc(0),
-      m_gb_current_media_port(0),
-
       m_gb_replay_generation(0),
 
       m_gb_live_capture_started(false),
@@ -3739,6 +3748,37 @@ ProtocolManager::~ProtocolManager()
     Stop();
 
     UnInit();
+
+}
+
+ProtocolManager::GbMediaSenderRuntime* ProtocolManager::GetGbMediaSenderRuntime(StreamRequestType requestType)
+
+{
+
+    return IsGbReplayRequestType(requestType) ? &m_gb_replay_media_runtime : &m_gb_live_media_runtime;
+
+}
+
+const ProtocolManager::GbMediaSenderRuntime* ProtocolManager::GetGbMediaSenderRuntime(StreamRequestType requestType) const
+
+{
+
+    return IsGbReplayRequestType(requestType) ? &m_gb_replay_media_runtime : &m_gb_live_media_runtime;
+
+}
+
+void ProtocolManager::ResetGbMediaSenderRuntime(StreamRequestType requestType)
+
+{
+
+    GbMediaSenderRuntime* runtime = GetGbMediaSenderRuntime(requestType);
+    if (runtime == NULL) {
+        return;
+    }
+
+    runtime->sender.CloseSession();
+    runtime->current_ssrc = 0;
+    runtime->current_port = 0;
 
 }
 
@@ -3806,21 +3846,33 @@ int ProtocolManager::Start()
 
 
 
-    int ret = m_rtp_ps_sender.Init(m_cfg.gb_live);
+    int ret = m_gb_live_media_runtime.sender.Init(m_cfg.gb_live);
 
     if (ret != 0) {
 
-        printf("[ProtocolManager] init RTP/PS sender failed: %d\n", ret);
+        printf("[ProtocolManager] init live RTP/PS sender failed: %d\n", ret);
 
         return ret;
 
     }
 
-    ret = m_rtp_ps_sender.OpenSession();
+    ret = m_gb_live_media_runtime.sender.OpenSession();
 
     if (ret != 0) {
 
-        printf("[ProtocolManager] open RTP/PS session failed: %d\n", ret);
+        printf("[ProtocolManager] open live RTP/PS session failed: %d\n", ret);
+
+        return ret;
+
+    }
+
+    ret = m_gb_replay_media_runtime.sender.Init(m_cfg.gb_live);
+
+    if (ret != 0) {
+
+        printf("[ProtocolManager] init replay RTP/PS sender failed: %d\n", ret);
+
+        m_gb_live_media_runtime.sender.CloseSession();
 
         return ret;
 
@@ -3834,7 +3886,8 @@ int ProtocolManager::Start()
 
         printf("[ProtocolManager] start broadcast session failed: %d\n", ret);
 
-        m_rtp_ps_sender.CloseSession();
+        m_gb_live_media_runtime.sender.CloseSession();
+        m_gb_replay_media_runtime.sender.CloseSession();
 
         return ret;
 
@@ -3848,7 +3901,8 @@ int ProtocolManager::Start()
 
         m_broadcast.StopSession();
 
-        m_rtp_ps_sender.CloseSession();
+        m_gb_live_media_runtime.sender.CloseSession();
+        m_gb_replay_media_runtime.sender.CloseSession();
 
         return ret;
 
@@ -3867,7 +3921,8 @@ int ProtocolManager::Start()
 
             m_broadcast.StopSession();
 
-            m_rtp_ps_sender.CloseSession();
+            m_gb_live_media_runtime.sender.CloseSession();
+            m_gb_replay_media_runtime.sender.CloseSession();
 
             return ret;
 
@@ -3895,7 +3950,8 @@ int ProtocolManager::Start()
 
             m_broadcast.StopSession();
 
-            m_rtp_ps_sender.CloseSession();
+            m_gb_live_media_runtime.sender.CloseSession();
+            m_gb_replay_media_runtime.sender.CloseSession();
 
             return ret;
 
@@ -3912,7 +3968,8 @@ int ProtocolManager::Start()
             m_talk_broadcast.StopSession();
             m_listen.StopSession();
             m_broadcast.StopSession();
-            m_rtp_ps_sender.CloseSession();
+            m_gb_live_media_runtime.sender.CloseSession();
+            m_gb_replay_media_runtime.sender.CloseSession();
             return ret;
         }
     }
@@ -3960,7 +4017,8 @@ void ProtocolManager::Stop()
 
     m_broadcast.StopSession();
 
-    m_rtp_ps_sender.CloseSession();
+    m_gb_live_media_runtime.sender.CloseSession();
+    m_gb_replay_media_runtime.sender.CloseSession();
 
 
 
@@ -5559,10 +5617,10 @@ int ProtocolManager::PushLiveVideoEsFrame(const uint8_t* data,
                (unsigned long long)pts90k);
     }
 
-    const int ret = m_rtp_ps_sender.SendVideoFrame(data,
-                                                   size,
-                                                   pts90k,
-                                                   keyFrame || startState == kGbVideoStartIdr);
+    const int ret = m_gb_live_media_runtime.sender.SendVideoFrame(data,
+                                                                  size,
+                                                                  pts90k,
+                                                                  keyFrame || startState == kGbVideoStartIdr);
 
     if (ret == 0) {
 
@@ -5639,7 +5697,7 @@ int ProtocolManager::PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint
 
 
 
-    const int ret = m_rtp_ps_sender.SendAudioFrame(data, size, pts90k);
+    const int ret = m_gb_live_media_runtime.sender.SendAudioFrame(data, size, pts90k);
 
     if (ret == 0) {
 
@@ -6432,6 +6490,30 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
 {
 
+    if (input == NULL) {
+
+        return -20;
+
+    }
+
+    GbLiveSession replacedSession;
+    bool needReplaceSession = false;
+    {
+        std::lock_guard<std::mutex> lock(m_gb_live_mutex);
+        if (m_gb_live_session.active) {
+            replacedSession = m_gb_live_session;
+            needReplaceSession = true;
+        }
+    }
+
+    if (needReplaceSession) {
+        printf("[ProtocolManager] gb live request replace existing session old_gb=%s old_handle=%p new_handle=%p\n",
+               replacedSession.gb_code.c_str(),
+               replacedSession.stream_handle,
+               handle);
+        HandleGbStopStreamRequest(replacedSession.stream_handle, replacedSession.gb_code.c_str());
+    }
+
     std::string remoteIp;
 
     int remotePort = 0;
@@ -6529,9 +6611,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
     ret = StartGbLiveCapture();
 
     if (ret != 0) {
-        m_rtp_ps_sender.CloseSession();
-        m_gb_current_media_ssrc = 0;
-        m_gb_current_media_port = 0;
+        ResetGbMediaSenderRuntime(kLiveStream);
 
         std::lock_guard<std::mutex> lock(m_gb_live_mutex);
 
@@ -6554,9 +6634,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
     if (ret != 0) {
 
         StopGbLiveCapture();
-        m_rtp_ps_sender.CloseSession();
-        m_gb_current_media_ssrc = 0;
-        m_gb_current_media_port = 0;
+        ResetGbMediaSenderRuntime(kLiveStream);
 
         std::lock_guard<std::mutex> lock(m_gb_live_mutex);
 
@@ -6696,9 +6774,9 @@ int ProtocolManager::HandleGbStreamAck(StreamHandle handle)
 
             handle == m_gb_live_session.stream_handle) {
 
-            if (!m_rtp_ps_sender.IsOpened()) {
+            if (!m_gb_live_media_runtime.sender.IsOpened()) {
 
-                const int openRet = m_rtp_ps_sender.OpenSession();
+                const int openRet = m_gb_live_media_runtime.sender.OpenSession();
 
                 if (openRet != 0) {
 
@@ -9573,8 +9651,6 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
 
             (handle == NULL ||
 
-             m_gb_replay_session.stream_handle == NULL ||
-
              handle == m_gb_replay_session.stream_handle)) {
 
             replaySession = m_gb_replay_session;
@@ -9596,8 +9672,6 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
         if (m_gb_live_session.active &&
 
             (handle == NULL ||
-
-             m_gb_live_session.stream_handle == NULL ||
 
              handle == m_gb_live_session.stream_handle)) {
 
@@ -9621,8 +9695,6 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
 
             (handle == NULL ||
 
-             m_gb_talk_session.stream_handle == NULL ||
-
              handle == m_gb_talk_session.stream_handle)) {
 
             talkSession = m_gb_talk_session;
@@ -9644,8 +9716,6 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
         if (m_gb_broadcast_session.active &&
 
             (handle == NULL ||
-
-             m_gb_broadcast_session.stream_handle == NULL ||
 
              handle == m_gb_broadcast_session.stream_handle)) {
 
@@ -9695,6 +9765,8 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
 
                replaySession.storage_handle);
 
+        ResetGbMediaSenderRuntime(replaySession.download ? kDownload : kPlayback);
+
     }
 
 
@@ -9703,7 +9775,7 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
 
         StopGbLiveCapture();
 
-        m_rtp_ps_sender.CloseSession();
+        ResetGbMediaSenderRuntime(kLiveStream);
 
         printf("[ProtocolManager] gb live session stopped gb=%s handle=%p stream=%s audio_requested=%d audio_enabled=%d sent_video=%u sent_audio=%u\n",
 
@@ -9821,13 +9893,6 @@ void ProtocolManager::HandleGbStopStreamRequest(StreamHandle handle, const char*
 
 
 
-    if (needStopReplay || needStopLive) {
-        m_gb_current_media_ssrc = 0;
-        m_gb_current_media_port = 0;
-    }
-
-
-
     printf("[ProtocolManager] gb stop stream gb=%s handle=%p\n", gbCode != NULL ? gbCode : "", handle);
 
 }
@@ -9921,16 +9986,20 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
            runtimeParam.target_ip.c_str(),
            runtimeParam.target_port);
 
-    m_gb_current_media_ssrc = static_cast<uint32_t>(runtimeParam.ssrc);
-    m_gb_current_media_port = 0;
+    GbMediaSenderRuntime* runtime = GetGbMediaSenderRuntime(requestType);
+    if (runtime == NULL) {
+        return -23;
+    }
+    runtime->current_ssrc = static_cast<uint32_t>(runtimeParam.ssrc);
+    runtime->current_port = 0;
 
 
 
-    m_rtp_ps_sender.CloseSession();
+    runtime->sender.CloseSession();
 
 
 
-    int ret = m_rtp_ps_sender.Init(runtimeParam);
+    int ret = runtime->sender.Init(runtimeParam);
 
     if (ret != 0) {
 
@@ -9942,6 +10011,8 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
                gbCode != NULL ? gbCode : "");
 
+        runtime->current_ssrc = 0;
+        runtime->current_port = 0;
         return -23;
 
     }
@@ -9949,7 +10020,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
     if (requestType == kLiveStream && runtimeParam.transport == "tcp") {
-        ret = m_rtp_ps_sender.OpenSession();
+        ret = runtime->sender.OpenSession();
         if (ret != 0) {
             printf("[ProtocolManager] gb %s stream sender open failed ret=%d gb=%s remote=%s:%d\n",
                    StreamRequestTypeName(requestType),
@@ -9958,17 +10029,18 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
                    remoteIp.c_str(),
                    remotePort);
 
-            m_rtp_ps_sender.Init(m_cfg.gb_live);
-            m_rtp_ps_sender.OpenSession();
+            runtime->sender.Init(m_cfg.gb_live);
+            runtime->current_ssrc = 0;
+            runtime->current_port = 0;
             return -24;
         }
 
-        m_gb_current_media_port = m_rtp_ps_sender.GetLocalPort();
+        runtime->current_port = runtime->sender.GetLocalPort();
         printf("[ProtocolManager] gb %s stream sender prepared target=%s:%d local_port=%d gb=%s transport=%s open=pre_response\n",
                StreamRequestTypeName(requestType),
                remoteIp.c_str(),
                remotePort,
-               m_gb_current_media_port,
+               runtime->current_port,
                gbCode != NULL ? gbCode : "",
                runtimeParam.transport.c_str());
         return 0;
@@ -9996,7 +10068,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
 
-    ret = m_rtp_ps_sender.OpenSession();
+    ret = runtime->sender.OpenSession();
 
     if (ret != 0) {
 
@@ -10014,9 +10086,9 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
 
-        m_rtp_ps_sender.Init(m_cfg.gb_live);
-
-        m_rtp_ps_sender.OpenSession();
+        runtime->sender.Init(m_cfg.gb_live);
+        runtime->current_ssrc = 0;
+        runtime->current_port = 0;
 
         return -24;
 
@@ -10024,7 +10096,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
 
-    m_gb_current_media_port = m_rtp_ps_sender.GetLocalPort();
+    runtime->current_port = runtime->sender.GetLocalPort();
 
     printf("[ProtocolManager] gb %s stream sender target=%s:%d local_port=%d gb=%s\n",
 
@@ -10034,7 +10106,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
            remotePort,
 
-           m_gb_current_media_port,
+           runtime->current_port,
 
            gbCode != NULL ? gbCode : "");
 
@@ -10145,6 +10217,8 @@ int ProtocolManager::BuildGbResponseMediaInfo(const char* gbCode,
     out.FileSize = input->FileSize;
     CopyBounded(out.MediaF, sizeof(out.MediaF), input->MediaF);
 
+    const GbMediaSenderRuntime* runtime = GetGbMediaSenderRuntime(requestType);
+
 
 
     // For downstream media answers, advertise the device-side address rather than
@@ -10162,8 +10236,8 @@ int ProtocolManager::BuildGbResponseMediaInfo(const char* gbCode,
         }
 
         if (out.RtpType == kRtpOverTcpActive || out.RtpType == kRtpOverTcp) {
-            if (m_gb_current_media_port > 0) {
-                resolvedPort = static_cast<unsigned int>(m_gb_current_media_port);
+            if (runtime != NULL && runtime->current_port > 0) {
+                resolvedPort = static_cast<unsigned int>(runtime->current_port);
             } else if (m_cfg.gb_live.local_port > 0) {
                 resolvedPort = static_cast<unsigned int>(m_cfg.gb_live.local_port);
             }
@@ -10185,8 +10259,8 @@ int ProtocolManager::BuildGbResponseMediaInfo(const char* gbCode,
 
 
 
-    const unsigned int ssrcValue = (m_gb_current_media_ssrc > 0)
-                                       ? m_gb_current_media_ssrc
+    const unsigned int ssrcValue = (runtime != NULL && runtime->current_ssrc > 0)
+                                       ? runtime->current_ssrc
                                        : ((m_cfg.gb_live.ssrc > 0) ? (unsigned int)m_cfg.gb_live.ssrc : 1u);
 
     snprintf(out.Ssrc, sizeof(out.Ssrc), "%010u", ssrcValue);
@@ -10619,9 +10693,28 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
 
     }
 
+    GbReplaySession replacedSession;
+    bool needReplaceSession = false;
+    {
+        std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
+        if (m_gb_replay_session.active) {
+            replacedSession = m_gb_replay_session;
+            needReplaceSession = true;
+        }
+    }
+
+    if (needReplaceSession) {
+        printf("[ProtocolManager] gb %s request replace existing replay gb=%s old_handle=%p new_handle=%p\n",
+               download ? "download" : "playback",
+               replacedSession.gb_code.c_str(),
+               replacedSession.stream_handle,
+               handle);
+        HandleGbStopStreamRequest(replacedSession.stream_handle, replacedSession.gb_code.c_str());
+    }
 
 
-    printf("[ProtocolManager] gb %s request enter gb=%s handle=%p offered_transport=%s remote=%s:%d range=[%llu,%llu], stop existing sessions first\n",
+
+    printf("[ProtocolManager] gb %s request enter gb=%s handle=%p offered_transport=%s remote=%s:%d range=[%llu,%llu]\n",
            download ? "download" : "playback",
            gbCode != NULL ? gbCode : "",
            handle,
@@ -10630,8 +10723,6 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
            input->Port,
            (unsigned long long)input->StartTime,
            (unsigned long long)input->EndTime);
-
-    HandleGbStopStreamRequest(NULL, gbCode);
 
     int ret = ReconfigureGbLiveSender(input, gbCode, download ? kDownload : kPlayback);
 
@@ -10649,6 +10740,7 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
     GbReplayCallbackContext* callbackContext = new GbReplayCallbackContext();
     if (callbackContext == NULL) {
 
+        ResetGbMediaSenderRuntime(download ? kDownload : kPlayback);
         return -44;
 
     }
@@ -10705,6 +10797,7 @@ int ProtocolManager::StartGbReplaySession(StreamHandle handle, const char* gbCod
 
         }
 
+        ResetGbMediaSenderRuntime(download ? kDownload : kPlayback);
         return -42;
 
     }
@@ -10948,6 +11041,8 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data,
 
                    ended.sent_audio_frames);
 
+            ResetGbMediaSenderRuntime(ended.download ? kDownload : kPlayback);
+
         }
 
 
@@ -11025,7 +11120,7 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data,
 
         const bool keyFrame = (frameInfo->iFrameType == 1);
 
-        ret = m_rtp_ps_sender.SendVideoFrame((const uint8_t*)data, (size_t)size, pts90k, keyFrame);
+        ret = m_gb_replay_media_runtime.sender.SendVideoFrame((const uint8_t*)data, (size_t)size, pts90k, keyFrame);
 
 
 
@@ -11113,7 +11208,7 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data,
 
 
 
-        ret = m_rtp_ps_sender.SendAudioFrame(audioData, audioSize, pts90k);
+        ret = m_gb_replay_media_runtime.sender.SendAudioFrame(audioData, audioSize, pts90k);
 
         if (ret == 0) {
 
@@ -11498,6 +11593,10 @@ void ProtocolManager::ClearGbReplaySessionState()
     std::lock_guard<std::mutex> lock(m_gb_replay_mutex);
 
     m_gb_replay_session = GbReplaySession();
+
+    m_gb_replay_media_runtime.sender.CloseSession();
+    m_gb_replay_media_runtime.current_ssrc = 0;
+    m_gb_replay_media_runtime.current_port = 0;
 
 }
 
