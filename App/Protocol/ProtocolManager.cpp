@@ -608,6 +608,8 @@ static std::string ResolveBitrateTypeByGb2022Code(unsigned int value)
     }
 }
 
+static std::string TrimWhitespaceCopy(const std::string& text);
+
 static bool HasVideoEncodeStreamState(const media::VideoEncodeStreamState& state)
 {
     return state.has_codec ||
@@ -616,6 +618,89 @@ static bool HasVideoEncodeStreamState(const media::VideoEncodeStreamState& state
            state.has_bitrate ||
            state.has_bitrate_type ||
            state.has_gop;
+}
+
+static bool HasVideoEncodeStreamConfig(const media::VideoEncodeStreamConfig& config)
+{
+    return !config.codec.empty() ||
+           !config.resolution.empty() ||
+           config.fps > 0 ||
+           config.bitrate_kbps > 0 ||
+           !config.bitrate_type.empty();
+}
+
+static void MergeVideoEncodeStreamConfig(media::VideoEncodeStreamConfig* target,
+                                         const media::VideoEncodeStreamConfig& delta)
+{
+    if (target == NULL) {
+        return;
+    }
+
+    if (!delta.codec.empty()) {
+        target->codec = delta.codec;
+    }
+
+    if (!delta.resolution.empty()) {
+        target->resolution = delta.resolution;
+    }
+
+    if (delta.fps > 0) {
+        target->fps = delta.fps;
+    }
+
+    if (delta.bitrate_kbps > 0) {
+        target->bitrate_kbps = delta.bitrate_kbps;
+    }
+
+    if (!delta.bitrate_type.empty()) {
+        target->bitrate_type = delta.bitrate_type;
+    }
+}
+
+static bool IsVideoEncodeStreamConfigMatched(const media::VideoEncodeStreamConfig& desired,
+                                             const media::VideoEncodeStreamState* runtimeState)
+{
+    if (runtimeState == NULL) {
+        return false;
+    }
+
+    if (!desired.codec.empty()) {
+        if (!runtimeState->has_codec ||
+            NormalizeRkVideoCodec(runtimeState->codec) != NormalizeRkVideoCodec(desired.codec)) {
+            return false;
+        }
+    }
+
+    if (!desired.resolution.empty()) {
+        if (!runtimeState->has_resolution ||
+            NormalizeResolutionValue(runtimeState->resolution, 'x') !=
+                NormalizeResolutionValue(desired.resolution, 'x')) {
+            return false;
+        }
+    }
+
+    if (desired.fps > 0) {
+        if (!runtimeState->has_frame_rate ||
+            TrimWhitespaceCopy(runtimeState->frame_rate) != BuildFrameRateValue(desired.fps)) {
+            return false;
+        }
+    }
+
+    if (desired.bitrate_kbps > 0) {
+        if (!runtimeState->has_bitrate || runtimeState->bitrate_kbps != desired.bitrate_kbps) {
+            return false;
+        }
+    }
+
+    if (!desired.bitrate_type.empty()) {
+        if (!runtimeState->has_bitrate_type ||
+            ToLowerCopy(TrimWhitespaceCopy(runtimeState->bitrate_type)) !=
+                ToLowerCopy(TrimWhitespaceCopy(desired.bitrate_type))) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static std::string NormalizeHexDigest(const std::string& text)
@@ -1752,6 +1837,55 @@ static std::string NormalizeGbOsdTextTemplate(const std::string& textIn)
     return (ToLowerCopy(text) == "null") ? "" : text;
 }
 
+static bool ContainsToken(const std::string& text, const char* token)
+{
+    return token != NULL && text.find(token) != std::string::npos;
+}
+
+static std::string NormalizeVideoOsdDateStyleValue(const std::string& formatIn)
+{
+    const std::string format = ToLowerCopy(formatIn);
+    if (format.empty()) {
+        return "CHR-YYYY-MM-DD";
+    }
+
+    if (ContainsToken(format, "yyyy/mm/dd")) {
+        return "CHR-YYYY/MM/DD";
+    }
+    if (ContainsToken(format, "mm/dd/yyyy")) {
+        return "CHR-MM/DD/YYYY";
+    }
+    if (ContainsToken(format, "dd/mm/yyyy")) {
+        return "CHR-DD/MM/YYYY";
+    }
+    if (ContainsToken(format, "mm-dd-yyyy")) {
+        return "CHR-MM-DD-YYYY";
+    }
+    if (ContainsToken(format, "dd-mm-yyyy")) {
+        return "CHR-DD-MM-YYYY";
+    }
+
+    return "CHR-YYYY-MM-DD";
+}
+
+static std::string NormalizeVideoOsdTimeStyleValue(const std::string& formatIn)
+{
+    const std::string format = ToLowerCopy(formatIn);
+    if (format.empty()) {
+        return "24hour";
+    }
+
+    if (ContainsToken(format, "tt") ||
+        ContainsToken(format, " am") ||
+        ContainsToken(format, " pm") ||
+        ContainsToken(format, "a/p") ||
+        ContainsToken(format, "12hour")) {
+        return "12hour";
+    }
+
+    return "24hour";
+}
+
 static media::VideoOsdConfig BuildVideoOsdConfig(const protocol::GbOsdParam& desired)
 {
     media::VideoOsdConfig config;
@@ -1762,6 +1896,73 @@ static media::VideoOsdConfig BuildVideoOsdConfig(const protocol::GbOsdParam& des
     config.time_format = desired.time_format;
     config.position = desired.position;
     return config;
+}
+
+static bool IsVideoOsdConfigMatched(const media::VideoOsdConfig& desired,
+                                    const media::VideoOsdState* runtimeState)
+{
+    if (runtimeState == NULL) {
+        return false;
+    }
+
+    const std::string normalizedTextTemplate = NormalizeGbOsdTextTemplate(desired.text_template);
+    const int desiredTimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
+    const int desiredCustomTextEnabled = normalizedTextTemplate.empty() ? 0 : 1;
+    const int desiredMasterSwitch =
+        (desiredTimeEnabled != 0 || desired.event_enabled != 0 || desired.alert_enabled != 0) ? 1 : 0;
+
+    if (!runtimeState->has_master_enabled || runtimeState->master_enabled != desiredMasterSwitch) {
+        return false;
+    }
+
+    if (!runtimeState->has_time_enabled || runtimeState->time_enabled != desiredTimeEnabled) {
+        return false;
+    }
+
+    if (!runtimeState->has_text_enabled || runtimeState->text_enabled != desiredCustomTextEnabled) {
+        return false;
+    }
+
+    if (!desired.time_format.empty()) {
+        if (!runtimeState->has_date_style ||
+            runtimeState->date_style != NormalizeVideoOsdDateStyleValue(desired.time_format)) {
+            return false;
+        }
+
+        if (!runtimeState->has_time_style ||
+            runtimeState->time_style != NormalizeVideoOsdTimeStyleValue(desired.time_format)) {
+            return false;
+        }
+    }
+
+    if (!desired.position.empty()) {
+        int anchorX = 0;
+        int anchorY = 0;
+        if (!media::ResolveVideoOsdAnchor(desired.position, &anchorX, &anchorY)) {
+            return false;
+        }
+
+        if (!runtimeState->has_time_position ||
+            runtimeState->time_x != anchorX ||
+            runtimeState->time_y != anchorY) {
+            return false;
+        }
+
+        if (!runtimeState->has_text_position ||
+            runtimeState->text_x != anchorX ||
+            runtimeState->text_y != anchorY) {
+            return false;
+        }
+    }
+
+    if (desiredCustomTextEnabled != 0) {
+        if (!runtimeState->has_text ||
+            NormalizeGbOsdTextTemplate(runtimeState->text) != normalizedTextTemplate) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 static bool ParseResolutionPair(const std::string& resolutionIn, int* width, int* height)
@@ -7184,9 +7385,31 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     bool applyImageFlip = false;
 
+    bool queriedRuntimeImageFlip = false;
+
+    bool hasRuntimeImageFlip = false;
+
+    bool queriedRuntimeOsdState = false;
+
+    bool hasRuntimeOsdState = false;
+
+    bool queriedRuntimeVideoState = false;
+
+    bool hasRuntimeVideoState = false;
+
+    bool applyVideoConfig[2] = {false, false};
+
     int applyVideoError = 0;
 
+    media::VideoOsdState runtimeOsdState;
+
+    media::VideoEncodeState runtimeVideoState;
+
+    media::VideoEncodeStreamConfig desiredVideoConfig[2];
+
     std::string imageFlipMode;
+
+    std::string runtimeImageFlipMode;
 
     for (unsigned int index = 0; index < configParam.Num; ++index) {
 
@@ -7433,13 +7656,8 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             desired.fps = nextFps;
             desired.bitrate_kbps = nextBitrate;
             desired.bitrate_type = nextBitrateType;
-
-            const int videoRet = media::ApplyVideoEncodeStreamConfig(streamId, desired);
-            if (videoRet != 0 && applyVideoError == 0) {
-
-                applyVideoError = videoRet;
-
-            }
+            applyVideoConfig[streamId] = true;
+            MergeVideoEncodeStreamConfig(&desiredVideoConfig[streamId], desired);
 
             if (streamId == 0) {
 
@@ -7511,9 +7729,7 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
             }
 
-            printf("[ProtocolManager] gb config apply video_param_attribute ret=%d stream=%d codec=%s resolution=%s fps=%d bitrate_type=%u bitrate=%u gb=%s\n",
-
-                   videoRet,
+            printf("[ProtocolManager] gb config stage video_param_attribute stream=%d codec=%s resolution=%s fps=%d bitrate_type=%u bitrate=%u gb=%s\n",
 
                    streamId,
 
@@ -7536,6 +7752,14 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
         if (setting.SetType == kImageSetting) {
 
             handled = true;
+
+            if (!queriedRuntimeImageFlip) {
+
+                queriedRuntimeImageFlip = true;
+
+                hasRuntimeImageFlip = media::QueryVideoImageFlipMode(&runtimeImageFlipMode);
+
+            }
 
             const std::string nextMode = NormalizeGbImageFlipMode(
                 SafeStr(setting.unionSetParam.Image.FlipMode, sizeof(setting.unionSetParam.Image.FlipMode)));
@@ -7587,23 +7811,156 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
 
     if (applyImageFlip) {
-        const int imageRet = media::ApplyVideoImageFlipMode(imageFlipMode);
-        printf("[ProtocolManager] gb config image_flip dispatch ret=%d value=%s gb=%s\n",
-               imageRet,
-               NormalizeGbImageFlipMode(imageFlipMode).c_str(),
-               cmd->GBCode);
+        if (!queriedRuntimeImageFlip) {
+
+            queriedRuntimeImageFlip = true;
+
+            hasRuntimeImageFlip = media::QueryVideoImageFlipMode(&runtimeImageFlipMode);
+
+        }
+
+        const std::string normalizedTargetImageFlip = NormalizeGbImageFlipMode(imageFlipMode);
+
+        const std::string normalizedCurrentImageFlip = hasRuntimeImageFlip ?
+            NormalizeGbImageFlipMode(runtimeImageFlipMode) :
+            std::string();
+
+        if (hasRuntimeImageFlip && normalizedCurrentImageFlip == normalizedTargetImageFlip) {
+
+            printf("[ProtocolManager] gb config image_flip skip_apply current=%s value=%s gb=%s\n",
+                   normalizedCurrentImageFlip.c_str(),
+                   normalizedTargetImageFlip.c_str(),
+                   cmd->GBCode);
+
+        } else {
+
+            const int imageRet = media::ApplyVideoImageFlipMode(imageFlipMode);
+            printf("[ProtocolManager] gb config image_flip dispatch ret=%d current=%s value=%s gb=%s\n",
+                   imageRet,
+                   hasRuntimeImageFlip ? normalizedCurrentImageFlip.c_str() : "unknown",
+                   normalizedTargetImageFlip.c_str(),
+                   cmd->GBCode);
+
+        }
+    }
+
+    if (applyVideoConfig[0] || applyVideoConfig[1]) {
+        if (!queriedRuntimeVideoState) {
+            queriedRuntimeVideoState = true;
+            hasRuntimeVideoState = media::QueryVideoEncodeState(&runtimeVideoState);
+        }
+
+        for (int streamId = 0; streamId < 2; ++streamId) {
+            if (!applyVideoConfig[streamId]) {
+                continue;
+            }
+
+            const media::VideoEncodeStreamConfig& desired = desiredVideoConfig[streamId];
+            if (!HasVideoEncodeStreamConfig(desired)) {
+                printf("[ProtocolManager] gb config ignore empty video_param_attribute stream=%d gb=%s\n",
+                       streamId,
+                       cmd->GBCode);
+                continue;
+            }
+
+            const media::VideoEncodeStreamState* runtimeStreamState = NULL;
+            if (hasRuntimeVideoState) {
+                runtimeStreamState = (streamId == 0) ? &runtimeVideoState.main_stream : &runtimeVideoState.sub_stream;
+            }
+
+            if (hasRuntimeVideoState && IsVideoEncodeStreamConfigMatched(desired, runtimeStreamState)) {
+                printf("[ProtocolManager] gb config video_param_attribute skip_apply stream=%d current_codec=%s current_resolution=%s current_fps=%s current_bitrate_type=%s current_bitrate=%d value_codec=%s value_resolution=%s value_fps=%d value_bitrate_type=%s value_bitrate=%d gb=%s\n",
+                       streamId,
+                       (runtimeStreamState != NULL && runtimeStreamState->has_codec) ?
+                           runtimeStreamState->codec.c_str() : "unknown",
+                       (runtimeStreamState != NULL && runtimeStreamState->has_resolution) ?
+                           runtimeStreamState->resolution.c_str() : "unknown",
+                       (runtimeStreamState != NULL && runtimeStreamState->has_frame_rate) ?
+                           runtimeStreamState->frame_rate.c_str() : "unknown",
+                       (runtimeStreamState != NULL && runtimeStreamState->has_bitrate_type) ?
+                           runtimeStreamState->bitrate_type.c_str() : "unknown",
+                       (runtimeStreamState != NULL && runtimeStreamState->has_bitrate) ?
+                           runtimeStreamState->bitrate_kbps : -1,
+                       desired.codec.empty() ? "unchanged" : desired.codec.c_str(),
+                       desired.resolution.empty() ? "unchanged" : desired.resolution.c_str(),
+                       desired.fps,
+                       desired.bitrate_type.empty() ? "unchanged" : desired.bitrate_type.c_str(),
+                       desired.bitrate_kbps,
+                       cmd->GBCode);
+                continue;
+            }
+
+            const int videoRet = media::ApplyVideoEncodeStreamConfig(streamId, desired);
+            if (videoRet != 0 && applyVideoError == 0) {
+                applyVideoError = videoRet;
+            }
+
+            printf("[ProtocolManager] gb config video_param_attribute dispatch ret=%d stream=%d current_codec=%s current_resolution=%s current_fps=%s current_bitrate_type=%s current_bitrate=%d value_codec=%s value_resolution=%s value_fps=%d value_bitrate_type=%s value_bitrate=%d gb=%s\n",
+                   videoRet,
+                   streamId,
+                   (runtimeStreamState != NULL && runtimeStreamState->has_codec) ?
+                       runtimeStreamState->codec.c_str() : "unknown",
+                   (runtimeStreamState != NULL && runtimeStreamState->has_resolution) ?
+                       runtimeStreamState->resolution.c_str() : "unknown",
+                   (runtimeStreamState != NULL && runtimeStreamState->has_frame_rate) ?
+                       runtimeStreamState->frame_rate.c_str() : "unknown",
+                   (runtimeStreamState != NULL && runtimeStreamState->has_bitrate_type) ?
+                       runtimeStreamState->bitrate_type.c_str() : "unknown",
+                   (runtimeStreamState != NULL && runtimeStreamState->has_bitrate) ?
+                       runtimeStreamState->bitrate_kbps : -1,
+                   desired.codec.empty() ? "unchanged" : desired.codec.c_str(),
+                   desired.resolution.empty() ? "unchanged" : desired.resolution.c_str(),
+                   desired.fps,
+                   desired.bitrate_type.empty() ? "unchanged" : desired.bitrate_type.c_str(),
+                   desired.bitrate_kbps,
+                   cmd->GBCode);
+        }
     }
 
     if (applyOsdConfig) {
+        if (!queriedRuntimeOsdState) {
+            queriedRuntimeOsdState = true;
+            hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
+        }
 
-        const int osdRet = media::ApplyVideoOsdConfig(BuildVideoOsdConfig(m_cfg.gb_osd));
-        printf("[ProtocolManager] gb config osd dispatch ret=%d time=%d event=%d alert=%d position=%s gb=%s\n",
-               osdRet,
-               m_cfg.gb_osd.time_enabled,
-               m_cfg.gb_osd.event_enabled,
-               m_cfg.gb_osd.alert_enabled,
-               m_cfg.gb_osd.position.c_str(),
-               cmd->GBCode);
+        const media::VideoOsdConfig desiredOsdConfig = BuildVideoOsdConfig(m_cfg.gb_osd);
+        if (hasRuntimeOsdState && IsVideoOsdConfigMatched(desiredOsdConfig, &runtimeOsdState)) {
+            printf("[ProtocolManager] gb config osd skip_apply current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
+                   runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
+                   runtimeOsdState.has_time_enabled ? runtimeOsdState.time_enabled : -1,
+                   runtimeOsdState.has_text_enabled ? runtimeOsdState.text_enabled : -1,
+                   runtimeOsdState.has_text ? runtimeOsdState.text.c_str() : "unknown",
+                   runtimeOsdState.has_time_position ? runtimeOsdState.time_x : -1,
+                   runtimeOsdState.has_time_position ? runtimeOsdState.time_y : -1,
+                   runtimeOsdState.has_date_style ? runtimeOsdState.date_style.c_str() : "unknown",
+                   runtimeOsdState.has_time_style ? runtimeOsdState.time_style.c_str() : "unknown",
+                   desiredOsdConfig.time_enabled,
+                   desiredOsdConfig.event_enabled,
+                   desiredOsdConfig.alert_enabled,
+                   desiredOsdConfig.text_template.empty() ? "unchanged" : desiredOsdConfig.text_template.c_str(),
+                   desiredOsdConfig.position.empty() ? "unchanged" : desiredOsdConfig.position.c_str(),
+                   desiredOsdConfig.time_format.empty() ? "unchanged" : desiredOsdConfig.time_format.c_str(),
+                   cmd->GBCode);
+        } else {
+            const int osdRet = media::ApplyVideoOsdConfig(desiredOsdConfig);
+            printf("[ProtocolManager] gb config osd dispatch ret=%d current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
+                   osdRet,
+                   hasRuntimeOsdState && runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
+                   hasRuntimeOsdState && runtimeOsdState.has_time_enabled ? runtimeOsdState.time_enabled : -1,
+                   hasRuntimeOsdState && runtimeOsdState.has_text_enabled ? runtimeOsdState.text_enabled : -1,
+                   hasRuntimeOsdState && runtimeOsdState.has_text ? runtimeOsdState.text.c_str() : "unknown",
+                   hasRuntimeOsdState && runtimeOsdState.has_time_position ? runtimeOsdState.time_x : -1,
+                   hasRuntimeOsdState && runtimeOsdState.has_time_position ? runtimeOsdState.time_y : -1,
+                   hasRuntimeOsdState && runtimeOsdState.has_date_style ? runtimeOsdState.date_style.c_str() : "unknown",
+                   hasRuntimeOsdState && runtimeOsdState.has_time_style ? runtimeOsdState.time_style.c_str() : "unknown",
+                   desiredOsdConfig.time_enabled,
+                   desiredOsdConfig.event_enabled,
+                   desiredOsdConfig.alert_enabled,
+                   desiredOsdConfig.text_template.empty() ? "unchanged" : desiredOsdConfig.text_template.c_str(),
+                   desiredOsdConfig.position.empty() ? "unchanged" : desiredOsdConfig.position.c_str(),
+                   desiredOsdConfig.time_format.empty() ? "unchanged" : desiredOsdConfig.time_format.c_str(),
+                   cmd->GBCode);
+        }
 
     }
 

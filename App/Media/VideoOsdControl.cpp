@@ -383,6 +383,17 @@ bool QueryVideoOsdState(VideoOsdState* state)
         state->text_enabled = value;
     }
 
+    std::string text;
+    if (ReadVideoOsdStringValue(rk_osd_get_date_style, kVideoOsdDateTimeId, text)) {
+        state->has_date_style = true;
+        state->date_style = text;
+    }
+
+    if (ReadVideoOsdStringValue(rk_osd_get_time_style, kVideoOsdDateTimeId, text)) {
+        state->has_time_style = true;
+        state->time_style = text;
+    }
+
     int posX = 0;
     int posY = 0;
     if (ReadVideoOsdPosition(kVideoOsdDateTimeId, &posX, &posY) && posX >= 0 && posY >= 0) {
@@ -397,7 +408,6 @@ bool QueryVideoOsdState(VideoOsdState* state)
         state->text_y = posY;
     }
 
-    std::string text;
     if (ReadVideoOsdStringValue(rk_osd_get_display_text, kVideoOsdCustomTextId, text)) {
         state->has_text = true;
         state->text = text;
@@ -406,6 +416,8 @@ bool QueryVideoOsdState(VideoOsdState* state)
     return state->has_master_enabled ||
            state->has_time_enabled ||
            state->has_text_enabled ||
+           state->has_date_style ||
+           state->has_time_style ||
            state->has_time_position ||
            state->has_text_position ||
            state->has_text;

@@ -8,6 +8,8 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603281740 | gb_osd_encode_control_runtime_query | 修复 | ✅已完成 | [2026-03/202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) |
+| 202603281505 | gb_image_flip_control_runtime_query | 修复 | ✅已完成 | [2026-03/202603281505_gb_image_flip_control_runtime_query](2026-03/202603281505_gb_image_flip_control_runtime_query/) |
 | 202603281240 | gb_frame_mirror_media_boundary | 修复 | ✅已完成 | [2026-03/202603281240_gb_frame_mirror_media_boundary](2026-03/202603281240_gb_frame_mirror_media_boundary/) |
 | 202603281234 | gat1400_capture_media_boundary | 开发 | ✅已完成 | [2026-03/202603281234_gat1400_capture_media_boundary](2026-03/202603281234_gat1400_capture_media_boundary/) |
 | 202603281209 | gb_protocol_constants_cleanup | 轻量迭代 | ✅已完成 | [2026-03/202603281209_gb_protocol_constants_cleanup](2026-03/202603281209_gb_protocol_constants_cleanup/) |
@@ -61,6 +63,8 @@
 
 ### 2026-03
 
+- [202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) - 补齐 GB28181 OSD 与编码参数控制链路的运行态查询闭环，让 `ProtocolManager` 在平台设置命令上显式调用 `QueryVideoOsdState` / `QueryVideoEncodeState`
+- [202603281505_gb_image_flip_control_runtime_query](2026-03/202603281505_gb_image_flip_control_runtime_query/) - 补齐 GB28181 画面反转控制链路的运行态查询闭环，让 `ProtocolManager` 在平台设置命令上显式调用 `QueryVideoImageFlipMode`
 - [202603281240_gb_frame_mirror_media_boundary](2026-03/202603281240_gb_frame_mirror_media_boundary/) - 将 GB28181 画面反转协议对齐到平台实测 `FrameMirror`，并把设备侧 `get/set` 下沉到 `App/Media/VideoImageControl.*`
 - [202603281234_gat1400_capture_media_boundary](2026-03/202603281234_gat1400_capture_media_boundary/) - 新增 1400 抓拍桥接控制层，承接人脸 / 机动车抓拍及关联图片 / 视频 / 文件的入队通知，并由 `GAT1400ClientService` 自动消费上传
 - [202603281209_gb_protocol_constants_cleanup](2026-03/202603281209_gb_protocol_constants_cleanup/) - 收口 GB28181 共用协议常量、默认值和字符串映射，减少 `ProtocolManager`、XML 解析层和广播桥中的散落硬编码

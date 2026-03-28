@@ -31,6 +31,10 @@ struct VideoOsdState
     int time_enabled;
     bool has_text_enabled;
     int text_enabled;
+    bool has_date_style;
+    std::string date_style;
+    bool has_time_style;
+    std::string time_style;
     bool has_time_position;
     int time_x;
     int time_y;
@@ -47,6 +51,8 @@ struct VideoOsdState
           time_enabled(0),
           has_text_enabled(false),
           text_enabled(0),
+          has_date_style(false),
+          has_time_style(false),
           has_time_position(false),
           time_x(0),
           time_y(0),
