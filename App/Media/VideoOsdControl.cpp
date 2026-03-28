@@ -28,6 +28,8 @@ namespace
 static const int kVideoOsdDateTimeId = 1;
 static const int kVideoOsdCustomTextId = 2;
 static int g_cached_master_switch = -1;
+static int g_cached_event_switch = -1;
+static int g_cached_alert_switch = -1;
 
 static std::string ToLowerCopy(const std::string& text)
 {
@@ -230,9 +232,11 @@ int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
     int finalRet = 0;
     const std::string normalizedTextTemplate = NormalizeVideoOsdTextTemplate(desired.text_template);
     const int desiredTimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
+    const int desiredEventEnabled = (desired.event_enabled != 0) ? 1 : 0;
+    const int desiredAlertEnabled = (desired.alert_enabled != 0) ? 1 : 0;
     const int desiredCustomTextEnabled = normalizedTextTemplate.empty() ? 0 : 1;
     const int desiredMasterSwitch =
-        (desiredTimeEnabled != 0 || desired.event_enabled != 0 || desired.alert_enabled != 0) ? 1 : 0;
+        (desiredTimeEnabled != 0 || desiredEventEnabled != 0 || desiredAlertEnabled != 0) ? 1 : 0;
 
     // Capture only exposes a setter, so media side keeps the last applied master switch.
     if (g_cached_master_switch < 0 || g_cached_master_switch != desiredMasterSwitch) {
@@ -356,6 +360,11 @@ int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
         finalRet = MergeError(finalRet, ret);
     }
 
+    if (finalRet == 0) {
+        g_cached_event_switch = desiredEventEnabled;
+        g_cached_alert_switch = desiredAlertEnabled;
+    }
+
     return finalRet;
 }
 
@@ -370,6 +379,16 @@ bool QueryVideoOsdState(VideoOsdState* state)
     if (g_cached_master_switch >= 0) {
         state->has_master_enabled = true;
         state->master_enabled = g_cached_master_switch;
+    }
+
+    if (g_cached_event_switch >= 0) {
+        state->has_event_enabled = true;
+        state->event_enabled = g_cached_event_switch;
+    }
+
+    if (g_cached_alert_switch >= 0) {
+        state->has_alert_enabled = true;
+        state->alert_enabled = g_cached_alert_switch;
     }
 
     int value = 0;
@@ -413,7 +432,17 @@ bool QueryVideoOsdState(VideoOsdState* state)
         state->text = text;
     }
 
+    if (!state->has_master_enabled &&
+        (state->has_time_enabled || state->has_event_enabled || state->has_alert_enabled)) {
+        state->has_master_enabled = true;
+        state->master_enabled = ((state->has_time_enabled && state->time_enabled != 0) ||
+                                 (state->has_event_enabled && state->event_enabled != 0) ||
+                                 (state->has_alert_enabled && state->alert_enabled != 0)) ? 1 : 0;
+    }
+
     return state->has_master_enabled ||
+           state->has_event_enabled ||
+           state->has_alert_enabled ||
            state->has_time_enabled ||
            state->has_text_enabled ||
            state->has_date_style ||

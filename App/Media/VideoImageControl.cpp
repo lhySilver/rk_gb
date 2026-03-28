@@ -11,6 +11,8 @@ int rk_isp_set_image_flip(int cam_id, const char *value);
 namespace
 {
 
+static std::string g_cached_image_flip_mode;
+
 static std::string ToLowerCopy(const std::string& text)
 {
     std::string out = text;
@@ -61,11 +63,16 @@ bool QueryVideoImageFlipMode(std::string* value)
 
     const char* raw = NULL;
     if (rk_isp_get_image_flip(0, &raw) != 0 || raw == NULL || raw[0] == '\0') {
-        return false;
+        if (g_cached_image_flip_mode.empty()) {
+            return false;
+        }
+        *value = g_cached_image_flip_mode;
+        return true;
     }
 
     const std::string normalized = NormalizeVideoImageFlipMode(raw);
     *value = normalized.empty() ? std::string(raw) : normalized;
+    g_cached_image_flip_mode = *value;
     return !value->empty();
 }
 
@@ -82,6 +89,7 @@ int ApplyVideoImageFlipMode(const std::string& desiredMode)
     std::string currentMode;
     const bool currentKnown = QueryVideoImageFlipMode(&currentMode);
     if (currentKnown && currentMode == normalizedMode) {
+        g_cached_image_flip_mode = normalizedMode;
         return 0;
     }
 
@@ -90,6 +98,9 @@ int ApplyVideoImageFlipMode(const std::string& desiredMode)
            ret,
            normalizedMode.c_str(),
            currentKnown ? currentMode.c_str() : "unknown");
+    if (ret == 0) {
+        g_cached_image_flip_mode = normalizedMode;
+    }
     return ret;
 }
 

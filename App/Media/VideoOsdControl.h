@@ -27,6 +27,10 @@ struct VideoOsdState
 {
     bool has_master_enabled;
     int master_enabled;
+    bool has_event_enabled;
+    int event_enabled;
+    bool has_alert_enabled;
+    int alert_enabled;
     bool has_time_enabled;
     int time_enabled;
     bool has_text_enabled;
@@ -47,6 +51,10 @@ struct VideoOsdState
     VideoOsdState()
         : has_master_enabled(false),
           master_enabled(0),
+          has_event_enabled(false),
+          event_enabled(0),
+          has_alert_enabled(false),
+          alert_enabled(0),
           has_time_enabled(false),
           time_enabled(0),
           has_text_enabled(false),

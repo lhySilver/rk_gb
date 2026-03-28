@@ -26,6 +26,7 @@
 - 新增 `App/Media/GAT1400CaptureControl.*` 抓拍桥接层，供编码侧 / 算法侧以“人脸 / 机动车 + 图片 / 视频 / 文件”事件方式向 1400 模块投递待上传数据，并补齐调用方接入使用说明。
 
 ### 变更
+- 收口 GB28181 / GAT1400 对外部模块配置的运行态缓存：`ProtocolManager` 不再把 `gb_osd/gb_video/gb_image` 当作 OSD、编码参数、画面反转的运行态来源，改为统一从 `VideoOsdControl` / `VideoEncodeControl` / `VideoImageControl` 查询；`GAT1400ClientService` 也不再长期缓存 `m_gb_register / m_device_id`，而是按需解析当前 1400 设备 ID。
 - 补齐 GB28181 画面反转控制链路的媒体查询闭环：`ProtocolManager::HandleGbConfigControl` 处理平台 `FrameMirror/ImageFlip` 设置时，现会先显式调用 `media::QueryVideoImageFlipMode()` 读取运行态，再按需调用 `media::ApplyVideoImageFlipMode()` 下发，确保 GB 模块到媒体接口的 `query -> apply` 边界完整可见。
 - 补齐 GB28181 OSD / 编码参数控制链路的媒体查询闭环：`ProtocolManager::HandleGbConfigControl` 处理 `OSDConfig/SVACEncodeConfig/SVACDecodeConfig/VideoParamAttribute` 设置时，现会先显式调用 `media::QueryVideoOsdState()` / `media::QueryVideoEncodeState()` 读取运行态，再按最终目标配置决定 `skip_apply` 或调用 `ApplyVideoOsdConfig()` / `ApplyVideoEncodeStreamConfig()` 下发；其中 OSD 运行态额外补齐了 `date_style/time_style` 读取，便于协议层显式比对时间格式落地状态。
 - 收口 GB28181 协议层散落硬编码：新增 `App/Protocol/gb28181/GB28181ProtocolConstants.h` 统一默认设备 ID、注册/保活缺省值、分辨率摘要、音频 payload/mime、`ConfigType/CmdType` 字符串与 `FrameMirror` 映射，`ProtocolManager`、`GB28181XmlParser`、`GB28181BroadcastBridge` 现复用同一套定义。

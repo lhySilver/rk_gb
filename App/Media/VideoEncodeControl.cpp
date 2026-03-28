@@ -23,6 +23,8 @@ int rk_video_set_resolution(int stream_id, const char *value);
 namespace
 {
 
+static media::VideoEncodeStreamState g_cached_stream_state[2];
+
 static std::string ToLowerCopy(const std::string& text)
 {
     std::string out = text;
@@ -44,6 +46,11 @@ static const char* ResolveStreamName(int streamId)
         default:
             return "unknown";
     }
+}
+
+static bool IsValidStreamId(int streamId)
+{
+    return streamId == 0 || streamId == 1;
 }
 
 static std::string NormalizeVideoEncodeCodec(const std::string& codecIn)
@@ -130,6 +137,29 @@ static std::string BuildResolutionValue(int width, int height, char separator)
     return buffer;
 }
 
+static bool ParseResolutionPair(const std::string& value, int* width, int* height)
+{
+    if (width == NULL || height == NULL) {
+        return false;
+    }
+
+    *width = 0;
+    *height = 0;
+
+    const std::string normalized = NormalizeResolutionValue(value, 'x');
+    int parsedWidth = 0;
+    int parsedHeight = 0;
+    if (sscanf(normalized.c_str(), "%d%*[*xX]%d", &parsedWidth, &parsedHeight) != 2 ||
+        parsedWidth <= 0 ||
+        parsedHeight <= 0) {
+        return false;
+    }
+
+    *width = parsedWidth;
+    *height = parsedHeight;
+    return true;
+}
+
 static bool ReadVideoEncodeFrameRateString(int streamId, std::string& value)
 {
     char buffer[32] = {0};
@@ -178,6 +208,117 @@ static bool ReadVideoEncodeResolution(int streamId, int* width, int* height)
 static int MergeError(int current, int candidate)
 {
     return (current != 0) ? current : candidate;
+}
+
+static void UpdateCachedStreamStateFromQuery(int streamId, const media::VideoEncodeStreamState& state)
+{
+    if (!IsValidStreamId(streamId)) {
+        return;
+    }
+
+    media::VideoEncodeStreamState& cached = g_cached_stream_state[streamId];
+    if (state.has_codec) {
+        cached.has_codec = true;
+        cached.codec = state.codec;
+    }
+    if (state.has_resolution) {
+        cached.has_resolution = true;
+        cached.width = state.width;
+        cached.height = state.height;
+        cached.resolution = state.resolution;
+    }
+    if (state.has_frame_rate) {
+        cached.has_frame_rate = true;
+        cached.frame_rate = state.frame_rate;
+    }
+    if (state.has_bitrate) {
+        cached.has_bitrate = true;
+        cached.bitrate_kbps = state.bitrate_kbps;
+    }
+    if (state.has_bitrate_type) {
+        cached.has_bitrate_type = true;
+        cached.bitrate_type = state.bitrate_type;
+    }
+    if (state.has_gop) {
+        cached.has_gop = true;
+        cached.gop = state.gop;
+    }
+}
+
+static void FillMissingStreamStateFromCache(int streamId, media::VideoEncodeStreamState* state)
+{
+    if (state == NULL || !IsValidStreamId(streamId)) {
+        return;
+    }
+
+    const media::VideoEncodeStreamState& cached = g_cached_stream_state[streamId];
+    if (!state->has_codec && cached.has_codec) {
+        state->has_codec = true;
+        state->codec = cached.codec;
+    }
+    if (!state->has_resolution && cached.has_resolution) {
+        state->has_resolution = true;
+        state->width = cached.width;
+        state->height = cached.height;
+        state->resolution = cached.resolution;
+    }
+    if (!state->has_frame_rate && cached.has_frame_rate) {
+        state->has_frame_rate = true;
+        state->frame_rate = cached.frame_rate;
+    }
+    if (!state->has_bitrate && cached.has_bitrate) {
+        state->has_bitrate = true;
+        state->bitrate_kbps = cached.bitrate_kbps;
+    }
+    if (!state->has_bitrate_type && cached.has_bitrate_type) {
+        state->has_bitrate_type = true;
+        state->bitrate_type = cached.bitrate_type;
+    }
+    if (!state->has_gop && cached.has_gop) {
+        state->has_gop = true;
+        state->gop = cached.gop;
+    }
+}
+
+static void UpdateCachedStreamStateFromDesired(int streamId, const media::VideoEncodeStreamConfig& desired)
+{
+    if (!IsValidStreamId(streamId)) {
+        return;
+    }
+
+    media::VideoEncodeStreamState& cached = g_cached_stream_state[streamId];
+    const std::string normalizedCodec = NormalizeVideoEncodeCodec(desired.codec);
+    if (!normalizedCodec.empty()) {
+        cached.has_codec = true;
+        cached.codec = normalizedCodec;
+    }
+
+    if (!desired.resolution.empty()) {
+        int width = 0;
+        int height = 0;
+        if (ParseResolutionPair(desired.resolution, &width, &height)) {
+            cached.has_resolution = true;
+            cached.width = width;
+            cached.height = height;
+            cached.resolution = BuildResolutionValue(width, height, 'x');
+        }
+    }
+
+    if (desired.fps > 0) {
+        cached.has_frame_rate = true;
+        cached.frame_rate = BuildFrameRateValue(desired.fps);
+    }
+
+    if (desired.bitrate_kbps > 0) {
+        cached.has_bitrate = true;
+        cached.bitrate_kbps = desired.bitrate_kbps;
+    }
+
+    const std::string normalizedBitrateType = NormalizeVideoBitrateType(desired.bitrate_type);
+    if (!normalizedBitrateType.empty()) {
+        cached.has_bitrate_type = true;
+        cached.bitrate_type = normalizedBitrateType;
+    }
 }
 
 static std::string BuildResolutionSummary(const media::VideoEncodeState& state)
@@ -249,6 +390,9 @@ bool QueryVideoEncodeStreamState(int streamId, VideoEncodeStreamState* state)
         state->has_gop = true;
         state->gop = gop;
     }
+
+    UpdateCachedStreamStateFromQuery(streamId, *state);
+    FillMissingStreamStateFromCache(streamId, state);
 
     return state->has_codec ||
            state->has_resolution ||
@@ -361,6 +505,10 @@ int ApplyVideoEncodeStreamConfig(int streamId, const VideoEncodeStreamConfig& de
                    resolutionKnown ? currentResolution.c_str() : "unknown");
             finalRet = MergeError(finalRet, ret);
         }
+    }
+
+    if (finalRet == 0) {
+        UpdateCachedStreamStateFromDesired(streamId, desired);
     }
 
     return finalRet;

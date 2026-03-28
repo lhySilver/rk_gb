@@ -144,7 +144,7 @@ private:
     int DrainPendingCaptureEvents();
     int PostCaptureEvent(const media::GAT1400CaptureEvent& event);
 
-    int SnapshotConfig(ProtocolExternalConfig& cfg, GbRegisterParam& gbRegister, std::string& deviceId) const;
+    int SnapshotConfig(ProtocolExternalConfig& cfg, std::string& deviceId) const;
     void UpdateRegistState(regist_state state);
 
     void DispatchSubscribeAdd(const GAT_1400_Subscribe& subscribe);
@@ -154,8 +154,6 @@ private:
 private:
     mutable std::mutex m_state_mutex;
     ProtocolExternalConfig m_cfg;
-    GbRegisterParam m_gb_register;
-    std::string m_device_id;
     bool m_started;
     bool m_registered;
     regist_state m_regist_state;

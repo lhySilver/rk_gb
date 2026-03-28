@@ -1694,9 +1694,12 @@ static std::string BuildGbImagingCapabilityValue()
     return BuildGbCapabilityValue('1', std::vector<std::string>(), "1");
 }
 
-static std::string BuildGbStreamParamCapabilityValue(const protocol::ProtocolExternalConfig& cfg)
+static std::string BuildGbStreamParamCapabilityValue()
 {
-    if (cfg.gb_video.main_codec.empty() || cfg.gb_video.main_resolution.empty()) {
+    media::VideoEncodeState runtimeState;
+    if (!media::QueryVideoEncodeState(&runtimeState) ||
+        !runtimeState.main_stream.has_codec ||
+        !runtimeState.main_stream.has_resolution) {
         return BuildGbCapabilityValue('0', std::vector<std::string>(), "");
     }
     return BuildGbCapabilityValue('1', std::vector<std::string>(), "");
@@ -1886,15 +1889,68 @@ static std::string NormalizeVideoOsdTimeStyleValue(const std::string& formatIn)
     return "24hour";
 }
 
-static media::VideoOsdConfig BuildVideoOsdConfig(const protocol::GbOsdParam& desired)
+static std::string BuildGbOsdPositionValue(unsigned int x, unsigned int y);
+
+static std::string BuildGbOsdTimeFormatFromRuntimeState(const media::VideoOsdState* runtimeState)
+{
+    if (runtimeState == NULL) {
+        return "";
+    }
+
+    std::string datePart = "yyyy-MM-dd";
+    if (runtimeState->has_date_style) {
+        const std::string style = ToLowerCopy(TrimWhitespaceCopy(runtimeState->date_style));
+        if (ContainsToken(style, "yyyy/mm/dd")) {
+            datePart = "yyyy/MM/dd";
+        } else if (ContainsToken(style, "mm/dd/yyyy")) {
+            datePart = "MM/dd/yyyy";
+        } else if (ContainsToken(style, "dd/mm/yyyy")) {
+            datePart = "dd/MM/yyyy";
+        } else if (ContainsToken(style, "mm-dd-yyyy")) {
+            datePart = "MM-dd-yyyy";
+        } else if (ContainsToken(style, "dd-mm-yyyy")) {
+            datePart = "dd-MM-yyyy";
+        }
+    }
+
+    std::string timePart = "HH:mm:ss";
+    if (runtimeState->has_time_style) {
+        const std::string style = ToLowerCopy(TrimWhitespaceCopy(runtimeState->time_style));
+        if (ContainsToken(style, "12hour")) {
+            timePart = "hh:mm:ss tt";
+        }
+    }
+
+    return datePart + " " + timePart;
+}
+
+static media::VideoOsdConfig BuildVideoOsdConfigFromRuntimeState(const media::VideoOsdState* runtimeState)
 {
     media::VideoOsdConfig config;
-    config.time_enabled = desired.time_enabled;
-    config.event_enabled = desired.event_enabled;
-    config.alert_enabled = desired.alert_enabled;
-    config.text_template = NormalizeGbOsdTextTemplate(desired.text_template);
-    config.time_format = desired.time_format;
-    config.position = desired.position;
+    if (runtimeState == NULL) {
+        return config;
+    }
+
+    if (runtimeState->has_time_enabled) {
+        config.time_enabled = runtimeState->time_enabled;
+    }
+    if (runtimeState->has_event_enabled) {
+        config.event_enabled = runtimeState->event_enabled;
+    }
+    if (runtimeState->has_alert_enabled) {
+        config.alert_enabled = runtimeState->alert_enabled;
+    }
+    if (runtimeState->has_text_enabled && runtimeState->text_enabled != 0 && runtimeState->has_text) {
+        config.text_template = NormalizeGbOsdTextTemplate(runtimeState->text);
+    }
+    if (runtimeState->has_time_position) {
+        config.position = BuildGbOsdPositionValue((unsigned int)runtimeState->time_x,
+                                                  (unsigned int)runtimeState->time_y);
+    } else if (runtimeState->has_text_position) {
+        config.position = BuildGbOsdPositionValue((unsigned int)runtimeState->text_x,
+                                                  (unsigned int)runtimeState->text_y);
+    }
+    config.time_format = BuildGbOsdTimeFormatFromRuntimeState(runtimeState);
     return config;
 }
 
@@ -2005,9 +2061,8 @@ static void ResolveGbOsdCanvasSize(const std::string& configuredResolution,
     *width = (canvasWidth > 0) ? (unsigned int)canvasWidth : 0U;
 }
 
-static void ResolveConfiguredGbOsdPosition(const protocol::GbOsdParam& desired,
-                                           unsigned int* x,
-                                           unsigned int* y)
+static void ResolveDefaultGbOsdPosition(unsigned int* x,
+                                        unsigned int* y)
 {
     if (x == NULL || y == NULL) {
         return;
@@ -2015,9 +2070,7 @@ static void ResolveConfiguredGbOsdPosition(const protocol::GbOsdParam& desired,
 
     int anchorX = 0;
     int anchorY = 0;
-    if (!media::ResolveVideoOsdAnchor(desired.position, &anchorX, &anchorY)) {
-        (void)media::ResolveVideoOsdAnchor("top_left", &anchorX, &anchorY);
-    }
+    (void)media::ResolveVideoOsdAnchor("top_left", &anchorX, &anchorY);
 
     *x = (anchorX >= 0) ? (unsigned int)anchorX : 0U;
     *y = (anchorY >= 0) ? (unsigned int)anchorY : 0U;
@@ -2047,8 +2100,7 @@ static std::string BuildGbOsdPositionValue(unsigned int x, unsigned int y)
     return buffer;
 }
 
-static void BuildGbOsdQueryConfig(const protocol::GbOsdParam& desired,
-                                  const std::string& configuredResolution,
+static void BuildGbOsdQueryConfig(const media::VideoEncodeState* runtimeVideoState,
                                   const media::VideoOsdState* runtimeState,
                                   CfgOsdConfig* out)
 {
@@ -2057,13 +2109,15 @@ static void BuildGbOsdQueryConfig(const protocol::GbOsdParam& desired,
     }
 
     memset(out, 0, sizeof(*out));
+    std::string configuredResolution;
+    if (runtimeVideoState != NULL && runtimeVideoState->main_stream.has_resolution) {
+        configuredResolution = runtimeVideoState->main_stream.resolution;
+    }
     ResolveGbOsdCanvasSize(configuredResolution, &out->Length, &out->Width);
-    ResolveConfiguredGbOsdPosition(desired, &out->TimeX, &out->TimeY);
+    ResolveDefaultGbOsdPosition(&out->TimeX, &out->TimeY);
 
     if (runtimeState != NULL && runtimeState->has_time_enabled) {
         out->TimeEnable = (runtimeState->time_enabled != 0) ? 1U : 0U;
-    } else {
-        out->TimeEnable = (desired.time_enabled != 0) ? 1U : 0U;
     }
 
     if (runtimeState != NULL &&
@@ -2074,9 +2128,9 @@ static void BuildGbOsdQueryConfig(const protocol::GbOsdParam& desired,
         out->TimeY = (unsigned int)runtimeState->time_y;
     }
 
-    out->TimeType = ResolveGbOsdTimeType(desired.time_format);
+    out->TimeType = ResolveGbOsdTimeType(BuildGbOsdTimeFormatFromRuntimeState(runtimeState));
 
-    std::string textTemplate = NormalizeGbOsdTextTemplate(desired.text_template);
+    std::string textTemplate;
     if (runtimeState != NULL && runtimeState->has_text) {
         const std::string normalizedRuntimeText = NormalizeGbOsdTextTemplate(runtimeState->text);
         if (!normalizedRuntimeText.empty()) {
@@ -3760,14 +3814,6 @@ int ProtocolManager::Start()
                m_cfg.gb_listen.target_port);
     }
 
-    {
-        const int imageRet = media::ApplyVideoImageFlipMode(m_cfg.gb_image.flip_mode);
-        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=image_flip value=%s stage=start\n",
-               imageRet,
-               NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode).c_str());
-    }
-
-
     if (m_cfg.gb_register.enabled != 0) {
         BindGbClientSdk();
         ret = StartGbClientLifecycle();
@@ -3978,37 +4024,6 @@ int ProtocolManager::ReloadExternalConfig()
 
                                    (m_cfg.gb_register.model != latest.gb_register.model);
 
-    const bool applyMediaConfig = (m_cfg.gb_video.main_codec != latest.gb_video.main_codec) ||
-
-                                  (m_cfg.gb_video.main_resolution != latest.gb_video.main_resolution) ||
-
-                                  (m_cfg.gb_video.main_fps != latest.gb_video.main_fps) ||
-
-                                  (m_cfg.gb_video.main_bitrate_kbps != latest.gb_video.main_bitrate_kbps) ||
-
-                                  (m_cfg.gb_video.sub_codec != latest.gb_video.sub_codec) ||
-
-                                  (m_cfg.gb_video.sub_resolution != latest.gb_video.sub_resolution) ||
-
-                                  (m_cfg.gb_video.sub_fps != latest.gb_video.sub_fps) ||
-
-                                  (m_cfg.gb_video.sub_bitrate_kbps != latest.gb_video.sub_bitrate_kbps) ||
-
-                                  (m_cfg.gb_image.flip_mode != latest.gb_image.flip_mode) ||
-
-                                  (m_cfg.gb_osd.text_template != latest.gb_osd.text_template) ||
-
-                                  (m_cfg.gb_osd.time_format != latest.gb_osd.time_format) ||
-
-                                  (m_cfg.gb_osd.position != latest.gb_osd.position) ||
-
-                                  (m_cfg.gb_osd.time_enabled != latest.gb_osd.time_enabled) ||
-
-                                  (m_cfg.gb_osd.event_enabled != latest.gb_osd.event_enabled) ||
-
-                                  (m_cfg.gb_osd.alert_enabled != latest.gb_osd.alert_enabled);
-    const bool applyImageFlipConfig = (m_cfg.gb_image.flip_mode != latest.gb_image.flip_mode);
-
     const bool reloadGat = (m_cfg.gat_register.scheme != latest.gat_register.scheme) ||
 
                            (m_cfg.gat_register.server_ip != latest.gat_register.server_ip) ||
@@ -4080,8 +4095,7 @@ int ProtocolManager::ReloadExternalConfig()
 
            m_started ? 1 : 0);
 
-    (void)applyMediaConfig;
-    // GB 外部配置的媒体参数变更当前只做配置更新，设备侧是否即时重载仍由显式重启路径控制。
+    // OSD / 编码参数 / 图像翻转属于外部媒体模块运行态，GB 侧不在 reload 时直接下发。
 
 
 
@@ -4163,13 +4177,6 @@ int ProtocolManager::ReloadExternalConfig()
                        m_cfg.gb_listen.target_port);
             }
 
-        }
-
-        if (applyImageFlipConfig) {
-            const int imageRet = media::ApplyVideoImageFlipMode(m_cfg.gb_image.flip_mode);
-            printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=image_flip value=%s stage=reload\n",
-                   imageRet,
-                   NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode).c_str());
         }
 
         if (reloadGbLifecycle) {
@@ -7399,9 +7406,17 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     bool applyVideoConfig[2] = {false, false};
 
+    bool desiredOsdConfigInitialized = false;
+
+    int applyImageError = 0;
+
+    int applyOsdError = 0;
+
     int applyVideoError = 0;
 
     media::VideoOsdState runtimeOsdState;
+
+    media::VideoOsdConfig desiredOsdConfig;
 
     media::VideoEncodeState runtimeVideoState;
 
@@ -7493,29 +7508,16 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             const int nextEventEnabledInt = nextEventEnabled ? 1 : 0;
             const int nextAlertEnabledInt = nextAlertEnabled ? 1 : 0;
 
-            if (m_cfg.gb_osd.time_enabled != nextTimeEnabledInt) {
-
-                m_cfg.gb_osd.time_enabled = nextTimeEnabledInt;
-
-                updated = true;
-
+            if (!desiredOsdConfigInitialized) {
+                queriedRuntimeOsdState = true;
+                hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
+                desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+                    hasRuntimeOsdState ? &runtimeOsdState : NULL);
+                desiredOsdConfigInitialized = true;
             }
-
-            if (m_cfg.gb_osd.event_enabled != nextEventEnabledInt) {
-
-                m_cfg.gb_osd.event_enabled = nextEventEnabledInt;
-
-                updated = true;
-
-            }
-
-            if (m_cfg.gb_osd.alert_enabled != nextAlertEnabledInt) {
-
-                m_cfg.gb_osd.alert_enabled = nextAlertEnabledInt;
-
-                updated = true;
-
-            }
+            desiredOsdConfig.time_enabled = nextTimeEnabledInt;
+            desiredOsdConfig.event_enabled = nextEventEnabledInt;
+            desiredOsdConfig.alert_enabled = nextAlertEnabledInt;
 
             applyOsdConfig = true;
 
@@ -7549,35 +7551,24 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
             const int nextTimeEnabled = (osd.TimeEnable != 0) ? 1 : 0;
 
-            if (m_cfg.gb_osd.time_enabled != nextTimeEnabled) {
-
-                m_cfg.gb_osd.time_enabled = nextTimeEnabled;
-
-                updated = true;
-
+            if (!desiredOsdConfigInitialized) {
+                queriedRuntimeOsdState = true;
+                hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
+                desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+                    hasRuntimeOsdState ? &runtimeOsdState : NULL);
+                desiredOsdConfigInitialized = true;
             }
+            desiredOsdConfig.time_enabled = nextTimeEnabled;
 
             const std::string nextPosition = BuildGbOsdPositionValue(osd.TimeX, osd.TimeY);
 
-            if (!nextPosition.empty() && m_cfg.gb_osd.position != nextPosition) {
-
-                m_cfg.gb_osd.position = nextPosition;
-
-                updated = true;
-
+            if (!nextPosition.empty()) {
+                desiredOsdConfig.position = nextPosition;
             }
 
             const std::string nextTimeFormat = ResolveGbOsdTimeFormat(osd.TimeType);
 
-            if (m_cfg.gb_osd.time_format != nextTimeFormat) {
-
-                m_cfg.gb_osd.time_format = nextTimeFormat;
-
-                updated = true;
-
-            }
-
-            std::string nextTextTemplate = m_cfg.gb_osd.text_template;
+            std::string nextTextTemplate = desiredOsdConfig.text_template;
 
             if (osd.TextEnable == 0) {
 
@@ -7590,13 +7581,8 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
             }
 
-            if (m_cfg.gb_osd.text_template != nextTextTemplate) {
-
-                m_cfg.gb_osd.text_template = nextTextTemplate;
-
-                updated = true;
-
-            }
+            desiredOsdConfig.time_format = nextTimeFormat;
+            desiredOsdConfig.text_template = nextTextTemplate;
 
             printf("[ProtocolManager] gb config apply osd_config length=%u width=%u time_enable=%u time_type=%u time_pos=%u,%u text_enable=%u text_num=%u gb=%s\n",
 
@@ -7659,76 +7645,6 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             applyVideoConfig[streamId] = true;
             MergeVideoEncodeStreamConfig(&desiredVideoConfig[streamId], desired);
 
-            if (streamId == 0) {
-
-                if (!nextCodec.empty() && m_cfg.gb_video.main_codec != nextCodec) {
-
-                    m_cfg.gb_video.main_codec = nextCodec;
-
-                    updated = true;
-
-                }
-
-                if (!nextResolution.empty() && m_cfg.gb_video.main_resolution != nextResolution) {
-
-                    m_cfg.gb_video.main_resolution = nextResolution;
-
-                    updated = true;
-
-                }
-
-                if (nextFps > 0 && m_cfg.gb_video.main_fps != nextFps) {
-
-                    m_cfg.gb_video.main_fps = nextFps;
-
-                    updated = true;
-
-                }
-
-                if (nextBitrate > 0 && m_cfg.gb_video.main_bitrate_kbps != nextBitrate) {
-
-                    m_cfg.gb_video.main_bitrate_kbps = nextBitrate;
-
-                    updated = true;
-
-                }
-
-            } else {
-
-                if (!nextCodec.empty() && m_cfg.gb_video.sub_codec != nextCodec) {
-
-                    m_cfg.gb_video.sub_codec = nextCodec;
-
-                    updated = true;
-
-                }
-
-                if (!nextResolution.empty() && m_cfg.gb_video.sub_resolution != nextResolution) {
-
-                    m_cfg.gb_video.sub_resolution = nextResolution;
-
-                    updated = true;
-
-                }
-
-                if (nextFps > 0 && m_cfg.gb_video.sub_fps != nextFps) {
-
-                    m_cfg.gb_video.sub_fps = nextFps;
-
-                    updated = true;
-
-                }
-
-                if (nextBitrate > 0 && m_cfg.gb_video.sub_bitrate_kbps != nextBitrate) {
-
-                    m_cfg.gb_video.sub_bitrate_kbps = nextBitrate;
-
-                    updated = true;
-
-                }
-
-            }
-
             printf("[ProtocolManager] gb config stage video_param_attribute stream=%d codec=%s resolution=%s fps=%d bitrate_type=%u bitrate=%u gb=%s\n",
 
                    streamId,
@@ -7769,14 +7685,6 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
                 imageFlipMode = nextMode;
 
                 applyImageFlip = true;
-
-                if (m_cfg.gb_image.flip_mode != nextMode) {
-
-                    m_cfg.gb_image.flip_mode = nextMode;
-
-                    updated = true;
-
-                }
 
                 printf("[ProtocolManager] gb config apply image_flip=%s frame_mirror=%s gb=%s\n",
 
@@ -7835,6 +7743,9 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
         } else {
 
             const int imageRet = media::ApplyVideoImageFlipMode(imageFlipMode);
+            if (imageRet != 0 && applyImageError == 0) {
+                applyImageError = imageRet;
+            }
             printf("[ProtocolManager] gb config image_flip dispatch ret=%d current=%s value=%s gb=%s\n",
                    imageRet,
                    hasRuntimeImageFlip ? normalizedCurrentImageFlip.c_str() : "unknown",
@@ -7923,7 +7834,11 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
         }
 
-        const media::VideoOsdConfig desiredOsdConfig = BuildVideoOsdConfig(m_cfg.gb_osd);
+        if (!desiredOsdConfigInitialized) {
+            desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+                hasRuntimeOsdState ? &runtimeOsdState : NULL);
+            desiredOsdConfigInitialized = true;
+        }
         if (hasRuntimeOsdState && IsVideoOsdConfigMatched(desiredOsdConfig, &runtimeOsdState)) {
             printf("[ProtocolManager] gb config osd skip_apply current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
                    runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
@@ -7943,6 +7858,9 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
                    cmd->GBCode);
         } else {
             const int osdRet = media::ApplyVideoOsdConfig(desiredOsdConfig);
+            if (osdRet != 0 && applyOsdError == 0) {
+                applyOsdError = osdRet;
+            }
             printf("[ProtocolManager] gb config osd dispatch ret=%d current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
                    osdRet,
                    hasRuntimeOsdState && runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
@@ -7963,6 +7881,19 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
         }
 
     }
+
+    const int finalOsdTimeEnabled = applyOsdConfig ?
+        desiredOsdConfig.time_enabled :
+        ((hasRuntimeOsdState && runtimeOsdState.has_time_enabled) ? runtimeOsdState.time_enabled : 0);
+    const int finalOsdEventEnabled = applyOsdConfig ?
+        desiredOsdConfig.event_enabled :
+        ((hasRuntimeOsdState && runtimeOsdState.has_event_enabled) ? runtimeOsdState.event_enabled : 0);
+    const int finalOsdAlertEnabled = applyOsdConfig ?
+        desiredOsdConfig.alert_enabled :
+        ((hasRuntimeOsdState && runtimeOsdState.has_alert_enabled) ? runtimeOsdState.alert_enabled : 0);
+    const std::string finalImageFlip = applyImageFlip ?
+        NormalizeGbImageFlipMode(imageFlipMode) :
+        (hasRuntimeImageFlip ? NormalizeGbImageFlipMode(runtimeImageFlipMode) : std::string("unknown"));
 
     if (updated && m_provider.get() != NULL) {
 
@@ -7992,15 +7923,15 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
            m_cfg.gb_keepalive.max_retry,
 
-           m_cfg.gb_osd.time_enabled,
+           finalOsdTimeEnabled,
 
-           m_cfg.gb_osd.event_enabled,
+           finalOsdEventEnabled,
 
-           m_cfg.gb_osd.alert_enabled,
+           finalOsdAlertEnabled,
 
-           NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode).c_str(),
+           finalImageFlip.c_str(),
 
-           ResolveGbFrameMirrorValue(m_cfg.gb_image.flip_mode).c_str(),
+           ResolveGbFrameMirrorValue(finalImageFlip).c_str(),
 
            cmd->GBCode);
 
@@ -8017,6 +7948,18 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
     if (applyVideoError != 0) {
 
         return applyVideoError;
+
+    }
+
+    if (applyOsdError != 0) {
+
+        return applyOsdError;
+
+    }
+
+    if (applyImageError != 0) {
+
+        return applyImageError;
 
     }
 
@@ -8920,7 +8863,7 @@ int ProtocolManager::ResponseGbQueryDeviceInfo(ResponseHandle handle, const Quer
                 BuildGbImagingCapabilityValue());
     CopyBounded(info.device_capability_list.StreamPeramCapability,
                 sizeof(info.device_capability_list.StreamPeramCapability),
-                BuildGbStreamParamCapabilityValue(m_cfg));
+                BuildGbStreamParamCapabilityValue());
     CopyBounded(info.device_capability_list.SupplyLightCapability,
                 sizeof(info.device_capability_list.SupplyLightCapability),
                 BuildGbSupplyLightCapabilityValue());
@@ -9330,36 +9273,39 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
         SafeStr(param->GBCode, sizeof(param->GBCode)),
         m_cfg);
 
-    int runtimeOsdEnabled = ((m_cfg.gb_osd.time_enabled != 0) ||
-                             (m_cfg.gb_osd.event_enabled != 0) ||
-                             (m_cfg.gb_osd.alert_enabled != 0)) ? 1 : 0;
-
     media::VideoOsdState runtimeOsdState;
     const bool hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
-    if (hasRuntimeOsdState && runtimeOsdState.has_master_enabled) {
-        runtimeOsdEnabled = runtimeOsdState.master_enabled;
-    }
+    const int runtimeOsdTimeEnabled =
+        (hasRuntimeOsdState && runtimeOsdState.has_time_enabled) ? runtimeOsdState.time_enabled : 0;
+    const int runtimeOsdEventEnabled =
+        (hasRuntimeOsdState && runtimeOsdState.has_event_enabled) ? runtimeOsdState.event_enabled : 0;
+    const int runtimeOsdAlertEnabled =
+        (hasRuntimeOsdState && runtimeOsdState.has_alert_enabled) ? runtimeOsdState.alert_enabled : 0;
+    const int runtimeOsdEnabled =
+        (hasRuntimeOsdState && runtimeOsdState.has_master_enabled) ?
+            runtimeOsdState.master_enabled :
+            ((runtimeOsdTimeEnabled != 0 || runtimeOsdEventEnabled != 0 || runtimeOsdAlertEnabled != 0) ? 1 : 0);
 
     media::VideoEncodeState runtimeVideoState;
     const bool hasRuntimeVideoState = media::QueryVideoEncodeState(&runtimeVideoState);
     std::string runtimeImageFlip;
     const bool hasRuntimeImageFlip = media::QueryVideoImageFlipMode(&runtimeImageFlip);
 
-    std::string mainCodec = NormalizeRkVideoCodec(m_cfg.gb_video.main_codec);
+    std::string mainCodec;
 
-    std::string subCodec = NormalizeRkVideoCodec(m_cfg.gb_video.sub_codec);
+    std::string subCodec;
 
-    std::string mainResolution = NormalizeResolutionValue(m_cfg.gb_video.main_resolution, 'x');
+    std::string mainResolution;
 
-    std::string subResolution = NormalizeResolutionValue(m_cfg.gb_video.sub_resolution, 'x');
+    std::string subResolution;
 
-    std::string mainFrameRate = BuildFrameRateValue(m_cfg.gb_video.main_fps);
+    std::string mainFrameRate;
 
-    std::string subFrameRate = BuildFrameRateValue(m_cfg.gb_video.sub_fps);
+    std::string subFrameRate;
 
-    int mainBitrate = m_cfg.gb_video.main_bitrate_kbps;
+    int mainBitrate = 0;
 
-    int subBitrate = m_cfg.gb_video.sub_bitrate_kbps;
+    int subBitrate = 0;
 
     std::string mainBitrateType = protocol::gb28181::kDefaultBitrateType;
 
@@ -9478,10 +9424,9 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
                     BuildGbVideoResolutionSummary(hasRuntimeVideoState ? &runtimeVideoState : NULL));
 
-        std::string imageFlip = NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode);
-        if (hasRuntimeImageFlip) {
-            imageFlip = NormalizeGbImageFlipMode(runtimeImageFlip);
-        }
+        std::string imageFlip = hasRuntimeImageFlip ?
+            NormalizeGbImageFlipMode(runtimeImageFlip) :
+            std::string();
 
         CopyBounded(item.UnionCfgParam.CfgVideoOpt.ImageFlip,
 
@@ -9501,10 +9446,9 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
         item.CfgType = kFrameMirrorConfig;
 
-        std::string imageFlip = NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode);
-        if (hasRuntimeImageFlip) {
-            imageFlip = NormalizeGbImageFlipMode(runtimeImageFlip);
-        }
+        std::string imageFlip = hasRuntimeImageFlip ?
+            NormalizeGbImageFlipMode(runtimeImageFlip) :
+            std::string();
 
         CopyBounded(item.UnionCfgParam.FrameMirror.FrameMirror,
 
@@ -9601,11 +9545,11 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
         item.UnionCfgParam.CfgEncode.stuRoiParam.aryParam = NULL;
 
-        item.UnionCfgParam.CfgEncode.stuSurveilParam.TimeShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.time_enabled : 0U;
+        item.UnionCfgParam.CfgEncode.stuSurveilParam.TimeShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdTimeEnabled : 0U;
 
-        item.UnionCfgParam.CfgEncode.stuSurveilParam.EventShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.event_enabled : 0U;
+        item.UnionCfgParam.CfgEncode.stuSurveilParam.EventShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdEventEnabled : 0U;
 
-        item.UnionCfgParam.CfgEncode.stuSurveilParam.AlertShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.alert_enabled : 0U;
+        item.UnionCfgParam.CfgEncode.stuSurveilParam.AlertShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdAlertEnabled : 0U;
 
         item.UnionCfgParam.CfgEncode.AudioRecognitionFlag.AudioRecognitionFlag = 0;
 
@@ -9623,11 +9567,11 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
         item.CfgType = kSVACDecodeConfig;
 
-        item.UnionCfgParam.CfgDecode.stuSurveilParam.TimeShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.time_enabled : 0U;
+        item.UnionCfgParam.CfgDecode.stuSurveilParam.TimeShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdTimeEnabled : 0U;
 
-        item.UnionCfgParam.CfgDecode.stuSurveilParam.EventShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.event_enabled : 0U;
+        item.UnionCfgParam.CfgDecode.stuSurveilParam.EventShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdEventEnabled : 0U;
 
-        item.UnionCfgParam.CfgDecode.stuSurveilParam.AlertShowFlag = runtimeOsdEnabled ? (unsigned int)m_cfg.gb_osd.alert_enabled : 0U;
+        item.UnionCfgParam.CfgDecode.stuSurveilParam.AlertShowFlag = runtimeOsdEnabled ? (unsigned int)runtimeOsdAlertEnabled : 0U;
 
         configList.push_back(item);
 
@@ -9641,8 +9585,7 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
         item.CfgType = kOsdConfig;
 
-        BuildGbOsdQueryConfig(m_cfg.gb_osd,
-                              m_cfg.gb_video.main_resolution,
+        BuildGbOsdQueryConfig(hasRuntimeVideoState ? &runtimeVideoState : NULL,
                               hasRuntimeOsdState ? &runtimeOsdState : NULL,
                               &item.UnionCfgParam.CfgOsd);
 
@@ -9664,7 +9607,7 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
     const std::string queryImageFlip = hasRuntimeImageFlip ?
         NormalizeGbImageFlipMode(runtimeImageFlip) :
-        NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode);
+        std::string("unknown");
 
     printf("[ProtocolManager] gb query config response num=%u main_codec=%s main_resolution=%s main_fps=%s main_bitrate_type=%s main_bitrate=%d main_gop=%d sub_codec=%s sub_resolution=%s sub_fps=%s sub_bitrate_type=%s sub_bitrate=%d sub_gop=%d image_flip=%s frame_mirror=%s osd(time=%d,event=%d,alert=%d,enabled=%d) gb=%s\n",
 
@@ -9698,11 +9641,11 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
            ResolveGbFrameMirrorValue(queryImageFlip).c_str(),
 
-           m_cfg.gb_osd.time_enabled,
+           runtimeOsdTimeEnabled,
 
-           m_cfg.gb_osd.event_enabled,
+           runtimeOsdEventEnabled,
 
-           m_cfg.gb_osd.alert_enabled,
+           runtimeOsdAlertEnabled,
 
            runtimeOsdEnabled,
 

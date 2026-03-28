@@ -1,4 +1,5 @@
 ﻿#include "GAT1400ClientService.h"
+#include "ProtocolManager.h"
 #include "ProtocolLog.h"
 
 #include <algorithm>
@@ -81,6 +82,39 @@ void CopyToArray(char* dst, size_t dstSize, const std::string& value)
     if (!value.empty()) {
         strncpy(dst, value.c_str(), dstSize - 1);
     }
+}
+
+std::string ResolveGbRuntimeDeviceId(const GbRegisterParam& gbRegister)
+{
+    if (!gbRegister.device_id.empty()) {
+        return gbRegister.device_id;
+    }
+    return gbRegister.username;
+}
+
+std::string ResolveGatRuntimeDeviceId(const ProtocolExternalConfig& cfg,
+                                      const GbRegisterParam* gbRegisterOverride = NULL)
+{
+    if (!cfg.gat_register.device_id.empty()) {
+        return cfg.gat_register.device_id;
+    }
+
+    if (gbRegisterOverride != NULL) {
+        const std::string gbDeviceId = ResolveGbRuntimeDeviceId(*gbRegisterOverride);
+        if (!gbDeviceId.empty()) {
+            return gbDeviceId;
+        }
+    } else {
+        const ProtocolManager* manager = ProtocolManager::InstanceIfCreated();
+        if (manager != NULL) {
+            const std::string gbDeviceId = ResolveGbRuntimeDeviceId(manager->GetGbRegisterConfig());
+            if (!gbDeviceId.empty()) {
+                return gbDeviceId;
+            }
+        }
+    }
+
+    return cfg.gat_register.username;
 }
 
 std::string FormatCurrentTime()
@@ -1001,7 +1035,6 @@ GAT1400ClientService::~GAT1400ClientService()
 }
 
 int GAT1400ClientService::SnapshotConfig(ProtocolExternalConfig& cfg,
-                                         GbRegisterParam& gbRegister,
                                          std::string& deviceId) const
 {
     std::lock_guard<std::mutex> lock(m_state_mutex);
@@ -1009,8 +1042,7 @@ int GAT1400ClientService::SnapshotConfig(ProtocolExternalConfig& cfg,
         return -1;
     }
     cfg = m_cfg;
-    gbRegister = m_gb_register;
-    deviceId = m_device_id;
+    deviceId = ResolveGatRuntimeDeviceId(cfg);
     return 0;
 }
 
@@ -1590,9 +1622,8 @@ int GAT1400ClientService::EnqueuePendingUpload(const char* action,
                                                const std::string& lastError)
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
     if (!EnsureDirectoryExists(cfg.gat_upload.queue_dir)) {
@@ -1699,9 +1730,8 @@ void GAT1400ClientService::ClearPendingUploadsLocked()
 int GAT1400ClientService::ReplayPendingUploads()
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -1814,9 +1844,8 @@ int GAT1400ClientService::ReplayPendingUploads()
 int GAT1400ClientService::ReplayPendingUploadsIfDue()
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -1853,9 +1882,8 @@ int GAT1400ClientService::PostJsonWithResponseList(const char* action,
                                                    const std::string* overrideUrl)
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -2052,9 +2080,8 @@ int GAT1400ClientService::PostJsonWithResponseStatus(const char* action,
                                                      const std::string* overrideUrl)
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -2107,9 +2134,8 @@ int GAT1400ClientService::PostBinaryData(const char* action,
                                          const std::string* overrideUrl)
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -2167,9 +2193,8 @@ int GAT1400ClientService::PostBinaryData(const char* action,
 int GAT1400ClientService::RegisterNow()
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -2218,13 +2243,9 @@ int GAT1400ClientService::RegisterNow()
 int GAT1400ClientService::UnregisterNow()
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    {
-        std::lock_guard<std::mutex> lock(m_state_mutex);
-        cfg = m_cfg;
-        gbRegister = m_gb_register;
-        deviceId = m_device_id;
+    if (SnapshotConfig(cfg, deviceId) != 0) {
+        return -1;
     }
     if (deviceId.empty()) {
         return 0;
@@ -2259,9 +2280,8 @@ int GAT1400ClientService::UnregisterNow()
 int GAT1400ClientService::SendKeepaliveNow()
 {
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -1;
     }
 
@@ -2349,9 +2369,8 @@ int GAT1400ClientService::SendHttpCommand(const std::string& url,
     }
 
     ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
-    if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+    if (SnapshotConfig(cfg, deviceId) != 0) {
         return -3;
     }
 
@@ -2388,9 +2407,8 @@ void GAT1400ClientService::HeartbeatLoop()
 {
     while (m_heartbeat_running.load()) {
         ProtocolExternalConfig cfg;
-        GbRegisterParam gbRegister;
         std::string deviceId;
-        if (SnapshotConfig(cfg, gbRegister, deviceId) != 0) {
+        if (SnapshotConfig(cfg, deviceId) != 0) {
             break;
         }
 
@@ -2464,8 +2482,7 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
 {
     Stop();
 
-    const std::string deviceId = !cfg.gat_register.device_id.empty() ? cfg.gat_register.device_id :
-                                 (!gbRegister.device_id.empty() ? gbRegister.device_id : gbRegister.username);
+    const std::string deviceId = ResolveGatRuntimeDeviceId(cfg, &gbRegister);
     if (cfg.gat_register.server_ip.empty() || cfg.gat_register.server_port <= 0 ||
         cfg.gat_register.listen_port <= 0 || deviceId.empty()) {
         return -1;
@@ -2474,14 +2491,11 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
     {
         std::lock_guard<std::mutex> lock(m_state_mutex);
         m_cfg = cfg;
-        m_gb_register = gbRegister;
-        m_device_id = deviceId;
         m_started = true;
         m_registered = false;
         m_regist_state = EM_REGIST_OFF;
         if (StartServerLocked() != 0) {
             m_started = false;
-            m_device_id.clear();
             return -2;
         }
     }
@@ -2518,16 +2532,12 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
 
 void GAT1400ClientService::Stop()
 {
-    ProtocolExternalConfig cfg;
-    GbRegisterParam gbRegister;
     std::string deviceId;
     bool shouldStop = false;
     {
         std::lock_guard<std::mutex> lock(m_state_mutex);
         shouldStop = m_started || m_registered || m_server_running.load();
-        cfg = m_cfg;
-        gbRegister = m_gb_register;
-        deviceId = m_device_id;
+        deviceId = ResolveGatRuntimeDeviceId(m_cfg);
         m_started = false;
         m_heartbeat_running.store(false);
     }
@@ -2544,9 +2554,7 @@ void GAT1400ClientService::Stop()
         std::lock_guard<std::mutex> lock(m_state_mutex);
         StopServerLocked();
         m_registered = false;
-        if (shouldStop) {
-            m_device_id.clear();
-        }
+        (void)shouldStop;
     }
 
     UpdateRegistState(EM_REGIST_OFF);
@@ -2554,8 +2562,7 @@ void GAT1400ClientService::Stop()
 
 int GAT1400ClientService::Reload(const ProtocolExternalConfig& cfg, const GbRegisterParam& gbRegister)
 {
-    const std::string nextDeviceId = !cfg.gat_register.device_id.empty() ? cfg.gat_register.device_id :
-                                     (!gbRegister.device_id.empty() ? gbRegister.device_id : gbRegister.username);
+    const std::string nextDeviceId = ResolveGatRuntimeDeviceId(cfg, &gbRegister);
     bool started = false;
     bool restartRequired = false;
     bool pendingConfigChanged = false;
@@ -2563,20 +2570,19 @@ int GAT1400ClientService::Reload(const ProtocolExternalConfig& cfg, const GbRegi
     {
         std::lock_guard<std::mutex> lock(m_state_mutex);
         started = m_started;
+        const std::string currentDeviceId = ResolveGatRuntimeDeviceId(m_cfg);
         restartRequired = (m_cfg.gat_register.server_ip != cfg.gat_register.server_ip) ||
                           (m_cfg.gat_register.server_port != cfg.gat_register.server_port) ||
                           (m_cfg.gat_register.listen_port != cfg.gat_register.listen_port) ||
                           (m_cfg.gat_register.username != cfg.gat_register.username) ||
                           (m_cfg.gat_register.password != cfg.gat_register.password) ||
-                          (m_device_id != nextDeviceId);
+                          (currentDeviceId != nextDeviceId);
         pendingConfigChanged = (m_cfg.gat_upload.queue_dir != cfg.gat_upload.queue_dir) ||
                                (m_cfg.gat_upload.max_pending_count != cfg.gat_upload.max_pending_count);
         replayConfigChanged = pendingConfigChanged ||
                               (m_cfg.gat_upload.replay_interval_sec != cfg.gat_upload.replay_interval_sec);
         if (!started) {
             m_cfg = cfg;
-            m_gb_register = gbRegister;
-            m_device_id = nextDeviceId;
             return 0;
         }
     }
@@ -2589,8 +2595,6 @@ int GAT1400ClientService::Reload(const ProtocolExternalConfig& cfg, const GbRegi
     {
         std::lock_guard<std::mutex> lock(m_state_mutex);
         m_cfg = cfg;
-        m_gb_register = gbRegister;
-        m_device_id = nextDeviceId;
     }
 
     if (pendingConfigChanged || replayConfigChanged) {
