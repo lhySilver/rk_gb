@@ -98,8 +98,9 @@ link_directories(
 
 #?????
 #media ??
-set(Media_SRC 
+set(Media_SRC
 	Media/AVManager.cpp
+	Media/VideoOsdControl.cpp
 	Media/Storage.cpp
 	Media/MediaDefaultConfig.cpp
 	Media/Record.cpp

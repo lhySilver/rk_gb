@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603281014 | gb_osd_media_boundary | 开发 | ✅已完成 | [2026-03/202603281014_gb_osd_media_boundary](2026-03/202603281014_gb_osd_media_boundary/) |
 | 202603271900 | gb_live_replay_concurrency | 修复 | ✅已完成 | [2026-03/202603271900_gb_live_replay_concurrency](2026-03/202603271900_gb_live_replay_concurrency/) |
 | 202603271815 | gb28181_osdconfig_compat | 修复 | ✅已完成 | [2026-03/202603271815_gb28181_osdconfig_compat](2026-03/202603271815_gb28181_osdconfig_compat/) |
 | 202603271028 | gb_runtime_register_mode | 轻量迭代 | ✅已完成 | [2026-03/202603271028_gb_runtime_register_mode](2026-03/202603271028_gb_runtime_register_mode/) |
@@ -55,6 +56,7 @@
 
 ### 2026-03
 
+- [202603281014_gb_osd_media_boundary](2026-03/202603281014_gb_osd_media_boundary/) - 将 GB OSD 的设备落地能力下沉到 `App/Media/VideoOsdControl.*`，GB 模块只保留协议映射与查询/设置转发
 - [202603271900_gb_live_replay_concurrency](2026-03/202603271900_gb_live_replay_concurrency/) - 将 GB 实时预览与回放/下载拆成独立媒体 sender，支持一条 live 与一条 replay/download 同时运行
 - [202603271815_gb28181_osdconfig_compat](2026-03/202603271815_gb28181_osdconfig_compat/) - 补齐白皮书 `OSDConfig` 的 GB28181 设备侧兼容，支持查询回包和设置落地，并明确 OSD 真实能力边界
 - [202603271028_gb_runtime_register_mode](2026-03/202603271028_gb_runtime_register_mode/) - 将 GB28181 “标准国标 / 零配置” 切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，并移除构建链路中的零配置宏依赖

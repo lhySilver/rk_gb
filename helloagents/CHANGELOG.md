@@ -25,6 +25,7 @@
 - 增加 issue bot 本机定时巡检脚本、Codex 修复器包装脚本与 cron 安装脚本，默认基于 `silver` 分支在隔离仓库中执行 triage / repair。
 
 ### 变更
+- 将 GB28181 OSD 的设备落地职责从 `ProtocolManager` 下沉到 `App/Media/VideoOsdControl.*`：GB 模块现在只保留协议字段映射、配置持久化和查询应答组包，媒体/编码侧统一负责 `CaptureSetOSDSwitch`、`rk_osd_*` 的默认适配实现。
 - 补齐 GB28181 白皮书 `OSDConfig` 设备侧兼容：`ConfigDownload + OSDConfig` 现可返回 `<OSDConfig>`，`DeviceConfig + OSDConfig` 现可映射到 `gb_osd.time_enabled/time_format/position/text_template` 并下沉到 `rk_osd_*`；同时明确当前设备仅支持 1 条文本项，`TimeType=1` 仅做协议保留与回显。
 - 补充 `helloagents/wiki/modules/gb28181.md` 中的 GB28181 OSD 对接说明，明确当前 OSD 获取/设置联调已通、实际生效路径为 `GB28181ClientReceiverAdapter -> ProtocolManager -> Capture/rk_osd_*`，并标注 `DevInterface` 的 OSD 四个虚接口尚未作为当前 GB OSD 正式入口使用。
 - 将 GB28181 “标准国标 / 零配置” 切换方式从编译期开关改为 `gb28181.ini::register_mode` 运行时控制，并同步补齐 `HttpConfigProvider` 的 `gb_register_mode` 字段；`register_mode=standard` 时忽略 `zero_config.ini` 缺失，`register_mode=zero_config` 时按零配置流程校验与启动。

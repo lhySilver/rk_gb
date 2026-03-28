@@ -38,6 +38,7 @@
 #include "Storage_api.h"
 #include "Manager/ConfigManager.h"
 #include "Manager/EventManager.h"
+#include "Media/VideoOsdControl.h"
 #include "ExchangeAL/CameraExchange.h"
 #include "ExchangeAL/ExchangeKind.h"
 #include "Update/update.h"
@@ -59,19 +60,6 @@ int rk_video_set_frame_rate(int stream_id, const char *value);
 int rk_video_set_resolution(int stream_id, const char *value);
 int rk_isp_get_image_flip(int cam_id, const char **value);
 int rk_isp_set_image_flip(int cam_id, const char *value);
-int rk_osd_get_enabled(int id, int *value);
-int rk_osd_set_enabled(int id, int value);
-int rk_osd_restart();
-int rk_osd_get_position_x(int id, int *value);
-int rk_osd_set_position_x(int id, int value);
-int rk_osd_get_position_y(int id, int *value);
-int rk_osd_set_position_y(int id, int value);
-int rk_osd_get_date_style(int id, const char **value);
-int rk_osd_set_date_style(int id, const char *value);
-int rk_osd_get_time_style(int id, const char **value);
-int rk_osd_set_time_style(int id, const char *value);
-int rk_osd_get_display_text(int id, const char **value);
-int rk_osd_set_display_text(int id, const char *value);
 }
 
 
@@ -101,8 +89,6 @@ namespace
 static protocol::ProtocolManager* g_gb_live_audio_manager = NULL;
 
 static const char* kGbLiveDmcModuleName = "gb28181_live";
-static const int kRkOsdDateTimeId = 1;
-static const int kRkOsdCustomTextId = 2;
 static const char* kGbUpgradePackagePath = "/tmp/upgrade.bin";
 static const char* kGbUpgradePackageTempPath = "/tmp/upgrade.bin.download";
 static const char* kGbUpgradeConfigPendingKey = "GbPending";
@@ -410,130 +396,11 @@ static std::string NormalizeGbImageFlipMode(const std::string& modeIn)
     return modeIn;
 }
 
-struct RkOsdAnchor
-{
-    int x;
-    int y;
-    bool valid;
-
-    RkOsdAnchor() : x(0), y(0), valid(false) {}
-};
-
-static bool ContainsToken(const std::string& text, const char* token)
-{
-    return token != NULL && text.find(token) != std::string::npos;
-}
-
-static std::string NormalizeRkOsdDateStyle(const std::string& formatIn)
-{
-    const std::string format = ToLowerCopy(formatIn);
-    if (format.empty()) {
-        return "CHR-YYYY-MM-DD";
-    }
-
-    if (ContainsToken(format, "yyyy/mm/dd")) {
-        return "CHR-YYYY/MM/DD";
-    }
-    if (ContainsToken(format, "mm/dd/yyyy")) {
-        return "CHR-MM/DD/YYYY";
-    }
-    if (ContainsToken(format, "dd/mm/yyyy")) {
-        return "CHR-DD/MM/YYYY";
-    }
-    if (ContainsToken(format, "mm-dd-yyyy")) {
-        return "CHR-MM-DD-YYYY";
-    }
-    if (ContainsToken(format, "dd-mm-yyyy")) {
-        return "CHR-DD-MM-YYYY";
-    }
-
-    return "CHR-YYYY-MM-DD";
-}
-
-static std::string NormalizeRkOsdTimeStyle(const std::string& formatIn)
-{
-    const std::string format = ToLowerCopy(formatIn);
-    if (format.empty()) {
-        return "24hour";
-    }
-
-    if (ContainsToken(format, "tt") ||
-        ContainsToken(format, " am") ||
-        ContainsToken(format, " pm") ||
-        ContainsToken(format, "a/p") ||
-        ContainsToken(format, "12hour")) {
-        return "12hour";
-    }
-
-    return "24hour";
-}
-
 static bool QueryMainStreamResolution(int& width, int& height)
 {
     width = 0;
     height = 0;
     return CaptureGetResolution(0, &width, &height) == 0 && width > 0 && height > 0;
-}
-
-static RkOsdAnchor ResolveRkOsdAnchor(const std::string& positionIn)
-{
-    RkOsdAnchor anchor;
-    const std::string position = ToLowerCopy(positionIn);
-    if (position.empty()) {
-        return anchor;
-    }
-
-    if (sscanf(position.c_str(), "%d,%d", &anchor.x, &anchor.y) == 2 ||
-        sscanf(position.c_str(), "%d:%d", &anchor.x, &anchor.y) == 2) {
-        anchor.valid = (anchor.x >= 0 && anchor.y >= 0);
-        return anchor;
-    }
-
-    int width = 1280;
-    int height = 720;
-    (void)QueryMainStreamResolution(width, height);
-
-    const int marginX = 16;
-    const int marginY = 16;
-    const int estimatedTextWidth = 176;
-    const int estimatedTextHeight = 64;
-
-    if (position == "top_left" || position == "left_top" || position == "top-left") {
-        anchor.x = marginX;
-        anchor.y = marginY;
-        anchor.valid = true;
-        return anchor;
-    }
-
-    if (position == "top_right" || position == "right_top" || position == "top-right") {
-        anchor.x = (width > estimatedTextWidth + marginX) ? (width - estimatedTextWidth) : marginX;
-        anchor.y = marginY;
-        anchor.valid = true;
-        return anchor;
-    }
-
-    if (position == "bottom_left" || position == "left_bottom" || position == "bottom-left") {
-        anchor.x = marginX;
-        anchor.y = (height > estimatedTextHeight + marginY) ? (height - estimatedTextHeight) : marginY;
-        anchor.valid = true;
-        return anchor;
-    }
-
-    if (position == "bottom_right" || position == "right_bottom" || position == "bottom-right") {
-        anchor.x = (width > estimatedTextWidth + marginX) ? (width - estimatedTextWidth) : marginX;
-        anchor.y = (height > estimatedTextHeight + marginY) ? (height - estimatedTextHeight) : marginY;
-        anchor.valid = true;
-        return anchor;
-    }
-
-    if (position == "center" || position == "middle") {
-        anchor.x = width / 2;
-        anchor.y = height / 2;
-        anchor.valid = true;
-        return anchor;
-    }
-
-    return anchor;
 }
 
 
@@ -1860,39 +1727,6 @@ static bool ReadRkVideoOutputTypeString(int streamId, std::string& value)
     return true;
 }
 
-static bool ReadRkOsdEnabled(int id, int* value)
-{
-    if (value == NULL) {
-        return false;
-    }
-
-    return rk_osd_get_enabled(id, value) == 0;
-}
-
-static bool ReadRkOsdStringValue(int (*getter)(int, const char**), int id, std::string& value)
-{
-    if (getter == NULL) {
-        return false;
-    }
-
-    const char* out = NULL;
-    if (getter(id, &out) != 0 || out == NULL || out[0] == '\0') {
-        return false;
-    }
-
-    value = out;
-    return true;
-}
-
-static bool ReadRkOsdPosition(int id, int* x, int* y)
-{
-    if (x == NULL || y == NULL) {
-        return false;
-    }
-
-    return rk_osd_get_position_x(id, x) == 0 && rk_osd_get_position_y(id, y) == 0;
-}
-
 static bool ReadRkImageFlipMode(std::string& value)
 {
     CConfigTable table;
@@ -1986,122 +1820,22 @@ static void ApplyRkVideoStreamConfig(const char* streamName,
     }
 }
 
-static void ApplyRkOsdConfig(const protocol::GbOsdParam& desired)
-{
-    const std::string normalizedTextTemplate = NormalizeGbOsdTextTemplate(desired.text_template);
-    const int desiredTimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
-    const int desiredCustomTextEnabled = normalizedTextTemplate.empty() ? 0 : 1;
-    const int desiredCaptureSwitch = (desiredTimeEnabled != 0 || desired.event_enabled != 0 || desired.alert_enabled != 0) ? 1 : 0;
-
-    int currentTimeEnabled = 0;
-    const bool timeKnown = ReadRkOsdEnabled(kRkOsdDateTimeId, &currentTimeEnabled);
-    if (!timeKnown || currentTimeEnabled != desiredTimeEnabled) {
-        const int captureRet = CaptureSetOSDSwitch(desiredCaptureSwitch);
-        const int osdRet = rk_osd_set_enabled(kRkOsdDateTimeId, desiredTimeEnabled);
-        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_datetime_enabled value=%d current=%d capture_ret=%d rk_ret=%d\n",
-               (captureRet != 0) ? captureRet : osdRet,
-               desiredTimeEnabled,
-               timeKnown ? currentTimeEnabled : -1,
-               captureRet,
-               osdRet);
-    }
-
-    int currentCustomTextEnabled = 0;
-    const bool customKnown = ReadRkOsdEnabled(kRkOsdCustomTextId, &currentCustomTextEnabled);
-    if (!customKnown || currentCustomTextEnabled != desiredCustomTextEnabled) {
-        const int osdRet = rk_osd_set_enabled(kRkOsdCustomTextId, desiredCustomTextEnabled);
-        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_text_enabled value=%d current=%d\n",
-               osdRet,
-               desiredCustomTextEnabled,
-               customKnown ? currentCustomTextEnabled : -1);
-    }
-
-    bool needRestart = false;
-
-    if (!normalizedTextTemplate.empty()) {
-        std::string currentText;
-        const bool textKnown = ReadRkOsdStringValue(rk_osd_get_display_text, kRkOsdCustomTextId, currentText);
-        if (!textKnown || currentText != normalizedTextTemplate) {
-            const int ret = rk_osd_set_display_text(kRkOsdCustomTextId, normalizedTextTemplate.c_str());
-            printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_text value=%s current=%s\n",
-                   ret,
-                   normalizedTextTemplate.c_str(),
-                   textKnown ? currentText.c_str() : "unknown");
-            needRestart = true;
-        }
-    }
-
-    if (!desired.time_format.empty()) {
-        const std::string desiredDateStyle = NormalizeRkOsdDateStyle(desired.time_format);
-        const std::string desiredTimeStyle = NormalizeRkOsdTimeStyle(desired.time_format);
-        std::string currentDateStyle;
-        std::string currentTimeStyle;
-        const bool dateKnown = ReadRkOsdStringValue(rk_osd_get_date_style, kRkOsdDateTimeId, currentDateStyle);
-        const bool timeStyleKnown = ReadRkOsdStringValue(rk_osd_get_time_style, kRkOsdDateTimeId, currentTimeStyle);
-        if (!dateKnown || currentDateStyle != desiredDateStyle) {
-            const int ret = rk_osd_set_date_style(kRkOsdDateTimeId, desiredDateStyle.c_str());
-            printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_date_style value=%s current=%s\n",
-                   ret,
-                   desiredDateStyle.c_str(),
-                   dateKnown ? currentDateStyle.c_str() : "unknown");
-            needRestart = true;
-        }
-        if (!timeStyleKnown || currentTimeStyle != desiredTimeStyle) {
-            const int ret = rk_osd_set_time_style(kRkOsdDateTimeId, desiredTimeStyle.c_str());
-            printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_time_style value=%s current=%s\n",
-                   ret,
-                   desiredTimeStyle.c_str(),
-                   timeStyleKnown ? currentTimeStyle.c_str() : "unknown");
-            needRestart = true;
-        }
-    }
-
-    if (!desired.position.empty()) {
-        const RkOsdAnchor anchor = ResolveRkOsdAnchor(desired.position);
-        if (anchor.valid) {
-            int currentX = 0;
-            int currentY = 0;
-            const bool currentPositionKnown = ReadRkOsdPosition(kRkOsdDateTimeId, &currentX, &currentY);
-            if (!currentPositionKnown || currentX != anchor.x || currentY != anchor.y) {
-                const int retX = rk_osd_set_position_x(kRkOsdDateTimeId, anchor.x);
-                const int retY = rk_osd_set_position_y(kRkOsdDateTimeId, anchor.y);
-                printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_datetime_position value=%d,%d current=%d,%d\n",
-                       (retX != 0) ? retX : retY,
-                       anchor.x,
-                       anchor.y,
-                       currentPositionKnown ? currentX : -1,
-                       currentPositionKnown ? currentY : -1);
-                needRestart = true;
-            }
-
-            currentX = 0;
-            currentY = 0;
-            const bool currentTextPositionKnown = ReadRkOsdPosition(kRkOsdCustomTextId, &currentX, &currentY);
-            if (!currentTextPositionKnown || currentX != anchor.x || currentY != anchor.y) {
-                const int retX = rk_osd_set_position_x(kRkOsdCustomTextId, anchor.x);
-                const int retY = rk_osd_set_position_y(kRkOsdCustomTextId, anchor.y);
-                printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_text_position value=%d,%d current=%d,%d\n",
-                       (retX != 0) ? retX : retY,
-                       anchor.x,
-                       anchor.y,
-                       currentTextPositionKnown ? currentX : -1,
-                       currentTextPositionKnown ? currentY : -1);
-                needRestart = true;
-            }
-        }
-    }
-
-    if (needRestart) {
-        const int restartRet = rk_osd_restart();
-        printf("[ProtocolManager] module=config event=media_apply trace=manager error=%d target=osd_restart\n",
-               restartRet);
-    }
-}
-
 static std::string NormalizeGbOsdTextTemplate(const std::string& textIn)
 {
     const std::string text = TrimWhitespaceCopy(textIn);
     return (ToLowerCopy(text) == "null") ? "" : text;
+}
+
+static media::VideoOsdConfig BuildVideoOsdConfig(const protocol::GbOsdParam& desired)
+{
+    media::VideoOsdConfig config;
+    config.time_enabled = desired.time_enabled;
+    config.event_enabled = desired.event_enabled;
+    config.alert_enabled = desired.alert_enabled;
+    config.text_template = NormalizeGbOsdTextTemplate(desired.text_template);
+    config.time_format = desired.time_format;
+    config.position = desired.position;
+    return config;
 }
 
 static bool ParseResolutionPair(const std::string& resolutionIn, int* width, int* height)
@@ -2152,13 +1886,14 @@ static void ResolveConfiguredGbOsdPosition(const protocol::GbOsdParam& desired,
         return;
     }
 
-    RkOsdAnchor anchor = ResolveRkOsdAnchor(desired.position);
-    if (!anchor.valid) {
-        anchor = ResolveRkOsdAnchor("top_left");
+    int anchorX = 0;
+    int anchorY = 0;
+    if (!media::ResolveVideoOsdAnchor(desired.position, &anchorX, &anchorY)) {
+        (void)media::ResolveVideoOsdAnchor("top_left", &anchorX, &anchorY);
     }
 
-    *x = (anchor.valid && anchor.x >= 0) ? (unsigned int)anchor.x : 0U;
-    *y = (anchor.valid && anchor.y >= 0) ? (unsigned int)anchor.y : 0U;
+    *x = (anchorX >= 0) ? (unsigned int)anchorX : 0U;
+    *y = (anchorY >= 0) ? (unsigned int)anchorY : 0U;
 }
 
 static unsigned int ResolveGbOsdTimeType(const std::string& timeFormat)
@@ -2187,6 +1922,7 @@ static std::string BuildGbOsdPositionValue(unsigned int x, unsigned int y)
 
 static void BuildGbOsdQueryConfig(const protocol::GbOsdParam& desired,
                                   const std::string& configuredResolution,
+                                  const media::VideoOsdState* runtimeState,
                                   CfgOsdConfig* out)
 {
     if (out == NULL) {
@@ -2197,43 +1933,44 @@ static void BuildGbOsdQueryConfig(const protocol::GbOsdParam& desired,
     ResolveGbOsdCanvasSize(configuredResolution, &out->Length, &out->Width);
     ResolveConfiguredGbOsdPosition(desired, &out->TimeX, &out->TimeY);
 
-    int runtimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
-    if (ReadRkOsdEnabled(kRkOsdDateTimeId, &runtimeEnabled)) {
-        out->TimeEnable = (runtimeEnabled != 0) ? 1U : 0U;
+    if (runtimeState != NULL && runtimeState->has_time_enabled) {
+        out->TimeEnable = (runtimeState->time_enabled != 0) ? 1U : 0U;
     } else {
         out->TimeEnable = (desired.time_enabled != 0) ? 1U : 0U;
     }
 
-    int runtimeX = 0;
-    int runtimeY = 0;
-    if (ReadRkOsdPosition(kRkOsdDateTimeId, &runtimeX, &runtimeY) && runtimeX >= 0 && runtimeY >= 0) {
-        out->TimeX = (unsigned int)runtimeX;
-        out->TimeY = (unsigned int)runtimeY;
+    if (runtimeState != NULL &&
+        runtimeState->has_time_position &&
+        runtimeState->time_x >= 0 &&
+        runtimeState->time_y >= 0) {
+        out->TimeX = (unsigned int)runtimeState->time_x;
+        out->TimeY = (unsigned int)runtimeState->time_y;
     }
 
     out->TimeType = ResolveGbOsdTimeType(desired.time_format);
 
     std::string textTemplate = NormalizeGbOsdTextTemplate(desired.text_template);
-    std::string runtimeText;
-    if (ReadRkOsdStringValue(rk_osd_get_display_text, kRkOsdCustomTextId, runtimeText)) {
-        const std::string normalizedRuntimeText = NormalizeGbOsdTextTemplate(runtimeText);
+    if (runtimeState != NULL && runtimeState->has_text) {
+        const std::string normalizedRuntimeText = NormalizeGbOsdTextTemplate(runtimeState->text);
         if (!normalizedRuntimeText.empty()) {
             textTemplate = normalizedRuntimeText;
         }
     }
 
-    runtimeEnabled = textTemplate.empty() ? 0 : 1;
-    if (ReadRkOsdEnabled(kRkOsdCustomTextId, &runtimeEnabled)) {
-        out->TextEnable = (runtimeEnabled != 0) ? 1U : 0U;
+    if (runtimeState != NULL && runtimeState->has_text_enabled) {
+        out->TextEnable = (runtimeState->text_enabled != 0) ? 1U : 0U;
     } else {
         out->TextEnable = textTemplate.empty() ? 0U : 1U;
     }
 
     unsigned int textX = out->TimeX;
     unsigned int textY = out->TimeY;
-    if (ReadRkOsdPosition(kRkOsdCustomTextId, &runtimeX, &runtimeY) && runtimeX >= 0 && runtimeY >= 0) {
-        textX = (unsigned int)runtimeX;
-        textY = (unsigned int)runtimeY;
+    if (runtimeState != NULL &&
+        runtimeState->has_text_position &&
+        runtimeState->text_x >= 0 &&
+        runtimeState->text_y >= 0) {
+        textX = (unsigned int)runtimeState->text_x;
+        textY = (unsigned int)runtimeState->text_y;
     }
 
     if (out->TextEnable != 0 && !textTemplate.empty()) {
@@ -3727,13 +3464,7 @@ ProtocolManager::ProtocolManager()
 
       m_started(false),
 
-      m_gb_device_name(""),
-
-      m_gb_osd_time_enabled(true),
-
-      m_gb_osd_event_enabled(false),
-
-      m_gb_osd_alert_enabled(false)
+      m_gb_device_name("")
 
 {
 
@@ -4239,9 +3970,6 @@ int ProtocolManager::ReloadExternalConfig()
 
     m_cfg = latest;
     m_gb_device_name = m_cfg.gb_register.device_name;
-    m_gb_osd_time_enabled = (m_cfg.gb_osd.time_enabled != 0);
-    m_gb_osd_event_enabled = (m_cfg.gb_osd.event_enabled != 0);
-    m_gb_osd_alert_enabled = (m_cfg.gb_osd.alert_enabled != 0);
 
     printf("[ProtocolManager] module=config event=config_apply_success trace=manager error=0 stage=reload version=%s changed=%s started=%d\n",
 
@@ -4265,7 +3993,7 @@ int ProtocolManager::ReloadExternalConfig()
     //                              m_cfg.gb_video.sub_fps,
     //                              m_cfg.gb_video.sub_bitrate_kbps);
     //     ApplyRkImageFlipConfig(m_cfg.gb_image.flip_mode);
-    //     ApplyRkOsdConfig(m_cfg.gb_osd);
+    //     media::ApplyVideoOsdConfig(BuildVideoOsdConfig(m_cfg.gb_osd));
     // }
 
 
@@ -7563,13 +7291,9 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     bool restartLifecycle = false;
 
-    bool applyOsdSwitch = false;
-
     bool applyOsdConfig = false;
 
     bool applyImageFlip = false;
-
-    int osdSwitch = -1;
 
     std::string imageFlipMode;
 
@@ -7651,39 +7375,33 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
             const bool nextAlertEnabled = surveil->AlertShowFlag != 0;
 
-            if (m_gb_osd_time_enabled != nextTimeEnabled) {
+            const int nextTimeEnabledInt = nextTimeEnabled ? 1 : 0;
+            const int nextEventEnabledInt = nextEventEnabled ? 1 : 0;
+            const int nextAlertEnabledInt = nextAlertEnabled ? 1 : 0;
 
-                m_gb_osd_time_enabled = nextTimeEnabled;
+            if (m_cfg.gb_osd.time_enabled != nextTimeEnabledInt) {
 
-                m_cfg.gb_osd.time_enabled = nextTimeEnabled ? 1 : 0;
-
-                updated = true;
-
-            }
-
-            if (m_gb_osd_event_enabled != nextEventEnabled) {
-
-                m_gb_osd_event_enabled = nextEventEnabled;
-
-                m_cfg.gb_osd.event_enabled = nextEventEnabled ? 1 : 0;
+                m_cfg.gb_osd.time_enabled = nextTimeEnabledInt;
 
                 updated = true;
 
             }
 
-            if (m_gb_osd_alert_enabled != nextAlertEnabled) {
+            if (m_cfg.gb_osd.event_enabled != nextEventEnabledInt) {
 
-                m_gb_osd_alert_enabled = nextAlertEnabled;
-
-                m_cfg.gb_osd.alert_enabled = nextAlertEnabled ? 1 : 0;
+                m_cfg.gb_osd.event_enabled = nextEventEnabledInt;
 
                 updated = true;
 
             }
 
-            osdSwitch = (nextTimeEnabled || nextEventEnabled || nextAlertEnabled) ? 1 : 0;
+            if (m_cfg.gb_osd.alert_enabled != nextAlertEnabledInt) {
 
-            applyOsdSwitch = true;
+                m_cfg.gb_osd.alert_enabled = nextAlertEnabledInt;
+
+                updated = true;
+
+            }
 
             applyOsdConfig = true;
 
@@ -7697,7 +7415,7 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
                    (unsigned int)surveil->AlertShowFlag,
 
-                   osdSwitch,
+                   (nextTimeEnabled || nextEventEnabled || nextAlertEnabled) ? 1 : 0,
 
                    cmd->GBCode);
 
@@ -7716,14 +7434,6 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             const OsdSetting& osd = setting.unionSetParam.Osd;
 
             const int nextTimeEnabled = (osd.TimeEnable != 0) ? 1 : 0;
-
-            if (m_gb_osd_time_enabled != (nextTimeEnabled != 0)) {
-
-                m_gb_osd_time_enabled = (nextTimeEnabled != 0);
-
-                updated = true;
-
-            }
 
             if (m_cfg.gb_osd.time_enabled != nextTimeEnabled) {
 
@@ -7851,28 +7561,6 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
 
 
-    if (applyOsdSwitch) {
-
-        const int captureRet = CaptureSetOSDSwitch(osdSwitch);
-
-        const int osdRet = rk_osd_set_enabled(kRkOsdDateTimeId, osdSwitch);
-
-        printf("[ProtocolManager] gb config osd apply capture_ret=%d osd_ret=%d enabled=%d osd_id=%d gb=%s\n",
-
-               captureRet,
-
-               osdRet,
-
-               osdSwitch,
-
-               kRkOsdDateTimeId,
-
-               cmd->GBCode);
-
-    }
-
-
-
     if (applyImageFlip) {
 
         ApplyRkImageFlipConfig(imageFlipMode);
@@ -7881,7 +7569,14 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     if (applyOsdConfig) {
 
-        ApplyRkOsdConfig(m_cfg.gb_osd);
+        const int osdRet = media::ApplyVideoOsdConfig(BuildVideoOsdConfig(m_cfg.gb_osd));
+        printf("[ProtocolManager] gb config osd dispatch ret=%d time=%d event=%d alert=%d position=%s gb=%s\n",
+               osdRet,
+               m_cfg.gb_osd.time_enabled,
+               m_cfg.gb_osd.event_enabled,
+               m_cfg.gb_osd.alert_enabled,
+               m_cfg.gb_osd.position.c_str(),
+               cmd->GBCode);
 
     }
 
@@ -7913,11 +7608,11 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
            m_cfg.gb_keepalive.max_retry,
 
-           m_gb_osd_time_enabled ? 1 : 0,
+           m_cfg.gb_osd.time_enabled,
 
-           m_gb_osd_event_enabled ? 1 : 0,
+           m_cfg.gb_osd.event_enabled,
 
-           m_gb_osd_alert_enabled ? 1 : 0,
+           m_cfg.gb_osd.alert_enabled,
 
            NormalizeGbImageFlipMode(m_cfg.gb_image.flip_mode).c_str(),
 
@@ -9305,14 +9000,14 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
 
 
-    int runtimeOsdEnabled = (m_gb_osd_time_enabled || m_gb_osd_event_enabled || m_gb_osd_alert_enabled) ? 1 : 0;
+    int runtimeOsdEnabled = ((m_cfg.gb_osd.time_enabled != 0) ||
+                             (m_cfg.gb_osd.event_enabled != 0) ||
+                             (m_cfg.gb_osd.alert_enabled != 0)) ? 1 : 0;
 
-    int osdEnabledValue = 0;
-
-    if (ReadRkOsdEnabled(kRkOsdDateTimeId, &osdEnabledValue)) {
-
-        runtimeOsdEnabled = osdEnabledValue;
-
+    media::VideoOsdState runtimeOsdState;
+    const bool hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
+    if (hasRuntimeOsdState && runtimeOsdState.has_master_enabled) {
+        runtimeOsdEnabled = runtimeOsdState.master_enabled;
     }
 
 
@@ -9479,6 +9174,7 @@ int ProtocolManager::ResponseGbQueryConfig(ResponseHandle handle, const QueryPar
 
         BuildGbOsdQueryConfig(m_cfg.gb_osd,
                               m_cfg.gb_video.main_resolution,
+                              hasRuntimeOsdState ? &runtimeOsdState : NULL,
                               &item.UnionCfgParam.CfgOsd);
 
         configList.push_back(item);

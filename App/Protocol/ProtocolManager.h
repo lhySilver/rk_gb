@@ -664,9 +664,6 @@ private:
     ProtocolExternalConfig m_cfg;
 
     std::string m_gb_device_name;
-    bool m_gb_osd_time_enabled;
-    bool m_gb_osd_event_enabled;
-    bool m_gb_osd_alert_enabled;
 
     GB28181BroadcastBridge m_broadcast;
 
@@ -751,7 +748,6 @@ private:
 
 
 #endif
-
 
 
 

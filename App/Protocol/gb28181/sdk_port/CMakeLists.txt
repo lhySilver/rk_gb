@@ -97,8 +97,9 @@ link_directories(
 
 #指定源文件
 #media 模块
-set(Media_SRC 
+set(Media_SRC
 	Media/AVManager.cpp
+	Media/VideoOsdControl.cpp
 	Media/Storage.cpp
 	Media/MediaDefaultConfig.cpp
 	Media/Record.cpp
