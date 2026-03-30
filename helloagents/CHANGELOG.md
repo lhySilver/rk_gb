@@ -86,6 +86,7 @@
 - 禁用 GAT1400 主动校时：`GetTime()` 现为空实现，启动阶段不再向 `/VIID/System/Time` 发起请求，设备时间统一由 GB28181 校时链路负责。
 - 修复 GB28181 远程升级提前上报成功的问题：`DeviceUpgrade` 现在只返回控制受理结果，最终 `DeviceUpgradeResult` 改为在升级执行并重启恢复注册后补报。
 - 修复 GB28181 远程升级停留在“下载落盘但不执行”的问题，改为复用现有 `UpgradeReleaseResource` 释放链路触发本地升级执行与重启。
+- 修复 GB28181 远程升级下载仍依赖外部 `curl` 命令的问题：`ProtocolManager` 现内置最小 HTTP 下载实现，支持总超时、重定向与流式落盘；当前协议边界仍只支持 `http`，`https` 会在下载阶段直接失败。
 - 补齐 GB28181 `gb_upgrade` / `gb_reboot` 的本地配置、HTTP 配置与能力声明，保证离线配置和远程配置路径一致。
 - 修复 GB28181 对讲链路仍依附广播状态的问题：新增独立 `talk session`、独立 `gb_talk.recv_port` 应答、`ACK` 后再应用媒体协商，并在支持的 transport 上启动上行采音 RTP。
 - 修复 GB28181 对讲配置不生效的问题：`gb_talk.codec / recv_port / sample_rate / jitter_buffer_ms` 已接入本地配置与 HTTP 配置校验 / 序列化链路。

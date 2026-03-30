@@ -17,8 +17,10 @@
 
 #include <vector>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -95,6 +97,33 @@ struct GbUpgradeThreadContext
     protocol::ProtocolManager* manager;
 
     GbUpgradeThreadContext() : manager(NULL) {}
+};
+
+struct GbUpgradeHttpTarget
+{
+    std::string scheme;
+    std::string host;
+    std::string request_path;
+    int port;
+
+    GbUpgradeHttpTarget() : port(0) {}
+};
+
+struct GbUpgradeHttpResponseHead
+{
+    int status_code;
+    bool chunked;
+    bool has_content_length;
+    unsigned long long content_length;
+    std::string location;
+
+    GbUpgradeHttpResponseHead()
+        : status_code(0),
+          chunked(false),
+          has_content_length(false),
+          content_length(0)
+    {
+    }
 };
 
 
@@ -848,18 +877,731 @@ static bool ReadShellOutput(const std::string& command, std::string& output)
     return !output.empty();
 }
 
+static long long GetGbUpgradeSteadyTimeMs()
+{
+    const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+}
+
+static int GetGbUpgradeRemainingTimeoutMs(long long deadlineMs)
+{
+    const long long remaining = deadlineMs - GetGbUpgradeSteadyTimeMs();
+    if (remaining <= 0) {
+        return 0;
+    }
+    if (remaining > 0x7fffffffLL) {
+        return 0x7fffffff;
+    }
+    return static_cast<int>(remaining);
+}
+
+static bool SetGbUpgradeSocketNonBlocking(int fd, bool nonBlocking)
+{
+    const int flags = fcntl(fd, F_GETFL, 0);
+    if (flags < 0) {
+        return false;
+    }
+
+    const int desired = nonBlocking ? (flags | O_NONBLOCK) : (flags & ~O_NONBLOCK);
+    return fcntl(fd, F_SETFL, desired) == 0;
+}
+
+static bool SetGbUpgradeSocketIoTimeoutMs(int fd, int timeoutMs)
+{
+    if (timeoutMs <= 0) {
+        timeoutMs = 1;
+    }
+
+    struct timeval tv;
+    tv.tv_sec = timeoutMs / 1000;
+    tv.tv_usec = static_cast<suseconds_t>((timeoutMs % 1000) * 1000);
+    return setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0 &&
+           setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv)) == 0;
+}
+
+static bool ParseGbUpgradeUnsignedLongLong(const std::string& text,
+                                           int base,
+                                           unsigned long long& value)
+{
+    const std::string trimmed = TrimWhitespaceCopy(text);
+    if (trimmed.empty()) {
+        return false;
+    }
+
+    char* end = NULL;
+    errno = 0;
+    const unsigned long long parsed = strtoull(trimmed.c_str(), &end, base);
+    if (errno != 0 || end == trimmed.c_str() || (end != NULL && *end != '\0')) {
+        return false;
+    }
+
+    value = parsed;
+    return true;
+}
+
+static std::string BuildGbUpgradeAuthority(const GbUpgradeHttpTarget& target)
+{
+    std::string authority;
+    if (target.host.find(':') != std::string::npos) {
+        authority = "[";
+        authority += target.host;
+        authority += "]";
+    } else {
+        authority = target.host;
+    }
+
+    const bool defaultPort =
+        (target.scheme == "http" && target.port == 80) ||
+        (target.scheme == "https" && target.port == 443);
+    if (!defaultPort) {
+        char portBuf[16] = {0};
+        snprintf(portBuf, sizeof(portBuf), "%d", target.port);
+        authority += ":";
+        authority += portBuf;
+    }
+
+    return authority;
+}
+
+static bool ParseGbUpgradeUrl(const std::string& url, GbUpgradeHttpTarget& out)
+{
+    out = GbUpgradeHttpTarget();
+    const std::string trimmed = TrimWhitespaceCopy(url);
+    const std::string::size_type schemeEnd = trimmed.find("://");
+    if (schemeEnd == std::string::npos || schemeEnd == 0) {
+        return false;
+    }
+
+    out.scheme = ToLowerCopy(trimmed.substr(0, schemeEnd));
+    std::string remain = trimmed.substr(schemeEnd + 3);
+    const std::string::size_type pathPos = remain.find_first_of("/?");
+    const std::string hostPort = remain.substr(0, pathPos);
+    out.request_path = (pathPos == std::string::npos) ? "/" : remain.substr(pathPos);
+    if (hostPort.empty()) {
+        return false;
+    }
+
+    if (!out.request_path.empty() && out.request_path[0] != '/') {
+        out.request_path.insert(out.request_path.begin(), '/');
+    }
+
+    const std::string::size_type fragmentPos = out.request_path.find('#');
+    if (fragmentPos != std::string::npos) {
+        out.request_path.erase(fragmentPos);
+    }
+    if (out.request_path.empty()) {
+        out.request_path = "/";
+    }
+
+    out.port = (out.scheme == "https") ? 443 : 80;
+    if (hostPort[0] == '[') {
+        const std::string::size_type endBracket = hostPort.find(']');
+        if (endBracket == std::string::npos || endBracket <= 1) {
+            return false;
+        }
+        out.host = hostPort.substr(1, endBracket - 1);
+        if (endBracket + 1 < hostPort.size()) {
+            if (hostPort[endBracket + 1] != ':') {
+                return false;
+            }
+            unsigned long long portValue = 0;
+            if (!ParseGbUpgradeUnsignedLongLong(hostPort.substr(endBracket + 2), 10, portValue) ||
+                portValue == 0 || portValue > 65535ULL) {
+                return false;
+            }
+            out.port = static_cast<int>(portValue);
+        }
+        return !out.host.empty();
+    }
+
+    const std::string::size_type colon = hostPort.rfind(':');
+    if (colon != std::string::npos && hostPort.find(':') == colon) {
+        out.host = hostPort.substr(0, colon);
+        unsigned long long portValue = 0;
+        if (out.host.empty() ||
+            !ParseGbUpgradeUnsignedLongLong(hostPort.substr(colon + 1), 10, portValue) ||
+            portValue == 0 || portValue > 65535ULL) {
+            return false;
+        }
+        out.port = static_cast<int>(portValue);
+    } else {
+        out.host = hostPort;
+    }
+
+    return !out.host.empty();
+}
+
+static bool IsGbUpgradeRedirectStatus(int statusCode)
+{
+    return statusCode == 301 || statusCode == 302 || statusCode == 303 ||
+           statusCode == 307 || statusCode == 308;
+}
+
+static std::string ResolveGbUpgradeRedirectUrl(const GbUpgradeHttpTarget& base,
+                                               const std::string& location)
+{
+    std::string resolved = TrimWhitespaceCopy(location);
+    if (resolved.empty()) {
+        return "";
+    }
+
+    const std::string::size_type fragmentPos = resolved.find('#');
+    if (fragmentPos != std::string::npos) {
+        resolved.erase(fragmentPos);
+    }
+    if (resolved.empty()) {
+        resolved = "/";
+    }
+
+    if (resolved.find("://") != std::string::npos) {
+        return resolved;
+    }
+
+    if (resolved.size() >= 2 && resolved[0] == '/' && resolved[1] == '/') {
+        return base.scheme + ":" + resolved;
+    }
+
+    const std::string prefix = base.scheme + "://" + BuildGbUpgradeAuthority(base);
+    if (resolved[0] == '/') {
+        return prefix + resolved;
+    }
+
+    if (resolved[0] == '?') {
+        std::string basePath = base.request_path;
+        const std::string::size_type queryPos = basePath.find('?');
+        if (queryPos != std::string::npos) {
+            basePath.erase(queryPos);
+        }
+        if (basePath.empty()) {
+            basePath = "/";
+        }
+        return prefix + basePath + resolved;
+    }
+
+    std::string basePath = base.request_path;
+    const std::string::size_type queryPos = basePath.find('?');
+    if (queryPos != std::string::npos) {
+        basePath.erase(queryPos);
+    }
+    if (basePath.empty() || basePath[0] != '/') {
+        basePath = "/";
+    }
+
+    const std::string::size_type slashPos = basePath.rfind('/');
+    const std::string directory =
+        (slashPos == std::string::npos) ? "/" : basePath.substr(0, slashPos + 1);
+    return prefix + directory + resolved;
+}
+
+static int ConnectGbUpgradeTcp(const std::string& host, int port, int timeoutMs)
+{
+    char portText[16] = {0};
+    snprintf(portText, sizeof(portText), "%d", port);
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    struct addrinfo* result = NULL;
+    if (getaddrinfo(host.c_str(), portText, &hints, &result) != 0) {
+        return -1;
+    }
+
+    int fd = -1;
+    for (struct addrinfo* it = result; it != NULL; it = it->ai_next) {
+        const int candidate = socket(it->ai_family, it->ai_socktype, it->ai_protocol);
+        if (candidate < 0) {
+            continue;
+        }
+
+        if (!SetGbUpgradeSocketNonBlocking(candidate, true)) {
+            close(candidate);
+            continue;
+        }
+
+        if (connect(candidate, it->ai_addr, it->ai_addrlen) != 0) {
+            if (errno != EINPROGRESS) {
+                close(candidate);
+                continue;
+            }
+
+            fd_set writeSet;
+            FD_ZERO(&writeSet);
+            FD_SET(candidate, &writeSet);
+
+            struct timeval tv;
+            tv.tv_sec = timeoutMs / 1000;
+            tv.tv_usec = static_cast<suseconds_t>((timeoutMs % 1000) * 1000);
+            const int selectRet = select(candidate + 1, NULL, &writeSet, NULL, &tv);
+            if (selectRet <= 0) {
+                close(candidate);
+                continue;
+            }
+
+            int soError = 0;
+            socklen_t soErrorLen = sizeof(soError);
+            if (getsockopt(candidate, SOL_SOCKET, SO_ERROR, &soError, &soErrorLen) != 0 || soError != 0) {
+                close(candidate);
+                continue;
+            }
+        }
+
+        if (!SetGbUpgradeSocketNonBlocking(candidate, false)) {
+            close(candidate);
+            continue;
+        }
+
+        if (!SetGbUpgradeSocketIoTimeoutMs(candidate, timeoutMs)) {
+            close(candidate);
+            continue;
+        }
+
+        fd = candidate;
+        break;
+    }
+
+    freeaddrinfo(result);
+    return fd;
+}
+
+static bool SendAllBytes(int fd, const char* data, size_t size, long long deadlineMs)
+{
+    size_t offset = 0;
+    while (offset < size) {
+        const int remainingMs = GetGbUpgradeRemainingTimeoutMs(deadlineMs);
+        if (remainingMs <= 0 || !SetGbUpgradeSocketIoTimeoutMs(fd, remainingMs > 1000 ? 1000 : remainingMs)) {
+            return false;
+        }
+
+        const ssize_t sent = send(fd, data + offset, size - offset, 0);
+        if (sent > 0) {
+            offset += static_cast<size_t>(sent);
+            continue;
+        }
+        if (sent < 0 && errno == EINTR) {
+            continue;
+        }
+        if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            continue;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+static bool RecvGbUpgradeBytes(int fd, std::string& out, long long deadlineMs)
+{
+    char buffer[4096] = {0};
+    while (true) {
+        const int remainingMs = GetGbUpgradeRemainingTimeoutMs(deadlineMs);
+        if (remainingMs <= 0 || !SetGbUpgradeSocketIoTimeoutMs(fd, remainingMs > 1000 ? 1000 : remainingMs)) {
+            return false;
+        }
+
+        const ssize_t len = recv(fd, buffer, sizeof(buffer), 0);
+        if (len > 0) {
+            out.append(buffer, static_cast<size_t>(len));
+            return true;
+        }
+        if (len == 0) {
+            return false;
+        }
+        if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
+            continue;
+        }
+        return false;
+    }
+}
+
+static bool ReceiveGbUpgradeHeaders(int fd,
+                                    std::string& rawResponse,
+                                    size_t& headerEnd,
+                                    long long deadlineMs)
+{
+    rawResponse.clear();
+    headerEnd = std::string::npos;
+
+    while (headerEnd == std::string::npos) {
+        if (rawResponse.size() > 64 * 1024) {
+            return false;
+        }
+        if (!RecvGbUpgradeBytes(fd, rawResponse, deadlineMs)) {
+            return false;
+        }
+        headerEnd = rawResponse.find("\r\n\r\n");
+    }
+
+    return true;
+}
+
+static bool ParseGbUpgradeResponseHead(const std::string& headerText,
+                                       GbUpgradeHttpResponseHead& out)
+{
+    out = GbUpgradeHttpResponseHead();
+
+    const std::string::size_type firstLineEnd = headerText.find("\r\n");
+    if (firstLineEnd == std::string::npos) {
+        return false;
+    }
+
+    const std::string statusLine = headerText.substr(0, firstLineEnd);
+    if (sscanf(statusLine.c_str(), "HTTP/%*u.%*u %d", &out.status_code) != 1 || out.status_code <= 0) {
+        return false;
+    }
+
+    std::string::size_type pos = firstLineEnd + 2;
+    while (pos < headerText.size()) {
+        std::string::size_type lineEnd = headerText.find("\r\n", pos);
+        if (lineEnd == pos) {
+            break;
+        }
+        if (lineEnd == std::string::npos) {
+            lineEnd = headerText.size();
+        }
+
+        const std::string line = headerText.substr(pos, lineEnd - pos);
+        const std::string::size_type colon = line.find(':');
+        if (colon != std::string::npos) {
+            const std::string name = ToLowerCopy(TrimWhitespaceCopy(line.substr(0, colon)));
+            const std::string value = TrimWhitespaceCopy(line.substr(colon + 1));
+            if (name == "content-length") {
+                unsigned long long parsed = 0;
+                if (!ParseGbUpgradeUnsignedLongLong(value, 10, parsed)) {
+                    return false;
+                }
+                out.content_length = parsed;
+                out.has_content_length = true;
+            } else if (name == "transfer-encoding" &&
+                       ToLowerCopy(value).find("chunked") != std::string::npos) {
+                out.chunked = true;
+            } else if (name == "location" && out.location.empty()) {
+                out.location = value;
+            }
+        }
+
+        pos = (lineEnd < headerText.size()) ? (lineEnd + 2) : headerText.size();
+    }
+
+    return true;
+}
+
+static bool WriteGbUpgradeFileBytes(FILE* fp, const char* data, size_t size)
+{
+    return size == 0 || (fp != NULL && fwrite(data, 1, size, fp) == size);
+}
+
+static bool ConsumeGbUpgradeChunkedBody(FILE* fp,
+                                        int fd,
+                                        std::string body,
+                                        long long deadlineMs)
+{
+    size_t offset = 0;
+    while (true) {
+        const std::string::size_type sizeLineEnd = body.find("\r\n", offset);
+        if (sizeLineEnd == std::string::npos) {
+            if (offset > 0) {
+                body.erase(0, offset);
+                offset = 0;
+            }
+            if (!RecvGbUpgradeBytes(fd, body, deadlineMs)) {
+                return false;
+            }
+            continue;
+        }
+
+        std::string chunkSizeText = body.substr(offset, sizeLineEnd - offset);
+        const std::string::size_type semicolon = chunkSizeText.find(';');
+        if (semicolon != std::string::npos) {
+            chunkSizeText.erase(semicolon);
+        }
+
+        unsigned long long chunkSize = 0;
+        if (!ParseGbUpgradeUnsignedLongLong(chunkSizeText, 16, chunkSize)) {
+            return false;
+        }
+
+        offset = sizeLineEnd + 2;
+        if (chunkSize == 0) {
+            while (true) {
+                if (body.size() >= offset + 2 && body.compare(offset, 2, "\r\n") == 0) {
+                    return true;
+                }
+                const std::string::size_type trailerEnd = body.find("\r\n\r\n", offset);
+                if (trailerEnd != std::string::npos) {
+                    return true;
+                }
+                if (offset > 0) {
+                    body.erase(0, offset);
+                    offset = 0;
+                }
+                if (!RecvGbUpgradeBytes(fd, body, deadlineMs)) {
+                    return false;
+                }
+            }
+        }
+
+        const unsigned long long needed = chunkSize + 2ULL;
+        while (body.size() - offset < needed) {
+            if (offset > 0) {
+                body.erase(0, offset);
+                offset = 0;
+            }
+            if (!RecvGbUpgradeBytes(fd, body, deadlineMs)) {
+                return false;
+            }
+        }
+
+        if (!WriteGbUpgradeFileBytes(fp, body.data() + offset, static_cast<size_t>(chunkSize))) {
+            return false;
+        }
+
+        offset += static_cast<size_t>(chunkSize);
+        if (body.compare(offset, 2, "\r\n") != 0) {
+            return false;
+        }
+        offset += 2;
+
+        if (offset >= body.size()) {
+            body.clear();
+            offset = 0;
+        } else if (offset > 8192) {
+            body.erase(0, offset);
+            offset = 0;
+        }
+    }
+}
+
+static bool ConsumeGbUpgradeFixedBody(FILE* fp,
+                                      int fd,
+                                      std::string body,
+                                      unsigned long long contentLength,
+                                      long long deadlineMs)
+{
+    unsigned long long written = 0;
+    if (!body.empty()) {
+        const size_t initialSize = static_cast<size_t>(
+            std::min<unsigned long long>(contentLength, static_cast<unsigned long long>(body.size())));
+        if (!WriteGbUpgradeFileBytes(fp, body.data(), initialSize)) {
+            return false;
+        }
+        written += static_cast<unsigned long long>(initialSize);
+    }
+
+    char buffer[4096] = {0};
+    while (written < contentLength) {
+        const int remainingMs = GetGbUpgradeRemainingTimeoutMs(deadlineMs);
+        if (remainingMs <= 0 || !SetGbUpgradeSocketIoTimeoutMs(fd, remainingMs > 1000 ? 1000 : remainingMs)) {
+            return false;
+        }
+
+        const size_t bytesToRead = static_cast<size_t>(
+            std::min<unsigned long long>(sizeof(buffer), contentLength - written));
+        const ssize_t len = recv(fd, buffer, bytesToRead, 0);
+        if (len > 0) {
+            if (!WriteGbUpgradeFileBytes(fp, buffer, static_cast<size_t>(len))) {
+                return false;
+            }
+            written += static_cast<unsigned long long>(len);
+            continue;
+        }
+        if (len == 0) {
+            return false;
+        }
+        if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
+            continue;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+static bool ConsumeGbUpgradeBodyUntilClose(FILE* fp,
+                                           int fd,
+                                           const std::string& body,
+                                           long long deadlineMs)
+{
+    if (!body.empty() && !WriteGbUpgradeFileBytes(fp, body.data(), body.size())) {
+        return false;
+    }
+
+    char buffer[4096] = {0};
+    while (true) {
+        const int remainingMs = GetGbUpgradeRemainingTimeoutMs(deadlineMs);
+        if (remainingMs <= 0 || !SetGbUpgradeSocketIoTimeoutMs(fd, remainingMs > 1000 ? 1000 : remainingMs)) {
+            return false;
+        }
+
+        const ssize_t len = recv(fd, buffer, sizeof(buffer), 0);
+        if (len > 0) {
+            if (!WriteGbUpgradeFileBytes(fp, buffer, static_cast<size_t>(len))) {
+                return false;
+            }
+            continue;
+        }
+        if (len == 0) {
+            return true;
+        }
+        if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
+            continue;
+        }
+        return false;
+    }
+}
+
 static int DownloadFileByCurl(const std::string& url, const char* outputPath, int timeoutSec)
 {
     if (url.empty() || outputPath == NULL || outputPath[0] == '\0') {
         return -1;
     }
 
-    char timeoutBuf[16] = {0};
-    snprintf(timeoutBuf, sizeof(timeoutBuf), "%d", (timeoutSec > 0) ? timeoutSec : 120);
-    const std::string command = "curl -L -f -sS --connect-timeout 5 --max-time " +
-        std::string(timeoutBuf) +
-        " -o '" + EscapeShellSingleQuote(outputPath) + "' '" + EscapeShellSingleQuote(url) + "'";
-    return RunShellCommand(command);
+    RemoveFileQuietly(outputPath);
+
+    const int totalTimeoutSec = (timeoutSec > 0) ? timeoutSec : 120;
+    const long long deadlineMs = GetGbUpgradeSteadyTimeMs() + static_cast<long long>(totalTimeoutSec) * 1000LL;
+    std::string currentUrl = TrimWhitespaceCopy(url);
+
+    for (int redirectCount = 0; redirectCount <= 5; ++redirectCount) {
+        GbUpgradeHttpTarget target;
+        if (!ParseGbUpgradeUrl(currentUrl, target)) {
+            printf("[ProtocolManager] gb upgrade download failed note=invalid_url url=%s\n",
+                   currentUrl.c_str());
+            return -1;
+        }
+
+        if (target.scheme != "http") {
+            printf("[ProtocolManager] gb upgrade download failed note=scheme_not_supported scheme=%s url=%s\n",
+                   target.scheme.c_str(),
+                   currentUrl.c_str());
+            return -1;
+        }
+
+        const int connectTimeoutMs = std::min(GetGbUpgradeRemainingTimeoutMs(deadlineMs), 5000);
+        if (connectTimeoutMs <= 0) {
+            printf("[ProtocolManager] gb upgrade download failed note=timeout_before_connect url=%s\n",
+                   currentUrl.c_str());
+            return -1;
+        }
+
+        const int fd = ConnectGbUpgradeTcp(target.host, target.port, connectTimeoutMs);
+        if (fd < 0) {
+            printf("[ProtocolManager] gb upgrade download failed note=connect_failed host=%s port=%d url=%s\n",
+                   target.host.c_str(),
+                   target.port,
+                   currentUrl.c_str());
+            return -1;
+        }
+
+        std::string requestPath = target.request_path.empty() ? "/" : target.request_path;
+        if (requestPath[0] != '/') {
+            requestPath.insert(requestPath.begin(), '/');
+        }
+
+        std::string request = "GET ";
+        request += requestPath;
+        request += " HTTP/1.1\r\nHost: ";
+        request += BuildGbUpgradeAuthority(target);
+        request += "\r\nUser-Agent: rk_gb-upgrade/1.0\r\nAccept: */*\r\nConnection: close\r\n\r\n";
+
+        if (!SendAllBytes(fd, request.data(), request.size(), deadlineMs)) {
+            printf("[ProtocolManager] gb upgrade download failed note=send_failed url=%s\n",
+                   currentUrl.c_str());
+            close(fd);
+            return -1;
+        }
+
+        std::string rawResponse;
+        size_t headerEnd = std::string::npos;
+        if (!ReceiveGbUpgradeHeaders(fd, rawResponse, headerEnd, deadlineMs)) {
+            printf("[ProtocolManager] gb upgrade download failed note=recv_header_failed url=%s\n",
+                   currentUrl.c_str());
+            close(fd);
+            return -1;
+        }
+
+        GbUpgradeHttpResponseHead responseHead;
+        if (!ParseGbUpgradeResponseHead(rawResponse.substr(0, headerEnd), responseHead)) {
+            printf("[ProtocolManager] gb upgrade download failed note=invalid_http_response url=%s\n",
+                   currentUrl.c_str());
+            close(fd);
+            return -1;
+        }
+
+        std::string responseBody = rawResponse.substr(headerEnd + 4);
+        if (IsGbUpgradeRedirectStatus(responseHead.status_code)) {
+            close(fd);
+            if (redirectCount >= 5 || responseHead.location.empty()) {
+                printf("[ProtocolManager] gb upgrade download failed note=redirect_invalid status=%d url=%s\n",
+                       responseHead.status_code,
+                       currentUrl.c_str());
+                return -1;
+            }
+
+            currentUrl = ResolveGbUpgradeRedirectUrl(target, responseHead.location);
+            if (currentUrl.empty()) {
+                printf("[ProtocolManager] gb upgrade download failed note=redirect_url_invalid url=%s\n",
+                       url.c_str());
+                return -1;
+            }
+
+            printf("[ProtocolManager] gb upgrade download redirect status=%d url=%s\n",
+                   responseHead.status_code,
+                   currentUrl.c_str());
+            continue;
+        }
+
+        if (responseHead.status_code < 200 || responseHead.status_code >= 300) {
+            printf("[ProtocolManager] gb upgrade download failed note=http_status status=%d url=%s\n",
+                   responseHead.status_code,
+                   currentUrl.c_str());
+            close(fd);
+            return -1;
+        }
+
+        FILE* fp = fopen(outputPath, "wb");
+        if (fp == NULL) {
+            printf("[ProtocolManager] gb upgrade download failed note=open_output_failed path=%s url=%s\n",
+                   outputPath,
+                   currentUrl.c_str());
+            close(fd);
+            return -1;
+        }
+
+        bool success = false;
+        if (responseHead.chunked) {
+            success = ConsumeGbUpgradeChunkedBody(fp, fd, responseBody, deadlineMs);
+        } else if (responseHead.has_content_length) {
+            success = ConsumeGbUpgradeFixedBody(fp, fd, responseBody, responseHead.content_length, deadlineMs);
+        } else {
+            success = ConsumeGbUpgradeBodyUntilClose(fp, fd, responseBody, deadlineMs);
+        }
+
+        close(fd);
+
+        bool closeOk = false;
+        if (success && fflush(fp) == 0 && fsync(fileno(fp)) == 0) {
+            closeOk = true;
+        }
+
+        const int closeRet = fclose(fp);
+        closeOk = closeOk && (closeRet == 0);
+
+        if (!success || !closeOk) {
+            RemoveFileQuietly(outputPath);
+            printf("[ProtocolManager] gb upgrade download failed note=body_transfer_failed url=%s\n",
+                   currentUrl.c_str());
+            return -1;
+        }
+
+        return 0;
+    }
+
+    RemoveFileQuietly(outputPath);
+    printf("[ProtocolManager] gb upgrade download failed note=too_many_redirects url=%s\n",
+           url.c_str());
+    return -1;
 }
 
 static std::string ResolveUpgradeDigestMode(const std::string& checksum, const protocol::ProtocolExternalConfig& cfg)

@@ -42,6 +42,8 @@
 - GB `TeleBoot` 远程重启已接入冷却保护；短时间内重复命令会被拒绝并打印 `gb teleboot rejected` 日志。
 - GB `DeviceUpgrade` 现在区分“控制命令应答”和“最终升级结果通知”两层语义：收到合法命令并完成下载校验后，只返回本次控制应答；最终 `DeviceUpgradeResult` 仅在升级执行并重启后的注册恢复阶段补报。
 - GB 升级不再依赖 `/tmp/ota_upgrade_flag` 这类外部守护进程假设，已改为在包落盘后复用现有 `UpgradeReleaseResource` 事件释放业务资源，再走本地升级执行与重启路径。
+- GB 升级包下载已不再依赖外部 `curl` 命令；`ProtocolManager` 现内置最小 HTTP 下载实现，支持总超时、`301/302/303/307/308` 重定向，以及按 `Content-Length` / `chunked` / 连接关闭三种方式流式落盘，避免把整包读入内存。
+- 当前内置升级下载只支持 `http` URL；`https` 链路仍未接入 TLS，收到此类地址时会在下载阶段记录 `scheme_not_supported` 并按现有错误码链路返回 `download_failed`。
 - `gb_reboot` / `gb_upgrade` 相关参数仍保留在运行态配置模型和 HTTP 配置链路中；当前本地 `gb28181.ini` 不再保存这些项，统一使用代码默认值。
 - GB 广播通知 `MESSAGE` 只能对同一事务返回一次最终 SIP 响应；不要先发空 `200 OK` 再补带 XML 的 `Response`，否则平台只会收到前一个无业务体的应答。
 - GB 广播 `Notify` 的业务 XML 响应必须回填平台原始 `SN`，并以 `TargetID` 作为响应 `DeviceID`；如果返回成 `SN=0` 或空设备编号，平台通常不会继续进入后续广播流程。

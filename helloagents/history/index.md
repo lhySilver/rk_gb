@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603301906 | gb_upgrade_builtin_http_download | 轻量迭代 | ✅已完成 | [2026-03/202603301906_gb_upgrade_builtin_http_download](2026-03/202603301906_gb_upgrade_builtin_http_download/) |
 | 202603301757 | gb_live_tcp_send_backpressure | 修复 | ✅已完成 | [2026-03/202603301757_gb_live_tcp_send_backpressure](2026-03/202603301757_gb_live_tcp_send_backpressure/) |
 | 202603301537 | gb_sip_random_local_port | 修复 | ✅已完成 | [2026-03/202603301537_gb_sip_random_local_port](2026-03/202603301537_gb_sip_random_local_port/) |
 | 202603301418 | protocol_manager_gat_dead_accessor_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301418_protocol_manager_gat_dead_accessor_trim](2026-03/202603301418_protocol_manager_gat_dead_accessor_trim/) |
@@ -75,6 +76,7 @@
 
 ### 2026-03
 
+- [202603301906_gb_upgrade_builtin_http_download](2026-03/202603301906_gb_upgrade_builtin_http_download/) - 将 GB28181 远程升级下载从外部 `curl` 命令改为内置 HTTP 下载，补齐总超时、重定向和流式落盘，并明确当前仅支持 `http`
 - [202603301757_gb_live_tcp_send_backpressure](2026-03/202603301757_gb_live_tcp_send_backpressure/) - 修复 GB28181 TCP RTP/PS 发送在短时回压下因 `EAGAIN/EWOULDBLOCK` 立即停流的问题，为 sender 增加限时等待可写后重试的容错
 - [202603301537_gb_sip_random_local_port](2026-03/202603301537_gb_sip_random_local_port/) - 修复 GB28181 SIP 客户端本地监听端口错误复用 `gb_register.server_port` 的问题，启动时改为随机本地端口，并同步回写真实监听端口到 `From/Contact`
 - [202603301418_protocol_manager_gat_dead_accessor_trim](2026-03/202603301418_protocol_manager_gat_dead_accessor_trim/) - 删除 `ProtocolManager` 中零调用的 `const` GAT/GB accessor，并清理 `LowerGAT1400SDK` 对应冗余声明，继续压缩协议胶水层符号面
