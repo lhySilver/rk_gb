@@ -73,21 +73,6 @@ void LogZeroConfigFileMissing(const char* tag)
            tag != NULL ? tag : "");
 }
 
-std::string JoinConfigList(const std::vector<std::string>& values)
-{
-    std::string out;
-    for (size_t i = 0; i < values.size(); ++i) {
-        if (values[i].empty()) {
-            continue;
-        }
-        if (!out.empty()) {
-            out += ",";
-        }
-        out += values[i];
-    }
-    return out;
-}
-
 std::string TrimCopy(const std::string& input)
 {
     size_t begin = 0;
@@ -985,30 +970,6 @@ int LocalConfigProvider::Validate(const ProtocolExternalConfig& cfg)
     }
 
     return 0;
-}
-
-int LocalConfigProvider::QueryCapabilities(std::string& outJson)
-{
-    outJson =
-        "{\"mandatory\":[\"gb.register\",\"gb.live\",\"gb.playback\",\"gb.talk\",\"gb.ptz\",\"gb.video\","
-        "\"gb.reboot\",\"gb.upgrade\",\"gb.image\",\"gb.osd\",\"gb.alarm\",\"gb.multistream\",\"gb.broadcast\",\"gb.listen\","
-        "\"gat.register\",\"gat.upload\",\"gat.capture\",\"cloud.fast_access\"],"
-        "\"storage\":\"local\",\"upgrade_verify_modes\":\"" + m_cached_cfg.gb_upgrade.verify_mode + "\","
-        "\"gb_upgrade_url_whitelist\":\"" + JoinConfigList(m_cached_cfg.gb_upgrade.url_whitelist) + "\"}";
-    return 0;
-}
-
-void LocalConfigProvider::SubscribeChange()
-{
-    printf("[Protocol][Config] module=config event=config_subscribe_noop trace=provider source=local tag=%s\n",
-           m_source_tag.c_str());
-}
-
-void LocalConfigProvider::SetMockConfig(const ProtocolExternalConfig& cfg)
-{
-    m_cached_cfg = cfg;
-    m_cached_cfg.gb_register.register_mode =
-        protocol::NormalizeGbRegisterMode(m_cached_cfg.gb_register.register_mode);
 }
 
 }

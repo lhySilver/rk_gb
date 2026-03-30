@@ -130,11 +130,11 @@
 
 | 整改项 | 目标 | 影响文件 | 验证方式 |
 |--------|------|----------|----------|
-| 注册重定向扩展头与身份切换 | 首次重定向 `REGISTER` 带 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion`，且 `From/To` 使用 `StringCode`；正式平台注册后再切回 `deviceId` | `rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/HttpConfigProvider.cpp`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 抓包比对白皮书 `A.16` 的“请求消息1/2”和正式平台注册报文 |
+| 注册重定向扩展头与身份切换 | 首次重定向 `REGISTER` 带 `Mac/StringCode/Line/Manufacturer/Model/Name/CustomProtocolVersion`，且 `From/To` 使用 `StringCode`；正式平台注册后再切回 `deviceId` | `rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 抓包比对白皮书 `A.16` 的“请求消息1/2”和正式平台注册报文 |
 | 注册重定向重试状态机 | 落实“失败 `30s` 重试，失败 `3` 次后 `1min` 并重新获取重定向地址”的闭环 | 优先定位 `GB28181` 注册生命周期实现，候选入口：`rk_gb/App/Protocol/ProtocolManager.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/GB28181Client/GBClientImpl.cpp` | 人工构造 401/302/注册失败场景，观察日志与抓包中的重试节奏 |
 | 设备信息查询应答扩展 | 已于 `2026-03-27` 完成代码落地：`StringCode/Mac/Line/CustomProtocolVersion` 和最小能力清单已补到 `DeviceInfo` 应答 | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/device_info.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp` | 触发 `DeviceInfo` 查询，核对白皮书 `A.19` 必填扩展字段和 XML 结构 |
 | 能力清单最小闭环 | 已于 `2026-03-27` 完成代码落地：当前最少回 `BroadcastCapability`、`FrameMirrorCapability`、`MultiStreamCapability`、`OSDCapability`、`DeviceUpgradeCapability`、`AlarmCapability`、`BroadcastTcpActiveCapability` | 同上 `DeviceInfo` 编码链路，外加 `rk_gb/App/Protocol/config/ProtocolExternalConfig.h` 和运行时能力采集点 | 平台查询设备信息后核对 capability 字段；同时对照附录 `G` 能力字符串格式 |
-| 基础参数查询/配置扩展 | 把 `VoiceFlowMode/LocalPort/Domain/SipIp/SipPort/SipId/Password/ChannelList` 纳入查询/配置闭环，`VoiceFlowMode` 映射到广播 `UDP/TCP active` | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/HttpConfigProvider.cpp`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 平台下发 `DeviceConfig`、设备回 `ConfigDownload`，核对 `A.14/A.15` 扩展字段完整性 |
+| 基础参数查询/配置扩展 | 把 `VoiceFlowMode/LocalPort/Domain/SipIp/SipPort/SipId/Password/ChannelList` 纳入查询/配置闭环，`VoiceFlowMode` 映射到广播 `UDP/TCP active` | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/configdownload_response.cpp`、`rk_gb/App/Protocol/ProtocolManager.cpp`、`rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp` | 平台下发 `DeviceConfig`、设备回 `ConfigDownload`，核对 `A.14/A.15` 扩展字段完整性 |
 
 ### P1 | 第二阶段整改
 
@@ -143,13 +143,13 @@
 | 告警扩展结构化 | 明确扩展报警编码口径，并补齐 `AlarmTypeParam/EventType/ExtraInfo` 的结构化承载 | `rk_gb/third_party/platform_sdk_port/CommonFile/CommonLib/GB28181Defs.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.h`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/alarm_notify.cpp`、`rk_gb/third_party/platform_sdk_port/CommonLibSrc/GB28181SDK/include/XML/GB28181XmlParser.cpp` | 触发扩展告警，检查 `Alarm/Info/AlarmTypeParam/EventType/ExtraInfo` 是否满足平台要求 |
 | 告警事件源接线 | 把升级失败、文件上传失败、断电等真实设备事件接到 `NotifyGbAlarm` | `rk_gb/App/Protocol/ProtocolManager.cpp` 及对应的升级/上传/设备状态模块 | 真实或模拟设备事件触发后，确认平台能收到告警并按白皮书语义处理 |
 | 告警复位例外语义 | “升级失败/文件上传失败无需复位”，其余设备报警仍需复位 | `rk_gb/App/Protocol/ProtocolManager.cpp` | 触发不同类型告警后验证平台复位和设备重新上报行为 |
-| 多码流能力补齐 | 将 `GbMultiStreamParam.stream_count`、独立参数设置和能力回报对齐到“三码流及以上” | `rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/HttpConfigProvider.cpp`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp`、实时流选择逻辑相关文件 | 对照测试用例 `43` 和附录 `G` 的 `MultiStreamCapability` 字符串 |
+| 多码流能力补齐 | 将 `GbMultiStreamParam.stream_count`、独立参数设置和能力回报对齐到“三码流及以上” | `rk_gb/App/Protocol/config/ProtocolExternalConfig.h`、`rk_gb/App/Protocol/config/LocalConfigProvider.cpp`、实时流选择逻辑相关文件 | 对照测试用例 `43` 和附录 `G` 的 `MultiStreamCapability` 字符串 |
 
 ### P2 | 收尾与回归
 
 | 整改项 | 目标 | 影响文件 | 验证方式 |
 |--------|------|----------|----------|
-| 配置来源补齐 | 所有白皮书新增字段都能从本地配置/HTTP 配置拿到 | `ProtocolExternalConfig.h`、`HttpConfigProvider.cpp`、`LocalConfigProvider.cpp` | 查询配置接口和本地配置文件回显一致 |
+| 配置来源补齐 | 所有白皮书新增字段都能从本地配置拿到；当前不再维护独立 HTTP 配置提供者链路 | `ProtocolExternalConfig.h`、`LocalConfigProvider.cpp` | 查询配置接口和本地配置文件回显一致 |
 | 联调抓包模板 | 为 `A.11/A.16/A.19` 固化最小抓包检查点和日志关键字 | 知识库文档优先，必要时补测试脚本 | 联调时直接按清单逐项勾选 |
 
 ## 建议实施顺序

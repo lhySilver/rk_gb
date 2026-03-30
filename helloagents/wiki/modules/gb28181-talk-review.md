@@ -44,7 +44,7 @@
 
 ### 4.3 `gb_talk` 已从“死配置”变为实际配置
 - `ProtocolExternalConfig::GbTalkParam` 现在包含 `codec`、`recv_port`、`sample_rate`、`jitter_buffer_ms`。
-- `LocalConfigProvider` / `HttpConfigProvider` 已支持这些字段的默认值、校验和落盘/序列化。
+- `LocalConfigProvider` 已支持这些字段的默认值、校验和落盘。
 - 被动对讲 `200 OK` 使用 `gb_talk.recv_port`，上行采音桥使用协商 codec 与 `gb_talk.sample_rate`。
 
 ### 4.4 建链时序已收敛到 `ACK` 后

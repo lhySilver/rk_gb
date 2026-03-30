@@ -2,23 +2,20 @@
 #define __LOCAL_CONFIG_PROVIDER_H__
 
 #include <string>
-
-#include "IExternalConfigProvider.h"
+#include "ProtocolExternalConfig.h"
 
 namespace protocol
 {
 
-class LocalConfigProvider : public IExternalConfigProvider
+class LocalConfigProvider
 {
 public:
     explicit LocalConfigProvider(const std::string& sourceTag);
-    virtual ~LocalConfigProvider();
+    ~LocalConfigProvider();
 
     int PullLatest(ProtocolExternalConfig& out);
     int PushApply(const ProtocolExternalConfig& cfg);
     int Validate(const ProtocolExternalConfig& cfg);
-    int QueryCapabilities(std::string& outJson);
-    void SubscribeChange();
 
     static GbRegisterParam BuildDefaultGbRegisterConfig();
     static int LoadOrCreateGbRegisterConfig(GbRegisterParam& out);
@@ -26,8 +23,6 @@ public:
     static GatRegisterParam BuildDefaultGatRegisterConfig();
     static int LoadOrCreateGatRegisterConfig(GatRegisterParam& out);
     static int UpdateGatRegisterConfig(const GatRegisterParam& param);
-
-    void SetMockConfig(const ProtocolExternalConfig& cfg);
 
 private:
     void InitDefaultConfig();

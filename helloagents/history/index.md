@@ -8,6 +8,13 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603301348 | protocol_manager_broadcast_clear_helper_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim](2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim/) |
+| 202603301342 | protocol_manager_forwarder_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301342_protocol_manager_forwarder_trim](2026-03/202603301342_protocol_manager_forwarder_trim/) |
+| 202603301333 | protocol_manager_dead_wrapper_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301333_protocol_manager_dead_wrapper_trim](2026-03/202603301333_protocol_manager_dead_wrapper_trim/) |
+| 202603301223 | local_config_provider_interface_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301223_local_config_provider_interface_trim](2026-03/202603301223_local_config_provider_interface_trim/) |
+| 202603301210 | http_config_provider_removal | 开发 | ✅已完成 | [2026-03/202603301210_http_config_provider_removal](2026-03/202603301210_http_config_provider_removal/) |
+| 202603301206 | gb_config_control_log_dedup_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301206_gb_config_control_log_dedup_trim](2026-03/202603301206_gb_config_control_log_dedup_trim/) |
+| 202603301151 | gb_osd_trim_redundant_code | 轻量迭代 | ✅已完成 | [2026-03/202603301151_gb_osd_trim_redundant_code](2026-03/202603301151_gb_osd_trim_redundant_code/) |
 | 202603301049 | gb_osd_state_unify_multitext | 开发 | ✅已完成 | [2026-03/202603301049_gb_osd_state_unify_multitext](2026-03/202603301049_gb_osd_state_unify_multitext/) |
 | 202603281538 | gb_runtime_media_config_boundary | 开发 | ✅已完成 | [2026-03/202603281538_gb_runtime_media_config_boundary](2026-03/202603281538_gb_runtime_media_config_boundary/) |
 | 202603281740 | gb_osd_encode_control_runtime_query | 修复 | ✅已完成 | [2026-03/202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) |
@@ -65,6 +72,13 @@
 
 ### 2026-03
 
+- [202603301348_protocol_manager_broadcast_clear_helper_trim](2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim/) - 删除 `ProtocolManager` 中零调用的私有广播会话清理 helper，继续收口广播链路死代码
+- [202603301342_protocol_manager_forwarder_trim](2026-03/202603301342_protocol_manager_forwarder_trim/) - 删除 `ProtocolManager` 中零调用的广播/监听转发方法与重复 helper 声明，继续收口协议层壳代码
+- [202603301333_protocol_manager_dead_wrapper_trim](2026-03/202603301333_protocol_manager_dead_wrapper_trim/) - 删除 `ProtocolManager` 中无调用的 GB 包装方法与未使用 helper 参数，继续压缩 `ProtocolManager.cpp` 编译产物体积
+- [202603301223_local_config_provider_interface_trim](2026-03/202603301223_local_config_provider_interface_trim/) - 删除 `LocalConfigProvider` 的空抽象层与未调用方法，继续收缩协议配置相关目标文件体积
+- [202603301210_http_config_provider_removal](2026-03/202603301210_http_config_provider_removal/) - 删除未使用的 `HttpConfigProvider` 死代码，并把协议配置知识库收口到 `LocalConfigProvider`
+- [202603301206_gb_config_control_log_dedup_trim](2026-03/202603301206_gb_config_control_log_dedup_trim/) - 收敛 `HandleGbConfigControl()` 中 `image_flip` 与 `video_param_attribute` 的重复日志展开，继续压缩 `ProtocolManager.cpp` 编译产物体积
+- [202603301151_gb_osd_trim_redundant_code](2026-03/202603301151_gb_osd_trim_redundant_code/) - 清理 GB OSD 多文本改动中的未使用 helper 与重复日志展开，收缩 `ProtocolManager.cpp` 编译产物体积
 - [202603301049_gb_osd_state_unify_multitext](2026-03/202603301049_gb_osd_state_unify_multitext/) - 统一 OSD get/set 到 `VideoOsdState`，补齐 GB `OSDConfig` 多文本 `Item[]` 协议态承载与查询回显
 - [202603281538_gb_runtime_media_config_boundary](2026-03/202603281538_gb_runtime_media_config_boundary/) - 收口 GB28181 / GAT1400 对外部模块配置的运行态缓存，GB 统一改走 `VideoOsdControl` / `VideoEncodeControl` / `VideoImageControl` 查询，1400 改为按需解析当前 device id
 - [202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) - 补齐 GB28181 OSD 与编码参数控制链路的运行态查询闭环，让 `ProtocolManager` 在平台设置命令上显式调用 `QueryVideoOsdState` / `QueryVideoEncodeState`

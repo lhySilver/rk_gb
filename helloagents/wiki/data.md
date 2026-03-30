@@ -379,7 +379,7 @@
 
 ## 索引与关联
 
-- 配置来源: `HttpConfigProvider -> ProtocolExternalConfig -> ProtocolManager / GAT1400ClientService`
+- 配置来源: `LocalConfigProvider -> ProtocolExternalConfig -> ProtocolManager / GAT1400ClientService`
 - 本地配置: `/userdata/conf/Config/GB/gb28181.ini + /userdata/conf/Config/GB/zero_config.ini -> LocalConfigProvider -> GetGbRegisterConfig()/SetGbRegisterConfig()/RestartGbRegisterService() -> ProtocolManager::Start()/GB lifecycle`
 - 本地配置: `/userdata/conf/Config/GB/gat1400.ini -> LocalConfigProvider -> GetGatRegisterConfig()/SetGatRegisterConfig()/RestartGatRegisterService() -> ProtocolManager::Start()/GAT1400 lifecycle`
 - 实时流关联: `GbLiveSession -> GB28181RtpPsSender`

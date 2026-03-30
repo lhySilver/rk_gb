@@ -91,12 +91,6 @@ public:
 
     virtual void Stop();
 
-    int GBManager_Start();
-
-    int GBManager_Stop();
-
-    void OnGbConfigChanged();
-
     virtual int ReloadExternalConfig();
 
     const ProtocolExternalConfig& GetConfig() const;
@@ -113,12 +107,6 @@ public:
     int PushLiveVideoEsFrame(const uint8_t* data, size_t size, uint64_t pts90k, int mediaType, bool keyFrame);
 
     int PushLiveAudioEsFrame(const uint8_t* data, size_t size, uint64_t pts90k);
-
-    int PushListenAudioFrame(const uint8_t* data, size_t size, uint64_t timestamp);
-
-
-
-    int ApplyGbBroadcastSdpOffer(const std::string& sdp, const std::string& remoteIpHint);
 
     int ApplyGbBroadcastTransportHint(const std::string& remoteIp,
 
@@ -176,8 +164,6 @@ public:
     void SetGbMediaPlayInfoResponder(GbMediaPlayInfoResponder responder, void* userData);
 
     void SetGbTimeSyncHook(GbTimeSyncHook hook, void* userData);
-
-    void SetGbBroadcastPcmCallback(GB28181BroadcastBridge::PcmFrameCallback cb, void* userData);
 
 
 
@@ -645,8 +631,6 @@ private:
 
     void ClearGbReplaySessionState();
 
-    void ClearGbBroadcastSessionState();
-
     void ClearGbTalkSessionState();
 
     int RestartGbBroadcastBridge(const char* reason);
@@ -659,7 +643,7 @@ private:
 
 private:
 
-    std::shared_ptr<IExternalConfigProvider> m_provider;
+    std::unique_ptr<LocalConfigProvider> m_provider;
 
     ProtocolExternalConfig m_cfg;
 
@@ -748,11 +732,6 @@ private:
 
 
 #endif
-
-
-
-
-
 
 
 

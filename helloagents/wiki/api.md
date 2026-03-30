@@ -2,37 +2,18 @@
 
 ## 概述
 本项目对外不是传统 Web 服务工程，但存在四类“接口面”：
-- 本地协议配置拉取接口
 - GB28181 配置查询 / 设置接口与 SDK 回调
 - GAT1400 作为下级系统发起 / 接收的 HTTP VIID 接口
 - GB28181 通过 SDK 回调暴露的媒体与控制接口
 
 ## 认证方式
-- 本地配置接口: 当前代码中未体现额外认证
+- 本地注册配置接口: 当前代码中未体现额外认证
 - GAT1400 对上 HTTP: 支持 Digest / Basic 类认证流程，401 后通过 `http_auth` 重试
 - GB28181: 由 SIP 注册参数 `username/password` 驱动
 
 ---
 
 ## 接口列表
-
-### 配置服务
-
-#### `GET /openapi/v1/ipc/protocol/config`
-**描述:** `HttpConfigProvider` 拉取协议最新配置。
-
-**请求参数:** 无
-
-**响应:** 最小 JSON 配置，映射到 `ProtocolExternalConfig`
-
-#### `POST /openapi/v1/ipc/protocol/config`
-**描述:** 协议配置应用后回推当前有效配置。
-
-#### `POST /openapi/v1/ipc/protocol/config/validate`
-**描述:** 校验候选配置是否合法。
-
-#### `GET /openapi/v1/ipc/protocol/capabilities`
-**描述:** 查询配置能力集合。
 
 ### GB28181 本地注册配置接口
 

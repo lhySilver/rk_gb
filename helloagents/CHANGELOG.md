@@ -110,5 +110,12 @@
 - 修复 GB 回放从 `index` 选择首个录像文件时的筛选逻辑，改为先排序再按时间重叠 / 后继文件选取，避免“查询能看到录像、回放却选不到文件”。
 
 ### 优化
+- 删除 `ProtocolManager` 中零调用的私有方法 `ClearGbBroadcastSessionState()`，继续收口广播链路中的死 helper。
+- 删除 `ProtocolManager` 中零调用的 `PushListenAudioFrame()`、`ApplyGbBroadcastSdpOffer()`、`SetGbBroadcastPcmCallback()` 转发方法，并清理 `TrimWhitespaceCopy()`、`NormalizeGbOsdTextTemplate()` 的重复前置声明，继续收口协议层无意义编译内容。
+- 删除 `ProtocolManager` 中无调用的 `GBManager_Start()`、`GBManager_Stop()`、`OnGbConfigChanged()` 包装方法，并去掉 `ClearGbUpgradePendingState()` 的未使用参数；在同编译宏条件下，`ProtocolManager.cpp` 的目标文件 `dec` 从 `236017` 进一步降到 `234806`。
+- 删除 `IExternalConfigProvider` 空抽象层，并收口 `LocalConfigProvider` 中未被活代码调用的 `QueryCapabilities`、`SubscribeChange`、`SetMockConfig`；在同编译宏条件下，`LocalConfigProvider.cpp` 与 `ProtocolManager.cpp` 的目标文件 `dec` 分别从 `76121` 降到 `72816`、从 `236499` 降到 `236017`。
+- 移除未被活源码和当前构建入口使用的 `App/Protocol/config/HttpConfigProvider.*`，协议配置知识库同步收口到 `LocalConfigProvider` 单一路径。
+- 清理最近 GB OSD 多文本改动中的未使用 helper、无效前置声明和重复日志展开；在同编译宏条件下，`ProtocolManager.cpp` 的目标文件 `dec` 从 `237955` 收缩到 `236490`。
+- 继续收敛 `ProtocolManager::HandleGbConfigControl()` 中 `image_flip` 与 `video_param_attribute` 的重复 `skip_apply / dispatch` 日志展开；在同编译宏条件下，`ProtocolManager.cpp` 的目标文件 `dec` 从 `236490` 进一步收缩到 `235760`，相对本轮瘦身前累计减少 `2195` 字节。
 - 优化 issue bot 本机定时任务的可执行文件发现逻辑，自动写入 `CODEX_BIN` / `GH_BIN` 绝对路径，降低 cron 环境缺少 PATH 时的失败率。
 - 静默忽略 `SIGPIPE`，并移除 GB live 音频 ES、PS 输出、RTP 发送统计的周期性刷屏日志。
