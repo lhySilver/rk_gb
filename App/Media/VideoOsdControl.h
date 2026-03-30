@@ -2,23 +2,24 @@
 #define _VIDEO_OSD_CONTROL_H_
 
 #include <string>
+#include <vector>
 
 namespace media
 {
 
-struct VideoOsdConfig
+struct VideoOsdTextItem
 {
-    int time_enabled;
-    int event_enabled;
-    int alert_enabled;
-    std::string text_template;
-    std::string time_format;
-    std::string position;
+    bool has_text;
+    std::string text;
+    bool has_position;
+    int x;
+    int y;
 
-    VideoOsdConfig()
-        : time_enabled(0),
-          event_enabled(0),
-          alert_enabled(0)
+    VideoOsdTextItem()
+        : has_text(false),
+          has_position(false),
+          x(0),
+          y(0)
     {
     }
 };
@@ -35,6 +36,8 @@ struct VideoOsdState
     int time_enabled;
     bool has_text_enabled;
     int text_enabled;
+    bool has_time_format;
+    std::string time_format;
     bool has_date_style;
     std::string date_style;
     bool has_time_style;
@@ -42,11 +45,8 @@ struct VideoOsdState
     bool has_time_position;
     int time_x;
     int time_y;
-    bool has_text_position;
-    int text_x;
-    int text_y;
-    bool has_text;
-    std::string text;
+    bool has_text_items;
+    std::vector<VideoOsdTextItem> text_items;
 
     VideoOsdState()
         : has_master_enabled(false),
@@ -59,21 +59,19 @@ struct VideoOsdState
           time_enabled(0),
           has_text_enabled(false),
           text_enabled(0),
+          has_time_format(false),
           has_date_style(false),
           has_time_style(false),
           has_time_position(false),
           time_x(0),
           time_y(0),
-          has_text_position(false),
-          text_x(0),
-          text_y(0),
-          has_text(false)
+          has_text_items(false)
     {
     }
 };
 
 bool ResolveVideoOsdAnchor(const std::string& position, int* x, int* y);
-int ApplyVideoOsdConfig(const VideoOsdConfig& desired);
+int ApplyVideoOsdConfig(const VideoOsdState& desired);
 bool QueryVideoOsdState(VideoOsdState* state);
 
 } // namespace media

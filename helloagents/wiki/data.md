@@ -29,6 +29,40 @@
 | `gat_upload` | `GatUploadParam` | 可选 | 批量大小、重试策略和失败补传队列参数 |
 | `gat_capture` | `GatCaptureParam` | 可选 | 采集侧并发和 profile 参数 |
 
+### `GbOsdParam`
+
+**描述:** 外部配置链路里的历史兼容 OSD 模型，定义于 `App/Protocol/config/ProtocolExternalConfig.h`。
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| `text_template` | `std::string` | 单条文本模板 |
+| `time_format` | `std::string` | 时间格式字符串 |
+| `position` | `std::string` | 时间/文本共用锚点 |
+| `time_enabled` | `int` | 时间 OSD 开关 |
+| `event_enabled` | `int` | 事件 OSD 开关 |
+| `alert_enabled` | `int` | 告警 OSD 开关 |
+
+**说明:** 这套结构当前仍用于本地/HTTP 外部配置兼容，不是媒体层 OSD 运行态的统一 get/set 模型，也不支持白皮书 `OSDConfig.Item[]` 多文本承载。
+
+### `media::VideoOsdState`
+
+**描述:** OSD 运行态与应用态统一结构，定义于 `App/Media/VideoOsdControl.h`，`QueryVideoOsdState()` 与 `ApplyVideoOsdConfig()` 现都以它为准。
+
+| 字段组 | 说明 |
+|--------|------|
+| `has_master_enabled/master_enabled` | OSD 总开关 |
+| `has_event_enabled/event_enabled` | 事件 OSD 开关 |
+| `has_alert_enabled/alert_enabled` | 告警 OSD 开关 |
+| `has_time_enabled/time_enabled` | 时间 OSD 开关 |
+| `has_text_enabled/text_enabled` | 文本 OSD 开关 |
+| `has_time_format/time_format` | 统一时间格式字符串 |
+| `has_date_style/date_style` | 底层日期样式 |
+| `has_time_style/time_style` | 底层时间样式 |
+| `has_time_position/time_x/time_y` | 时间 OSD 坐标 |
+| `has_text_items/text_items[]` | 文本项数组；每项包含 `has_text/text/has_position/x/y` |
+
+**说明:** 白皮书 `OSDConfig.SumNum + Item[]` 当前直接映射到 `VideoOsdState.text_items[]`。协议态支持多文本回显，但当前 SoC 真实只会尽力显示第 `1` 个文本项；额外项由媒体层缓存并供 GB 查询回显。
+
 ### `GbRegisterParam` 本地持久化子集
 
 | 字段名 | 类型 | 说明 |

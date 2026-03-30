@@ -1897,6 +1897,10 @@ static std::string BuildGbOsdTimeFormatFromRuntimeState(const media::VideoOsdSta
         return "";
     }
 
+    if (runtimeState->has_time_format && !TrimWhitespaceCopy(runtimeState->time_format).empty()) {
+        return TrimWhitespaceCopy(runtimeState->time_format);
+    }
+
     std::string datePart = "yyyy-MM-dd";
     if (runtimeState->has_date_style) {
         const std::string style = ToLowerCopy(TrimWhitespaceCopy(runtimeState->date_style));
@@ -1924,48 +1928,115 @@ static std::string BuildGbOsdTimeFormatFromRuntimeState(const media::VideoOsdSta
     return datePart + " " + timePart;
 }
 
-static media::VideoOsdConfig BuildVideoOsdConfigFromRuntimeState(const media::VideoOsdState* runtimeState)
+static void NormalizeVideoOsdStateForProtocol(media::VideoOsdState* state)
 {
-    media::VideoOsdConfig config;
-    if (runtimeState == NULL) {
-        return config;
+    if (state == NULL) {
+        return;
     }
 
-    if (runtimeState->has_time_enabled) {
-        config.time_enabled = runtimeState->time_enabled;
+    if (!state->has_text_items) {
+        state->text_items.clear();
+    } else {
+        size_t writeIndex = 0;
+        for (size_t index = 0; index < state->text_items.size(); ++index) {
+            media::VideoOsdTextItem item = state->text_items[index];
+            if (item.has_text) {
+                item.text = NormalizeGbOsdTextTemplate(item.text);
+                item.has_text = !item.text.empty();
+            }
+            if (!item.has_text && !item.has_position) {
+                continue;
+            }
+            if (writeIndex != index) {
+                state->text_items[writeIndex] = item;
+            }
+            ++writeIndex;
+        }
+        state->text_items.resize(writeIndex);
+        state->has_text_items = !state->text_items.empty();
     }
-    if (runtimeState->has_event_enabled) {
-        config.event_enabled = runtimeState->event_enabled;
+
+    if (!state->has_time_format &&
+        (state->has_date_style || state->has_time_style)) {
+        state->has_time_format = true;
+        state->time_format = BuildGbOsdTimeFormatFromRuntimeState(state);
     }
-    if (runtimeState->has_alert_enabled) {
-        config.alert_enabled = runtimeState->alert_enabled;
-    }
-    if (runtimeState->has_text_enabled && runtimeState->text_enabled != 0 && runtimeState->has_text) {
-        config.text_template = NormalizeGbOsdTextTemplate(runtimeState->text);
-    }
-    if (runtimeState->has_time_position) {
-        config.position = BuildGbOsdPositionValue((unsigned int)runtimeState->time_x,
-                                                  (unsigned int)runtimeState->time_y);
-    } else if (runtimeState->has_text_position) {
-        config.position = BuildGbOsdPositionValue((unsigned int)runtimeState->text_x,
-                                                  (unsigned int)runtimeState->text_y);
-    }
-    config.time_format = BuildGbOsdTimeFormatFromRuntimeState(runtimeState);
-    return config;
 }
 
-static bool IsVideoOsdConfigMatched(const media::VideoOsdConfig& desired,
-                                    const media::VideoOsdState* runtimeState)
+static const media::VideoOsdTextItem* GetPrimaryVideoOsdTextItem(const media::VideoOsdState* state)
+{
+    if (state == NULL || !state->has_text_items || state->text_items.empty()) {
+        return NULL;
+    }
+
+    return &state->text_items[0];
+}
+
+static media::VideoOsdTextItem* EnsurePrimaryVideoOsdTextItem(media::VideoOsdState* state)
+{
+    if (state == NULL) {
+        return NULL;
+    }
+
+    if (!state->has_text_items) {
+        state->has_text_items = true;
+        state->text_items.clear();
+    }
+    if (state->text_items.empty()) {
+        state->text_items.push_back(media::VideoOsdTextItem());
+    }
+    return &state->text_items[0];
+}
+
+static std::string GetPrimaryVideoOsdTextTemplate(const media::VideoOsdState* state)
+{
+    const media::VideoOsdTextItem* item = GetPrimaryVideoOsdTextItem(state);
+    if (item == NULL || !item->has_text) {
+        return "";
+    }
+
+    return NormalizeGbOsdTextTemplate(item->text);
+}
+
+static size_t GetVideoOsdTextItemCount(const media::VideoOsdState* state)
+{
+    return (state != NULL && state->has_text_items) ? state->text_items.size() : 0U;
+}
+
+static media::VideoOsdState BuildVideoOsdStateFromRuntimeState(const media::VideoOsdState* runtimeState)
+{
+    media::VideoOsdState state;
+    if (runtimeState != NULL) {
+        state = *runtimeState;
+    }
+    NormalizeVideoOsdStateForProtocol(&state);
+    return state;
+}
+
+static bool IsVideoOsdStateMatched(const media::VideoOsdState& desired,
+                                   const media::VideoOsdState* runtimeState)
 {
     if (runtimeState == NULL) {
         return false;
     }
 
-    const std::string normalizedTextTemplate = NormalizeGbOsdTextTemplate(desired.text_template);
-    const int desiredTimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
-    const int desiredCustomTextEnabled = normalizedTextTemplate.empty() ? 0 : 1;
-    const int desiredMasterSwitch =
-        (desiredTimeEnabled != 0 || desired.event_enabled != 0 || desired.alert_enabled != 0) ? 1 : 0;
+    media::VideoOsdState normalizedDesired = desired;
+    NormalizeVideoOsdStateForProtocol(&normalizedDesired);
+
+    const std::string desiredTimeFormat = BuildGbOsdTimeFormatFromRuntimeState(&normalizedDesired);
+    const std::string normalizedTextTemplate = GetPrimaryVideoOsdTextTemplate(&normalizedDesired);
+    const int desiredTimeEnabled =
+        (normalizedDesired.has_time_enabled && normalizedDesired.time_enabled != 0) ? 1 : 0;
+    const int desiredEventEnabled =
+        (normalizedDesired.has_event_enabled && normalizedDesired.event_enabled != 0) ? 1 : 0;
+    const int desiredAlertEnabled =
+        (normalizedDesired.has_alert_enabled && normalizedDesired.alert_enabled != 0) ? 1 : 0;
+    const int desiredCustomTextEnabled = normalizedDesired.has_text_enabled ?
+        ((normalizedDesired.text_enabled != 0) ? 1 : 0) :
+        (normalizedTextTemplate.empty() ? 0 : 1);
+    const int desiredMasterSwitch = normalizedDesired.has_master_enabled ?
+        ((normalizedDesired.master_enabled != 0) ? 1 : 0) :
+        ((desiredTimeEnabled != 0 || desiredEventEnabled != 0 || desiredAlertEnabled != 0) ? 1 : 0);
 
     if (!runtimeState->has_master_enabled || runtimeState->master_enabled != desiredMasterSwitch) {
         return false;
@@ -1979,42 +2050,50 @@ static bool IsVideoOsdConfigMatched(const media::VideoOsdConfig& desired,
         return false;
     }
 
-    if (!desired.time_format.empty()) {
+    if (!desiredTimeFormat.empty()) {
         if (!runtimeState->has_date_style ||
-            runtimeState->date_style != NormalizeVideoOsdDateStyleValue(desired.time_format)) {
+            runtimeState->date_style != NormalizeVideoOsdDateStyleValue(desiredTimeFormat)) {
             return false;
         }
 
         if (!runtimeState->has_time_style ||
-            runtimeState->time_style != NormalizeVideoOsdTimeStyleValue(desired.time_format)) {
+            runtimeState->time_style != NormalizeVideoOsdTimeStyleValue(desiredTimeFormat)) {
             return false;
         }
     }
 
-    if (!desired.position.empty()) {
-        int anchorX = 0;
-        int anchorY = 0;
-        if (!media::ResolveVideoOsdAnchor(desired.position, &anchorX, &anchorY)) {
-            return false;
-        }
-
+    if (normalizedDesired.has_time_position) {
         if (!runtimeState->has_time_position ||
-            runtimeState->time_x != anchorX ||
-            runtimeState->time_y != anchorY) {
-            return false;
-        }
-
-        if (!runtimeState->has_text_position ||
-            runtimeState->text_x != anchorX ||
-            runtimeState->text_y != anchorY) {
+            runtimeState->time_x != normalizedDesired.time_x ||
+            runtimeState->time_y != normalizedDesired.time_y) {
             return false;
         }
     }
 
-    if (desiredCustomTextEnabled != 0) {
-        if (!runtimeState->has_text ||
-            NormalizeGbOsdTextTemplate(runtimeState->text) != normalizedTextTemplate) {
+    if (normalizedDesired.has_text_items) {
+        if (!runtimeState->has_text_items ||
+            runtimeState->text_items.size() != normalizedDesired.text_items.size()) {
             return false;
+        }
+
+        for (size_t index = 0; index < normalizedDesired.text_items.size(); ++index) {
+            const media::VideoOsdTextItem& desiredItem = normalizedDesired.text_items[index];
+            const media::VideoOsdTextItem& runtimeItem = runtimeState->text_items[index];
+            if (desiredItem.has_text != runtimeItem.has_text) {
+                return false;
+            }
+            if (desiredItem.has_text &&
+                NormalizeGbOsdTextTemplate(desiredItem.text) !=
+                    NormalizeGbOsdTextTemplate(runtimeItem.text)) {
+                return false;
+            }
+            if (desiredItem.has_position != runtimeItem.has_position) {
+                return false;
+            }
+            if (desiredItem.has_position &&
+                (desiredItem.x != runtimeItem.x || desiredItem.y != runtimeItem.y)) {
+                return false;
+            }
         }
     }
 
@@ -2130,35 +2209,36 @@ static void BuildGbOsdQueryConfig(const media::VideoEncodeState* runtimeVideoSta
 
     out->TimeType = ResolveGbOsdTimeType(BuildGbOsdTimeFormatFromRuntimeState(runtimeState));
 
-    std::string textTemplate;
-    if (runtimeState != NULL && runtimeState->has_text) {
-        const std::string normalizedRuntimeText = NormalizeGbOsdTextTemplate(runtimeState->text);
-        if (!normalizedRuntimeText.empty()) {
-            textTemplate = normalizedRuntimeText;
-        }
-    }
-
+    media::VideoOsdState normalizedState = BuildVideoOsdStateFromRuntimeState(runtimeState);
     if (runtimeState != NULL && runtimeState->has_text_enabled) {
         out->TextEnable = (runtimeState->text_enabled != 0) ? 1U : 0U;
     } else {
-        out->TextEnable = textTemplate.empty() ? 0U : 1U;
+        out->TextEnable = normalizedState.has_text_items ? 1U : 0U;
     }
 
-    unsigned int textX = out->TimeX;
-    unsigned int textY = out->TimeY;
-    if (runtimeState != NULL &&
-        runtimeState->has_text_position &&
-        runtimeState->text_x >= 0 &&
-        runtimeState->text_y >= 0) {
-        textX = (unsigned int)runtimeState->text_x;
-        textY = (unsigned int)runtimeState->text_y;
-    }
+    if (out->TextEnable != 0 && normalizedState.has_text_items) {
+        const unsigned int itemCount =
+            (unsigned int)((normalizedState.text_items.size() > MAX_OSD_TEXT_NUM) ?
+                MAX_OSD_TEXT_NUM :
+                normalizedState.text_items.size());
+        out->SumNum = itemCount;
+        for (unsigned int index = 0; index < itemCount; ++index) {
+            const media::VideoOsdTextItem& item = normalizedState.text_items[index];
+            if (item.has_text) {
+                CopyBounded(out->Item[index].Text,
+                            sizeof(out->Item[index].Text),
+                            NormalizeGbOsdTextTemplate(item.text));
+            }
 
-    if (out->TextEnable != 0 && !textTemplate.empty()) {
-        out->SumNum = 1;
-        CopyBounded(out->Item[0].Text, sizeof(out->Item[0].Text), textTemplate);
-        out->Item[0].X = textX;
-        out->Item[0].Y = textY;
+            unsigned int textX = out->TimeX;
+            unsigned int textY = out->TimeY;
+            if (item.has_position && item.x >= 0 && item.y >= 0) {
+                textX = (unsigned int)item.x;
+                textY = (unsigned int)item.y;
+            }
+            out->Item[index].X = textX;
+            out->Item[index].Y = textY;
+        }
     }
 }
 
@@ -7406,7 +7486,7 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     bool applyVideoConfig[2] = {false, false};
 
-    bool desiredOsdConfigInitialized = false;
+    bool desiredOsdStateInitialized = false;
 
     int applyImageError = 0;
 
@@ -7416,7 +7496,7 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
     media::VideoOsdState runtimeOsdState;
 
-    media::VideoOsdConfig desiredOsdConfig;
+    media::VideoOsdState desiredOsdState;
 
     media::VideoEncodeState runtimeVideoState;
 
@@ -7508,16 +7588,22 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             const int nextEventEnabledInt = nextEventEnabled ? 1 : 0;
             const int nextAlertEnabledInt = nextAlertEnabled ? 1 : 0;
 
-            if (!desiredOsdConfigInitialized) {
+            if (!desiredOsdStateInitialized) {
                 queriedRuntimeOsdState = true;
                 hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
-                desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+                desiredOsdState = BuildVideoOsdStateFromRuntimeState(
                     hasRuntimeOsdState ? &runtimeOsdState : NULL);
-                desiredOsdConfigInitialized = true;
+                desiredOsdStateInitialized = true;
             }
-            desiredOsdConfig.time_enabled = nextTimeEnabledInt;
-            desiredOsdConfig.event_enabled = nextEventEnabledInt;
-            desiredOsdConfig.alert_enabled = nextAlertEnabledInt;
+            desiredOsdState.has_time_enabled = true;
+            desiredOsdState.time_enabled = nextTimeEnabledInt;
+            desiredOsdState.has_event_enabled = true;
+            desiredOsdState.event_enabled = nextEventEnabledInt;
+            desiredOsdState.has_alert_enabled = true;
+            desiredOsdState.alert_enabled = nextAlertEnabledInt;
+            desiredOsdState.has_master_enabled = true;
+            desiredOsdState.master_enabled =
+                (nextTimeEnabledInt != 0 || nextEventEnabledInt != 0 || nextAlertEnabledInt != 0) ? 1 : 0;
 
             applyOsdConfig = true;
 
@@ -7551,38 +7637,47 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
 
             const int nextTimeEnabled = (osd.TimeEnable != 0) ? 1 : 0;
 
-            if (!desiredOsdConfigInitialized) {
+            if (!desiredOsdStateInitialized) {
                 queriedRuntimeOsdState = true;
                 hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
-                desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+                desiredOsdState = BuildVideoOsdStateFromRuntimeState(
                     hasRuntimeOsdState ? &runtimeOsdState : NULL);
-                desiredOsdConfigInitialized = true;
+                desiredOsdStateInitialized = true;
             }
-            desiredOsdConfig.time_enabled = nextTimeEnabled;
-
-            const std::string nextPosition = BuildGbOsdPositionValue(osd.TimeX, osd.TimeY);
-
-            if (!nextPosition.empty()) {
-                desiredOsdConfig.position = nextPosition;
-            }
+            desiredOsdState.has_time_enabled = true;
+            desiredOsdState.time_enabled = nextTimeEnabled;
+            desiredOsdState.has_time_position = true;
+            desiredOsdState.time_x = (int)osd.TimeX;
+            desiredOsdState.time_y = (int)osd.TimeY;
 
             const std::string nextTimeFormat = ResolveGbOsdTimeFormat(osd.TimeType);
-
-            std::string nextTextTemplate = desiredOsdConfig.text_template;
+            desiredOsdState.has_time_format = true;
+            desiredOsdState.time_format = nextTimeFormat;
+            desiredOsdState.has_text_enabled = true;
+            desiredOsdState.text_enabled = (osd.TextEnable != 0) ? 1 : 0;
 
             if (osd.TextEnable == 0) {
-
-                nextTextTemplate.clear();
-
+                desiredOsdState.has_text_items = true;
+                desiredOsdState.text_items.clear();
             } else if (osd.SumNum > 0) {
-
-                nextTextTemplate = NormalizeGbOsdTextTemplate(
-                    SafeStr(osd.Item[0].Text, sizeof(osd.Item[0].Text)));
-
+                desiredOsdState.has_text_items = true;
+                desiredOsdState.text_items.clear();
+                const unsigned int itemCount = (osd.SumNum > MAX_OSD_TEXT_NUM) ? MAX_OSD_TEXT_NUM : osd.SumNum;
+                for (unsigned int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+                    media::VideoOsdTextItem item;
+                    const std::string nextText = NormalizeGbOsdTextTemplate(
+                        SafeStr(osd.Item[itemIndex].Text, sizeof(osd.Item[itemIndex].Text)));
+                    if (!nextText.empty()) {
+                        item.has_text = true;
+                        item.text = nextText;
+                    }
+                    item.has_position = true;
+                    item.x = (int)osd.Item[itemIndex].X;
+                    item.y = (int)osd.Item[itemIndex].Y;
+                    desiredOsdState.text_items.push_back(item);
+                }
             }
-
-            desiredOsdConfig.time_format = nextTimeFormat;
-            desiredOsdConfig.text_template = nextTextTemplate;
+            NormalizeVideoOsdStateForProtocol(&desiredOsdState);
 
             printf("[ProtocolManager] gb config apply osd_config length=%u width=%u time_enable=%u time_type=%u time_pos=%u,%u text_enable=%u text_num=%u gb=%s\n",
 
@@ -7834,62 +7929,70 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
             hasRuntimeOsdState = media::QueryVideoOsdState(&runtimeOsdState);
         }
 
-        if (!desiredOsdConfigInitialized) {
-            desiredOsdConfig = BuildVideoOsdConfigFromRuntimeState(
+        if (!desiredOsdStateInitialized) {
+            desiredOsdState = BuildVideoOsdStateFromRuntimeState(
                 hasRuntimeOsdState ? &runtimeOsdState : NULL);
-            desiredOsdConfigInitialized = true;
+            desiredOsdStateInitialized = true;
         }
-        if (hasRuntimeOsdState && IsVideoOsdConfigMatched(desiredOsdConfig, &runtimeOsdState)) {
-            printf("[ProtocolManager] gb config osd skip_apply current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
+        if (hasRuntimeOsdState && IsVideoOsdStateMatched(desiredOsdState, &runtimeOsdState)) {
+            printf("[ProtocolManager] gb config osd skip_apply current_master=%d current_time=%d current_text=%d current_text_items=%u current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_items=%u value_primary_text=%s value_time_format=%s gb=%s\n",
                    runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
                    runtimeOsdState.has_time_enabled ? runtimeOsdState.time_enabled : -1,
                    runtimeOsdState.has_text_enabled ? runtimeOsdState.text_enabled : -1,
-                   runtimeOsdState.has_text ? runtimeOsdState.text.c_str() : "unknown",
+                   (unsigned int)GetVideoOsdTextItemCount(&runtimeOsdState),
                    runtimeOsdState.has_time_position ? runtimeOsdState.time_x : -1,
                    runtimeOsdState.has_time_position ? runtimeOsdState.time_y : -1,
                    runtimeOsdState.has_date_style ? runtimeOsdState.date_style.c_str() : "unknown",
                    runtimeOsdState.has_time_style ? runtimeOsdState.time_style.c_str() : "unknown",
-                   desiredOsdConfig.time_enabled,
-                   desiredOsdConfig.event_enabled,
-                   desiredOsdConfig.alert_enabled,
-                   desiredOsdConfig.text_template.empty() ? "unchanged" : desiredOsdConfig.text_template.c_str(),
-                   desiredOsdConfig.position.empty() ? "unchanged" : desiredOsdConfig.position.c_str(),
-                   desiredOsdConfig.time_format.empty() ? "unchanged" : desiredOsdConfig.time_format.c_str(),
+                   desiredOsdState.has_time_enabled ? desiredOsdState.time_enabled : 0,
+                   desiredOsdState.has_event_enabled ? desiredOsdState.event_enabled : 0,
+                   desiredOsdState.has_alert_enabled ? desiredOsdState.alert_enabled : 0,
+                   (unsigned int)GetVideoOsdTextItemCount(&desiredOsdState),
+                   GetPrimaryVideoOsdTextTemplate(&desiredOsdState).empty() ?
+                       "unchanged" :
+                       GetPrimaryVideoOsdTextTemplate(&desiredOsdState).c_str(),
+                   BuildGbOsdTimeFormatFromRuntimeState(&desiredOsdState).empty() ?
+                       "unchanged" :
+                       BuildGbOsdTimeFormatFromRuntimeState(&desiredOsdState).c_str(),
                    cmd->GBCode);
         } else {
-            const int osdRet = media::ApplyVideoOsdConfig(desiredOsdConfig);
+            const int osdRet = media::ApplyVideoOsdConfig(desiredOsdState);
             if (osdRet != 0 && applyOsdError == 0) {
                 applyOsdError = osdRet;
             }
-            printf("[ProtocolManager] gb config osd dispatch ret=%d current_master=%d current_time=%d current_text=%d current_text_template=%s current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_template=%s value_position=%s value_time_format=%s gb=%s\n",
+            printf("[ProtocolManager] gb config osd dispatch ret=%d current_master=%d current_time=%d current_text=%d current_text_items=%u current_position=%d,%d current_date_style=%s current_time_style=%s value_time=%d value_event=%d value_alert=%d value_text_items=%u value_primary_text=%s value_time_format=%s gb=%s\n",
                    osdRet,
                    hasRuntimeOsdState && runtimeOsdState.has_master_enabled ? runtimeOsdState.master_enabled : -1,
                    hasRuntimeOsdState && runtimeOsdState.has_time_enabled ? runtimeOsdState.time_enabled : -1,
                    hasRuntimeOsdState && runtimeOsdState.has_text_enabled ? runtimeOsdState.text_enabled : -1,
-                   hasRuntimeOsdState && runtimeOsdState.has_text ? runtimeOsdState.text.c_str() : "unknown",
+                   (unsigned int)GetVideoOsdTextItemCount(hasRuntimeOsdState ? &runtimeOsdState : NULL),
                    hasRuntimeOsdState && runtimeOsdState.has_time_position ? runtimeOsdState.time_x : -1,
                    hasRuntimeOsdState && runtimeOsdState.has_time_position ? runtimeOsdState.time_y : -1,
                    hasRuntimeOsdState && runtimeOsdState.has_date_style ? runtimeOsdState.date_style.c_str() : "unknown",
                    hasRuntimeOsdState && runtimeOsdState.has_time_style ? runtimeOsdState.time_style.c_str() : "unknown",
-                   desiredOsdConfig.time_enabled,
-                   desiredOsdConfig.event_enabled,
-                   desiredOsdConfig.alert_enabled,
-                   desiredOsdConfig.text_template.empty() ? "unchanged" : desiredOsdConfig.text_template.c_str(),
-                   desiredOsdConfig.position.empty() ? "unchanged" : desiredOsdConfig.position.c_str(),
-                   desiredOsdConfig.time_format.empty() ? "unchanged" : desiredOsdConfig.time_format.c_str(),
+                   desiredOsdState.has_time_enabled ? desiredOsdState.time_enabled : 0,
+                   desiredOsdState.has_event_enabled ? desiredOsdState.event_enabled : 0,
+                   desiredOsdState.has_alert_enabled ? desiredOsdState.alert_enabled : 0,
+                   (unsigned int)GetVideoOsdTextItemCount(&desiredOsdState),
+                   GetPrimaryVideoOsdTextTemplate(&desiredOsdState).empty() ?
+                       "unchanged" :
+                       GetPrimaryVideoOsdTextTemplate(&desiredOsdState).c_str(),
+                   BuildGbOsdTimeFormatFromRuntimeState(&desiredOsdState).empty() ?
+                       "unchanged" :
+                       BuildGbOsdTimeFormatFromRuntimeState(&desiredOsdState).c_str(),
                    cmd->GBCode);
         }
 
     }
 
     const int finalOsdTimeEnabled = applyOsdConfig ?
-        desiredOsdConfig.time_enabled :
+        (desiredOsdState.has_time_enabled ? desiredOsdState.time_enabled : 0) :
         ((hasRuntimeOsdState && runtimeOsdState.has_time_enabled) ? runtimeOsdState.time_enabled : 0);
     const int finalOsdEventEnabled = applyOsdConfig ?
-        desiredOsdConfig.event_enabled :
+        (desiredOsdState.has_event_enabled ? desiredOsdState.event_enabled : 0) :
         ((hasRuntimeOsdState && runtimeOsdState.has_event_enabled) ? runtimeOsdState.event_enabled : 0);
     const int finalOsdAlertEnabled = applyOsdConfig ?
-        desiredOsdConfig.alert_enabled :
+        (desiredOsdState.has_alert_enabled ? desiredOsdState.alert_enabled : 0) :
         ((hasRuntimeOsdState && runtimeOsdState.has_alert_enabled) ? runtimeOsdState.alert_enabled : 0);
     const std::string finalImageFlip = applyImageFlip ?
         NormalizeGbImageFlipMode(imageFlipMode) :

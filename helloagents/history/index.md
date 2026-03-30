@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603301049 | gb_osd_state_unify_multitext | 开发 | ✅已完成 | [2026-03/202603301049_gb_osd_state_unify_multitext](2026-03/202603301049_gb_osd_state_unify_multitext/) |
 | 202603281538 | gb_runtime_media_config_boundary | 开发 | ✅已完成 | [2026-03/202603281538_gb_runtime_media_config_boundary](2026-03/202603281538_gb_runtime_media_config_boundary/) |
 | 202603281740 | gb_osd_encode_control_runtime_query | 修复 | ✅已完成 | [2026-03/202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) |
 | 202603281505 | gb_image_flip_control_runtime_query | 修复 | ✅已完成 | [2026-03/202603281505_gb_image_flip_control_runtime_query](2026-03/202603281505_gb_image_flip_control_runtime_query/) |
@@ -64,6 +65,7 @@
 
 ### 2026-03
 
+- [202603301049_gb_osd_state_unify_multitext](2026-03/202603301049_gb_osd_state_unify_multitext/) - 统一 OSD get/set 到 `VideoOsdState`，补齐 GB `OSDConfig` 多文本 `Item[]` 协议态承载与查询回显
 - [202603281538_gb_runtime_media_config_boundary](2026-03/202603281538_gb_runtime_media_config_boundary/) - 收口 GB28181 / GAT1400 对外部模块配置的运行态缓存，GB 统一改走 `VideoOsdControl` / `VideoEncodeControl` / `VideoImageControl` 查询，1400 改为按需解析当前 device id
 - [202603281740_gb_osd_encode_control_runtime_query](2026-03/202603281740_gb_osd_encode_control_runtime_query/) - 补齐 GB28181 OSD 与编码参数控制链路的运行态查询闭环，让 `ProtocolManager` 在平台设置命令上显式调用 `QueryVideoOsdState` / `QueryVideoEncodeState`
 - [202603281505_gb_image_flip_control_runtime_query](2026-03/202603281505_gb_image_flip_control_runtime_query/) - 补齐 GB28181 画面反转控制链路的运行态查询闭环，让 `ProtocolManager` 在平台设置命令上显式调用 `QueryVideoImageFlipMode`

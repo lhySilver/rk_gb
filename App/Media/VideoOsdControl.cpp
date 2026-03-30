@@ -30,6 +30,8 @@ static const int kVideoOsdCustomTextId = 2;
 static int g_cached_master_switch = -1;
 static int g_cached_event_switch = -1;
 static int g_cached_alert_switch = -1;
+static bool g_has_cached_protocol_state = false;
+static media::VideoOsdState g_cached_protocol_state;
 
 static std::string ToLowerCopy(const std::string& text)
 {
@@ -114,6 +116,32 @@ static std::string NormalizeVideoOsdTimeStyle(const std::string& formatIn)
     return "24hour";
 }
 
+static std::string BuildVideoOsdTimeFormatFromStyles(const std::string& dateStyleIn,
+                                                     const std::string& timeStyleIn)
+{
+    std::string datePart = "yyyy-MM-dd";
+    const std::string dateStyle = ToLowerCopy(TrimWhitespaceCopy(dateStyleIn));
+    if (ContainsToken(dateStyle, "yyyy/mm/dd")) {
+        datePart = "yyyy/MM/dd";
+    } else if (ContainsToken(dateStyle, "mm/dd/yyyy")) {
+        datePart = "MM/dd/yyyy";
+    } else if (ContainsToken(dateStyle, "dd/mm/yyyy")) {
+        datePart = "dd/MM/yyyy";
+    } else if (ContainsToken(dateStyle, "mm-dd-yyyy")) {
+        datePart = "MM-dd-yyyy";
+    } else if (ContainsToken(dateStyle, "dd-mm-yyyy")) {
+        datePart = "dd-MM-yyyy";
+    }
+
+    std::string timePart = "HH:mm:ss";
+    const std::string timeStyle = ToLowerCopy(TrimWhitespaceCopy(timeStyleIn));
+    if (ContainsToken(timeStyle, "12hour")) {
+        timePart = "hh:mm:ss tt";
+    }
+
+    return datePart + " " + timePart;
+}
+
 static bool QueryMainStreamResolution(int& width, int& height)
 {
     width = 0;
@@ -157,6 +185,118 @@ static bool ReadVideoOsdPosition(int id, int* x, int* y)
 static int MergeError(int current, int candidate)
 {
     return (current != 0) ? current : candidate;
+}
+
+static void NormalizeVideoOsdTextItems(media::VideoOsdState* state)
+{
+    if (state == NULL) {
+        return;
+    }
+
+    if (!state->has_text_items) {
+        state->text_items.clear();
+        return;
+    }
+
+    size_t writeIndex = 0;
+    for (size_t index = 0; index < state->text_items.size(); ++index) {
+        media::VideoOsdTextItem item = state->text_items[index];
+        if (item.has_text) {
+            item.text = NormalizeVideoOsdTextTemplate(item.text);
+            item.has_text = !item.text.empty();
+        }
+        if (!item.has_text && !item.has_position) {
+            continue;
+        }
+        if (writeIndex != index) {
+            state->text_items[writeIndex] = item;
+        }
+        ++writeIndex;
+    }
+
+    state->text_items.resize(writeIndex);
+    state->has_text_items = !state->text_items.empty();
+}
+
+static media::VideoOsdTextItem* EnsurePrimaryVideoOsdTextItem(media::VideoOsdState* state)
+{
+    if (state == NULL) {
+        return NULL;
+    }
+
+    if (!state->has_text_items) {
+        state->has_text_items = true;
+        state->text_items.clear();
+    }
+    if (state->text_items.empty()) {
+        state->text_items.push_back(media::VideoOsdTextItem());
+    }
+
+    return &state->text_items[0];
+}
+
+static const media::VideoOsdTextItem* GetPrimaryVideoOsdTextItem(const media::VideoOsdState& state)
+{
+    if (!state.has_text_items || state.text_items.empty()) {
+        return NULL;
+    }
+
+    return &state.text_items[0];
+}
+
+static std::string GetPrimaryVideoOsdTextTemplate(const media::VideoOsdState& state)
+{
+    const media::VideoOsdTextItem* item = GetPrimaryVideoOsdTextItem(state);
+    if (item == NULL || !item->has_text) {
+        return "";
+    }
+
+    return NormalizeVideoOsdTextTemplate(item->text);
+}
+
+static bool GetVideoOsdTimePosition(const media::VideoOsdState& state, int* x, int* y)
+{
+    if (x == NULL || y == NULL ||
+        !state.has_time_position ||
+        state.time_x < 0 ||
+        state.time_y < 0) {
+        return false;
+    }
+
+    *x = state.time_x;
+    *y = state.time_y;
+    return true;
+}
+
+static bool GetPrimaryVideoOsdTextPosition(const media::VideoOsdState& state, int* x, int* y)
+{
+    if (x == NULL || y == NULL) {
+        return false;
+    }
+
+    const media::VideoOsdTextItem* item = GetPrimaryVideoOsdTextItem(state);
+    if (item == NULL || !item->has_position || item->x < 0 || item->y < 0) {
+        return false;
+    }
+
+    *x = item->x;
+    *y = item->y;
+    return true;
+}
+
+static void CacheVideoOsdProtocolState(const media::VideoOsdState& desired)
+{
+    g_cached_protocol_state = desired;
+    NormalizeVideoOsdTextItems(&g_cached_protocol_state);
+    if (!g_cached_protocol_state.has_time_format &&
+        (g_cached_protocol_state.has_date_style ||
+         g_cached_protocol_state.has_time_style)) {
+        g_cached_protocol_state.has_time_format = true;
+        g_cached_protocol_state.time_format = BuildVideoOsdTimeFormatFromStyles(
+            g_cached_protocol_state.date_style,
+            g_cached_protocol_state.time_style);
+    }
+    g_has_cached_protocol_state = true;
 }
 
 } // namespace
@@ -227,16 +367,30 @@ bool ResolveVideoOsdAnchor(const std::string& positionIn, int* x, int* y)
     return false;
 }
 
-int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
+int ApplyVideoOsdConfig(const VideoOsdState& desired)
 {
+    VideoOsdState normalizedDesired = desired;
+    NormalizeVideoOsdTextItems(&normalizedDesired);
+
     int finalRet = 0;
-    const std::string normalizedTextTemplate = NormalizeVideoOsdTextTemplate(desired.text_template);
-    const int desiredTimeEnabled = (desired.time_enabled != 0) ? 1 : 0;
-    const int desiredEventEnabled = (desired.event_enabled != 0) ? 1 : 0;
-    const int desiredAlertEnabled = (desired.alert_enabled != 0) ? 1 : 0;
-    const int desiredCustomTextEnabled = normalizedTextTemplate.empty() ? 0 : 1;
-    const int desiredMasterSwitch =
-        (desiredTimeEnabled != 0 || desiredEventEnabled != 0 || desiredAlertEnabled != 0) ? 1 : 0;
+    const std::string normalizedTextTemplate = GetPrimaryVideoOsdTextTemplate(normalizedDesired);
+    const int desiredTimeEnabled =
+        (normalizedDesired.has_time_enabled && normalizedDesired.time_enabled != 0) ? 1 : 0;
+    const int desiredEventEnabled =
+        (normalizedDesired.has_event_enabled && normalizedDesired.event_enabled != 0) ? 1 : 0;
+    const int desiredAlertEnabled =
+        (normalizedDesired.has_alert_enabled && normalizedDesired.alert_enabled != 0) ? 1 : 0;
+    const int desiredCustomTextEnabled = normalizedDesired.has_text_enabled ?
+        ((normalizedDesired.text_enabled != 0) ? 1 : 0) :
+        (normalizedTextTemplate.empty() ? 0 : 1);
+    const int desiredMasterSwitch = normalizedDesired.has_master_enabled ?
+        ((normalizedDesired.master_enabled != 0) ? 1 : 0) :
+        ((desiredTimeEnabled != 0 || desiredEventEnabled != 0 || desiredAlertEnabled != 0) ? 1 : 0);
+    const std::string desiredTimeFormat = normalizedDesired.has_time_format ?
+        TrimWhitespaceCopy(normalizedDesired.time_format) :
+        ((normalizedDesired.has_date_style || normalizedDesired.has_time_style) ?
+            BuildVideoOsdTimeFormatFromStyles(normalizedDesired.date_style, normalizedDesired.time_style) :
+            std::string());
 
     // Capture only exposes a setter, so media side keeps the last applied master switch.
     if (g_cached_master_switch < 0 || g_cached_master_switch != desiredMasterSwitch) {
@@ -289,9 +443,9 @@ int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
         }
     }
 
-    if (!desired.time_format.empty()) {
-        const std::string desiredDateStyle = NormalizeVideoOsdDateStyle(desired.time_format);
-        const std::string desiredTimeStyle = NormalizeVideoOsdTimeStyle(desired.time_format);
+    if (!desiredTimeFormat.empty()) {
+        const std::string desiredDateStyle = NormalizeVideoOsdDateStyle(desiredTimeFormat);
+        const std::string desiredTimeStyle = NormalizeVideoOsdTimeStyle(desiredTimeFormat);
         std::string currentDateStyle;
         std::string currentTimeStyle;
         const bool dateKnown = ReadVideoOsdStringValue(rk_osd_get_date_style, kVideoOsdDateTimeId, currentDateStyle);
@@ -316,41 +470,50 @@ int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
         }
     }
 
-    if (!desired.position.empty()) {
-        int anchorX = 0;
-        int anchorY = 0;
-        if (ResolveVideoOsdAnchor(desired.position, &anchorX, &anchorY)) {
-            int currentX = 0;
-            int currentY = 0;
-            const bool timePositionKnown = ReadVideoOsdPosition(kVideoOsdDateTimeId, &currentX, &currentY);
-            if (!timePositionKnown || currentX != anchorX || currentY != anchorY) {
-                const int retX = rk_osd_set_position_x(kVideoOsdDateTimeId, anchorX);
-                const int retY = rk_osd_set_position_y(kVideoOsdDateTimeId, anchorY);
-                printf("[VideoOsdControl] apply datetime_position ret=%d value=%d,%d current=%d,%d\n",
-                       (retX != 0) ? retX : retY,
-                       anchorX,
-                       anchorY,
-                       timePositionKnown ? currentX : -1,
-                       timePositionKnown ? currentY : -1);
-                finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
-                needRestart = true;
-            }
+    int timeAnchorX = 0;
+    int timeAnchorY = 0;
+    const bool hasTimePosition = GetVideoOsdTimePosition(normalizedDesired, &timeAnchorX, &timeAnchorY);
+    if (hasTimePosition) {
+        int currentX = 0;
+        int currentY = 0;
+        const bool timePositionKnown = ReadVideoOsdPosition(kVideoOsdDateTimeId, &currentX, &currentY);
+        if (!timePositionKnown || currentX != timeAnchorX || currentY != timeAnchorY) {
+            const int retX = rk_osd_set_position_x(kVideoOsdDateTimeId, timeAnchorX);
+            const int retY = rk_osd_set_position_y(kVideoOsdDateTimeId, timeAnchorY);
+            printf("[VideoOsdControl] apply datetime_position ret=%d value=%d,%d current=%d,%d\n",
+                   (retX != 0) ? retX : retY,
+                   timeAnchorX,
+                   timeAnchorY,
+                   timePositionKnown ? currentX : -1,
+                   timePositionKnown ? currentY : -1);
+            finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
+            needRestart = true;
+        }
+    }
 
-            currentX = 0;
-            currentY = 0;
-            const bool textPositionKnown = ReadVideoOsdPosition(kVideoOsdCustomTextId, &currentX, &currentY);
-            if (!textPositionKnown || currentX != anchorX || currentY != anchorY) {
-                const int retX = rk_osd_set_position_x(kVideoOsdCustomTextId, anchorX);
-                const int retY = rk_osd_set_position_y(kVideoOsdCustomTextId, anchorY);
-                printf("[VideoOsdControl] apply text_position ret=%d value=%d,%d current=%d,%d\n",
-                       (retX != 0) ? retX : retY,
-                       anchorX,
-                       anchorY,
-                       textPositionKnown ? currentX : -1,
-                       textPositionKnown ? currentY : -1);
-                finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
-                needRestart = true;
-            }
+    int textAnchorX = 0;
+    int textAnchorY = 0;
+    bool hasTextPosition = GetPrimaryVideoOsdTextPosition(normalizedDesired, &textAnchorX, &textAnchorY);
+    if (!hasTextPosition && hasTimePosition) {
+        textAnchorX = timeAnchorX;
+        textAnchorY = timeAnchorY;
+        hasTextPosition = true;
+    }
+    if (hasTextPosition) {
+        int currentX = 0;
+        int currentY = 0;
+        const bool textPositionKnown = ReadVideoOsdPosition(kVideoOsdCustomTextId, &currentX, &currentY);
+        if (!textPositionKnown || currentX != textAnchorX || currentY != textAnchorY) {
+            const int retX = rk_osd_set_position_x(kVideoOsdCustomTextId, textAnchorX);
+            const int retY = rk_osd_set_position_y(kVideoOsdCustomTextId, textAnchorY);
+            printf("[VideoOsdControl] apply text_position ret=%d value=%d,%d current=%d,%d\n",
+                   (retX != 0) ? retX : retY,
+                   textAnchorX,
+                   textAnchorY,
+                   textPositionKnown ? currentX : -1,
+                   textPositionKnown ? currentY : -1);
+            finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
+            needRestart = true;
         }
     }
 
@@ -363,6 +526,7 @@ int ApplyVideoOsdConfig(const VideoOsdConfig& desired)
     if (finalRet == 0) {
         g_cached_event_switch = desiredEventEnabled;
         g_cached_alert_switch = desiredAlertEnabled;
+        CacheVideoOsdProtocolState(normalizedDesired);
     }
 
     return finalRet;
@@ -375,6 +539,10 @@ bool QueryVideoOsdState(VideoOsdState* state)
     }
 
     *state = VideoOsdState();
+    if (g_has_cached_protocol_state) {
+        *state = g_cached_protocol_state;
+        NormalizeVideoOsdTextItems(state);
+    }
 
     if (g_cached_master_switch >= 0) {
         state->has_master_enabled = true;
@@ -413,6 +581,12 @@ bool QueryVideoOsdState(VideoOsdState* state)
         state->time_style = text;
     }
 
+    if (!state->has_time_format &&
+        (state->has_date_style || state->has_time_style)) {
+        state->has_time_format = true;
+        state->time_format = BuildVideoOsdTimeFormatFromStyles(state->date_style, state->time_style);
+    }
+
     int posX = 0;
     int posY = 0;
     if (ReadVideoOsdPosition(kVideoOsdDateTimeId, &posX, &posY) && posX >= 0 && posY >= 0) {
@@ -421,16 +595,25 @@ bool QueryVideoOsdState(VideoOsdState* state)
         state->time_y = posY;
     }
 
-    if (ReadVideoOsdPosition(kVideoOsdCustomTextId, &posX, &posY) && posX >= 0 && posY >= 0) {
-        state->has_text_position = true;
-        state->text_x = posX;
-        state->text_y = posY;
+    const bool textPositionKnown =
+        ReadVideoOsdPosition(kVideoOsdCustomTextId, &posX, &posY) && posX >= 0 && posY >= 0;
+    if (textPositionKnown) {
+        VideoOsdTextItem* item = EnsurePrimaryVideoOsdTextItem(state);
+        if (item != NULL) {
+            item->has_position = true;
+            item->x = posX;
+            item->y = posY;
+        }
     }
 
     if (ReadVideoOsdStringValue(rk_osd_get_display_text, kVideoOsdCustomTextId, text)) {
-        state->has_text = true;
-        state->text = text;
+        VideoOsdTextItem* item = EnsurePrimaryVideoOsdTextItem(state);
+        if (item != NULL) {
+            item->has_text = true;
+            item->text = NormalizeVideoOsdTextTemplate(text);
+        }
     }
+    NormalizeVideoOsdTextItems(state);
 
     if (!state->has_master_enabled &&
         (state->has_time_enabled || state->has_event_enabled || state->has_alert_enabled)) {
@@ -445,11 +628,11 @@ bool QueryVideoOsdState(VideoOsdState* state)
            state->has_alert_enabled ||
            state->has_time_enabled ||
            state->has_text_enabled ||
+           state->has_time_format ||
            state->has_date_style ||
            state->has_time_style ||
            state->has_time_position ||
-           state->has_text_position ||
-           state->has_text;
+           state->has_text_items;
 }
 
 } // namespace media
