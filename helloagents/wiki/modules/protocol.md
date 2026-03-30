@@ -23,6 +23,7 @@
 ## 注意事项
 - `LocalConfigProvider` 现在读取 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；其中 `gb28181.ini` / `gat1400.ini` 缺失时仍可按默认值自动生成。`gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关：`standard` 模式下忽略 `zero_config.ini` 缺失，`zero_config` 模式下若 `zero_config.ini` 缺失则会直接记录日志并返回错误；旧的 `/userdata/conf/Config/gb28181.ini` 路径不再兼容，也不自动迁移。
 - `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。
+- `ProtocolManager` 当前对 GAT1400 服务实例和 GB28181 receiver 只保留运行中真实使用的非 `const` getter；此前零调用的 `const GetGatClientService()` / `const GetGbClientReceiver()` 已从协议胶水层移除。
 - `GB28181ClientSDK` 的创建、绑定、释放现全部下沉到 `ProtocolManager` 私有生命周期中；`CSofia` 不再持有 SDK 指针，也不再负责 `Bind/Unbind`。
 - `GetGbRegisterConfig()` 现在始终直接读取 `/userdata/conf/Config/GB/gb28181.ini + zero_config.ini`；即使 `ProtocolManager::Init()` 之前被外部模块调用，也会先按默认值补齐配置文件再返回结果。
 - `SetGbRegisterConfig()` 只负责把 issue38 约定的 6 个外部可编辑字段写回 flash：`enabled`、`username`、`server_ip`、`server_port`、`device_id`、`password`；`device_name`、`expires_sec` 等其余注册参数继续沿用代码默认值。

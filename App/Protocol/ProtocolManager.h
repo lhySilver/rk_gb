@@ -169,13 +169,9 @@ public:
 
     GAT1400ClientService* GetGatClientService();
 
-    const GAT1400ClientService* GetGatClientService() const;
-
 
 
     GB28181ClientReceiverAdapter* GetGbClientReceiver();
-
-    const GB28181ClientReceiverAdapter* GetGbClientReceiver() const;
 
 
 
@@ -732,7 +728,6 @@ private:
 
 
 #endif
-
 
 
 

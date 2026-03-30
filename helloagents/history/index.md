@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202603301418 | protocol_manager_gat_dead_accessor_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301418_protocol_manager_gat_dead_accessor_trim](2026-03/202603301418_protocol_manager_gat_dead_accessor_trim/) |
 | 202603301348 | protocol_manager_broadcast_clear_helper_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim](2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim/) |
 | 202603301342 | protocol_manager_forwarder_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301342_protocol_manager_forwarder_trim](2026-03/202603301342_protocol_manager_forwarder_trim/) |
 | 202603301333 | protocol_manager_dead_wrapper_trim | 轻量迭代 | ✅已完成 | [2026-03/202603301333_protocol_manager_dead_wrapper_trim](2026-03/202603301333_protocol_manager_dead_wrapper_trim/) |
@@ -72,6 +73,7 @@
 
 ### 2026-03
 
+- [202603301418_protocol_manager_gat_dead_accessor_trim](2026-03/202603301418_protocol_manager_gat_dead_accessor_trim/) - 删除 `ProtocolManager` 中零调用的 `const` GAT/GB accessor，并清理 `LowerGAT1400SDK` 对应冗余声明，继续压缩协议胶水层符号面
 - [202603301348_protocol_manager_broadcast_clear_helper_trim](2026-03/202603301348_protocol_manager_broadcast_clear_helper_trim/) - 删除 `ProtocolManager` 中零调用的私有广播会话清理 helper，继续收口广播链路死代码
 - [202603301342_protocol_manager_forwarder_trim](2026-03/202603301342_protocol_manager_forwarder_trim/) - 删除 `ProtocolManager` 中零调用的广播/监听转发方法与重复 helper 声明，继续收口协议层壳代码
 - [202603301333_protocol_manager_dead_wrapper_trim](2026-03/202603301333_protocol_manager_dead_wrapper_trim/) - 删除 `ProtocolManager` 中无调用的 GB 包装方法与未使用 helper 参数，继续压缩 `ProtocolManager.cpp` 编译产物体积

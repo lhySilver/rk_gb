@@ -110,6 +110,7 @@
 - 修复 GB 回放从 `index` 选择首个录像文件时的筛选逻辑，改为先排序再按时间重叠 / 后继文件选取，避免“查询能看到录像、回放却选不到文件”。
 
 ### 优化
+- 删除 `ProtocolManager` 中零调用的 `const GetGatClientService()` / `const GetGbClientReceiver()` 重载，并清理 `LowerGAT1400SDK` 对应的冗余 `const` 壳声明；在同工具链、同宏条件下，`ProtocolManager.o` 的 `dec` 从 `167103` 降到 `167071`。
 - 删除 `ProtocolManager` 中零调用的私有方法 `ClearGbBroadcastSessionState()`，继续收口广播链路中的死 helper。
 - 删除 `ProtocolManager` 中零调用的 `PushListenAudioFrame()`、`ApplyGbBroadcastSdpOffer()`、`SetGbBroadcastPcmCallback()` 转发方法，并清理 `TrimWhitespaceCopy()`、`NormalizeGbOsdTextTemplate()` 的重复前置声明，继续收口协议层无意义编译内容。
 - 删除 `ProtocolManager` 中无调用的 `GBManager_Start()`、`GBManager_Stop()`、`OnGbConfigChanged()` 包装方法，并去掉 `ClearGbUpgradePendingState()` 的未使用参数；在同编译宏条件下，`ProtocolManager.cpp` 的目标文件 `dec` 从 `236017` 进一步降到 `234806`。

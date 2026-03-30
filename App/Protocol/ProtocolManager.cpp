@@ -11966,25 +11966,7 @@ GB28181ClientReceiverAdapter* ProtocolManager::GetGbClientReceiver()
 
 }
 
-
-
-const GB28181ClientReceiverAdapter* ProtocolManager::GetGbClientReceiver() const
-
-{
-
-    return &m_gb_receiver;
-
-}
-
 GAT1400ClientService* ProtocolManager::GetGatClientService()
-
-{
-
-    return m_gat_client.get();
-
-}
-
-const GAT1400ClientService* ProtocolManager::GetGatClientService() const
 
 {
 

@@ -10,7 +10,6 @@ public:
     static ProtocolManager& Instance();
     const ProtocolExternalConfig& GetConfig() const;
     GAT1400ClientService* GetGatClientService();
-    const GAT1400ClientService* GetGatClientService() const;
 };
 }
 
