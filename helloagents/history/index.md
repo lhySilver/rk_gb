@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604011800 | gat1400_keepalive_demo_disposition_notification | 轻量迭代 | ✅已完成 | [2026-04/202604011800_gat1400_keepalive_demo_disposition_notification](2026-04/202604011800_gat1400_keepalive_demo_disposition_notification/) |
 | 202604011719 | gat1400_keepalive_demo_image_only | 轻量迭代 | ✅已完成 | [2026-04/202604011719_gat1400_keepalive_demo_image_only](2026-04/202604011719_gat1400_keepalive_demo_image_only/) |
 | 202604011703 | gat1400_keepalive_demo_notify_capture | 轻量迭代 | ✅已完成 | [2026-04/202604011703_gat1400_keepalive_demo_notify_capture](2026-04/202604011703_gat1400_keepalive_demo_notify_capture/) |
 | 202604011603 | gat1400_capture_control_relocate | 轻量迭代 | ✅已完成 | [2026-04/202604011603_gat1400_capture_control_relocate](2026-04/202604011603_gat1400_capture_control_relocate/) |
@@ -83,6 +84,7 @@
 
 ### 2026-04
 
+- [202604011800_gat1400_keepalive_demo_disposition_notification](2026-04/202604011800_gat1400_keepalive_demo_disposition_notification/) - 将 GAT1400 keepalive demo 的平台通信改为 `POST /VIID/DispositionNotifications`，当前使用 `PersonObject + SubImage(Data)` 组最小告警通知并保留本地图片 `/mnt/sdcard/test.jpeg`
 - [202604011719_gat1400_keepalive_demo_image_only](2026-04/202604011719_gat1400_keepalive_demo_image_only/) - 修正上一版 GAT1400 keepalive demo，仅保留通过 `NotifyCaptureEvent()` 发送的人脸 + 图片，不再发送视频
 - [202604011703_gat1400_keepalive_demo_notify_capture](2026-04/202604011703_gat1400_keepalive_demo_notify_capture/) - 按 issue 41 最新评论重做 GAT1400 保活 demo：去掉旧的直传函数，改为在保活成功后通过 `NotifyCaptureEvent()` 上送人脸检测事件，默认关联本地图片和视频，并限制总共触发 `5` 次
 - [202604011603_gat1400_capture_control_relocate](2026-04/202604011603_gat1400_capture_control_relocate/) - 将 `GAT1400CaptureControl` 从 `App/Media/` 迁移到 `App/Protocol/gat1400/`，同步收口 include、构建脚本和当前知识库路径说明

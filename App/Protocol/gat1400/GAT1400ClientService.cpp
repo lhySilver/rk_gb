@@ -43,6 +43,7 @@ static const char* kResponseKindStatus = "status";
 static const int kClientErrorUnsupportedUri = -6;
 static const int kClientErrorApePostCompatDisabled = -7;
 static const char* kKeepaliveDemoImagePath = "/mnt/sdcard/test.jpeg";
+static const char* kKeepaliveDemoDispositionIdPrefix = "DISPDEMO_";
 static const int kKeepaliveDemoMaxNotifyCount = 5;
 
 struct RequestTarget
@@ -2131,7 +2132,7 @@ int GAT1400ClientService::NotifyCaptureEvent(const media::GAT1400CaptureEvent& e
     return submitRet;
 }
 
-int GAT1400ClientService::SendKeepaliveDemoCaptureEvent(const std::string& deviceId)
+int GAT1400ClientService::SendKeepaliveDemoDispositionNotification(const std::string& deviceId)
 {
     int currentCount = m_keepalive_demo_notify_count.load();
     int notifyIndex = 0;
@@ -2158,53 +2159,49 @@ int GAT1400ClientService::SendKeepaliveDemoCaptureEvent(const std::string& devic
 
     const std::string shotTime = FormatCurrentTimeWithMilliseconds();
     const std::string sequenceTag = shotTime + std::string("_") + std::to_string(notifyIndex);
-    const std::string imageId = std::string("IMGDEMO") + sequenceTag;
-    const std::string faceId = std::string("FACEDEMO") + sequenceTag;
+    const std::string imageId = std::string("IMGDEMO_") + sequenceTag;
+    const std::string personId = std::string("PERSONDEMO_") + sequenceTag;
+    const std::string notificationId = std::string("NOTIFYDEMO_") + sequenceTag;
+    const std::string dispositionId = std::string(kKeepaliveDemoDispositionIdPrefix) + deviceId;
 
-    GAT_1400_Face face;
-    memset(&face, 0, sizeof(face));
-    CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
-    face.InfoKind = 1;
-    CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
-    face.LeftTopX = 100;
-    face.LeftTopY = 100;
-    face.RightBtmX = 500;
-    face.RightBtmY = 500;
+    GAT_1400_SubImage subImage;
+    CopyToArray(subImage.ImageID, sizeof(subImage.ImageID), imageId);
+    subImage.EventSort = FACE_DETECT_EVENT;
+    CopyToArray(subImage.DeviceID, sizeof(subImage.DeviceID), deviceId);
+    subImage.Type = IMAGE_FACE;
+    CopyToArray(subImage.FileFormat, sizeof(subImage.FileFormat), "Jpeg");
+    CopyToArray(subImage.ShotTime, sizeof(subImage.ShotTime), shotTime);
+    subImage.Width = 1920;
+    subImage.Height = 1080;
+    subImage.Data = imageData;
 
-    GAT_1400_ImageSet imageSet;
-    memset(&imageSet.ImageInfo, 0, sizeof(imageSet.ImageInfo));
-    CopyToArray(imageSet.ImageInfo.ImageID, sizeof(imageSet.ImageInfo.ImageID), imageId);
-    imageSet.ImageInfo.InfoKind = 1;
-    imageSet.ImageInfo.ImageSource = 1;
-    imageSet.ImageInfo.EventSort = FACE_DETECT_EVENT;
-    CopyToArray(imageSet.ImageInfo.DeviceID, sizeof(imageSet.ImageInfo.DeviceID), deviceId);
-    CopyToArray(imageSet.ImageInfo.FileFormat, sizeof(imageSet.ImageInfo.FileFormat), "jpg");
-    CopyToArray(imageSet.ImageInfo.ShotTime, sizeof(imageSet.ImageInfo.ShotTime), shotTime);
-    CopyToArray(imageSet.ImageInfo.Title, sizeof(imageSet.ImageInfo.Title), "test");
-    CopyToArray(imageSet.ImageInfo.ContentDescription,
-                sizeof(imageSet.ImageInfo.ContentDescription),
-                "keepalive demo image");
-    CopyToArray(imageSet.ImageInfo.ShotPlaceFullAdress,
-                sizeof(imageSet.ImageInfo.ShotPlaceFullAdress),
-                "keepalive demo");
-    imageSet.ImageInfo.SecurityLevel = 5;
-    imageSet.ImageInfo.Width = 1920;
-    imageSet.ImageInfo.Height = 1080;
-    imageSet.ImageInfo.FileSize = static_cast<int>(imageRaw.size());
-    imageSet.Data = imageData;
+    GAT_1400_Person person;
+    CopyToArray(person.PersonID, sizeof(person.PersonID), personId);
+    person.InfoKind = INFO_TYPE_AUTOMATIC;
+    CopyToArray(person.SourceID, sizeof(person.SourceID), imageId);
+    CopyToArray(person.DeviceID, sizeof(person.DeviceID), deviceId);
+    person.LeftTopX = 100;
+    person.LeftTopY = 100;
+    person.RightBtmX = 500;
+    person.RightBtmY = 500;
+    person.SubImageList.push_back(subImage);
 
-    media::GAT1400CaptureEvent event;
-    event.trace_id = std::string("keepalive_demo_") + sequenceTag;
-    event.object_type = media::GAT1400_CAPTURE_OBJECT_FACE;
-    event.face = face;
-    event.image_list.push_back(imageSet);
+    GAT_1400_Disposition_Notification notification;
+    CopyToArray(notification.NotificationID, sizeof(notification.NotificationID), notificationId);
+    CopyToArray(notification.DispositionID, sizeof(notification.DispositionID), dispositionId);
+    CopyToArray(notification.Title, sizeof(notification.Title), "keepalive demo alarm");
+    CopyToArray(notification.TriggerTime, sizeof(notification.TriggerTime), shotTime);
+    CopyToArray(notification.CntObjectID, sizeof(notification.CntObjectID), personId);
+    notification.PersonObject = person;
 
-    const int ret = NotifyCaptureEvent(event);
+    std::list<GAT_1400_Disposition_Notification> notificationList;
+    notificationList.push_back(notification);
+    const int ret = PostDispositionNotifications(notificationList);
     if (ret != 0) {
         m_keepalive_demo_notify_count.fetch_sub(1);
     }
 
-    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d count=%d max=%d image=%s\n",
+    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d count=%d max=%d path=/VIID/DispositionNotifications image=%s\n",
            ret,
            notifyIndex,
            kKeepaliveDemoMaxNotifyCount,
@@ -2469,7 +2466,7 @@ int GAT1400ClientService::SendKeepaliveNow()
         return -2;
     }
     (void)DrainPendingCaptureEvents();
-    (void)SendKeepaliveDemoCaptureEvent(deviceId);
+    (void)SendKeepaliveDemoDispositionNotification(deviceId);
     return 0;
 }
 
