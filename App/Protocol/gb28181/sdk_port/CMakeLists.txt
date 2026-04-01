@@ -99,7 +99,6 @@ link_directories(
 #media 模块
 set(Media_SRC
 	Media/AVManager.cpp
-	Media/GAT1400CaptureControl.cpp
 	Media/VideoOsdControl.cpp
 	Media/VideoEncodeControl.cpp
 	Media/VideoImageControl.cpp
@@ -196,6 +195,7 @@ set(Protocol_SRC
 	Protocol/gb28181/GB28181ListenBridge.cpp
 	Protocol/gb28181/GB28181RtpPsSender.cpp
 	Protocol/gb28181/GB28181ClientReceiverAdapter.cpp
+	Protocol/gat1400/GAT1400CaptureControl.cpp
 )
 #加密和产测配置 模块
 set(Encryption_SRC Encryption/Encryption.cpp)

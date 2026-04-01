@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604011603 | gat1400_capture_control_relocate | 轻量迭代 | ✅已完成 | [2026-04/202604011603_gat1400_capture_control_relocate](2026-04/202604011603_gat1400_capture_control_relocate/) |
 | 202604011408 | gat_notify_alarm_entry | 开发 | ✅已完成 | [2026-04/202604011408_gat_notify_alarm_entry](2026-04/202604011408_gat_notify_alarm_entry/) |
 | 202604011157 | gat1400_capture_observer_removal | 轻量迭代 | ✅已完成 | [2026-04/202604011157_gat1400_capture_observer_removal](2026-04/202604011157_gat1400_capture_observer_removal/) |
 | 202604011132 | gat1400_keepalive_demo_simplify | 轻量迭代 | ✅已完成 | [2026-04/202604011132_gat1400_keepalive_demo_simplify](2026-04/202604011132_gat1400_keepalive_demo_simplify/) |
@@ -80,6 +81,7 @@
 
 ### 2026-04
 
+- [202604011603_gat1400_capture_control_relocate](2026-04/202604011603_gat1400_capture_control_relocate/) - 将 `GAT1400CaptureControl` 从 `App/Media/` 迁移到 `App/Protocol/gat1400/`，同步收口 include、构建脚本和当前知识库路径说明
 - [202604011408_gat_notify_alarm_entry](2026-04/202604011408_gat_notify_alarm_entry/) - 新增 `ProtocolManager::NotifyGatAlarm()` 作为 1400 业务通知入口，算法/编码侧可直接上送 `GAT1400CaptureEvent`，由协议模块自动决定立即上传还是先入队补偿
 - [202604011157_gat1400_capture_observer_removal](2026-04/202604011157_gat1400_capture_observer_removal/) - 去掉 `GAT1400ClientService` 对抓拍 observer 的继承和回调注册，抓拍桥接改为纯内存队列，并在注册成功/保活成功后显式 drain
 - [202604011132_gat1400_keepalive_demo_simplify](2026-04/202604011132_gat1400_keepalive_demo_simplify/) - 将上一版 GAT1400 保活 demo 收敛为嵌入式场景下的最小测试调用，在不改动现有 `/Data` Base64 上传语义的前提下，只保留首次保活成功后的单次人脸 + 图片联调

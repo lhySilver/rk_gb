@@ -189,7 +189,7 @@
 
 ### GAT1400 抓拍桥接接口
 
-**描述:** 编码侧 / 算法侧 / 其他业务模块优先通过 `ProtocolManager::NotifyGatAlarm()` 通知 1400 模块；内部仍复用 `App/Media/GAT1400CaptureControl.*` 作为抓拍队列。若 1400 已注册，服务会直接尝试上传；否则先入队，后续在注册成功或保活成功后 drain。
+**描述:** 编码侧 / 算法侧 / 其他业务模块优先通过 `ProtocolManager::NotifyGatAlarm()` 通知 1400 模块；内部仍复用 `App/Protocol/gat1400/GAT1400CaptureControl.*` 作为抓拍队列。若 1400 已注册，服务会直接尝试上传；否则先入队，后续在注册成功或保活成功后 drain。
 
 | 接口 | 说明 |
 |------|------|

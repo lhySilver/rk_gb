@@ -319,7 +319,7 @@
 
 ### `media::GAT1400CaptureEvent`
 
-**描述:** 编码侧 / 算法侧向 1400 模块投递抓拍结果的运行时事件模型。
+**描述:** 定义位于 `App/Protocol/gat1400/GAT1400CaptureControl.*`，用于编码侧 / 算法侧向 1400 模块投递抓拍结果的运行时事件模型。
 
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
@@ -333,7 +333,7 @@
 
 ### `media::GAT1400CaptureControl`
 
-**描述:** 1400 抓拍桥接控制器，负责抓拍事件的线程安全排队。业务侧推荐通过 `ProtocolManager::NotifyGatAlarm()` 进入这条链路；本控制器主要承担内部排队与补偿。
+**描述:** 定义位于 `App/Protocol/gat1400/GAT1400CaptureControl.*`，负责抓拍事件的线程安全排队。业务侧推荐通过 `ProtocolManager::NotifyGatAlarm()` 进入这条链路；本控制器主要承担内部排队与补偿。
 
 | 字段 / 能力 | 类型 | 说明 |
 |-------------|------|------|

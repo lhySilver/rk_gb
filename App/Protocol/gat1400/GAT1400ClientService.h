@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 
-#include "Media/GAT1400CaptureControl.h"
+#include "GAT1400CaptureControl.h"
 #include "ProtocolExternalConfig.h"
 #define ConnectParam GAT1400ConnectParam
 #include "CMS1400Struct.h"
