@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604011132 | gat1400_keepalive_demo_simplify | 轻量迭代 | ✅已完成 | [2026-04/202604011132_gat1400_keepalive_demo_simplify](2026-04/202604011132_gat1400_keepalive_demo_simplify/) |
 | 202603311651 | gat1400_keepalive_demo_upload_once | 轻量迭代 | ✅已完成 | [2026-03/202603311651_gat1400_keepalive_demo_upload_once](2026-03/202603311651_gat1400_keepalive_demo_upload_once/) |
 | 202603301906 | gb_upgrade_builtin_http_download | 轻量迭代 | ✅已完成 | [2026-03/202603301906_gb_upgrade_builtin_http_download](2026-03/202603301906_gb_upgrade_builtin_http_download/) |
 | 202603301757 | gb_live_tcp_send_backpressure | 修复 | ✅已完成 | [2026-03/202603301757_gb_live_tcp_send_backpressure](2026-03/202603301757_gb_live_tcp_send_backpressure/) |
@@ -74,6 +75,10 @@
 | 202603121053 | rk830_cross_build | 修复 | ✅已完成 | [2026-03/202603121053_rk830_cross_build](2026-03/202603121053_rk830_cross_build/) |
 
 ## 按月归档
+
+### 2026-04
+
+- [202604011132_gat1400_keepalive_demo_simplify](2026-04/202604011132_gat1400_keepalive_demo_simplify/) - 将上一版 GAT1400 保活 demo 收敛为嵌入式场景下的最小测试调用，在不改动现有 `/Data` Base64 上传语义的前提下，只保留首次保活成功后的单次人脸 + 图片联调
 
 ### 2026-03
 

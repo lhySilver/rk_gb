@@ -43,14 +43,6 @@ static const char* kResponseKindStatus = "status";
 static const int kClientErrorUnsupportedUri = -6;
 static const int kClientErrorApePostCompatDisabled = -7;
 static const char* kKeepaliveDemoImagePath = "/mnt/sdcard/test.jpeg";
-static const char* kKeepaliveDemoTraceId = "keepalive_demo_upload_once";
-static const char* kKeepaliveDemoShotTime = "20260324174542000";
-static const int kKeepaliveDemoInfoKind = 1;
-static const int kKeepaliveDemoEventSort = 15;
-static const int kKeepaliveDemoSecurityLevel = 5;
-static const int kKeepaliveDemoImageSource = 1;
-static const int kKeepaliveDemoImageWidth = 1920;
-static const int kKeepaliveDemoImageHeight = 1080;
 
 struct RequestTarget
 {
@@ -136,55 +128,6 @@ std::string FormatCurrentTime()
     localtime_r(&now, &tmNow);
     strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &tmNow);
     return std::string(buffer);
-}
-
-std::string FormatCurrentTimeWithMillis()
-{
-    char buffer[32] = {0};
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    struct tm tmNow;
-    localtime_r(&tv.tv_sec, &tmNow);
-    size_t prefixLen = strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &tmNow);
-    snprintf(buffer + prefixLen, sizeof(buffer) - prefixLen, "%03ld", tv.tv_usec / 1000);
-    return std::string(buffer);
-}
-
-std::string BuildDemoObjectId(const char* prefix, const std::string& token)
-{
-    return std::string(prefix != NULL ? prefix : "") + token;
-}
-
-std::string ExtractFileName(const std::string& path)
-{
-    size_t pos = path.find_last_of("/\\");
-    return pos == std::string::npos ? path : path.substr(pos + 1);
-}
-
-std::string ExtractFileStem(const std::string& path)
-{
-    const std::string fileName = ExtractFileName(path);
-    size_t pos = fileName.find_last_of('.');
-    return pos == std::string::npos ? fileName : fileName.substr(0, pos);
-}
-
-std::string ExtractFileExtension(const std::string& path)
-{
-    const std::string fileName = ExtractFileName(path);
-    size_t pos = fileName.find_last_of('.');
-    if (pos == std::string::npos || pos + 1 >= fileName.size()) {
-        return "";
-    }
-    return ToLowerCopy(fileName.substr(pos + 1));
-}
-
-std::string ResolveDemoImageFormat(const std::string& path)
-{
-    std::string ext = ExtractFileExtension(path);
-    if (ext == "jpeg") {
-        return "jpg";
-    }
-    return ext.empty() ? "jpg" : ext;
 }
 
 bool IsEmptyCString(const char* value)
@@ -567,84 +510,6 @@ bool ReadFileText(const std::string& path, std::string& out)
     const bool ok = (ferror(fp) == 0);
     fclose(fp);
     return ok;
-}
-
-bool ReadFileBase64(const std::string& path, std::string& out, size_t& rawSize, std::string& error)
-{
-    out.clear();
-    rawSize = 0;
-    std::string raw;
-    if (!ReadFileText(path, raw)) {
-        error = "read_failed";
-        return false;
-    }
-    if (raw.empty()) {
-        error = "empty_file";
-        return false;
-    }
-    if (!CBase64Coder::Encode(reinterpret_cast<const unsigned char*>(raw.data()),
-                              static_cast<unsigned long>(raw.size()),
-                              out)) {
-        error = "base64_encode_failed";
-        return false;
-    }
-    rawSize = raw.size();
-    return true;
-}
-
-bool BuildKeepaliveDemoEvent(const std::string& deviceId,
-                             media::GAT1400CaptureEvent& event,
-                             std::string& error)
-{
-    size_t imageRawSize = 0;
-    std::string imageData;
-    if (!ReadFileBase64(kKeepaliveDemoImagePath, imageData, imageRawSize, error)) {
-        return false;
-    }
-
-    const std::string token = FormatCurrentTimeWithMillis();
-    const std::string imageId = BuildDemoObjectId("IMGDEMO", token);
-    const std::string faceId = BuildDemoObjectId("FACEDEMO", token);
-
-    GAT_1400_Face face;
-    CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
-    face.InfoKind = kKeepaliveDemoInfoKind;
-    CopyToArray(face.SourceID, sizeof(face.SourceID), imageId);
-    CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
-    face.LeftTopX = 100;
-    face.LeftTopY = 100;
-    face.RightBtmX = 500;
-    face.RightBtmY = 500;
-
-    GAT_1400_ImageSet imageSet;
-    CopyToArray(imageSet.ImageInfo.ImageID, sizeof(imageSet.ImageInfo.ImageID), imageId);
-    imageSet.ImageInfo.InfoKind = kKeepaliveDemoInfoKind;
-    imageSet.ImageInfo.ImageSource = kKeepaliveDemoImageSource;
-    imageSet.ImageInfo.EventSort = kKeepaliveDemoEventSort;
-    CopyToArray(imageSet.ImageInfo.DeviceID, sizeof(imageSet.ImageInfo.DeviceID), deviceId);
-    CopyToArray(imageSet.ImageInfo.FileFormat,
-                sizeof(imageSet.ImageInfo.FileFormat),
-                ResolveDemoImageFormat(kKeepaliveDemoImagePath));
-    CopyToArray(imageSet.ImageInfo.ShotTime, sizeof(imageSet.ImageInfo.ShotTime), kKeepaliveDemoShotTime);
-    CopyToArray(imageSet.ImageInfo.Title, sizeof(imageSet.ImageInfo.Title), ExtractFileStem(kKeepaliveDemoImagePath));
-    CopyToArray(imageSet.ImageInfo.ContentDescription,
-                sizeof(imageSet.ImageInfo.ContentDescription),
-                "keepalive demo image");
-    CopyToArray(imageSet.ImageInfo.ShotPlaceFullAdress,
-                sizeof(imageSet.ImageInfo.ShotPlaceFullAdress),
-                "keepalive demo");
-    imageSet.ImageInfo.SecurityLevel = kKeepaliveDemoSecurityLevel;
-    imageSet.ImageInfo.Width = kKeepaliveDemoImageWidth;
-    imageSet.ImageInfo.Height = kKeepaliveDemoImageHeight;
-    imageSet.ImageInfo.FileSize = static_cast<int>(imageRawSize);
-    imageSet.Data = imageData;
-
-    event = media::GAT1400CaptureEvent();
-    event.trace_id = kKeepaliveDemoTraceId;
-    event.object_type = media::GAT1400_CAPTURE_OBJECT_FACE;
-    event.face = face;
-    event.image_list.push_back(imageSet);
-    return true;
 }
 
 std::list<GAT_1400_VideoSliceSet> BuildVideoSliceMetadataBatch(const std::list<GAT_1400_VideoSliceSet>& batch)
@@ -2220,15 +2085,82 @@ int GAT1400ClientService::SendKeepaliveDemoUploadOnce(const std::string& deviceI
         return 0;
     }
 
-    media::GAT1400CaptureEvent event;
-    std::string error;
-    if (!BuildKeepaliveDemoEvent(deviceId, event, error)) {
-        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=-1 note=%s\n",
-               error.empty() ? "-" : error.c_str());
+    std::string imageRaw;
+    if (!ReadFileText(kKeepaliveDemoImagePath, imageRaw)) {
+        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=-1 note=read_failed image=%s\n",
+               kKeepaliveDemoImagePath);
+        return -1;
+    }
+    if (imageRaw.empty()) {
+        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=-1 note=empty_file image=%s\n",
+               kKeepaliveDemoImagePath);
         return -1;
     }
 
-    const int ret = PostCaptureEvent(event);
+    std::string imageData;
+    if (!CBase64Coder::Encode(reinterpret_cast<const unsigned char*>(imageRaw.data()),
+                              static_cast<unsigned long>(imageRaw.size()),
+                              imageData)) {
+        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=-1 note=base64_encode_failed image=%s\n",
+               kKeepaliveDemoImagePath);
+        return -1;
+    }
+
+    char token[32] = {0};
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    struct tm tmNow;
+    localtime_r(&tv.tv_sec, &tmNow);
+    size_t prefixLen = strftime(token, sizeof(token), "%Y%m%d%H%M%S", &tmNow);
+    snprintf(token + prefixLen, sizeof(token) - prefixLen, "%03ld", tv.tv_usec / 1000);
+
+    const std::string shotTime(token);
+    const std::string imageId = std::string("IMGDEMO") + shotTime;
+    const std::string faceId = std::string("FACEDEMO") + shotTime;
+
+    GAT_1400_Face face;
+    memset(&face, 0, sizeof(face));
+    CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
+    face.InfoKind = 1;
+    CopyToArray(face.SourceID, sizeof(face.SourceID), imageId);
+    CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
+    face.LeftTopX = 100;
+    face.LeftTopY = 100;
+    face.RightBtmX = 500;
+    face.RightBtmY = 500;
+
+    GAT_1400_ImageSet imageSet;
+    memset(&imageSet.ImageInfo, 0, sizeof(imageSet.ImageInfo));
+    CopyToArray(imageSet.ImageInfo.ImageID, sizeof(imageSet.ImageInfo.ImageID), imageId);
+    imageSet.ImageInfo.InfoKind = 1;
+    imageSet.ImageInfo.ImageSource = 1;
+    imageSet.ImageInfo.EventSort = 15;
+    CopyToArray(imageSet.ImageInfo.DeviceID, sizeof(imageSet.ImageInfo.DeviceID), deviceId);
+    CopyToArray(imageSet.ImageInfo.FileFormat, sizeof(imageSet.ImageInfo.FileFormat), "jpg");
+    CopyToArray(imageSet.ImageInfo.ShotTime, sizeof(imageSet.ImageInfo.ShotTime), shotTime);
+    CopyToArray(imageSet.ImageInfo.Title, sizeof(imageSet.ImageInfo.Title), "test");
+    CopyToArray(imageSet.ImageInfo.ContentDescription,
+                sizeof(imageSet.ImageInfo.ContentDescription),
+                "keepalive demo image");
+    CopyToArray(imageSet.ImageInfo.ShotPlaceFullAdress,
+                sizeof(imageSet.ImageInfo.ShotPlaceFullAdress),
+                "keepalive demo");
+    imageSet.ImageInfo.SecurityLevel = 5;
+    imageSet.ImageInfo.Width = 1920;
+    imageSet.ImageInfo.Height = 1080;
+    imageSet.ImageInfo.FileSize = static_cast<int>(imageRaw.size());
+    imageSet.FaceList.push_back(face);
+    imageSet.Data = imageData;
+
+    std::list<GAT_1400_Face> faceList;
+    faceList.push_back(face);
+    int ret = PostFaces(faceList);
+    if (ret == 0) {
+        std::list<GAT_1400_ImageSet> imageList;
+        imageList.push_back(imageSet);
+        ret = PostImages(imageList);
+    }
+
     printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d image=%s\n",
            ret,
            kKeepaliveDemoImagePath);
