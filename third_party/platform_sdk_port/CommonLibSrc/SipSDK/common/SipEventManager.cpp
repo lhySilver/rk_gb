@@ -137,7 +137,7 @@ static void SetHeaderIfNotEmpty(osip_message_t* msg, const char* name, const std
     if (msg == NULL || name == NULL || value.empty()) {
         return;
     }
-    osip_message_set_header(msg, name, value.c_str());
+    osip_message_replace_header(msg, name, value.c_str());
 }
 
 static bool ReadHeaderValue(osip_message_t* message, const char* name, std::string& out)
