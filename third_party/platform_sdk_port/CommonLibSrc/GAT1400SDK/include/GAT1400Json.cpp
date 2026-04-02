@@ -19,6 +19,11 @@ static void _split(const std::string & src, char delim, std::vector<std::string>
 	}
 }
 
+static bool _HasContent(const char* value)
+{
+	return value != NULL && value[0] != '\0';
+}
+
 static Json::Value _PackFace(const GAT_1400_Face& Face)
 {
 	Json::Value FaceObject;
@@ -26,13 +31,20 @@ static Json::Value _PackFace(const GAT_1400_Face& Face)
 	FaceObject["InfoKind"] = Json::Value(Face.InfoKind);
 	FaceObject["SourceID"] = Json::Value(Face.SourceID);
 	FaceObject["DeviceID"] = Json::Value(Face.DeviceID);
+	if (_HasContent(Face.LocationMarkTime)) {
+		FaceObject["ShotTime"] = Json::Value(Face.LocationMarkTime);
+		FaceObject["LocationMarkTime"] = Json::Value(Face.LocationMarkTime);
+	} else if (!Face.SubImageList.empty() && _HasContent(Face.SubImageList.front().ShotTime)) {
+		FaceObject["ShotTime"] = Json::Value(Face.SubImageList.front().ShotTime);
+	}
 	FaceObject["LeftTopX"] = Json::Value(Face.LeftTopX);
 	FaceObject["LeftTopY"] = Json::Value(Face.LeftTopY);
 	FaceObject["RightBtmX"] = Json::Value(Face.RightBtmX);
 	FaceObject["RightBtmY"] = Json::Value(Face.RightBtmY);
-	if(Face.InfoKind == INFO_TYPE_MANUAL) {
-		FaceObject["LocationMarkTime"] = Json::Value(Face.LocationMarkTime);
+	if (_HasContent(Face.FaceAppearTime)) {
 		FaceObject["FaceAppearTime"] = Json::Value(Face.FaceAppearTime);
+	}
+	if (_HasContent(Face.FaceDisAppearTime)) {
 		FaceObject["FaceDisAppearTime"] = Json::Value(Face.FaceDisAppearTime);
 	}
 	char szGender[12] = {0};
@@ -61,7 +73,7 @@ static Json::Value _PackFace(const GAT_1400_Face& Face)
 		ImageObject["DeviceID"] = Json::Value(suIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(suIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", suIter->Type);
+		sprintf(szType, "%02d", suIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(suIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(suIter->ShotTime);
@@ -109,7 +121,7 @@ static Json::Value _PackPerson(const GAT_1400_Person& Person)
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);
@@ -134,14 +146,27 @@ static Json::Value _PackMotorVehicle(const GAT_1400_Motor& MotorVehicle)
 	MotorVehicleseObject["LeftTopY"] = Json::Value(MotorVehicle.LeftTopY);
 	MotorVehicleseObject["RightBtmX"] = Json::Value(MotorVehicle.RightBtmX);
 	MotorVehicleseObject["RightBtmY"] = Json::Value(MotorVehicle.RightBtmY);
-	if(MotorVehicle.InfoKind == INFO_TYPE_MANUAL) {
+	if (_HasContent(MotorVehicle.MarkTime)) {
 		MotorVehicleseObject["MarkTime"] = Json::Value(MotorVehicle.MarkTime);
+	}
+	if (_HasContent(MotorVehicle.AppearTime)) {
 		MotorVehicleseObject["AppearTime"] = Json::Value(MotorVehicle.AppearTime);
+	}
+	if (_HasContent(MotorVehicle.DisappearTime)) {
 		MotorVehicleseObject["DisappearTime"] = Json::Value(MotorVehicle.DisappearTime);
 	}
 
 	MotorVehicleseObject["LaneNo"] = Json::Value(MotorVehicle.LaneNo);
 	MotorVehicleseObject["HasPlate"] = Json::Value(MotorVehicle.HasPlate);
+	MotorVehicleseObject["Speed"] = Json::Value(MotorVehicle.Speed);
+
+	char szDirection[12] = {0};
+	sprintf(szDirection, "%d", MotorVehicle.Direction);
+	MotorVehicleseObject["Direction"] = Json::Value(szDirection);
+	MotorVehicleseObject["VehicleLength"] = Json::Value(MotorVehicle.VehicleLength);
+	if (_HasContent(MotorVehicle.PassTime)) {
+		MotorVehicleseObject["PassTime"] = Json::Value(MotorVehicle.PassTime);
+	}
 
 	char szPlateClass[12] = {0};
 	sprintf(szPlateClass, "%d", MotorVehicle.PlateClass);
@@ -165,7 +190,7 @@ static Json::Value _PackMotorVehicle(const GAT_1400_Motor& MotorVehicle)
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);
@@ -217,7 +242,7 @@ static Json::Value _PackNonmotorVehicle(const GAT_1400_NonMotor& NonmotorVehicle
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);
@@ -258,7 +283,7 @@ static Json::Value _PackThing(const GAT_1400_Thing& Thing)
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);
@@ -287,7 +312,7 @@ static Json::Value _PackScene(const GAT_1400_Scene& Scene)
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);
@@ -323,7 +348,7 @@ static Json::Value _PackDisposition(const GAT_1400_Disposition& Disposition)
 		ImageObject["DeviceID"] = Json::Value(subIter->DeviceID);
 		ImageObject["StoragePath"] = Json::Value(subIter->StoragePath);
 		char szType[12] = {0};
-		sprintf(szType, "%d", subIter->Type);
+		sprintf(szType, "%02d", subIter->Type);
 		ImageObject["Type"] = Json::Value(szType);
 		ImageObject["FileFormat"] = Json::Value(subIter->FileFormat);
 		ImageObject["ShotTime"] = Json::Value(subIter->ShotTime);

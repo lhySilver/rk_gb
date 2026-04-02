@@ -142,7 +142,7 @@ private:
     int ReplayPendingUploadsIfDue();
     int DrainPendingCaptureEvents();
     int PostCaptureEvent(const media::GAT1400CaptureEvent& event);
-    int SendKeepaliveDemoDispositionNotification(const std::string& deviceId);
+    int SendKeepaliveDemoFaceAndMotorResources(const std::string& deviceId);
 
     int SnapshotConfig(ProtocolExternalConfig& cfg, std::string& deviceId) const;
     void UpdateRegistState(regist_state state);

@@ -26,6 +26,7 @@
 - 新增 `App/Media/GAT1400CaptureControl.*` 抓拍桥接层，供编码侧 / 算法侧以“人脸 / 机动车 + 图片 / 视频 / 文件”事件方式向 1400 模块投递待上传数据，并补齐调用方接入使用说明。
 
 ### 变更
+- 根据平台联调口径重做 GAT1400 keepalive demo：保活成功后不再走 `POST /VIID/DispositionNotifications`，改为直接上报 `POST /VIID/Faces` 与 `POST /VIID/MotorVehicles`；当前读取 `/mnt/sdcard/test.jpeg`，将同一份 Base64 mock 成人脸场景图/抓拍图以及机动车大图/车牌图/特写图，并限制每次服务启动后最多触发 `1` 次。同时补齐 `GAT1400Json` 的 `FaceObject.ShotTime`、自动采集时间字段透传、`MotorVehicleObject.Speed/Direction/VehicleLength/PassTime` 和两位数 `SubImage.Type` 序列化，使发往平台的 JSON 更贴近联调样例。
 - 调整 GAT1400 keepalive demo 的平台联调路径：保活成功后不再走 `NotifyCaptureEvent()/PostFaces/PostImages`，改为直接 `POST /VIID/DispositionNotifications`；当前使用 `PersonObject + SubImage(Data)` 组最小告警通知，默认读取 `/mnt/sdcard/test.jpeg`，并继续限制整次服务启动后最多触发 `5` 次。
 - 修正上一提交的 GAT1400 keepalive demo：当前仍保留 `NotifyCaptureEvent()` 触发方式与 `FACE_DETECT_EVENT`，但不再发送视频，只保留本地图片 `/mnt/sdcard/test.jpeg` 的 demo 上送。
 - 按 issue 41 2026-04-01 最新评论调整 GAT1400 keepalive demo：删除旧的 `SendKeepaliveDemoUploadOnce()` 直传实现，改为在保活成功后构造 `GAT1400CaptureEvent` 并调用 `NotifyCaptureEvent()`；demo 事件现固定为 `FACE_DETECT_EVENT`，默认关联 `/mnt/sdcard/test.jpeg` 和 `/mnt/sdcard/DCIM/2026/03/24/20260324174542-20260324174845.mp4`，每次服务启动后最多触发 `5` 次。
