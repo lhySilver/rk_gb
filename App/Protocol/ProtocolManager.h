@@ -98,6 +98,7 @@ public:
     virtual int ReloadExternalConfig();
 
     const ProtocolExternalConfig& GetConfig() const;
+    bool GetGbOnlineStatus() const;
 
     int SetGbRegisterConfig(const GbRegisterParam& param);
     GbRegisterParam GetGbRegisterConfig() const;
@@ -676,7 +677,7 @@ private:
 
     void* m_gb_time_sync_user;
 
-    std::mutex m_gb_lifecycle_mutex;
+    mutable std::mutex m_gb_lifecycle_mutex;
 
     std::thread m_gb_heartbeat_thread;
 
@@ -733,7 +734,6 @@ private:
 
 
 #endif
-
 
 
 

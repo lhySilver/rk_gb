@@ -6078,6 +6078,12 @@ const ProtocolExternalConfig& ProtocolManager::GetConfig() const
 
 }
 
+bool ProtocolManager::GetGbOnlineStatus() const
+{
+    std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
+    return m_gb_client_registered;
+}
+
 int ProtocolManager::SetGbRegisterConfig(const GbRegisterParam& param)
 {
     printf("[ProtocolManager] module=config event=gb_register_set_start trace=manager error=0 started=%d\n",
