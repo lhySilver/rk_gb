@@ -5507,6 +5507,11 @@ int ProtocolManager::RegisterGbClient(bool force)
 
 
 
+    const std::string registerPassword =
+        (useZeroConfig && !m_cfg.gb_register.mac_address.empty()) ?
+            m_cfg.gb_register.mac_address :
+            m_cfg.gb_register.password;
+
     GBRegistParam registerParam;
 
     memset(&registerParam, 0, sizeof(registerParam));
@@ -5519,7 +5524,7 @@ int ProtocolManager::RegisterGbClient(bool force)
 
     CopyBounded(registerParam.username, sizeof(registerParam.username), authUser);
 
-    CopyBounded(registerParam.password, sizeof(registerParam.password), m_cfg.gb_register.password);
+    CopyBounded(registerParam.password, sizeof(registerParam.password), registerPassword);
     CopyBounded(registerParam.local_name, sizeof(registerParam.local_name), registerLocalName);
     CopyBounded(registerParam.device_name, sizeof(registerParam.device_name), deviceName);
     registerParam.use_zero_config = useZeroConfig;
@@ -5582,7 +5587,7 @@ int ProtocolManager::RegisterGbClient(bool force)
 
                authUser.c_str(),
 
-               MaskSecret(m_cfg.gb_register.password).c_str());
+               MaskSecret(registerPassword).c_str());
 
         return mappedRet;
 
