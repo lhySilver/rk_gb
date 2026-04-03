@@ -132,12 +132,34 @@ static bool ResolveAutoSipListenPort(SipTransportType type, uint16_t& local_port
     return local_port > 0;
 }
 
-static void SetHeaderIfNotEmpty(osip_message_t* msg, const char* name, const std::string& value)
+static void RemoveHeadersByName(osip_message_t* msg, const char* name)
 {
-    if (msg == NULL || name == NULL || value.empty()) {
+    if (msg == NULL || name == NULL) {
         return;
     }
-    osip_message_replace_header(msg, name, value.c_str());
+
+    osip_header_t* header = NULL;
+    int pos = osip_message_header_get_byname(msg, name, 0, &header);
+    while (pos >= 0 && header != NULL) {
+        osip_list_remove(&msg->headers, pos);
+        osip_header_free(header);
+        header = NULL;
+        pos = osip_message_header_get_byname(msg, name, 0, &header);
+    }
+}
+
+static void SetHeaderIfNotEmpty(osip_message_t* msg, const char* name, const std::string& value)
+{
+    if (msg == NULL || name == NULL) {
+        return;
+    }
+
+    RemoveHeadersByName(msg, name);
+    if (value.empty()) {
+        return;
+    }
+
+    osip_message_set_header(msg, name, value.c_str());
 }
 
 static bool ReadHeaderValue(osip_message_t* message, const char* name, std::string& out)
