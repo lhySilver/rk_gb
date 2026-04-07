@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604071542 | gb_broadcast_rx_dump_and_decode_align | 轻量迭代 | ✅已完成 | [2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align](2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align/) |
 | 202604031701 | gb_catalog_required_fields | 轻量迭代 | ✅已完成 | [2026-04/202604031701_gb_catalog_required_fields](2026-04/202604031701_gb_catalog_required_fields/) |
 | 202604021432 | gat1400_keepalive_demo_single_shot_split | 轻量迭代 | ✅已完成 | [2026-04/202604021432_gat1400_keepalive_demo_single_shot_split](2026-04/202604021432_gat1400_keepalive_demo_single_shot_split/) |
 | 202604021026 | gat1400_keepalive_demo_face_motor_resources | 轻量迭代 | ✅已完成 | [2026-04/202604021026_gat1400_keepalive_demo_face_motor_resources](2026-04/202604021026_gat1400_keepalive_demo_face_motor_resources/) |
@@ -87,6 +88,7 @@
 
 ### 2026-04
 
+- [202604071542_gb_broadcast_rx_dump_and_decode_align](2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align/) - 分析 `234.pcap` / `debug.log` 后，给 GB28181 广播下行增加解码前原始音频落盘能力，并将 G711A/U 解码目标缓冲改为 `int16_t` 对齐写法，便于继续排查“第二次有流但设备侧无声/声音难听”
 - [202604031701_gb_catalog_required_fields](2026-04/202604031701_gb_catalog_required_fields/) - 根据 `224.pcap` 修复 GB28181 `Catalog` 查询响应和目录订阅通知字段缺失，统一补齐 `Name/Owner/CivilCode/Address/IPAddress/RegisterWay/Status/Event` 等目录项基础信息，并修正 XML 打包层把这些字段真正编码出去
 - [202604021432_gat1400_keepalive_demo_single_shot_split](2026-04/202604021432_gat1400_keepalive_demo_single_shot_split/) - 按 issue 41 最新评论将 keepalive demo 拆成人脸/机动车两个单次函数，改用四张独立图片并去掉失败后的心跳重试，避免平台持续看到重复上报
 - [202604021026_gat1400_keepalive_demo_face_motor_resources](2026-04/202604021026_gat1400_keepalive_demo_face_motor_resources/) - 按平台样例将 keepalive demo 改为直接上报 `Faces` 与 `MotorVehicles`，并补齐联调所需的 Face/MotorVehicle JSON 字段与两位数 `SubImage.Type` 序列化
