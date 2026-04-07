@@ -130,6 +130,7 @@ struct NetAddress
     char*               manufacturer;
     char*               model;
     char*               custom_protocol_version;
+    char*               gb_protocol_version_id;
 
 };
 

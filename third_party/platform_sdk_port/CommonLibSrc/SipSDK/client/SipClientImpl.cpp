@@ -85,6 +85,8 @@ int   CSipClientImpl::Register(const SipRegistParam* message, const SipConnectPa
     m_client_info->Model = (message->model != NULL) ? message->model : "";
     m_client_info->CustomProtocolVersion =
         (message->custom_protocol_version != NULL) ? message->custom_protocol_version : "";
+    m_client_info->GbProtocolVersionId =
+        (message->gb_protocol_version_id != NULL) ? message->gb_protocol_version_id : "";
     if (m_event_manager->GetLocalPort() > 0) {
         m_client_info->LocalPort = m_event_manager->GetLocalPort();
     }

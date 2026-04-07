@@ -38,7 +38,7 @@ struct GbRegisterParam
           device_name("IPC"),
           expires_sec(3600),
           line_id("1"),
-          custom_protocol_version("1.0"),
+          custom_protocol_version("3.0"),
           manufacturer("IPC"),
           model("RC0240") {}
 };

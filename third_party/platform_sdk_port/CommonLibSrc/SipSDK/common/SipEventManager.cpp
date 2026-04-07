@@ -241,6 +241,15 @@ static void SetZeroConfigRegisterHeaders(osip_message_t* msg, const ClientInfo* 
     SetHeaderIfNotEmpty(msg, "CustomProtocolVersion", client_info->CustomProtocolVersion);
 }
 
+static void SetStandardRegisterHeaders(osip_message_t* msg, const ClientInfo* client_info)
+{
+    if (msg == NULL || client_info == NULL) {
+        return;
+    }
+
+    SetHeaderIfNotEmpty(msg, "X-GB-Ver", client_info->GbProtocolVersionId);
+}
+
 void FreeSipData(SipData* data)
 {
     if(!data) {
@@ -1168,6 +1177,7 @@ int CSipEventManager::Register(ClientInfo* client_info , int timeout , SipData**
                         << " attempts=" << attempt);
        }
 
+        SetStandardRegisterHeaders(pMsg, client_info);
         SetZeroConfigRegisterHeaders(pMsg, client_info);
 
         CResponseWaiter *pCond = NULL;

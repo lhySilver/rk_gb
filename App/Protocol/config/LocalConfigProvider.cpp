@@ -212,7 +212,7 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     param.line_id = "1";
     param.redirect_domain = "35010000002000000001";
     param.redirect_server_id = "35010000002000000001";
-    param.custom_protocol_version = "1.0";
+    param.custom_protocol_version = "3.0";
     param.manufacturer = "IPC";
     param.model = "RC0240";
     return param;

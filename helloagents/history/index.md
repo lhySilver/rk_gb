@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604071753 | gb_register_2022_style | 开发 | ✅已完成 | [2026-04/202604071753_gb_register_2022_style](2026-04/202604071753_gb_register_2022_style/) |
 | 202604071712 | gb_broadcast_raw_dump_removal | 轻量迭代 | ✅已完成 | [2026-04/202604071712_gb_broadcast_raw_dump_removal](2026-04/202604071712_gb_broadcast_raw_dump_removal/) |
 | 202604071641 | gb_talk_audio_output_session_boundary | 轻量迭代 | ✅已完成 | [2026-04/202604071641_gb_talk_audio_output_session_boundary](2026-04/202604071641_gb_talk_audio_output_session_boundary/) |
 | 202604071542 | gb_broadcast_rx_dump_and_decode_align | 轻量迭代 | ✅已完成 | [2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align](2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align/) |
@@ -90,6 +91,7 @@
 
 ### 2026-04
 
+- [202604071753_gb_register_2022_style](2026-04/202604071753_gb_register_2022_style/) - 将 GB28181 注册主链切到更接近 `GB/T 28181-2022` 的口径：新增 `X-GB-Ver: 3.0`，SDK 启动版本切到 `kGB2022Version`，并让现有 `2016` 扩展字段逻辑按“2016 及以上版本”继续复用
 - [202604071712_gb_broadcast_raw_dump_removal](2026-04/202604071712_gb_broadcast_raw_dump_removal/) - 去掉 GB28181 广播下行排障期间临时加入的原始音频落盘逻辑，删除 `/mnt/sdcard/gb_broadcast_rx_*` 写文件分支和相关状态变量，保留 `g711a/g711u` 的对齐解码修正
 - [202604071641_gb_talk_audio_output_session_boundary](2026-04/202604071641_gb_talk_audio_output_session_boundary/) - 将 GB28181 广播/对讲下行的扬声器控制改为按会话边界处理：旧连接关闭时清掉 `AUDIO_TALK_TYPE`，新的 `UDP apply` 或 `TCP connect/accept` 成功后再明确打开，修正第二次有码流但设备侧无声的播放恢复时机
 - [202604071542_gb_broadcast_rx_dump_and_decode_align](2026-04/202604071542_gb_broadcast_rx_dump_and_decode_align/) - 分析 `234.pcap` / `debug.log` 后，给 GB28181 广播下行增加解码前原始音频落盘能力，并将 G711A/U 解码目标缓冲改为 `int16_t` 对齐写法，便于继续排查“第二次有流但设备侧无声/声音难听”

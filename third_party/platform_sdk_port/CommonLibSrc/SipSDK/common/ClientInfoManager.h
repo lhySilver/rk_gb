@@ -41,6 +41,7 @@ public:
     std::string Manufacturer;
     std::string Model;
     std::string CustomProtocolVersion;
+    std::string GbProtocolVersionId;
     ClientInfo(){
         clientId = g_client_id.Increment();
         RegId = -1;

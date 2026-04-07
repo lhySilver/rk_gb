@@ -63,8 +63,27 @@ enum GB28181ErrorCode
 enum GB28181Version
 {
     kGB2011Version,
-    kGB2016Version
+    kGB2016Version,
+    kGB2022Version
 };
+
+inline bool IsGb2016OrLater(GB28181Version version)
+{
+    return version >= kGB2016Version;
+}
+
+inline const char* GetGbProtocolVersionIdentifier(GB28181Version version)
+{
+    switch (version) {
+        case kGB2022Version:
+            return "3.0";
+        case kGB2016Version:
+            return "2.0";
+        case kGB2011Version:
+        default:
+            return "1.0";
+    }
+}
 
 //传输方式
 enum TransPorco

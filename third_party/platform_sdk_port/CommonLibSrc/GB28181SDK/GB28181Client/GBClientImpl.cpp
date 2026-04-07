@@ -75,6 +75,7 @@ static const char* ResolveSipRemoteName(const ConnectParam* connect)
 
 static void PrepareSipRegisterParam(SipRegistParam* sip_param,
                                     const GBRegistParam* gb_param,
+                                    GB28181Version version,
                                     const char* auth_user,
                                     const char* local_name,
                                     bool new_reg,
@@ -100,6 +101,8 @@ static void PrepareSipRegisterParam(SipRegistParam* sip_param,
     sip_param->manufacturer = const_cast<char*>(gb_param->manufacturer);
     sip_param->model = const_cast<char*>(gb_param->model);
     sip_param->custom_protocol_version = const_cast<char*>(gb_param->custom_protocol_version);
+    sip_param->gb_protocol_version_id =
+        const_cast<char*>(GetGbProtocolVersionIdentifier(version));
 }
 
 static void PrepareSipConnectParam(SipConnectParam* sip_connect, ConnectParam* connect)
@@ -510,6 +513,7 @@ int CGBClientImpl::Register(const GBRegistParam* gb_param, const ConnectParam* g
                             SipData** output) -> int {
         PrepareSipRegisterParam(m_sip_regist_param,
                                 m_gb_regist_param,
+                                m_xml_parser->m_version,
                                 auth_user,
                                 local_name,
                                 true,

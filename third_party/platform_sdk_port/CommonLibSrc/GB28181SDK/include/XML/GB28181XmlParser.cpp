@@ -1581,7 +1581,7 @@ void CGB28181XmlParser::PackKeepalive(const KeepaliveInfo*  list,  std::string& 
     device_status.Status =  list->status ? "OK" : "ERROR" ;
     device_status.SN = m_sn.Increment();
 
-    if( m_version == kGB2016Version && list && list->Num > 0  ) {
+    if( IsGb2016OrLater(m_version) && list && list->Num > 0  ) {
         int i = 0;
         for(; i< (int)list->Num;i++  ) {
               device_status.Info.DeviceID.push_back( list->fault_device[i].DeviceID );
@@ -1660,7 +1660,7 @@ bool CGB28181XmlParser::UnPackKeepalive(const std::string &xml_str, std::string&
    if(num >= 1) {
          list->fault_device = (FaultDevice*)malloc( sizeof(FaultDevice)* num);
    }
-    if(  m_version == kGB2016Version   && num >= 1 && list->fault_device ){
+    if(  IsGb2016OrLater(m_version)   && num >= 1 && list->fault_device ){
         list->Num = device_status.Info.DeviceID.size();
         int i=0;
         for(;i< (int)list->Num; i++) {

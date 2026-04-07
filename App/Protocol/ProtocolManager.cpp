@@ -5299,7 +5299,7 @@ int ProtocolManager::StartGbClientLifecycle()
 
 
 
-        const int startRet = m_gb_client_sdk->Start(kGB2016Version,
+        const int startRet = m_gb_client_sdk->Start(kGB2022Version,
 
                                                      sipTransport,
 
@@ -5590,6 +5590,9 @@ int ProtocolManager::RegisterGbClient(bool force)
         (useZeroConfig && !m_cfg.gb_register.mac_address.empty()) ?
             m_cfg.gb_register.mac_address :
             m_cfg.gb_register.password;
+    const std::string customProtocolVersion = m_cfg.gb_register.custom_protocol_version.empty() ?
+                                              GetGbProtocolVersionIdentifier(kGB2022Version) :
+                                              m_cfg.gb_register.custom_protocol_version;
 
     GBRegistParam registerParam;
 
@@ -5616,7 +5619,7 @@ int ProtocolManager::RegisterGbClient(bool force)
         CopyBounded(registerParam.model, sizeof(registerParam.model), model);
         CopyBounded(registerParam.custom_protocol_version,
                     sizeof(registerParam.custom_protocol_version),
-                    m_cfg.gb_register.custom_protocol_version);
+                    customProtocolVersion);
     }
 
 
@@ -9679,7 +9682,7 @@ int ProtocolManager::ResponseGbQueryDeviceInfo(ResponseHandle handle, const Quer
     const std::string stringCode = ResolveGbZeroConfigStringCode(m_cfg);
     const std::string lineId = m_cfg.gb_register.line_id.empty() ? "0" : m_cfg.gb_register.line_id;
     const std::string customProtocolVersion = m_cfg.gb_register.custom_protocol_version.empty()
-                                                  ? "1.0"
+                                                  ? GetGbProtocolVersionIdentifier(kGB2022Version)
                                                   : m_cfg.gb_register.custom_protocol_version;
 
     CopyBounded(info.GBCode, sizeof(info.GBCode), gbCode);
