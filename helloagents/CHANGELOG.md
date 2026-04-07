@@ -80,7 +80,7 @@
 
 ### 修复
 - 修复 GB28181 第二次对讲/广播“有码流但设备侧没声音”的播放恢复时机问题：`GB28181BroadcastBridge` 现按会话边界管理扬声器，旧连接关闭时同步清掉 `AUDIO_TALK_TYPE`，新的 `UDP transport apply` 或 `TCP connect/accept` 成功后再明确打开扬声器，避免第一轮结束后仍残留旧播放态或错误依赖逐帧兜底。
-- 修复 GB28181 广播下行“平台第二轮仍有流但设备侧无声/声音异常”时缺少抓手的问题：`GB28181BroadcastBridge` 现在会在解码前把平台下发的原始音频 payload 追加写入 `/mnt/sdcard/gb_broadcast_rx_<timestamp>.<codec>`，并把 `DG_decode_g711a/DG_decode_g711u` 的目标缓冲改为 `int16_t` 对齐临时缓冲后再拷回 PCM，避免直接按 `short*` 写入 `std::vector<char>` 带来的对齐风险。
+- 修复 GB28181 广播下行 `g711a/g711u` 解码目标缓冲的对齐写法：`GB28181BroadcastBridge::DecodeToPcm16()` 现先写入 `int16_t` 临时缓冲，再拷回播放链使用的 PCM 字节流，避免直接按 `short*` 写进 `std::vector<char>` 带来的对齐风险。
 - 修复 GB28181 广播主动 `INVITE` 和实时预览 TCP 协商里的旧状态/方向错误：广播建链不再复用上一轮广播会话缓存的 transport，实时预览收到 `setup:active` 时设备侧改为回 `tcp-passive`、先监听本地端口并在发流前按需 `accept`，避免广播 `passive/passive` 和预览错误主动 `connect` 导致的 `403`。
 - 修复 GB28181 `Catalog` 查询响应/订阅通知目录项字段长期缺失的问题：`ProtocolManager` 现统一填充 `Name/Manufacturer/Model/Owner/CivilCode/Address/IPAddress/RegisterWay/Parental/Status/Event` 等基础信息，GB28181 XML 打包层也同步把 `CatalogInfo` 中已填字段真实编码进报文，不再把 `Owner/CivilCode/Address/Parental/RegisterWay` 等值丢成空标签或默认值。
 - 修复 GAT1400 keepalive demo 在图片缺失或某一路上报失败时会在后续心跳中持续重试、导致平台看到重复人脸/车辆事件的问题；当前改为每次服务启动后每类 demo 仅尝试一次，不再回退重试计数。
@@ -128,6 +128,7 @@
 - 修复 GB 回放从 `index` 选择首个录像文件时的筛选逻辑，改为先排序再按时间重叠 / 后继文件选取，避免“查询能看到录像、回放却选不到文件”。
 
 ### 优化
+- 删除 GB28181 广播下行排障期间临时加入的原始音频落盘调试逻辑，去掉 `GB28181BroadcastBridge` 中写 `/mnt/sdcard/gb_broadcast_rx_*` 的函数和相关状态变量，避免 demo 版本继续带着额外 I/O 分支。
 - 删除 `ProtocolManager` 中零调用的 `const GetGatClientService()` / `const GetGbClientReceiver()` 重载，并清理 `LowerGAT1400SDK` 对应的冗余 `const` 壳声明；在同工具链、同宏条件下，`ProtocolManager.o` 的 `dec` 从 `167103` 降到 `167071`。
 - 删除 `ProtocolManager` 中零调用的私有方法 `ClearGbBroadcastSessionState()`，继续收口广播链路中的死 helper。
 - 删除 `ProtocolManager` 中零调用的 `PushListenAudioFrame()`、`ApplyGbBroadcastSdpOffer()`、`SetGbBroadcastPcmCallback()` 转发方法，并清理 `TrimWhitespaceCopy()`、`NormalizeGbOsdTextTemplate()` 的重复前置声明，继续收口协议层无意义编译内容。

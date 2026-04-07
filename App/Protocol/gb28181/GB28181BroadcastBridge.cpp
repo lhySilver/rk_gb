@@ -260,8 +260,6 @@ GB28181BroadcastBridge::GB28181BroadcastBridge()
       m_negotiated_payload_type(-1),
       m_transport_type(kRtpOverUdp),
       m_remote_port(0),
-      m_raw_dump_fp(NULL),
-      m_raw_dump_open_failed(false),
       m_pcm_callback(NULL),
       m_pcm_callback_user(NULL)
 {
@@ -293,8 +291,6 @@ int GB28181BroadcastBridge::StartSession(const GbBroadcastParam& param)
     m_remote_ip.clear();
     m_remote_port = 0;
     m_tcp_recv_buffer.clear();
-    m_raw_dump_open_failed = false;
-    m_raw_dump_path.clear();
 
     if (m_param.input_mode == "stream") {
         if (m_param.recv_port <= 0) {
@@ -327,7 +323,7 @@ int GB28181BroadcastBridge::StartSession(const GbBroadcastParam& param)
 
 void GB28181BroadcastBridge::StopSession()
 {
-    if (!m_running && !m_recv_thread_started && !m_audio_opened && m_raw_dump_fp == NULL) {
+    if (!m_running && !m_recv_thread_started && !m_audio_opened) {
         return;
     }
 
@@ -339,8 +335,6 @@ void GB28181BroadcastBridge::StopSession()
     m_remote_ip.clear();
     m_remote_port = 0;
     m_tcp_recv_buffer.clear();
-    CloseRawAudioDump();
-    m_raw_dump_open_failed = false;
 
     if (m_audio_opened) {
         IAudioManager::instance()->StopAudioOut(IAudioManager::AUDIO_TALK_TYPE, true);
@@ -363,66 +357,6 @@ int GB28181BroadcastBridge::EnsureAudioOutputStarted()
 
     m_audio_opened = true;
     return 0;
-}
-
-void GB28181BroadcastBridge::CloseRawAudioDump()
-{
-    if (m_raw_dump_fp != NULL) {
-        fclose(m_raw_dump_fp);
-        m_raw_dump_fp = NULL;
-    }
-
-    m_raw_dump_path.clear();
-}
-
-void GB28181BroadcastBridge::DumpRawAudioFrame(const uint8_t* data, size_t size)
-{
-    if (data == NULL || size == 0 || m_raw_dump_open_failed) {
-        return;
-    }
-
-    if (m_raw_dump_fp == NULL) {
-        const std::string codec = ToLowerCopy(m_param.codec);
-        const char* ext = "bin";
-        if (codec == "g711a" || codec == "pcma") {
-            ext = "g711a";
-        } else if (codec == "g711u" || codec == "pcmu") {
-            ext = "g711u";
-        } else if (codec == "pcm" || codec == "pcm16" || codec == "pcm_s16le") {
-            ext = "pcm";
-        }
-
-        char path[256] = {0};
-        snprintf(path,
-                 sizeof(path),
-                 "/mnt/sdcard/gb_broadcast_rx_%llu.%s",
-                 (unsigned long long)GetNowMs(),
-                 ext);
-
-        m_raw_dump_fp = fopen(path, "wb");
-        if (m_raw_dump_fp == NULL) {
-            m_raw_dump_open_failed = true;
-            printf("[GB28181][Broadcast] open raw audio dump failed errno=%d path=%s\n", errno, path);
-            return;
-        }
-
-        m_raw_dump_path = path;
-        printf("[GB28181][Broadcast] raw audio dump start path=%s codec=%s\n",
-               m_raw_dump_path.c_str(),
-               m_param.codec.c_str());
-    }
-
-    if (fwrite(data, 1, size, m_raw_dump_fp) != size) {
-        printf("[GB28181][Broadcast] write raw audio dump failed errno=%d path=%s size=%lu\n",
-               errno,
-               m_raw_dump_path.c_str(),
-               (unsigned long)size);
-        CloseRawAudioDump();
-        m_raw_dump_open_failed = true;
-        return;
-    }
-
-    fflush(m_raw_dump_fp);
 }
 
 int GB28181BroadcastBridge::DecodeToPcm16(const uint8_t* data, size_t size, std::vector<char>& pcmOut)
@@ -920,8 +854,6 @@ int GB28181BroadcastBridge::OnAudioFrame(const uint8_t* data, size_t size, uint6
     if (data == NULL || size == 0) {
         return -2;
     }
-
-    DumpRawAudioFrame(data, size);
 
     int ret = EnsureAudioOutputStarted();
     if (ret != 0) {

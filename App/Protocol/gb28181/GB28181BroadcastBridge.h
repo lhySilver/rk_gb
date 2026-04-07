@@ -1,7 +1,6 @@
 #ifndef __GB28181_BROADCAST_BRIDGE_H__
 #define __GB28181_BROADCAST_BRIDGE_H__
 
-#include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <pthread.h>
@@ -55,8 +54,6 @@ private:
     };
 
     int EnsureAudioOutputStarted();
-    void CloseRawAudioDump();
-    void DumpRawAudioFrame(const uint8_t* data, size_t size);
     int DecodeToPcm16(const uint8_t* data, size_t size, std::vector<char>& pcmOut);
 
     int SetupRecvSocket();
@@ -86,9 +83,6 @@ private:
     std::string m_remote_ip;
     int m_remote_port;
     std::vector<uint8_t> m_tcp_recv_buffer;
-    FILE* m_raw_dump_fp;
-    std::string m_raw_dump_path;
-    bool m_raw_dump_open_failed;
 
     PcmFrameCallback m_pcm_callback;
     void* m_pcm_callback_user;
