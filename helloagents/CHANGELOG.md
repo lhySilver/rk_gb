@@ -79,6 +79,7 @@
 - 为 triage 增加失败状态和空结果状态落盘，统一本地回归与线上排障时的状态语义。
 
 ### 修复
+- 修复 GB28181 广播主动 `INVITE` 和实时预览 TCP 协商里的旧状态/方向错误：广播建链不再复用上一轮广播会话缓存的 transport，实时预览收到 `setup:active` 时设备侧改为回 `tcp-passive`、先监听本地端口并在发流前按需 `accept`，避免广播 `passive/passive` 和预览错误主动 `connect` 导致的 `403`。
 - 修复 GB28181 `Catalog` 查询响应/订阅通知目录项字段长期缺失的问题：`ProtocolManager` 现统一填充 `Name/Manufacturer/Model/Owner/CivilCode/Address/IPAddress/RegisterWay/Parental/Status/Event` 等基础信息，GB28181 XML 打包层也同步把 `CatalogInfo` 中已填字段真实编码进报文，不再把 `Owner/CivilCode/Address/Parental/RegisterWay` 等值丢成空标签或默认值。
 - 修复 GAT1400 keepalive demo 在图片缺失或某一路上报失败时会在后续心跳中持续重试、导致平台看到重复人脸/车辆事件的问题；当前改为每次服务启动后每类 demo 仅尝试一次，不再回退重试计数。
 - 修复 GB28181 TCP RTP/PS 发送在短时回压下因 `EAGAIN/EWOULDBLOCK` 立即停流的问题：`GB28181RtpPsSender` 现会在 `3s` 总窗口内等待 socket 可写后重试，超过窗口或遇到非重试型错误才返回失败。

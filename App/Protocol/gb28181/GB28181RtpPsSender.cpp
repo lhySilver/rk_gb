@@ -106,6 +106,72 @@ static int WaitForSocketWritable(int sockfd, int timeoutMs)
     }
 }
 
+static int WaitForSocketReadable(int sockfd, int timeoutMs)
+{
+    if (sockfd < 0 || timeoutMs < 0) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    const uint64_t deadlineMs = NowMonotonicMilliseconds() + static_cast<uint64_t>(timeoutMs);
+
+    while (true) {
+        const uint64_t nowMs = NowMonotonicMilliseconds();
+        if (nowMs > deadlineMs) {
+            errno = ETIMEDOUT;
+            return -1;
+        }
+
+        fd_set rfds;
+        FD_ZERO(&rfds);
+        FD_SET(sockfd, &rfds);
+
+        const int remainMs = static_cast<int>(deadlineMs - nowMs);
+        struct timeval tv;
+        tv.tv_sec = remainMs / 1000;
+        tv.tv_usec = (remainMs % 1000) * 1000;
+
+        const int ret = select(sockfd + 1, &rfds, NULL, NULL, &tv);
+        if (ret > 0) {
+            return FD_ISSET(sockfd, &rfds) ? 0 : -1;
+        }
+        if (ret == 0) {
+            errno = ETIMEDOUT;
+            return -1;
+        }
+        if (errno == EINTR) {
+            continue;
+        }
+        return -1;
+    }
+}
+
+static bool IsTcpTransport(const std::string& transport)
+{
+    return transport == "tcp" ||
+           transport == "tcp-active" ||
+           transport == "tcp-passive";
+}
+
+static bool IsTcpPassiveTransport(const std::string& transport)
+{
+    return transport == "tcp-passive";
+}
+
+static void SetSocketSendTimeout(int sockfd, int timeoutMs)
+{
+    if (sockfd < 0 || timeoutMs < 0) {
+        return;
+    }
+
+    struct timeval sndTimeout;
+    sndTimeout.tv_sec = timeoutMs / 1000;
+    sndTimeout.tv_usec = (timeoutMs % 1000) * 1000;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &sndTimeout, sizeof(sndTimeout)) != 0) {
+        printf("[GB28181][RtpPs] set SO_SNDTIMEO failed errno=%d sock=%d\n", errno, sockfd);
+    }
+}
+
 static int ConnectTcpWithTimeout(int sockfd, const struct sockaddr_in* remoteAddr, int timeoutMs)
 {
     if (sockfd < 0 || remoteAddr == NULL || timeoutMs <= 0) {
@@ -255,6 +321,7 @@ struct GB28181RtpPsSender::RuntimeState
     } api;
 
     int sockfd;
+    int listen_sockfd;
     bool opened;
 
     struct sockaddr_in remote_addr;
@@ -281,6 +348,7 @@ struct GB28181RtpPsSender::RuntimeState
 
     RuntimeState()
         : sockfd(-1),
+          listen_sockfd(-1),
           opened(false),
           ps_muxer(NULL),
           rtp_encoder(NULL),
@@ -353,13 +421,14 @@ int GB28181RtpPsSender::OpenTransportSocket()
     }
 
     const std::string transport = ToLowerCopy(m_param.transport);
-    const bool isTcp = (transport == "tcp");
+    const bool isTcp = IsTcpTransport(transport);
+    const bool isTcpPassive = IsTcpPassiveTransport(transport);
     if (!isTcp && transport != "udp") {
         printf("[GB28181][RtpPs] unsupported transport=%s\n", m_param.transport.c_str());
         return -2;
     }
 
-    if (m_param.target_ip.empty() || m_param.target_port <= 0) {
+    if (!isTcpPassive && (m_param.target_ip.empty() || m_param.target_port <= 0)) {
         printf("[GB28181][RtpPs] invalid target endpoint %s:%d\n", m_param.target_ip.c_str(), m_param.target_port);
         return -3;
     }
@@ -368,47 +437,64 @@ int GB28181RtpPsSender::OpenTransportSocket()
         close(m_state->sockfd);
         m_state->sockfd = -1;
     }
+    if (m_state->listen_sockfd >= 0) {
+        close(m_state->listen_sockfd);
+        m_state->listen_sockfd = -1;
+    }
     m_state->local_port = 0;
 
     const int sockType = isTcp ? SOCK_STREAM : SOCK_DGRAM;
-    m_state->sockfd = socket(AF_INET, sockType, 0);
-    if (m_state->sockfd < 0) {
+    const int sockfd = socket(AF_INET, sockType, 0);
+    if (sockfd < 0) {
         printf("[GB28181][RtpPs] create %s socket failed errno=%d\n", isTcp ? "tcp" : "udp", errno);
         return -4;
     }
 
     const int reuse = 1;
-    if (setsockopt(m_state->sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) != 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) != 0) {
         printf("[GB28181][RtpPs] set SO_REUSEADDR failed errno=%d\n", errno);
     }
 
-    if (isTcp && m_param.local_port > 0) {
+    if (isTcpPassive || m_param.local_port > 0) {
         struct sockaddr_in localAddr;
         memset(&localAddr, 0, sizeof(localAddr));
         localAddr.sin_family = AF_INET;
-        localAddr.sin_port = htons(static_cast<uint16_t>(m_param.local_port));
+        localAddr.sin_port = htons(static_cast<uint16_t>((m_param.local_port > 0) ? m_param.local_port : 0));
         localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-        if (bind(m_state->sockfd, (const struct sockaddr*)&localAddr, sizeof(localAddr)) != 0) {
+        if (bind(sockfd, (const struct sockaddr*)&localAddr, sizeof(localAddr)) != 0) {
             printf("[GB28181][RtpPs] bind local port failed errno=%d local_port=%d\n",
                    errno,
                    m_param.local_port);
-            close(m_state->sockfd);
-            m_state->sockfd = -1;
+            close(sockfd);
             return -5;
         }
     }
 
     memset(&m_state->remote_addr, 0, sizeof(m_state->remote_addr));
-    m_state->remote_addr.sin_family = AF_INET;
-    m_state->remote_addr.sin_port = htons(static_cast<uint16_t>(m_param.target_port));
-    if (1 != inet_pton(AF_INET, m_param.target_ip.c_str(), &m_state->remote_addr.sin_addr)) {
-        printf("[GB28181][RtpPs] invalid target ip: %s\n", m_param.target_ip.c_str());
-        close(m_state->sockfd);
-        m_state->sockfd = -1;
-        return -6;
+    if (!m_param.target_ip.empty()) {
+        m_state->remote_addr.sin_family = AF_INET;
+        m_state->remote_addr.sin_port = htons(static_cast<uint16_t>(m_param.target_port));
+        if (1 != inet_pton(AF_INET, m_param.target_ip.c_str(), &m_state->remote_addr.sin_addr)) {
+            printf("[GB28181][RtpPs] invalid target ip: %s\n", m_param.target_ip.c_str());
+            close(sockfd);
+            return -6;
+        }
     }
 
-    if (isTcp) {
+    if (isTcpPassive) {
+        if (listen(sockfd, 1) != 0) {
+            printf("[GB28181][RtpPs] tcp passive listen failed errno=%d local_port=%d\n",
+                   errno,
+                   m_param.local_port);
+            close(sockfd);
+            return -7;
+        }
+        m_state->listen_sockfd = sockfd;
+    } else {
+        m_state->sockfd = sockfd;
+    }
+
+    if (isTcp && !isTcpPassive) {
         const int connectTimeoutMs = 3000;
         if (ConnectTcpWithTimeout(m_state->sockfd, &m_state->remote_addr, connectTimeoutMs) != 0) {
             printf("[GB28181][RtpPs] tcp connect failed errno=%d target=%s:%d\n",
@@ -424,18 +510,15 @@ int GB28181RtpPsSender::OpenTransportSocket()
     struct sockaddr_in localAddr;
     socklen_t localAddrLen = sizeof(localAddr);
     memset(&localAddr, 0, sizeof(localAddr));
-    if (getsockname(m_state->sockfd, (struct sockaddr*)&localAddr, &localAddrLen) == 0) {
+    const int localSockfd = (m_state->listen_sockfd >= 0) ? m_state->listen_sockfd : m_state->sockfd;
+    if (getsockname(localSockfd, (struct sockaddr*)&localAddr, &localAddrLen) == 0) {
         m_state->local_port = static_cast<int>(ntohs(localAddr.sin_port));
     } else {
         printf("[GB28181][RtpPs] getsockname failed errno=%d\n", errno);
     }
 
-    const int sendTimeoutMs = 50;
-    struct timeval sndTimeout;
-    sndTimeout.tv_sec = sendTimeoutMs / 1000;
-    sndTimeout.tv_usec = (sendTimeoutMs % 1000) * 1000;
-    if (setsockopt(m_state->sockfd, SOL_SOCKET, SO_SNDTIMEO, &sndTimeout, sizeof(sndTimeout)) != 0) {
-        printf("[GB28181][RtpPs] set SO_SNDTIMEO failed errno=%d\n", errno);
+    if (m_state->sockfd >= 0) {
+        SetSocketSendTimeout(m_state->sockfd, 50);
     }
 
     return 0;
@@ -553,6 +636,10 @@ void GB28181RtpPsSender::CloseSession()
     if (m_state->sockfd >= 0) {
         close(m_state->sockfd);
         m_state->sockfd = -1;
+    }
+    if (m_state->listen_sockfd >= 0) {
+        close(m_state->listen_sockfd);
+        m_state->listen_sockfd = -1;
     }
     m_state->local_port = 0;
 
@@ -724,11 +811,46 @@ int GB28181RtpPsSender::OnRtpPacket(const void* packet, int bytes, uint32_t time
     (void)timestamp;
     (void)flags;
 
-    if (m_state == NULL || m_state->sockfd < 0 || packet == NULL || bytes <= 0) {
+    if (m_state == NULL || !m_state->opened || packet == NULL || bytes <= 0) {
         return -1;
     }
 
-    const bool isTcp = (ToLowerCopy(m_param.transport) == "tcp");
+    const std::string transport = ToLowerCopy(m_param.transport);
+    const bool isTcp = IsTcpTransport(transport);
+    const bool isTcpPassive = IsTcpPassiveTransport(transport);
+    if (isTcpPassive && m_state->sockfd < 0 && m_state->listen_sockfd >= 0) {
+        if (WaitForSocketReadable(m_state->listen_sockfd, 20) == 0) {
+            struct sockaddr_in remoteAddr;
+            socklen_t remoteAddrLen = sizeof(remoteAddr);
+            memset(&remoteAddr, 0, sizeof(remoteAddr));
+            const int clientSockfd = accept(m_state->listen_sockfd,
+                                            (struct sockaddr*)&remoteAddr,
+                                            &remoteAddrLen);
+            if (clientSockfd >= 0) {
+                SetSocketSendTimeout(clientSockfd, 50);
+                m_state->sockfd = clientSockfd;
+
+                char remoteIp[INET_ADDRSTRLEN] = {0};
+                inet_ntop(AF_INET, &remoteAddr.sin_addr, remoteIp, sizeof(remoteIp));
+                printf("[GB28181][RtpPs] tcp passive accept remote=%s:%d local_port=%d\n",
+                       remoteIp,
+                       ntohs(remoteAddr.sin_port),
+                       m_state->local_port);
+            } else if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+                printf("[GB28181][RtpPs] tcp passive accept failed errno=%d local_port=%d\n",
+                       errno,
+                       m_state->local_port);
+            }
+        }
+        if (m_state->sockfd < 0) {
+            return 0;
+        }
+    }
+
+    if (m_state->sockfd < 0) {
+        return -1;
+    }
+
     if (isTcp) {
         std::vector<uint8_t> framed(static_cast<size_t>(bytes) + 2U);
         framed[0] = static_cast<uint8_t>((bytes >> 8) & 0xFF);

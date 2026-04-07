@@ -6540,35 +6540,15 @@ int ProtocolManager::BuildGbBroadcastMediaInfo(const std::string& localIp,
 
 
 
-    std::string remoteIp;
+    std::string codec = NormalizeCodec(m_cfg.gb_broadcast.codec);
 
-    int remotePort = 0;
+    int payloadType = ResolvePayloadTypeByCodec(codec);
 
-    int payloadType = -1;
+    int localRecvPort = m_cfg.gb_broadcast.recv_port;
 
-    std::string codec;
-
-    int localRecvPort = 0;
-
-    int transportType = kRtpOverUdp;
-
-
-
-    int ret = m_broadcast.GetNegotiatedTransport(remoteIp, remotePort, payloadType, codec, localRecvPort, transportType);
-
-    if (ret != 0) {
-
-        codec = NormalizeCodec(m_cfg.gb_broadcast.codec);
-
-        payloadType = ResolvePayloadTypeByCodec(codec);
-
-        localRecvPort = m_cfg.gb_broadcast.recv_port;
-
-        const std::string& broadcastTransport = m_cfg.gb_broadcast.transport;
-
-        transportType = (ToLowerCopy(broadcastTransport) == "tcp") ? kRtpOverTcpActive : kRtpOverUdp;
-
-    }
+    int transportType = (ToLowerCopy(m_cfg.gb_broadcast.transport) == "tcp")
+                            ? kRtpOverTcpActive
+                            : kRtpOverUdp;
 
 
 
@@ -10923,8 +10903,15 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
     runtimeParam.local_port = 0;
     runtimeParam.video_stream_id = (requestedStreamNum > 0) ? "sub" : "main";
 
-    runtimeParam.transport = (input->RtpType == kRtpOverUdp) ? "udp" : "tcp";
-    if (runtimeParam.transport == "tcp" && m_cfg.gb_live.local_port > 0) {
+    const NetTransType answerTransport = ResolveGbAnswerTransportType(input->RtpType, m_cfg.gb_live.transport);
+    if (answerTransport == kRtpOverUdp) {
+        runtimeParam.transport = "udp";
+    } else if (answerTransport == kRtpOverTcpPassive) {
+        runtimeParam.transport = "tcp-passive";
+    } else {
+        runtimeParam.transport = "tcp-active";
+    }
+    if (runtimeParam.transport != "udp" && m_cfg.gb_live.local_port > 0) {
         runtimeParam.local_port = m_cfg.gb_live.local_port;
     }
     runtimeParam.ssrc = (m_cfg.gb_live.ssrc > 0)
@@ -10982,7 +10969,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
 
 
-    if (requestType == kLiveStream && runtimeParam.transport == "tcp") {
+    if (requestType == kLiveStream && runtimeParam.transport != "udp") {
         ret = runtime->sender.OpenSession();
         if (ret != 0) {
             printf("[ProtocolManager] gb %s stream sender open failed ret=%d gb=%s remote=%s:%d\n",
@@ -11198,7 +11185,9 @@ int ProtocolManager::BuildGbResponseMediaInfo(const char* gbCode,
 
         }
 
-        if (out.RtpType == kRtpOverTcpActive || out.RtpType == kRtpOverTcp) {
+        if (out.RtpType == kRtpOverTcpActive ||
+            out.RtpType == kRtpOverTcpPassive ||
+            out.RtpType == kRtpOverTcp) {
             if (runtime != NULL && runtime->current_port > 0) {
                 resolvedPort = static_cast<unsigned int>(runtime->current_port);
             } else if (m_cfg.gb_live.local_port > 0) {
