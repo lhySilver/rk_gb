@@ -218,6 +218,15 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     return param;
 }
 
+protocol::GbZeroConfigParam BuildDefaultGbZeroConfigParam()
+{
+    protocol::GbZeroConfigParam param;
+    const protocol::GbRegisterParam defaults = BuildDefaultGbRegisterParam();
+    param.string_code = defaults.string_code;
+    param.mac_address = defaults.mac_address;
+    return param;
+}
+
 protocol::GatRegisterParam BuildDefaultGatRegisterParam()
 {
     protocol::GatRegisterParam param;
@@ -243,6 +252,12 @@ void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const prot
     target = source;
     target.enabled = (source.enabled != 0) ? 1 : 0;
     target.register_mode = protocol::NormalizeGbRegisterMode(source.register_mode);
+}
+
+void ApplyGbZeroConfigEditableFields(protocol::GbRegisterParam& target, const protocol::GbZeroConfigParam& source)
+{
+    target.string_code = source.string_code;
+    target.mac_address = source.mac_address;
 }
 
 int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
@@ -416,12 +431,6 @@ bool LoadGbZeroConfigFromFile(const char* path, protocol::GbRegisterParam& out)
     bool loaded = false;
     loaded = ReadIniString(ini, kLocalZeroConfigSection, "string_code", path, out.string_code) || loaded;
     loaded = ReadIniString(ini, kLocalZeroConfigSection, "mac_address", path, out.mac_address) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "line_id", path, out.line_id) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "redirect_domain", path, out.redirect_domain) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "redirect_server_id", path, out.redirect_server_id) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "custom_protocol_version", path, out.custom_protocol_version) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "manufacturer", path, out.manufacturer) || loaded;
-    loaded = ReadIniString(ini, kLocalZeroConfigSection, "model", path, out.model) || loaded;
     NormalizeGbRegisterConfig(out);
     return loaded;
 }
@@ -523,12 +532,6 @@ int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
     fprintf(fp, "[%s]\n", kLocalZeroConfigSection);
     fprintf(fp, "string_code=%s\n", normalized.string_code.c_str());
     fprintf(fp, "mac_address=%s\n", normalized.mac_address.c_str());
-    fprintf(fp, "line_id=%s\n", normalized.line_id.c_str());
-    fprintf(fp, "redirect_domain=%s\n", normalized.redirect_domain.c_str());
-    fprintf(fp, "redirect_server_id=%s\n", normalized.redirect_server_id.c_str());
-    fprintf(fp, "custom_protocol_version=%s\n", normalized.custom_protocol_version.c_str());
-    fprintf(fp, "manufacturer=%s\n", normalized.manufacturer.c_str());
-    fprintf(fp, "model=%s\n", normalized.model.c_str());
 
     const int flushRet = fflush(fp);
     const int closeRet = fclose(fp);
@@ -659,6 +662,25 @@ GbRegisterParam LocalConfigProvider::BuildDefaultGbRegisterConfig()
     return BuildDefaultGbRegisterParam();
 }
 
+GbZeroConfigParam LocalConfigProvider::BuildDefaultGbZeroConfig()
+{
+    return BuildDefaultGbZeroConfigParam();
+}
+
+int LocalConfigProvider::LoadGbZeroConfig(GbZeroConfigParam& out)
+{
+    out = BuildDefaultGbZeroConfig();
+
+    GbRegisterParam loaded = BuildDefaultGbRegisterConfig();
+    if (LoadExistingGbZeroConfig(loaded) != kLocalConfigLoadCurrent) {
+        return -1;
+    }
+
+    out.string_code = loaded.string_code;
+    out.mac_address = loaded.mac_address;
+    return 0;
+}
+
 int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
 {
     out = BuildDefaultGbRegisterConfig();
@@ -694,6 +716,21 @@ int LocalConfigProvider::UpdateGbRegisterConfig(const GbRegisterParam& param)
     const int saveGbRet = SaveLocalGbConfigFile(next);
     if (saveGbRet != 0) {
         return saveGbRet;
+    }
+
+    return SaveLocalGbZeroConfigFile(next);
+}
+
+int LocalConfigProvider::UpdateGbZeroConfig(const GbZeroConfigParam& param)
+{
+    GbRegisterParam next = BuildDefaultGbRegisterConfig();
+    LoadExistingGbRegisterConfig(next);
+    LoadExistingGbZeroConfig(next);
+    ApplyGbZeroConfigEditableFields(next, param);
+    NormalizeGbRegisterConfig(next);
+    const int check = ValidateGbRegisterEditableFields(next);
+    if (check != 0) {
+        return check;
     }
 
     return SaveLocalGbZeroConfigFile(next);

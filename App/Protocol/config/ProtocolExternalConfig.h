@@ -11,6 +11,12 @@ namespace protocol
 static const char* const kGbRegisterModeStandard = "standard";
 static const char* const kGbRegisterModeZeroConfig = "zero_config";
 
+struct GbZeroConfigParam
+{
+    std::string string_code;
+    std::string mac_address;
+};
+
 struct GbRegisterParam
 {
     int enabled;

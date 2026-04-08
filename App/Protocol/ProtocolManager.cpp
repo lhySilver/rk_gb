@@ -6087,6 +6087,41 @@ bool ProtocolManager::GetGbOnlineStatus() const
     return m_gb_client_registered;
 }
 
+int ProtocolManager::SetGbZeroConfig(const GbZeroConfigParam& param)
+{
+    printf("[ProtocolManager] module=config event=gb_zero_config_set_start trace=manager error=0 started=%d\n",
+           m_started ? 1 : 0);
+
+    const int persistRet = LocalConfigProvider::UpdateGbZeroConfig(param);
+    if (persistRet != 0) {
+        printf("[ProtocolManager] module=config event=gb_zero_config_set_fail trace=manager error=%d stage=persist started=%d\n",
+               persistRet,
+               m_started ? 1 : 0);
+        return persistRet;
+    }
+
+    GbZeroConfigParam latest = LocalConfigProvider::BuildDefaultGbZeroConfig();
+    const int loadRet = LocalConfigProvider::LoadGbZeroConfig(latest);
+    printf("[ProtocolManager] module=config event=gb_zero_config_set_success trace=manager error=%d stage=persist started=%d string=%s mac=%s\n",
+           loadRet,
+           m_started ? 1 : 0,
+           latest.string_code.c_str(),
+           latest.mac_address.c_str());
+    return 0;
+}
+
+GbZeroConfigParam ProtocolManager::GetGbZeroConfig() const
+{
+    GbZeroConfigParam latest = LocalConfigProvider::BuildDefaultGbZeroConfig();
+    const int ret = LocalConfigProvider::LoadGbZeroConfig(latest);
+    if (ret != 0) {
+        printf("[ProtocolManager] module=config event=gb_zero_config_get_default trace=manager error=%d started=%d\n",
+               ret,
+               m_started ? 1 : 0);
+    }
+    return latest;
+}
+
 int ProtocolManager::SetGbRegisterConfig(const GbRegisterParam& param)
 {
     printf("[ProtocolManager] module=config event=gb_register_set_start trace=manager error=0 started=%d\n",

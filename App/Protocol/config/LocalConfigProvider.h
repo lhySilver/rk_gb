@@ -18,6 +18,9 @@ public:
     int Validate(const ProtocolExternalConfig& cfg);
 
     static GbRegisterParam BuildDefaultGbRegisterConfig();
+    static GbZeroConfigParam BuildDefaultGbZeroConfig();
+    static int LoadGbZeroConfig(GbZeroConfigParam& out);
+    static int UpdateGbZeroConfig(const GbZeroConfigParam& param);
     static int LoadOrCreateGbRegisterConfig(GbRegisterParam& out);
     static int UpdateGbRegisterConfig(const GbRegisterParam& param);
     static GatRegisterParam BuildDefaultGatRegisterConfig();

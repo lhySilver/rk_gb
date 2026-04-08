@@ -23,16 +23,23 @@
 #### `SetGbRegisterConfig()`
 **描述:** 只写入 GB28181 注册配置到 flash，不直接修改运行中的 GB 注册生命周期。
 
+#### `GetGbZeroConfig()`
+**描述:** 从 `/userdata/conf/Config/GB/zero_config.ini` 读取零配置入口参数；文件缺失时回落代码默认值，不依赖 `ProtocolManager` 当前缓存。
+
+#### `SetGbZeroConfig()`
+**描述:** 只写入零配置入口参数到 flash，不直接修改运行中的 GB 注册生命周期。
+
 #### `RestartGbRegisterService()`
 **描述:** 从 flash 重新读取 GB28181 注册配置，并按当前运行状态与 `enabled` 决定只刷新缓存、停止 GB 服务或重新启动注册生命周期。
 
 **当前约束:**
 - 当前 `gb28181.ini` 仅持久化 `enabled`、`register_mode`、`username`、`server_ip`、`server_port`、`device_id`、`password` 7 个注册字段，其中 `register_mode` 取值为 `standard` 或 `zero_config`
-- 零配置字段 `string_code`、`mac_address`、`line_id`、`redirect_domain`、`redirect_server_id`、`custom_protocol_version`、`manufacturer`、`model` 独立持久化到 `zero_config.ini`
+- 零配置文件 `zero_config.ini` 当前只持久化 `string_code`、`mac_address`；`line_id`、`redirect_domain`、`redirect_server_id`、`custom_protocol_version`、`manufacturer`、`model` 统一走代码默认值
 - 上述两个 `ini` 只保存零配置首次接入所需的本地入口参数；运行期 `302` 返回的正式平台 `ServerIp/ServerPort/ServerDomain/ServerId/deviceId` 只保存在 SDK 内存，不会通过这些接口回写 flash
 - 当 `register_mode=zero_config` 且 `zero_config.ini` 缺失时，flash 读取链路会记录错误日志；其中 `RestartGbRegisterService()` 与 `ProtocolManager::Init()/Start()` 会返回错误，`GetGbRegisterConfig()` 则会保留当前“记录日志后回落默认结构”的接口语义
 - `device_name`、`expires_sec`、`gb_talk`、`gb_broadcast`、`gb_upgrade`、`gat_*` 等其他协议项不再写入本地 `ini`
 - `SetGbRegisterConfig()` 成功仅表示 flash 落盘成功；运行中如需生效，需再显式调用 `RestartGbRegisterService()`
+- `SetGbZeroConfig()` 成功仅表示 flash 落盘成功；运行中如需让新值参与注册，也需再显式调用 `RestartGbRegisterService()`
 - `RestartGbRegisterService()` 在 `ProtocolManager` 未启动时只刷新缓存；已启动时会结合当前生命周期状态和 `enabled` 决定是否停/启 GB 服务
 - 当 `RestartGbRegisterService()` 触发 GB 生命周期重启时，`GBClientImpl::Stop()` 会清空内存中的正式平台注册目标；后续再次注册会基于 flash 中的入口参数重新向重定向服务器获取
 - `ProtocolManager::Start()` 前会先执行一次 `ReloadExternalConfig()`，保证 `Init()` 之后、`Start()` 之前写入 flash 的配置不会被旧缓存覆盖

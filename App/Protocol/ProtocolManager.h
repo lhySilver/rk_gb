@@ -100,6 +100,8 @@ public:
     const ProtocolExternalConfig& GetConfig() const;
     bool GetGbOnlineStatus() const;
 
+    int SetGbZeroConfig(const GbZeroConfigParam& param);
+    GbZeroConfigParam GetGbZeroConfig() const;
     int SetGbRegisterConfig(const GbRegisterParam& param);
     GbRegisterParam GetGbRegisterConfig() const;
     int RestartGbRegisterService();
@@ -734,7 +736,6 @@ private:
 
 
 #endif
-
 
 
 
