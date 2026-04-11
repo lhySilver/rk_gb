@@ -2083,6 +2083,7 @@ bool CGB28181XmlParser::UnPackAlarmResetControl(const std::string &xml_str, int&
         return false;
     }
 
+    sn = control.SN;
     if( m_version == kGB2016Version && control.xml_has_Info()) {
          GBUtil::memcpy_safe(cmd.control_param.alarm_reset_cmd.AlarmMethod, STR_LEN, control.Info.AlarmMethod   );
          GBUtil::memcpy_safe(cmd.control_param.alarm_reset_cmd.AlarmType, STR_LEN, control.Info.AlarmType   );
@@ -2109,7 +2110,8 @@ bool CGB28181XmlParser::UnPackGurdControl(const std::string &xml_str, int& sn , 
     if (!slothxml::decode(xml_str, "Control", control)) {
         return false;
     }
-     GBUtil::memcpy_safe( cmd.GBCode, GB_ID_LEN,   control.DeviceID  );
+    sn = control.SN;
+    GBUtil::memcpy_safe( cmd.GBCode, GB_ID_LEN,   control.DeviceID  );
     if(  control.GuardCmd == "SetGuard" ){
           cmd.control_param.gurd_cmd = true;
     }
@@ -2140,6 +2142,7 @@ bool CGB28181XmlParser::UnPackRecordControl(const std::string &xml_str, int& sn 
     if (!slothxml::decode(xml_str, "Control", control)) {
         return false;
     }
+    sn = control.SN;
     GBUtil::memcpy_safe( cmd.GBCode, GB_ID_LEN,   control.DeviceID  );
     if(  control.RecordCmd == "Record" ){
          cmd.control_param.record_cmd = true;
@@ -2188,6 +2191,7 @@ bool CGB28181XmlParser::UnPackZoomControl(const std::string &xml_str, int& sn , 
     if (!slothxml::decode(xml_str, "Control", control)) {
         return false;
     }
+    sn = control.SN;
     GBUtil::memcpy_safe(cmd.GBCode ,GB_ID_LEN,  control.DeviceID  );
 
     slothxml::drag_t  drag;
@@ -2532,6 +2536,7 @@ bool CGB28181XmlParser::UnPackKeyFrameControl(const std::string &xml_str, int& s
     if (!slothxml::decode(xml_str, "Control", control)) {
         return false;
     }
+    sn = control.SN;
     GBUtil::memcpy_safe(cmd.GBCode ,GB_ID_LEN, control.DeviceID  );
     return true;
 }
@@ -2557,6 +2562,7 @@ bool CGB28181XmlParser::UnPackHomePositionControl(const std::string &xml_str, in
       if (!slothxml::decode(xml_str, "Control", control)) {
           return false;
       }
+      sn = control.SN;
       GBUtil::memcpy_safe(cmd.GBCode ,GB_ID_LEN, control.DeviceID  );
       cmd.control_param.homeposition_cmd.enable = control.HomePosition.Enabled;
       cmd.control_param.homeposition_cmd.presetIndex = control.HomePosition.PresetIndex;
