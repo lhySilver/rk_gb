@@ -10,7 +10,6 @@
 #include <thread>
 #include <vector>
 
-#include "GAT1400CaptureControl.h"
 #include "ProtocolExternalConfig.h"
 #define ConnectParam GAT1400ConnectParam
 #include "CMS1400Struct.h"
@@ -86,8 +85,9 @@ public:
     int PostSubscribeNotifications(const std::list<GAT_1400_Subscribe_Notification>& notificationList,
                                    const std::string& url);
     int PostApes(const std::list<GAT_1400_Ape>& apeList);
-    int NotifyCaptureEvent(const media::GAT1400CaptureEvent& event);
-
+    int NotifyFaces(const std::list<GAT_1400_Face>& faceList);
+    int NotifyMotorVehicles(const std::list<GAT_1400_Motor>& motorList);
+    int NotifyNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList);
     std::list<GAT_1400_Subscribe> GetSubscriptions() const;
     int PostJsonWithResponseList(const char* action,
                                  const char* path,
@@ -140,10 +140,6 @@ private:
     void ClearPendingUploadsLocked();
     int ReplayPendingUploads();
     int ReplayPendingUploadsIfDue();
-    int DrainPendingCaptureEvents();
-    int PostCaptureEvent(const media::GAT1400CaptureEvent& event);
-    int SendKeepaliveDemoFaceResource(const std::string& deviceId);
-    int SendKeepaliveDemoMotorVehicleResource(const std::string& deviceId);
 
     int SnapshotConfig(ProtocolExternalConfig& cfg, std::string& deviceId) const;
     void UpdateRegistState(regist_state state);
@@ -170,9 +166,6 @@ private:
     std::list<PendingUploadItem> m_pending_uploads;
     unsigned long long m_pending_seq;
     time_t m_last_replay_time;
-    std::mutex m_capture_upload_mutex;
-    std::atomic<bool> m_keepalive_demo_face_sent;
-    std::atomic<bool> m_keepalive_demo_motor_sent;
 
     mutable std::mutex m_observer_mutex;
     std::vector<CLower1400SubscribeObserver*> m_subscribe_observers;

@@ -30,6 +30,7 @@
 - 新增 `GetGbZeroConfig()` / `SetGbZeroConfig()`；只负责零配置入口的 `string_code`、`mac_address` flash 读写，不直接修改运行中的 GB 注册生命周期。
 - 新增 `RestartGbRegisterService()` 作为单独的 GB 服务重载入口；它会从 flash 重新读取注册配置，并根据 `ProtocolManager` 当前是否已启动、GB 生命周期是否正在运行以及 `enabled` 新值决定只刷新缓存、停服或重启注册。
 - 新增 `GetGatRegisterConfig()` / `SetGatRegisterConfig()` / `RestartGatRegisterService()`；语义与 GB 接口保持一致，分别负责“只读 flash”“只写 flash”和“显式把 `gat1400.ini` 重载到运行态”。
+- `ProtocolManager` 当前只保留 `NotifyGatFaces()` / `NotifyGatMotorVehicles()` / `NotifyGatNonMotorVehicles()` 3 个 1400 对外上报入口，供外部模块直接上报人脸、机动车、非机动车；若 1400 未注册，则直接落现有失败补传队列。旧的 `NotifyGatAlarm()`、keepalive demo 和 `GAT1400CaptureEvent/GAT1400CaptureControl` 抓拍桥接链路均已移除。
 - `ProtocolManager::Start()` 在真正拉起 RTP/广播/监听/注册链路前，会先执行一次 `ReloadExternalConfig()`，确保 `Init()` 之后、`Start()` 之前通过 `SetGbRegisterConfig()` 落盘的新值会被带入运行态。
 - `StartGbClientLifecycle()` 当前固定以本地端口 `0` 启动 GB28181 SIP 客户端，由内核分配随机本地监听端口；`gb_register.server_port` 只保留远端平台 SIP 端口语义，不再复用为本地绑定端口。
 - `SipEventManager` 在随机端口场景下会先用临时 socket `bind(0)` 获取一个可用端口，再用该端口走现有 `eXosip_listen_addr()` 建立正式监听，并把实际端口回写到 `ClientInfo.LocalPort`，保证 `REGISTER` / `MESSAGE` / `INVITE` 的 `From/Contact` 与真实监听端口一致。

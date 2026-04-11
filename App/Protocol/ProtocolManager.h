@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include <list>
+
 #include <mutex>
 
 #include <stddef.h>
@@ -37,13 +39,11 @@
 #include "Storage_api.h"
 #include "config/ProtocolExternalConfig.h"
 
-
+#define ConnectParam GAT1400ConnectParam
+#include "CMS1400Struct.h"
+#undef ConnectParam
 
 class GB28181ClientSDK;
-namespace media
-{
-struct GAT1400CaptureEvent;
-}
 
 namespace protocol
 {
@@ -161,7 +161,9 @@ public:
     int NotifyGbCatalog(const char* gbCode);
 
     int NotifyGbAlarm(AlarmNotifyInfo* info);
-    int NotifyGatAlarm(const media::GAT1400CaptureEvent* event);
+    int NotifyGatFaces(const std::list<GAT_1400_Face>& faceList);
+    int NotifyGatMotorVehicles(const std::list<GAT_1400_Motor>& motorList);
+    int NotifyGatNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList);
 
     int NotifyGbMobilePosition(const MobilePositionInfo* info);
 
@@ -744,8 +746,6 @@ private:
 
 
 #endif
-
-
 
 
 

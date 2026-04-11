@@ -1,8 +1,6 @@
 ﻿#include "GAT1400ClientService.h"
 #include "ProtocolManager.h"
 #include "ProtocolLog.h"
-#include "Base64Coder.h"
-
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cerrno>
@@ -42,16 +40,6 @@ static const char* kResponseKindList = "list";
 static const char* kResponseKindStatus = "status";
 static const int kClientErrorUnsupportedUri = -6;
 static const int kClientErrorApePostCompatDisabled = -7;
-static const char* kKeepaliveDemoFaceSceneImagePath = "/mnt/sdcard/test.jpeg";
-static const char* kKeepaliveDemoFaceImagePath = "/mnt/sdcard/face.jpeg";
-static const char* kKeepaliveDemoMotorSceneImagePath = "/mnt/sdcard/test2.jpeg";
-static const char* kKeepaliveDemoMotorImagePath = "/mnt/sdcard/motor.jpeg";
-static const int kKeepaliveDemoSceneWidth = 1920;
-static const int kKeepaliveDemoSceneHeight = 1080;
-static const int kKeepaliveDemoFaceImageWidth = 336;
-static const int kKeepaliveDemoFaceImageHeight = 676;
-static const int kKeepaliveDemoMotorImageWidth = 800;
-static const int kKeepaliveDemoMotorImageHeight = 600;
 
 struct RequestTarget
 {
@@ -154,78 +142,6 @@ std::string FormatCurrentTimeWithMilliseconds()
 bool IsEmptyCString(const char* value)
 {
     return value == NULL || value[0] == '\0';
-}
-
-bool ResolveCaptureSourceId(const media::GAT1400CaptureEvent& event, std::string& sourceId)
-{
-    if (!event.image_list.empty() && !IsEmptyCString(event.image_list.front().ImageInfo.ImageID)) {
-        sourceId = event.image_list.front().ImageInfo.ImageID;
-        return true;
-    }
-    if (!event.video_slice_list.empty() && !IsEmptyCString(event.video_slice_list.front().VideoSliceInfo.VideoID)) {
-        sourceId = event.video_slice_list.front().VideoSliceInfo.VideoID;
-        return true;
-    }
-    if (!event.file_list.empty() && !IsEmptyCString(event.file_list.front().FileInfo.FileID)) {
-        sourceId = event.file_list.front().FileInfo.FileID;
-        return true;
-    }
-    return false;
-}
-
-bool ResolveCaptureDeviceId(const media::GAT1400CaptureEvent& event, std::string& deviceId)
-{
-    if (!event.image_list.empty() && !IsEmptyCString(event.image_list.front().ImageInfo.DeviceID)) {
-        deviceId = event.image_list.front().ImageInfo.DeviceID;
-        return true;
-    }
-    if (!event.video_slice_list.empty() && !IsEmptyCString(event.video_slice_list.front().VideoSliceInfo.DeviceID)) {
-        deviceId = event.video_slice_list.front().VideoSliceInfo.DeviceID;
-        return true;
-    }
-    return false;
-}
-
-void BindFaceCaptureIfNeeded(const GAT_1400_Face& face, GAT_1400_ImageSet& imageSet)
-{
-    if (imageSet.FaceList.empty()) {
-        imageSet.FaceList.push_back(face);
-    }
-}
-
-void BindFaceCaptureIfNeeded(const GAT_1400_Face& face, GAT_1400_VideoSliceSet& videoSliceSet)
-{
-    if (videoSliceSet.FaceList.empty()) {
-        videoSliceSet.FaceList.push_back(face);
-    }
-}
-
-void BindFaceCaptureIfNeeded(const GAT_1400_Face& face, GAT_1400_FileSet& fileSet)
-{
-    if (fileSet.FaceList.empty()) {
-        fileSet.FaceList.push_back(face);
-    }
-}
-
-void BindMotorCaptureIfNeeded(const GAT_1400_Motor& motorVehicle, GAT_1400_ImageSet& imageSet)
-{
-    if (imageSet.MotorVehicleList.empty()) {
-        imageSet.MotorVehicleList.push_back(motorVehicle);
-    }
-}
-
-void BindMotorCaptureIfNeeded(const GAT_1400_Motor& motorVehicle, GAT_1400_VideoSliceSet& videoSliceSet)
-{
-    if (videoSliceSet.MotorVehicleList.empty()) {
-        videoSliceSet.MotorVehicleList.push_back(motorVehicle);
-    }
-}
-
-void BindMotorCaptureIfNeeded(const GAT_1400_Motor& motorVehicle, GAT_1400_FileSet& fileSet)
-{
-    if (fileSet.MotorVehicleList.empty()) {
-        fileSet.MotorVehicleList.push_back(motorVehicle);
-    }
 }
 
 bool ParseCompactTime(const char* text, time_t& out)
@@ -533,30 +449,6 @@ bool ReadFileText(const std::string& path, std::string& out)
     return ok;
 }
 
-bool ReadFileBase64(const char* path, std::string& raw, std::string& encoded)
-{
-    raw.clear();
-    encoded.clear();
-    if (path == NULL || !ReadFileText(path, raw) || raw.empty()) {
-        return false;
-    }
-    return CBase64Coder::Encode(reinterpret_cast<const unsigned char*>(raw.data()),
-                                static_cast<unsigned long>(raw.size()),
-                                encoded);
-}
-
-bool TryMarkKeepaliveDemoSent(std::atomic<bool>& sentFlag)
-{
-    bool expected = false;
-    return sentFlag.compare_exchange_strong(expected, true);
-}
-
-bool ReadFileBase64Data(const char* path, std::string& encoded)
-{
-    std::string raw;
-    return ReadFileBase64(path, raw, encoded);
-}
-
 bool ParseResponseStatusListCompat(const std::string& body,
                                    std::list<GAT1400_RESPONSESTATUS_ST>& responseList)
 {
@@ -572,23 +464,6 @@ bool ParseResponseStatusListCompat(const std::string& body,
 
     responseList.push_back(responseStatus);
     return true;
-}
-
-bool HasKeepaliveDemoMarker(const std::string& text)
-{
-    return text.find("FACEDEMO_") != std::string::npos ||
-           text.find("MOTORDEMO_") != std::string::npos ||
-           text.find("IMGSCENEFACEDEMO_") != std::string::npos ||
-           text.find("IMGCROPFACEDEMO_") != std::string::npos ||
-           text.find("IMGSCENEMOTORDEMO_") != std::string::npos ||
-           text.find("IMGVIEWMOTORDEMO_") != std::string::npos;
-}
-
-bool IsKeepaliveDemoPendingUpload(const GAT1400ClientService::PendingUploadItem& item)
-{
-    return HasKeepaliveDemoMarker(item.object_id) ||
-           HasKeepaliveDemoMarker(item.path) ||
-           HasKeepaliveDemoMarker(item.body);
 }
 
 std::list<GAT_1400_VideoSliceSet> BuildVideoSliceMetadataBatch(const std::list<GAT_1400_VideoSliceSet>& batch)
@@ -1132,9 +1007,7 @@ GAT1400ClientService::GAT1400ClientService()
       m_server_running(false),
       m_heartbeat_running(false),
       m_pending_seq(0),
-      m_last_replay_time(0),
-      m_keepalive_demo_face_sent(false),
-      m_keepalive_demo_motor_sent(false)
+      m_last_replay_time(0)
 {
 }
 
@@ -1758,10 +1631,6 @@ int GAT1400ClientService::EnqueuePendingUpload(const char* action,
         item.enqueue_time = time(NULL);
         item.persist_path = JoinFilePath(cfg.gat_upload.queue_dir, item.id);
 
-        if (IsKeepaliveDemoPendingUpload(item)) {
-            return 0;
-        }
-
         if (!WriteFileText(item.persist_path, SerializePendingUpload(item))) {
             return -3;
         }
@@ -1811,10 +1680,6 @@ void GAT1400ClientService::LoadPendingUploadsLocked(const ProtocolExternalConfig
         PendingUploadItem item;
         const std::string filePath = JoinFilePath(cfg.gat_upload.queue_dir, fileName);
         if (!ReadPendingUploadFile(filePath, item)) {
-            RemoveFileIfExists(filePath);
-            continue;
-        }
-        if (IsKeepaliveDemoPendingUpload(item)) {
             RemoveFileIfExists(filePath);
             continue;
         }
@@ -1879,20 +1744,6 @@ int GAT1400ClientService::ReplayPendingUploads()
     int droppedCount = 0;
     for (std::list<PendingUploadItem>::const_iterator itemIt = replayItems.begin(); itemIt != replayItems.end(); ++itemIt) {
         const PendingUploadItem& pending = *itemIt;
-        if (IsKeepaliveDemoPendingUpload(pending)) {
-            std::lock_guard<std::mutex> lock(m_pending_mutex);
-            std::list<PendingUploadItem>::iterator current = std::find_if(
-                m_pending_uploads.begin(),
-                m_pending_uploads.end(),
-                [&](const PendingUploadItem& item) { return item.id == pending.id; });
-            if (current != m_pending_uploads.end()) {
-                RemoveFileIfExists(current->persist_path);
-                m_pending_uploads.erase(current);
-                ++droppedCount;
-            }
-            continue;
-        }
-
         bool success = false;
         int finalRet = 0;
         int attemptsUsed = 0;
@@ -2082,318 +1933,106 @@ int GAT1400ClientService::PostJsonWithResponseList(const char* action,
     return finalRet;
 }
 
-int GAT1400ClientService::PostCaptureEvent(const media::GAT1400CaptureEvent& event)
+int GAT1400ClientService::NotifyFaces(const std::list<GAT_1400_Face>& faceList)
 {
-    std::lock_guard<std::mutex> lock(m_capture_upload_mutex);
-
-    std::string sourceId;
-    std::string deviceId;
-    (void)ResolveCaptureSourceId(event, sourceId);
-    (void)ResolveCaptureDeviceId(event, deviceId);
-
-    GAT_1400_Face face = event.face;
-    if (event.object_type == media::GAT1400_CAPTURE_OBJECT_FACE) {
-        if (IsEmptyCString(face.SourceID) && !sourceId.empty()) {
-            CopyToArray(face.SourceID, sizeof(face.SourceID), sourceId);
-        }
-        if (IsEmptyCString(face.DeviceID) && !deviceId.empty()) {
-            CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
-        }
-
-        std::list<GAT_1400_Face> faceList;
-        faceList.push_back(face);
-        const int ret = PostFaces(faceList);
-        if (ret != 0) {
-            return ret;
-        }
+    if (faceList.empty()) {
+        return 0;
     }
 
-    GAT_1400_Motor motorVehicle = event.motor_vehicle;
-    if (event.object_type == media::GAT1400_CAPTURE_OBJECT_MOTOR_VEHICLE) {
-        if (IsEmptyCString(motorVehicle.SourceID) && !sourceId.empty()) {
-            CopyToArray(motorVehicle.SourceID, sizeof(motorVehicle.SourceID), sourceId);
-        }
-        if (IsEmptyCString(motorVehicle.DeviceID) && !deviceId.empty()) {
-            CopyToArray(motorVehicle.DeviceID, sizeof(motorVehicle.DeviceID), deviceId);
-        }
-
-        std::list<GAT_1400_Motor> motorList;
-        motorList.push_back(motorVehicle);
-        const int ret = PostMotorVehicles(motorList);
-        if (ret != 0) {
-            return ret;
-        }
-    }
-
-    if (!event.image_list.empty()) {
-        std::list<GAT_1400_ImageSet> imageList = event.image_list;
-        for (std::list<GAT_1400_ImageSet>::iterator it = imageList.begin(); it != imageList.end(); ++it) {
-            if (event.object_type == media::GAT1400_CAPTURE_OBJECT_FACE) {
-                BindFaceCaptureIfNeeded(face, *it);
-            } else if (event.object_type == media::GAT1400_CAPTURE_OBJECT_MOTOR_VEHICLE) {
-                BindMotorCaptureIfNeeded(motorVehicle, *it);
-            }
-        }
-        const int ret = PostImages(imageList);
-        if (ret != 0) {
-            return ret;
-        }
-    }
-
-    if (!event.video_slice_list.empty()) {
-        std::list<GAT_1400_VideoSliceSet> videoSliceList = event.video_slice_list;
-        for (std::list<GAT_1400_VideoSliceSet>::iterator it = videoSliceList.begin(); it != videoSliceList.end(); ++it) {
-            if (event.object_type == media::GAT1400_CAPTURE_OBJECT_FACE) {
-                BindFaceCaptureIfNeeded(face, *it);
-            } else if (event.object_type == media::GAT1400_CAPTURE_OBJECT_MOTOR_VEHICLE) {
-                BindMotorCaptureIfNeeded(motorVehicle, *it);
-            }
-        }
-        const int ret = PostVideoSlices(videoSliceList);
-        if (ret != 0) {
-            return ret;
-        }
-    }
-
-    if (!event.file_list.empty()) {
-        std::list<GAT_1400_FileSet> fileList = event.file_list;
-        for (std::list<GAT_1400_FileSet>::iterator it = fileList.begin(); it != fileList.end(); ++it) {
-            if (event.object_type == media::GAT1400_CAPTURE_OBJECT_FACE) {
-                BindFaceCaptureIfNeeded(face, *it);
-            } else if (event.object_type == media::GAT1400_CAPTURE_OBJECT_MOTOR_VEHICLE) {
-                BindMotorCaptureIfNeeded(motorVehicle, *it);
-            }
-        }
-        const int ret = PostFiles(fileList);
-        if (ret != 0) {
-            return ret;
-        }
-    }
-
-    return 0;
-}
-
-int GAT1400ClientService::NotifyCaptureEvent(const media::GAT1400CaptureEvent& event)
-{
     bool readyToUpload = false;
     {
         std::lock_guard<std::mutex> lock(m_state_mutex);
         readyToUpload = m_started && m_registered;
     }
 
-    int directRet = 0;
     if (readyToUpload) {
-        directRet = PostCaptureEvent(event);
-        if (directRet == 0) {
-            printf("[GAT1400] module=gat1400 event=capture_notify trace=bridge error=0 mode=direct object=%d images=%zu videos=%zu files=%zu pending=%zu\n",
-                   static_cast<int>(event.object_type),
-                   event.image_list.size(),
-                   event.video_slice_list.size(),
-                   event.file_list.size(),
-                   media::GAT1400CaptureControl::Instance().PendingCount());
-            return 0;
-        }
+        const int ret = PostFaces(faceList);
+        printf("[GAT1400] module=gat1400 event=notify_faces trace=bridge error=%d mode=direct count=%zu\n",
+               ret,
+               faceList.size());
+        return ret;
     }
 
-    const int submitRet = media::GAT1400CaptureControl::Instance().Submit(event);
-    printf("[GAT1400] module=gat1400 event=capture_notify trace=bridge error=%d mode=%s object=%d images=%zu videos=%zu files=%zu pending=%zu direct=%d\n",
-           submitRet,
-           readyToUpload ? "queue_fallback" : "queue_only",
-           static_cast<int>(event.object_type),
-           event.image_list.size(),
-           event.video_slice_list.size(),
-           event.file_list.size(),
-           media::GAT1400CaptureControl::Instance().PendingCount(),
-           directRet);
-    return submitRet;
-}
-
-int GAT1400ClientService::SendKeepaliveDemoFaceResource(const std::string& deviceId)
-{
-    if (!TryMarkKeepaliveDemoSent(m_keepalive_demo_face_sent)) {
-        return 0;
-    }
-
-    std::string sceneImageData;
-    if (!ReadFileBase64Data(kKeepaliveDemoFaceSceneImagePath, sceneImageData)) {
-        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=face error=-1 note=scene_image_load_failed image=%s\n",
-               kKeepaliveDemoFaceSceneImagePath);
-        return -1;
-    }
-
-    std::string faceImageData;
-    if (!ReadFileBase64Data(kKeepaliveDemoFaceImagePath, faceImageData)) {
-        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=face error=-1 note=face_image_load_failed image=%s\n",
-               kKeepaliveDemoFaceImagePath);
-        return -1;
-    }
-
-    const std::string eventTime = FormatCurrentTime();
-    const std::string sequenceTag = FormatCurrentTimeWithMilliseconds();
-    const std::string faceSceneImageId = std::string("IMGSCENEFACEDEMO_") + sequenceTag;
-    const std::string faceCropImageId = std::string("IMGCROPFACEDEMO_") + sequenceTag;
-    const std::string faceId = std::string("FACEDEMO_") + sequenceTag;
-
-    GAT_1400_SubImage faceSceneImage;
-    CopyToArray(faceSceneImage.ImageID, sizeof(faceSceneImage.ImageID), faceSceneImageId);
-    faceSceneImage.EventSort = FACE_DETECT_EVENT;
-    CopyToArray(faceSceneImage.DeviceID, sizeof(faceSceneImage.DeviceID), deviceId);
-    faceSceneImage.Type = IMAGE_SENCE;
-    CopyToArray(faceSceneImage.FileFormat, sizeof(faceSceneImage.FileFormat), "Jpeg");
-    CopyToArray(faceSceneImage.ShotTime, sizeof(faceSceneImage.ShotTime), eventTime);
-    faceSceneImage.Width = kKeepaliveDemoSceneWidth;
-    faceSceneImage.Height = kKeepaliveDemoSceneHeight;
-    faceSceneImage.Data = sceneImageData;
-
-    GAT_1400_SubImage faceCropImage;
-    CopyToArray(faceCropImage.ImageID, sizeof(faceCropImage.ImageID), faceCropImageId);
-    faceCropImage.EventSort = FACE_DETECT_EVENT;
-    CopyToArray(faceCropImage.DeviceID, sizeof(faceCropImage.DeviceID), deviceId);
-    faceCropImage.Type = IMAGE_FACE;
-    CopyToArray(faceCropImage.FileFormat, sizeof(faceCropImage.FileFormat), "Jpeg");
-    CopyToArray(faceCropImage.ShotTime, sizeof(faceCropImage.ShotTime), eventTime);
-    faceCropImage.Width = kKeepaliveDemoFaceImageWidth;
-    faceCropImage.Height = kKeepaliveDemoFaceImageHeight;
-    faceCropImage.Data = faceImageData;
-
-    GAT_1400_Face face;
-    CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
-    face.InfoKind = INFO_TYPE_AUTOMATIC;
-    CopyToArray(face.SourceID, sizeof(face.SourceID), faceSceneImageId);
-    CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
-    face.LeftTopX = 439;
-    face.LeftTopY = 271;
-    face.RightBtmX = 560;
-    face.RightBtmY = 393;
-    CopyToArray(face.LocationMarkTime, sizeof(face.LocationMarkTime), eventTime);
-    CopyToArray(face.FaceAppearTime, sizeof(face.FaceAppearTime), eventTime);
-    CopyToArray(face.FaceDisAppearTime, sizeof(face.FaceDisAppearTime), eventTime);
-    face.IsDriver = 2;
-    face.IsForeigner = 2;
-    face.IsSuspectedTerrorist = 2;
-    face.IsCriminalInvolved = 2;
-    face.IsDetainees = 2;
-    face.IsVictim = 2;
-    face.IsSuspiciousPerson = 2;
-    face.SubImageList.push_back(faceSceneImage);
-    face.SubImageList.push_back(faceCropImage);
-
-    std::list<GAT_1400_Face> faceList;
-    faceList.push_back(face);
-    const int ret = PostFaces(faceList);
-    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=face error=%d path=/VIID/Faces scene=%s face=%s\n",
+    const int ret = EnqueuePendingUpload("post_faces",
+                                         "POST",
+                                         "/VIID/Faces",
+                                         kJsonContentType,
+                                         kResponseKindList,
+                                         GAT1400Json::PackFaceListJson(faceList),
+                                         "",
+                                         "ret=not_ready");
+    printf("[GAT1400] module=gat1400 event=notify_faces trace=bridge error=%d mode=queue_only count=%zu\n",
            ret,
-           kKeepaliveDemoFaceSceneImagePath,
-           kKeepaliveDemoFaceImagePath);
+           faceList.size());
     return ret;
 }
 
-int GAT1400ClientService::SendKeepaliveDemoMotorVehicleResource(const std::string& deviceId)
+int GAT1400ClientService::NotifyMotorVehicles(const std::list<GAT_1400_Motor>& motorList)
 {
-    if (!TryMarkKeepaliveDemoSent(m_keepalive_demo_motor_sent)) {
+    if (motorList.empty()) {
         return 0;
     }
 
-    std::string sceneImageData;
-    if (!ReadFileBase64Data(kKeepaliveDemoMotorSceneImagePath, sceneImageData)) {
-        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=motor error=-1 note=scene_image_load_failed image=%s\n",
-               kKeepaliveDemoMotorSceneImagePath);
-        return -1;
+    bool readyToUpload = false;
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        readyToUpload = m_started && m_registered;
     }
 
-    std::string motorImageData;
-    if (!ReadFileBase64Data(kKeepaliveDemoMotorImagePath, motorImageData)) {
-        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=motor error=-1 note=vehicle_image_load_failed image=%s\n",
-               kKeepaliveDemoMotorImagePath);
-        return -1;
+    if (readyToUpload) {
+        const int ret = PostMotorVehicles(motorList);
+        printf("[GAT1400] module=gat1400 event=notify_motor trace=bridge error=%d mode=direct count=%zu\n",
+               ret,
+               motorList.size());
+        return ret;
     }
 
-    const std::string eventTime = FormatCurrentTime();
-    const std::string sequenceTag = FormatCurrentTimeWithMilliseconds();
-    const std::string motorSceneImageId = std::string("IMGSCENEMOTORDEMO_") + sequenceTag;
-    const std::string motorCloseImageId = std::string("IMGVIEWMOTORDEMO_") + sequenceTag;
-    const std::string motorId = std::string("MOTORDEMO_") + sequenceTag;
-
-    GAT_1400_SubImage motorSceneImage;
-    CopyToArray(motorSceneImage.ImageID, sizeof(motorSceneImage.ImageID), motorSceneImageId);
-    motorSceneImage.EventSort = PASS_VEHICLE_EVENT;
-    CopyToArray(motorSceneImage.DeviceID, sizeof(motorSceneImage.DeviceID), deviceId);
-    motorSceneImage.Type = IMAGE_CAR_ORIGINAL;
-    CopyToArray(motorSceneImage.FileFormat, sizeof(motorSceneImage.FileFormat), "Jpeg");
-    CopyToArray(motorSceneImage.ShotTime, sizeof(motorSceneImage.ShotTime), eventTime);
-    motorSceneImage.Width = kKeepaliveDemoSceneWidth;
-    motorSceneImage.Height = kKeepaliveDemoSceneHeight;
-    motorSceneImage.Data = sceneImageData;
-
-    GAT_1400_SubImage motorCloseImage;
-    CopyToArray(motorCloseImage.ImageID, sizeof(motorCloseImage.ImageID), motorCloseImageId);
-    motorCloseImage.EventSort = PASS_VEHICLE_EVENT;
-    CopyToArray(motorCloseImage.DeviceID, sizeof(motorCloseImage.DeviceID), deviceId);
-    motorCloseImage.Type = IMAGE_VEHICLE_VIEW;
-    CopyToArray(motorCloseImage.FileFormat, sizeof(motorCloseImage.FileFormat), "Jpeg");
-    CopyToArray(motorCloseImage.ShotTime, sizeof(motorCloseImage.ShotTime), eventTime);
-    motorCloseImage.Width = kKeepaliveDemoMotorImageWidth;
-    motorCloseImage.Height = kKeepaliveDemoMotorImageHeight;
-    motorCloseImage.Data = motorImageData;
-
-    GAT_1400_Motor motorVehicle;
-    CopyToArray(motorVehicle.MotorVehicleID, sizeof(motorVehicle.MotorVehicleID), motorId);
-    motorVehicle.InfoKind = INFO_TYPE_AUTOMATIC;
-    CopyToArray(motorVehicle.SourceID, sizeof(motorVehicle.SourceID), motorSceneImageId);
-    CopyToArray(motorVehicle.DeviceID, sizeof(motorVehicle.DeviceID), deviceId);
-    CopyToArray(motorVehicle.StorageUrl1, sizeof(motorVehicle.StorageUrl1), "Not Support");
-    motorVehicle.LeftTopX = 3;
-    motorVehicle.LeftTopY = 5236;
-    motorVehicle.RightBtmX = 5046;
-    motorVehicle.RightBtmY = 8930;
-    CopyToArray(motorVehicle.MarkTime, sizeof(motorVehicle.MarkTime), eventTime);
-    CopyToArray(motorVehicle.AppearTime, sizeof(motorVehicle.AppearTime), eventTime);
-    CopyToArray(motorVehicle.DisappearTime, sizeof(motorVehicle.DisappearTime), eventTime);
-    motorVehicle.LaneNo = 1;
-    motorVehicle.HasPlate = false;
-    motorVehicle.VehicleColor = static_cast<ColorType>(99);
-    motorVehicle.Speed = 0.0;
-    motorVehicle.Direction = 3;
-    motorVehicle.VehicleLength = 0;
-    CopyToArray(motorVehicle.PassTime, sizeof(motorVehicle.PassTime), eventTime);
-    motorVehicle.SubImageList.push_back(motorSceneImage);
-    motorVehicle.SubImageList.push_back(motorCloseImage);
-
-    std::list<GAT_1400_Motor> motorList;
-    motorList.push_back(motorVehicle);
-    const int ret = PostMotorVehicles(motorList);
-    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=motor error=%d path=/VIID/MotorVehicles scene=%s vehicle=%s\n",
+    const int ret = EnqueuePendingUpload("post_motor",
+                                         "POST",
+                                         "/VIID/MotorVehicles",
+                                         kJsonContentType,
+                                         kResponseKindList,
+                                         GAT1400Json::PackMotorVehicleListJson(motorList),
+                                         "",
+                                         "ret=not_ready");
+    printf("[GAT1400] module=gat1400 event=notify_motor trace=bridge error=%d mode=queue_only count=%zu\n",
            ret,
-           kKeepaliveDemoMotorSceneImagePath,
-           kKeepaliveDemoMotorImagePath);
+           motorList.size());
     return ret;
 }
 
-int GAT1400ClientService::DrainPendingCaptureEvents()
+int GAT1400ClientService::NotifyNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList)
 {
-    if (!IsStarted()) {
-        return -1;
+    if (nonMotorList.empty()) {
+        return 0;
     }
 
-    int processedCount = 0;
-    int lastRet = 0;
-    media::GAT1400CaptureEvent event;
-    while (media::GAT1400CaptureControl::Instance().PopPending(&event)) {
-        ++processedCount;
-        const int ret = PostCaptureEvent(event);
-        if (ret != 0) {
-            lastRet = ret;
-        }
+    bool readyToUpload = false;
+    {
+        std::lock_guard<std::mutex> lock(m_state_mutex);
+        readyToUpload = m_started && m_registered;
     }
 
-    if (processedCount > 0) {
-        printf("[GAT1400] module=gat1400 event=capture_drain trace=bridge error=%d count=%d pending=%zu\n",
-               lastRet,
-               processedCount,
-               media::GAT1400CaptureControl::Instance().PendingCount());
+    if (readyToUpload) {
+        const int ret = PostNonMotorVehicles(nonMotorList);
+        printf("[GAT1400] module=gat1400 event=notify_non_motor trace=bridge error=%d mode=direct count=%zu\n",
+               ret,
+               nonMotorList.size());
+        return ret;
     }
 
-    return lastRet;
+    const int ret = EnqueuePendingUpload("post_non_motor",
+                                         "POST",
+                                         "/VIID/NonMotorVehicles",
+                                         kJsonContentType,
+                                         kResponseKindList,
+                                         GAT1400Json::PackNonmotorVehicleListJson(nonMotorList),
+                                         "",
+                                         "ret=not_ready");
+    printf("[GAT1400] module=gat1400 event=notify_non_motor trace=bridge error=%d mode=queue_only count=%zu\n",
+           ret,
+           nonMotorList.size());
+    return ret;
 }
 
 int GAT1400ClientService::PostJsonWithResponseStatus(const char* action,
@@ -2559,7 +2198,6 @@ int GAT1400ClientService::RegisterNow()
            deviceId.c_str(),
            cfg.gat_register.listen_port);
     ReplayPendingUploads();
-    (void)DrainPendingCaptureEvents();
     return 0;
 }
 
@@ -2625,9 +2263,6 @@ int GAT1400ClientService::SendKeepaliveNow()
     if (GAT1400Json::UnPackResponseStatus(response.body, responseStatus) != 0 || responseStatus.StatusCode != OK) {
         return -2;
     }
-    (void)DrainPendingCaptureEvents();
-    (void)SendKeepaliveDemoFaceResource(deviceId);
-    (void)SendKeepaliveDemoMotorVehicleResource(deviceId);
     return 0;
 }
 
@@ -2820,8 +2455,6 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
         m_started = true;
         m_registered = false;
         m_regist_state = EM_REGIST_OFF;
-        m_keepalive_demo_face_sent.store(false);
-        m_keepalive_demo_motor_sent.store(false);
         if (StartServerLocked() != 0) {
             m_started = false;
             return -2;
@@ -2866,8 +2499,6 @@ void GAT1400ClientService::Stop()
         deviceId = ResolveGatRuntimeDeviceId(m_cfg);
         m_started = false;
         m_heartbeat_running.store(false);
-        m_keepalive_demo_face_sent.store(false);
-        m_keepalive_demo_motor_sent.store(false);
     }
 
     if (m_heartbeat_thread.joinable()) {

@@ -195,29 +195,26 @@
 | `LOWER_1400_ADD_REGIST_OBSERVER` / `LOWER_1400_DEL_REGIST_OBSERVER` | 业务层监听注册状态变化 |
 | `LOWER_1400_SET_1400INHTTPCMD(url, method, format, content)` | 按 `HTTP_MSG_TYPE_H + HTTP_URI_TYPE_H` 透传自定义 1400 HTTP 命令，内部仍复用现有发送链路；若目标为 `/VIAS/*` 或未开启的 `POST /VIID/APEs` 兼容扩展，会直接返回本地错误 |
 
-### GAT1400 抓拍桥接接口
+### GAT1400 结构化上报接口
 
-**描述:** 编码侧 / 算法侧 / 其他业务模块优先通过 `ProtocolManager::NotifyGatAlarm()` 通知 1400 模块；内部仍复用 `App/Protocol/gat1400/GAT1400CaptureControl.*` 作为抓拍队列。若 1400 已注册，服务会直接尝试上传；否则先入队，后续在注册成功或保活成功后 drain。
+**描述:** 当前对外只保留 `ProtocolManager` 的 3 个明确接口，用于上报人脸 / 机动车 / 非机动车结构化对象。旧的 `NotifyGatAlarm()`、keepalive demo，以及 `GAT1400CaptureEvent/GAT1400CaptureControl` 抓拍桥接链路均已移除。
 
 | 接口 | 说明 |
 |------|------|
-| `protocol::ProtocolManager::Instance().NotifyGatAlarm(event)` | 业务侧正式入口；提交一条抓拍事件给 1400 模块，内部自动决定“直接上传”或“先入队” |
-| `media::GAT1400CaptureControl::Instance()` | 获取进程内唯一抓拍桥接控制器 |
-| `SubmitFaceCapture(face, images, videos, files, traceId)` | 提交一条人脸抓拍事件，携带可选关联图片 / 视频 / 文件 |
-| `SubmitMotorCapture(motorVehicle, images, videos, files, traceId)` | 提交一条机动车抓拍事件，携带可选关联图片 / 视频 / 文件 |
-| `Submit(event)` | 直接提交完整 `GAT1400CaptureEvent`，供后续扩展更多抓拍类型 |
-| `PopPending()` / `PendingCount()` | 供消费者按队列方式主动拉取待处理抓拍事件 |
+| `protocol::ProtocolManager::Instance().NotifyGatFaces(faceList)` | 外部模块上报人脸对象；已注册直接发送，未注册时直接写失败补传队列 |
+| `protocol::ProtocolManager::Instance().NotifyGatMotorVehicles(motorList)` | 外部模块上报机动车对象；已注册直接发送，未注册时直接写失败补传队列 |
+| `protocol::ProtocolManager::Instance().NotifyGatNonMotorVehicles(nonMotorList)` | 外部模块上报非机动车对象；已注册直接发送，未注册时直接写失败补传队列 |
 
 **当前约束:**
-- 当前默认只收口“人脸抓拍 / 机动车抓拍 + 图片 / 视频 / 文件”这两类需求。
-- 抓拍桥接层当前只做进程内内存排队，不写 flash；设备或进程重启后，未上传的抓拍事件不会自动恢复。
-- 若结构化对象里的 `SourceID/DeviceID` 为空，1400 服务会优先从关联的图片 / 视频元数据里补齐最小来源关系。
+- 结构化对象 3 个新接口只负责 `Faces/MotorVehicles/NonMotorVehicles` 本体上报，不帮调用方自动补图片 / 视频 / 文件。
+- 当前没有额外的“抓拍事件打包上传”高层接口；如果调用方还需要图片 / 视频 / 文件上报，需继续走现有 `PostImages/PostVideoSlices/PostFiles` 或 `LOWER_1400_POST_*` 链路自行编排。
+- 结构化对象 3 个接口未就绪时会直接落 `gat_upload.queue_dir`，后续按现有失败补传机制恢复。
 
 **接入步骤:**
-1. 调用方先准备好 `GAT_1400_Face` 或 `GAT_1400_Motor`。
-2. 如果有图片 / 视频 / 文件，同时准备好对应的 `GAT_1400_ImageSet/GAT_1400_VideoSliceSet/GAT_1400_FileSet`，并把 Base64 数据放到 `Data` 字段。
-3. 推荐把这些内容组到 `GAT1400CaptureEvent` 后调用 `ProtocolManager::NotifyGatAlarm()`；只有在协议模块内部或特殊场景下，才直接用 `SubmitFaceCapture()/SubmitMotorCapture()/Submit()`。
-4. 返回 `0` 表示 1400 模块已接收这条业务通知；若当前链路已就绪，会直接尝试上传；若未就绪或直接上传失败，会保留到内部队列等待后续补偿。
+1. 若只是结构化对象上报，直接准备好 `std::list<GAT_1400_Face>`、`std::list<GAT_1400_Motor>` 或 `std::list<GAT_1400_NonMotor>`。
+2. 分别调用 `NotifyGatFaces()`、`NotifyGatMotorVehicles()`、`NotifyGatNonMotorVehicles()`。
+3. 若还要补图片 / 视频 / 文件，请按调用方自己的业务顺序继续走现有 `Post*` / `LOWER_1400_POST_*` 链路。
+4. 返回 `0` 表示协议模块已接收这次上报；若 1400 当前未就绪，请求体会直接进入失败补传队列。
 
 **最小示例:**
 ```cpp
@@ -225,19 +222,10 @@ GAT_1400_Motor motor;
 strncpy(motor.MotorVehicleID, "motor-001", sizeof(motor.MotorVehicleID) - 1);
 strncpy(motor.DeviceID, "34020000001320000001", sizeof(motor.DeviceID) - 1);
 
-GAT_1400_ImageSet imageSet;
-strncpy(imageSet.ImageInfo.ImageID, "img-001", sizeof(imageSet.ImageInfo.ImageID) - 1);
-strncpy(imageSet.ImageInfo.DeviceID, "34020000001320000001", sizeof(imageSet.ImageInfo.DeviceID) - 1);
-strncpy(imageSet.ImageInfo.FileFormat, "Jpeg", sizeof(imageSet.ImageInfo.FileFormat) - 1);
-imageSet.Data = imageBase64;
+std::list<GAT_1400_Motor> motorList;
+motorList.push_back(motor);
 
-media::GAT1400CaptureEvent event;
-event.trace_id = "capture-trace-001";
-event.object_type = media::GAT1400_CAPTURE_OBJECT_MOTOR_VEHICLE;
-event.motor_vehicle = motor;
-event.image_list.push_back(imageSet);
-
-const int ret = protocol::ProtocolManager::Instance().NotifyGatAlarm(&event);
+const int ret = protocol::ProtocolManager::Instance().NotifyGatMotorVehicles(motorList);
 ```
 
 ### GB28181 设备能力接口

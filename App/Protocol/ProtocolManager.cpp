@@ -9585,23 +9585,42 @@ int ProtocolManager::NotifyGbAlarm(AlarmNotifyInfo* info)
 
 }
 
-int ProtocolManager::NotifyGatAlarm(const media::GAT1400CaptureEvent* event)
+int ProtocolManager::NotifyGatFaces(const std::list<GAT_1400_Face>& faceList)
 {
-    if (event == NULL) {
-        return -93;
-    }
     if (m_gat_client.get() == NULL) {
         return -94;
     }
 
-    const int ret = m_gat_client->NotifyCaptureEvent(*event);
-    printf("[ProtocolManager] module=gat1400 event=alarm_notify trace=manager error=%d object=%d images=%zu videos=%zu files=%zu trace_id=%s\n",
+    const int ret = m_gat_client->NotifyFaces(faceList);
+    printf("[ProtocolManager] module=gat1400 event=post_faces trace=manager error=%d count=%zu\n",
            ret,
-           static_cast<int>(event->object_type),
-           event->image_list.size(),
-           event->video_slice_list.size(),
-           event->file_list.size(),
-           event->trace_id.empty() ? "-" : event->trace_id.c_str());
+           faceList.size());
+    return ret;
+}
+
+int ProtocolManager::NotifyGatMotorVehicles(const std::list<GAT_1400_Motor>& motorList)
+{
+    if (m_gat_client.get() == NULL) {
+        return -94;
+    }
+
+    const int ret = m_gat_client->NotifyMotorVehicles(motorList);
+    printf("[ProtocolManager] module=gat1400 event=post_motor trace=manager error=%d count=%zu\n",
+           ret,
+           motorList.size());
+    return ret;
+}
+
+int ProtocolManager::NotifyGatNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList)
+{
+    if (m_gat_client.get() == NULL) {
+        return -94;
+    }
+
+    const int ret = m_gat_client->NotifyNonMotorVehicles(nonMotorList);
+    printf("[ProtocolManager] module=gat1400 event=post_non_motor trace=manager error=%d count=%zu\n",
+           ret,
+           nonMotorList.size());
     return ret;
 }
 

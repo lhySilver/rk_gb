@@ -26,6 +26,7 @@
 - 新增 `App/Media/GAT1400CaptureControl.*` 抓拍桥接层，供编码侧 / 算法侧以“人脸 / 机动车 + 图片 / 视频 / 文件”事件方式向 1400 模块投递待上传数据，并补齐调用方接入使用说明。
 
 ### 变更
+- 按 issue 43 最新评论完成 GAT1400 收口：`ProtocolManager` 当前只保留 `NotifyGatFaces()` / `NotifyGatMotorVehicles()` / `NotifyGatNonMotorVehicles()` 3 个结构化对象上报接口，分别对接 `PostFaces/PostMotorVehicles/PostNonMotorVehicles`；已注册时直接发送，未注册时直接写入现有失败补传队列。同时删除 `ProtocolManager::NotifyGatAlarm()`、keepalive demo，以及 `GAT1400CaptureControl` / `GAT1400CaptureEvent` / `GAT1400ClientService::NotifyCaptureEvent()` 这条未再被调用的抓拍桥接链路。
 - 按 `GB/T 28181-2022` 附录 G 收口 GB28181 实时点播的 `f=` 处理：`ProtocolManager` 现保持按 `a=streamnumber` / 本地默认配置选择目标码流，再解析 `INVITE` SDP 里的 `f=` 视频参数并通过现有编码参数接口下发到该码流；当前只先打通协议层入口与日志，不额外扩展底层编码器动态重配实现。
 - 按 issue 42 最新评论继续收口零配置与标准国标配置边界：`register_mode=zero_config` 时运行态固定使用代码内置的重定向 `server_id/server_ip/server_port`，不再复用 `gb28181.ini` 中的 `username/server_ip/server_port`；同时 `SetGbRegisterConfig()` 不再顺带写 `zero_config.ini`，避免标准配置接口污染零配置入口文件。
 - 按 issue 42 收口零配置本地配置模型：`zero_config.ini` 现只落盘 `string_code/mac_address` 两个字段，其余 `line_id/redirect_domain/redirect_server_id/custom_protocol_version/manufacturer/model` 统一走代码默认值；同时新增 `ProtocolManager::GetGbZeroConfig()/SetGbZeroConfig()` 供其他模块直接读写零配置入口参数。
