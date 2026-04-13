@@ -1,5 +1,7 @@
 #ifndef GB28181CLIENTSDK_H
 #define GB28181CLIENTSDK_H
+#include <string>
+
 #include "GB28181Defs.h"
 
 class CGBClientImpl;
@@ -19,6 +21,7 @@ public:
     void ResetZeroConfigState();
 
 	char* GetTime();
+    std::string GetLocalGbCode() const;
     int Logout();
 
     //Heartbeat

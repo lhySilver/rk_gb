@@ -485,6 +485,14 @@ void CGBClientImpl::ResetZeroConfigState()
     memset(m_zero_config_formal_device_id, 0, sizeof(m_zero_config_formal_device_id));
 }
 
+std::string CGBClientImpl::GetLocalGbCode() const
+{
+    if (m_xml_parser == NULL) {
+        return "";
+    }
+    return m_xml_parser->m_local_code;
+}
+
 
 
 

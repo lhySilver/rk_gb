@@ -51,6 +51,14 @@ char* GB28181ClientSDK::GetTime()
 	return buf;
 }
 
+std::string GB28181ClientSDK::GetLocalGbCode() const
+{
+    if (m_client_Impl == NULL) {
+        return "";
+    }
+    return m_client_Impl->GetLocalGbCode();
+}
+
 
 int GB28181ClientSDK::Logout()
 {

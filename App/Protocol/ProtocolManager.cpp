@@ -4752,8 +4752,7 @@ ProtocolManager::ProtocolManager()
 
       m_started(false),
 
-      m_gb_device_name(""),
-      m_gb_runtime_device_id("")
+      m_gb_device_name("")
 
 {
 
@@ -9387,9 +9386,6 @@ int ProtocolManager::HandleGbSubscribe(SubscribeHandle handle, SubscribeType typ
         case kCatalogSubscribe:
 
             m_gb_catalog_subscribe_handle = handle;
-            if (gbCode != NULL && gbCode[0] != '\0') {
-                m_gb_runtime_device_id = gbCode;
-            }
 
             notifyCatalog = true;
 
@@ -9398,18 +9394,12 @@ int ProtocolManager::HandleGbSubscribe(SubscribeHandle handle, SubscribeType typ
         case kAlarmSubscribe:
 
             m_gb_alarm_subscribe_handle = handle;
-            if (gbCode != NULL && gbCode[0] != '\0') {
-                m_gb_runtime_device_id = gbCode;
-            }
 
             break;
 
         case kMobilePositionSubscribe:
 
             m_gb_mobile_position_subscribe_handle = handle;
-            if (gbCode != NULL && gbCode[0] != '\0') {
-                m_gb_runtime_device_id = gbCode;
-            }
 
             break;
 
@@ -9494,14 +9484,12 @@ int ProtocolManager::NotifyGbAlarm(AlarmNotifyInfo* info)
     }
 
     SubscribeHandle handle = NULL;
-    std::string runtimeDeviceId;
 
     {
 
         std::lock_guard<std::mutex> lock(m_gb_subscribe_mutex);
 
         handle = m_gb_alarm_subscribe_handle;
-        runtimeDeviceId = m_gb_runtime_device_id;
 
     }
 
@@ -9511,10 +9499,6 @@ int ProtocolManager::NotifyGbAlarm(AlarmNotifyInfo* info)
 
     }
 
-    NormalizeGbAlarmIdentity(m_cfg, runtimeDeviceId, *info);
-
-
-
     std::lock_guard<std::mutex> lock(m_gb_lifecycle_mutex);
 
     if (m_gb_client_sdk == NULL) {
@@ -9522,6 +9506,9 @@ int ProtocolManager::NotifyGbAlarm(AlarmNotifyInfo* info)
         return 0;
 
     }
+
+    const std::string runtimeDeviceId = m_gb_client_sdk->GetLocalGbCode();
+    NormalizeGbAlarmIdentity(m_cfg, runtimeDeviceId, *info);
 
 
 

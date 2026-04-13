@@ -70,6 +70,7 @@ public:
     void ResetZeroConfigState();
 
     int Logout();//???
+    std::string GetLocalGbCode() const;
 
 
 
