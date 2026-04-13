@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604131127 | issue44_gb_alarm_identity_trim | 轻量迭代 | ✅已完成 | [2026-04/202604131127_issue44_gb_alarm_identity_trim](2026-04/202604131127_issue44_gb_alarm_identity_trim/) |
 | 202604131039 | issue44_gb_alarm_runtime_device_id | 轻量迭代 | ✅已完成 | [2026-04/202604131039_issue44_gb_alarm_runtime_device_id](2026-04/202604131039_issue44_gb_alarm_runtime_device_id/) |
 | 202604111448 | protocol_feature_switch_trim | 轻量迭代 | ✅已完成 | [2026-04/202604111448_protocol_feature_switch_trim](2026-04/202604111448_protocol_feature_switch_trim/) |
 | 202604101715 | issue43_gat1400_protocol_entry_cleanup | 轻量迭代 | ✅已完成 | [2026-04/202604101715_issue43_gat1400_protocol_entry_cleanup](2026-04/202604101715_issue43_gat1400_protocol_entry_cleanup/) |
@@ -97,6 +98,7 @@
 
 ### 2026-04
 
+- [202604131127_issue44_gb_alarm_identity_trim](2026-04/202604131127_issue44_gb_alarm_identity_trim/) - 按 issue 44 的后续收口意见删除独立 `GbAlarmIdentity` helper 文件与最小测试入口，把报警身份归一化逻辑内联回 `ProtocolManager.cpp`
 - [202604131039_issue44_gb_alarm_runtime_device_id](2026-04/202604131039_issue44_gb_alarm_runtime_device_id/) - 按 issue 44 修复 GB28181 报警通知 `DeviceID` 仍固定写回静态配置的问题，改为优先复用订阅回调带回的运行态 `gbCode`，从而对齐零配置 `302` 后的正式平台 `deviceId`
 - [202604111448_protocol_feature_switch_trim](2026-04/202604111448_protocol_feature_switch_trim/) - 删除 `ProtocolFeatureSwitch.h` 与 `PROTOCOL_HAS_GB28181_CLIENT_SDK` 历史编译期开关，去掉重复构建宏，收口 `ProtocolManager` 中围绕该宏的恒真条件编译分支
 - [202604101715_issue43_gat1400_protocol_entry_cleanup](2026-04/202604101715_issue43_gat1400_protocol_entry_cleanup/) - 按 issue 43 最新评论完成 GAT1400 收口：对外只保留 `NotifyGatFaces/NotifyGatMotorVehicles/NotifyGatNonMotorVehicles` 3 个结构化对象接口，并删除 `NotifyGatAlarm()`、keepalive demo 与未使用的抓拍桥接链路

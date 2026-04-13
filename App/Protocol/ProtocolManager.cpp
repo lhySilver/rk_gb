@@ -1,5 +1,4 @@
 #include "ProtocolManager.h"
-#include "gb28181/GbAlarmIdentity.h"
 #include "gat1400/GAT1400ClientService.h"
 #include "ProtocolLog.h"
 #include "GB28181ClientSDK.h"
@@ -3804,6 +3803,38 @@ static std::string ResolveGbZeroConfigStringCode(const protocol::ProtocolExterna
         return cfg.gb_register.device_id;
     }
     return cfg.gb_register.username;
+}
+
+static std::string ResolveGbAlarmRuntimeDeviceId(const protocol::ProtocolExternalConfig& cfg,
+                                                 const std::string& runtimeDeviceId)
+{
+    if (!runtimeDeviceId.empty()) {
+        return runtimeDeviceId;
+    }
+
+    if (protocol::IsGbRegisterModeZeroConfig(cfg.gb_register)) {
+        return ResolveGbZeroConfigStringCode(cfg);
+    }
+
+    if (!cfg.gb_register.device_id.empty()) {
+        return cfg.gb_register.device_id;
+    }
+    return cfg.gb_register.username;
+}
+
+static void NormalizeGbAlarmIdentity(const protocol::ProtocolExternalConfig& cfg,
+                                     const std::string& runtimeDeviceId,
+                                     AlarmNotifyInfo& info)
+{
+    const std::string deviceId = ResolveGbAlarmRuntimeDeviceId(cfg, runtimeDeviceId);
+    if (deviceId.empty()) {
+        return;
+    }
+
+    CopyBounded(info.DeviceID, sizeof(info.DeviceID), deviceId);
+    if (info.AlarmID[0] == '\0') {
+        CopyBounded(info.AlarmID, sizeof(info.AlarmID), deviceId);
+    }
 }
 
 static std::string ResolveGbZeroConfigRedirectServerId(const protocol::ProtocolExternalConfig& cfg)
@@ -9480,7 +9511,7 @@ int ProtocolManager::NotifyGbAlarm(AlarmNotifyInfo* info)
 
     }
 
-    protocol::gb28181::NormalizeGbAlarmIdentity(m_cfg, runtimeDeviceId, *info);
+    NormalizeGbAlarmIdentity(m_cfg, runtimeDeviceId, *info);
 
 
 
