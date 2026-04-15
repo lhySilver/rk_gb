@@ -151,6 +151,8 @@ bool CQrCode::Create(QrCodeExtractedCallback cb)
 	if( true == m_bCerated )
 		return true;
 
+	m_result = "";
+
 	#ifdef USE_ZBAR
     int rc = rkbar_init(&rkbar_hand);
     if (rc == -1) 

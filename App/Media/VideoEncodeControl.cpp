@@ -5,20 +5,31 @@
 
 #include "PAL/Capture.h"
 
-extern "C"
-{
-int rk_video_get_gop(int stream_id, int *value);
-int rk_video_set_gop(int stream_id, int value);
-int rk_video_get_max_rate(int stream_id, int *value);
-int rk_video_set_max_rate(int stream_id, int value);
-int rk_video_get_RC_mode(int stream_id, const char **value);
-int rk_video_set_RC_mode(int stream_id, const char *value);
-int rk_video_get_output_data_type(int stream_id, const char **value);
-int rk_video_set_output_data_type(int stream_id, const char *value);
-int rk_video_get_frame_rate(int stream_id, char **value);
-int rk_video_set_frame_rate(int stream_id, const char *value);
-int rk_video_set_resolution(int stream_id, const char *value);
-}
+//extern "C"
+//{
+//int rk_video_get_gop(int stream_id, int *value);
+//int rk_video_set_gop(int stream_id, int value);
+//int rk_video_get_max_rate(int stream_id, int *value);
+//int rk_video_set_max_rate(int stream_id, int value);
+//int rk_video_get_RC_mode(int stream_id, const char **value);
+//int rk_video_set_RC_mode(int stream_id, const char *value);
+//int rk_video_get_output_data_type(int stream_id, const char **value);
+//int rk_video_set_output_data_type(int stream_id, const char *value);
+//int rk_video_get_frame_rate(int stream_id, char **value);
+//int rk_video_set_frame_rate(int stream_id, const char *value);
+//int rk_video_set_resolution(int stream_id, const char *value);
+//}
+int rk_video_get_gop(int stream_id, int *value){}
+int rk_video_set_gop(int stream_id, int value){}
+int rk_video_get_max_rate(int stream_id, int *value){}
+int rk_video_set_max_rate(int stream_id, int value){}
+int rk_video_get_RC_mode(int stream_id, const char **value){}
+int rk_video_set_RC_mode(int stream_id, const char *value){}
+int rk_video_get_output_data_type(int stream_id, const char **value){}
+int rk_video_set_output_data_type(int stream_id, const char *value){}
+int rk_video_get_frame_rate(int stream_id, char **value){}
+int rk_video_set_frame_rate(int stream_id, const char *value){}
+int rk_video_set_resolution(int stream_id, const char *value){}
 
 namespace
 {

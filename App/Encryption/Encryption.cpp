@@ -128,7 +128,7 @@ int CEncryption::ChangeTuyapidBySdcard()
 	int wait_mount = 0;
 	printf("\033[1;36m ======================ChangeTuyapidBySdcard start----------------- \033[0m\n");
 	//0.挂载sdcard
-	START_PROCESS("sh", "sh", "-c", "mount " MMCP1" " MOUNT_DIR, NULL);
+	//START_PROCESS("sh", "sh", "-c", "mount " MMCP1" " MOUNT_DIR, NULL);
 
 	//结合前面的函数，连续的mount/umount的操作可能会影响文件的判断
 	//最多等到500ms
@@ -258,7 +258,7 @@ int CEncryption::ChangeTuyapidBySdcard()
 				dg_save_file(DEV_INFO, hwid, 256);
 				dg_save_file(DEV_INFO_BK, hwid, 256);
 				sync();
-				CheckDevLicense();//重新读取加密信息
+				CheckDevLicense();//重新读取加密信息(程序的逻辑这样子设计是没什么问题的，只要重新加载后，如果加密异常就没法子正常跑就可以了 add on 2025.02.07)
 			}
 			
 
@@ -266,7 +266,7 @@ int CEncryption::ChangeTuyapidBySdcard()
 	}
 end:
 	//6.卸载sdcard
-     START_PROCESS("sh", "sh", "-c", "umount -l " MOUNT_DIR, NULL);
+    // START_PROCESS("sh", "sh", "-c", "umount -l " MOUNT_DIR, NULL);
 	printf("\033[1;36m ======================ChangeTuyapidBySdcard  end---------------\033[0m\n");
 	return ret;
 }
@@ -591,14 +591,14 @@ bool CEncryption::CheckDevLicense()
 			m_iLicenseSavaType = 1;
 
 			// 检查备份
-			if (access(DEV_INFO, F_OK) == 0)
+			if (access(DEV_INFO, F_OK) == 0)//加密文件存在则读取加密文件的内容, 对比是否一致，不一致则重新写入加密文件
 			{
 				uchar hwid_flash[256] = {0};
 				dg_read_file(DEV_INFO, hwid_flash, 256);
 				if (memcmp(hwid_src, hwid_flash, 256) != 0)
 					dg_save_file(DEV_INFO, hwid_src, 256);
 			}
-			else
+			else//加密文件不存在则写入加密文件
 			{
 				dg_save_file(DEV_INFO, hwid_src, 256);
 			}
@@ -887,8 +887,8 @@ bool CEncryption::CheckFLASHTest()
 	memset(m_devInfoFromEEPROM.TUYA_UID, 0, sizeof(m_devInfoFromEEPROM.TUYA_UID));
 	memcpy(m_devInfoFromEEPROM.TUYA_UID, "dgcx06399919905981b5", 20); // 涂鸦 UUID 		//20 bytes
 	memset(m_devInfoFromEEPROM.TUYA_PID, 0, sizeof(m_devInfoFromEEPROM.TUYA_PID));
-	memcpy(m_devInfoFromEEPROM.TUYA_PID, "4i5ofuwbb6xxslhw", 16);//励国双目安保灯
-	//memcpy(m_devInfoFromEEPROM.TUYA_PID, "sxrmiqf8p2aaiu4x", 16);//双目枪
+	//memcpy(m_devInfoFromEEPROM.TUYA_PID, "4i5ofuwbb6xxslhw", 16);//励国双目安保灯
+	memcpy(m_devInfoFromEEPROM.TUYA_PID, "sxrmiqf8p2aaiu4x", 16);//双目枪
 	
 	AppInfo("============================================\n");
 

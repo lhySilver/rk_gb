@@ -381,6 +381,182 @@ static int CheckWifiPwd(void)
 
 static int WifiMode = -1;
 
+//-------------------------------
+Wifi_Model_info_S s_stWifiModelInfo = {WIFI_MODEL_UNKNOWN, 0, 0};
+
+#define WIFI_RTL8188FTV_ID 	"0bda:f179"
+#define WIFI_SV6256P_ID 	"8065:6000"
+#define WIFI_ATBM6012B_ID 	"007a:888b"
+#define WIFI_ATBM6062_ID 	"007a:6052"
+#define WIFI_ATBM6132_ID 	"007a:8890"
+#define WIFI_AIC8800DL_ID 	"a69c:8d80"
+typedef struct{
+	WIFI_MODEL_E eModel;
+	const char *strId;
+} WifiModelId_S;
+
+
+//初始化WiFi 识别并加载驱动
+void WifiInit()
+{
+	WifiModelId_S astWifiModelId[] = {{WIFI_MODEL_RTL8188FTV, WIFI_RTL8188FTV_ID},
+									  {WIFI_MODEL_SV6256P, WIFI_SV6256P_ID}, 
+									  {WIFI_MODEL_ATBM6012B, WIFI_ATBM6012B_ID}, 
+									  {WIFI_MODEL_ATBM6062, WIFI_ATBM6062_ID},
+									  {WIFI_MODEL_ATBM6132, WIFI_ATBM6132_ID},
+									  {WIFI_MODEL_AIC8800DL, WIFI_AIC8800DL_ID}};
+	//reset wifi
+	SystemWifiPwrCtl(1); //WiFi模块下电	
+	sleep(1);
+	SystemWifiPwrCtl(0); //WiFi模块上电	
+	sleep(1);
+
+	const int RETRY_COUNT = 5;
+	int i;
+	for (i = 0; i < RETRY_COUNT; i++)
+	{
+		FILE *pp = popen("lsusb", "r");
+		if(pp == NULL)
+		{
+			printf("popen lsusb fails. errno: %d\n", errno);
+			usleep(500*1000);
+			continue ;
+		}
+		
+		char buffer[128];
+		memset(buffer, 0, sizeof(buffer));
+		
+		while (fgets(buffer, sizeof(buffer), pp) != NULL)
+		{
+			printf("%s\n", buffer);
+			
+			if (strstr(buffer, WIFI_RTL8188FTV_ID)) 	//rtl8188ftv
+			{
+				printf("wifi is rtl8188ftv\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/libarc4.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/rtl8188ftv/cfg80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/mac80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/rtl8188ftv/8188fu.ko", NULL);
+				s_stWifiModelInfo.model = WIFI_MODEL_RTL8188FTV;
+				s_stWifiModelInfo.is5G = 0;
+				s_stWifiModelInfo.isBle = 0;
+				break;
+			}
+			else if (strstr(buffer, WIFI_SV6256P_ID)) 	//sv6256p
+			{
+				printf("wifi is sv6256p\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/cfg80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/libarc4.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/mac80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/ctr.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/ccm.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/libaes.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/aes_generic.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod  /oem/usr/ko/ssv6x5x.ko", NULL); 
+
+				s_stWifiModelInfo.model = WIFI_MODEL_SV6256P;
+				s_stWifiModelInfo.is5G = 1;
+				s_stWifiModelInfo.isBle = 0;
+
+				break;
+			}
+			else if (strstr(buffer, WIFI_ATBM6012B_ID)) 	//atbm6012b
+			{
+				printf("wifi is atbm6012b\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/libarc4.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/cfg80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/mac80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/atbm6012b/atbm603x_comb_wifi_usb.ko wifi_bt_comb=1", NULL);
+
+				s_stWifiModelInfo.model = WIFI_MODEL_ATBM6012B;
+				s_stWifiModelInfo.is5G = 0;
+				s_stWifiModelInfo.isBle = 1;
+				break;
+			}
+			else if (strstr(buffer, WIFI_ATBM6062_ID)) 	//atbm6062
+			{
+				printf("wifi is atbm6062\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/libarc4.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/atbm6062/cfg80211.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/atbm6062/ATBM606x_wifi_usb.ko wifi_bt_comb=1", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "ifconfig wlan0 up", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "iwpriv wlan0 common set_rate_txpower_mode,6", NULL);
+				
+				s_stWifiModelInfo.model = WIFI_MODEL_ATBM6062;
+				s_stWifiModelInfo.is5G = 0;
+				s_stWifiModelInfo.isBle = 1;
+				break;
+			}
+			else if (strstr(buffer, WIFI_ATBM6132_ID)) 	//atbm6132
+			{
+				printf("wifi is atbm6132\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/libarc4.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/cfg80211.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/mac80211.ko", NULL); 
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/atbm6132/atbm6x3x_wifi_usb.ko wifi_bt_comb=1", NULL); 
+
+				s_stWifiModelInfo.model = WIFI_MODEL_ATBM6132;
+				s_stWifiModelInfo.is5G = 1;
+				s_stWifiModelInfo.isBle = 1;
+				break;
+			}
+			else if (strstr(buffer, WIFI_AIC8800DL_ID)) 	//atbm6132
+			{
+				printf("wifi is aic8800dl\n");
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/libarc4.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/cfg80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/mac80211.ko", NULL);
+				MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/aic8800dl/aic_load_fw.ko aic_fw_path=/oem/usr/ko/aic8800dl/aic8800D80", NULL);
+				int wait_count = 0;
+				while(wait_count++ < 10)
+				{
+					sleep(1);
+					MW_START_PROCESS("sh", "sh", "-c", "lsusb > /tmp/lsusb.output", NULL);
+					FILE *fp = fopen("/tmp/lsusb.output", "r");
+					if(fp == NULL)
+					{
+						printf("fopen /tmp/lsusb.output fails. errno: %d\n", errno);
+						continue ;
+					}
+
+					int load_fw_succ = 0;
+					char str_line[64];					
+					while (fgets(str_line, sizeof(str_line), fp) != NULL)
+					{
+						if (strstr(str_line, "a69c:8d81"))
+						{
+							load_fw_succ = 1;
+							break;
+						}
+					}
+					fclose(fp);
+					MW_START_PROCESS("sh", "sh", "-c", "rm /tmp/lsusb.output", NULL);
+					if (load_fw_succ)
+					{
+						MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/aic8800dl/aic8800_fdrv.ko", NULL);
+//						MW_START_PROCESS("sh", "sh", "-c", "insmod /oem/usr/ko/aic8800dl/aic_btusb.ko", NULL); //用于搜索热点
+						
+						s_stWifiModelInfo.model = WIFI_MODEL_AIC8800DL;
+						s_stWifiModelInfo.is5G = 1;
+						s_stWifiModelInfo.isBle = 1;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		pclose(pp);
+
+		if (WIFI_MODEL_UNKNOWN != s_stWifiModelInfo.model)
+			break;
+		usleep(500*1000);
+	}
+}
+
+
+
+
+//-------------------------------
 /// 创建ap模式
 int WifiGetMode()
 {
@@ -453,6 +629,7 @@ int WifiApModeDestroy()
 	return 0;	
 }
 
+static WIFI_ST_t s_stWifiConf;
 static int wifi_connecting = 0;
 static int wifi_connect_thread_running = 0;
 void *thread_get_wifi_connect_result(void *arg)
@@ -531,17 +708,39 @@ void *thread_get_wifi_connect_result(void *arg)
 
 	if( WIFI_CONNECTED == wifi_status )
 	{
-	//	START_PROCESS("udhcpc -b -i wlan0 -s /usr/share/udhcpc/default.script","r");
-		MSG("udhcpc -b -i wlan0 -h ipcam -s /usr/share/udhcpc/default.script\n");
-
-
 		MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 down", NULL);
-
-		//MW_START_PROCESS("sh", "sh", "-c", "udhcpc -b -i wlan0 -s /usr/share/udhcpc/default.script", NULL);
-		MW_START_PROCESS_CLOSE_FD("sh", "sh", "-c", "udhcpc -b -i wlan0 -h ipcam -s /usr/share/udhcpc/default.script", NULL);
-
+		
+		char strIp[16];
+		char strNetmask[16];
+		char strGateway[16];
+		char strDns[16];
+		if (s_stWifiConf.bStaticIp)
+		{
+			if (inet_ntop(AF_INET, &s_stWifiConf.ip, strIp, sizeof(strIp)) == NULL || 
+				inet_ntop(AF_INET, &s_stWifiConf.netmask, strNetmask, sizeof(strNetmask)) == NULL || 
+				inet_ntop(AF_INET, &s_stWifiConf.gateway, strGateway, sizeof(strGateway)) == NULL || 
+				inet_ntop(AF_INET, &s_stWifiConf.dns, strDns, sizeof(strDns)) == NULL)
+				s_stWifiConf.bStaticIp = 0;
+		}
+		
+		if (0 == s_stWifiConf.bStaticIp)
+		{
+			MSG("udhcpc -b -i wlan0 -h ipcam -s /usr/share/udhcpc/default.script\n");
+			MW_START_PROCESS_CLOSE_FD("sh", "sh", "-c", "udhcpc -b -i wlan0 -h ipcam -s /usr/share/udhcpc/default.script", NULL);
+		}
+		else
+		{
+			snprintf(buffer, sizeof(buffer), "ifconfig wlan0 %s netmask %s", strIp, strNetmask);
+			printf("cmd : %s\n", buffer);
+			MW_START_PROCESS("sh", "sh", "-c", buffer, NULL);
+			snprintf(buffer, sizeof(buffer), "route add default gw %s", strGateway);
+			printf("cmd : %s\n", buffer);
+			MW_START_PROCESS("sh", "sh", "-c", buffer, NULL);
+			snprintf(buffer, sizeof(buffer), "echo -e \'nameserver %s\' > /etc/resolv.conf", strDns);
+			MW_START_PROCESS("sh", "sh", "-c", buffer, NULL);
+		}
+		
 		MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 up", NULL);
-
 
 		WifiMode = WIFI_MODE_ST;
 	}
@@ -552,6 +751,92 @@ void *thread_get_wifi_connect_result(void *arg)
 	wifi_connect_thread_running = 0;
 	return NULL;
 }
+
+int NetGetWifiConnectStatus(WIFI_ST_t *pStm,int timeout)
+{
+	int ret;
+	FILE *fp = NULL;
+	int wrong_key_count = 0;
+	int else_count = 0;
+
+	char *p = NULL;
+	char buffer[256];
+	int connected = 0;
+	//------------------------------为WiFi连接做准备
+	MW_START_PROCESS("sh", "sh", "-c", "killall udhcpd", NULL);
+	MW_START_PROCESS("sh", "sh", "-c", "killall hostapd", NULL);
+	MW_START_PROCESS("sh", "sh", "-c", "killall wpa_supplicant", NULL);
+	MW_START_PROCESS("sh", "sh", "-c", "killall udhcpc", NULL);
+
+	usleep(1000*100);
+    MW_START_PROCESS("sh", "sh", "-c", "ifconfig wlan0 up", NULL);
+    usleep(1000*100);
+
+	int encrypt = 3;
+	const char *ssid = pStm->ssid;
+	const char *passwd  = pStm->psk;
+
+	if( 0 != strlen(passwd) )
+		CreateWpaConfig(encrypt, ssid, passwd);
+	else
+		CreateWpaConfig(0, ssid, passwd);
+	//-----------------------------
+
+
+	sprintf(buffer, "wpa_supplicant -Dnl80211 -i%s -c /tmp/wpa_supplicant.conf -f /tmp/wpa_output &","wlan0");
+	MSG("cmd : %s\n", buffer);
+	MW_START_PROCESS_CLOSE_FD("sh", "sh", "-c", buffer, NULL);
+
+	while(1)
+	{
+		sleep(1);
+
+		else_count++;
+		if( else_count >= timeout)
+		{
+			printf("wifi connect falied................................................................................\n");
+			break;
+		}		
+
+		fp = fopen("/tmp/wpa_output", "r");
+		if( NULL == fp )
+			continue;
+
+		while (fgets(buffer, sizeof(buffer), fp) != NULL)
+		{
+			if ((p = strstr(buffer, "CTRL-EVENT-CONNECTED")) != NULL)
+			{
+				printf("wifi connected..................................................................................\n");
+				connected = 1;
+				goto cleanup;
+			}
+			
+			if ((p = strstr(buffer, "reason=WRONG_KEY")) != NULL)
+			{
+				wrong_key_count++;
+				if( wrong_key_count >= 2 )
+				{
+					printf("wifi passwd error.................................................................................\n");
+					goto cleanup;
+				}
+			}
+		}
+		
+		if(fp)
+			fclose(fp);
+	}
+
+cleanup:
+    if(fp) 
+        fclose(fp);
+    remove("/tmp/wpa_output");
+
+    return connected;
+
+}
+
+
+
 
 /// 创建station模式
 /// 
@@ -570,8 +855,10 @@ int WifiStationModeCreate(WIFI_ST_t *pStm, connect_wifi_result_cb cb)
 	MW_START_PROCESS("sh", "sh", "-c", "killall wpa_supplicant", NULL);
 	MW_START_PROCESS("sh", "sh", "-c", "killall udhcpc", NULL);
 
+	MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 0.0.0.0", NULL);
 	usleep(1000*100);
     MW_START_PROCESS("sh", "sh", "-c", "ifconfig wlan0 up", NULL);
+	MW_START_PROCESS("sh", "sh", "-c", "ifconfig wlan0 0.0.0.0", NULL);
     usleep(1000*100);
 
 	int encrypt = 3;
@@ -592,6 +879,7 @@ int WifiStationModeCreate(WIFI_ST_t *pStm, connect_wifi_result_cb cb)
 		while( 1 == wifi_connect_thread_running )
 			usleep(1000*100);
 
+		memcpy(&s_stWifiConf, pStm, sizeof(WIFI_ST_t));
 		wifi_connecting = 1;
 		CreateDetachedThread(thread_get_wifi_connect_result, (void *)cb, 1);
 
@@ -1220,7 +1508,7 @@ int NetSetEthMac(char* mac)
 	MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 up", NULL);
 }
 
-int NetSetEth()
+int NetSetEth(uint bStaticIp, uint ip, uint netmask, uint gateway, uint dns)
 {
 //<shang>	MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 down", NULL);
 	MW_START_PROCESS("sh", "sh", "-c", "killall udhcpd", NULL);
@@ -1228,7 +1516,39 @@ int NetSetEth()
 	MW_START_PROCESS("sh", "sh", "-c", "killall wpa_supplicant", NULL);
 	MW_START_PROCESS("sh", "sh", "-c", "killall udhcpc", NULL);
 	MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 up", NULL);
-	MW_START_PROCESS_CLOSE_FD("sh", "sh", "-c", "udhcpc -b -i eth0 -s /usr/share/udhcpc/default.script", NULL);
+	MW_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 0.0.0.0", NULL);
+
+	char strIp[16];
+	char strNetmask[16];
+	char strGateway[16];
+	char strDns[16];
+	if (bStaticIp)
+	{
+		printf("NetSetEth %08X---%08X---%08X\n", ip, netmask, gateway);
+		if (inet_ntop(AF_INET, &ip, strIp, sizeof(strIp)) == NULL || 
+			inet_ntop(AF_INET, &netmask, strNetmask, sizeof(strNetmask)) == NULL || 
+			inet_ntop(AF_INET, &gateway, strGateway, sizeof(strGateway)) == NULL || 
+			inet_ntop(AF_INET, &dns, strDns, sizeof(strDns)) == NULL)
+			bStaticIp = 0;
+		printf("NetSetEth converted %s---%s---%s\n", strIp, strNetmask, strGateway);
+		printf("NetSetEth DNS: %s\n", strDns);
+	}
+	printf("NetSetEth bStaticIp: %d\n", bStaticIp);
+
+	if (0 == bStaticIp)
+	{
+		MW_START_PROCESS_CLOSE_FD("sh", "sh", "-c", "udhcpc -b -i eth0 -s /usr/share/udhcpc/default.script", NULL);
+	}
+	else
+	{
+		char cmd[128];
+		snprintf(cmd, sizeof(cmd), "ifconfig eth0 %s netmask %s", strIp, strNetmask);
+		MW_START_PROCESS("sh", "sh", "-c", cmd, NULL);
+		snprintf(cmd, sizeof(cmd), "route add default gw %s", strGateway);
+		MW_START_PROCESS("sh", "sh", "-c", cmd, NULL);
+		snprintf(cmd, sizeof(cmd), "echo -e \'nameserver %s\' > /etc/resolv.conf", strDns);
+		MW_START_PROCESS("sh", "sh", "-c", cmd, NULL);
+	}
 }
 
 int NetSetEth_Peiwang()

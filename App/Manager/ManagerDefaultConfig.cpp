@@ -50,6 +50,7 @@ void CDefaultConfig::NetWork()
 	CConfigTable NetWifi;
 
 	NetWifi[Json::StaticString("Enable")] = false;
+	NetWifi[Json::StaticString("StaticIpEnable")] = false;
 	NetWifi[Json::StaticString("SSID")] = Json::StaticString("");
 	NetWifi[Json::StaticString("Channel")] = 0;
 	NetWifi[Json::StaticString("NetType")] = Json::StaticString("Infra");
@@ -57,9 +58,10 @@ void CDefaultConfig::NetWork()
 	NetWifi[Json::StaticString("Auth")] = Json::StaticString("OPEN");
 	NetWifi[Json::StaticString("KeyType")] = 0;
 	NetWifi[Json::StaticString("Keys")] = Json::StaticString("");
-	NetWifi[Json::StaticString("GateWay")] = Json::StaticString("0x0101A8C0");
-	NetWifi[Json::StaticString("HostIP")] = Json::StaticString("0x0C01A8C0");
-	NetWifi[Json::StaticString("Submask")] = Json::StaticString("0x00FFFFFF");	
+	NetWifi[Json::StaticString("GateWay")] = Json::StaticString("");
+	NetWifi[Json::StaticString("HostIP")] = Json::StaticString("");
+	NetWifi[Json::StaticString("Submask")] = Json::StaticString("");	
+	NetWifi[Json::StaticString("DNS")] = Json::StaticString("");	
 	g_configManager.setDefault(getConfigName(CFG_WIFI), NetWifi);
 
 	//AP模式配置
@@ -96,6 +98,8 @@ void CDefaultConfig::Camera()		// HI3518平台摄像头参数
         table[i]["OSDSwitch"] = 1;
         table[i]["NightVisionMode"] = 0;
         table[i]["AntiFlicker"] = 0;
+        table[i]["mirror"] = 0;
+        table[i]["flip"] = 0;
 	}
 
 	g_configManager.setDefault(getConfigName(CFG_CAMERA_PARAM), table);
@@ -174,7 +178,7 @@ void CDefaultConfig::setFlightWarn()
 	
     table[Json::StaticString("ManualEnable")] = false;
     table[Json::StaticString("Enable")] = true;
-    table[Json::StaticString("Duration")] = 0; 	//0-600 sec
+	table[Json::StaticString("Duration")] = 30; 	//10-600 sec
     table[Json::StaticString("Luminance")] = 100;
 	table[Json::StaticString("Luminance_yellow")] = 1000;
 	g_configManager.setDefault(getConfigName(CFG_FLIGHT_WARN), table);

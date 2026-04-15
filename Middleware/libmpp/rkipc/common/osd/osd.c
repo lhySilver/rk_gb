@@ -439,6 +439,7 @@ int rk_osd_deinit() {
 	pthread_mutex_lock(&g_osd_mutex);
 	const char *osd_type;
 	char entry[128] = {'\0'};
+	int osd_enable = 0;//add on 2025.02.13
 	g_osd_server_run_ = 0;
 	if (g_osd_signal) {
 		rk_signal_give(g_osd_signal);
@@ -450,6 +451,11 @@ int rk_osd_deinit() {
 		snprintf(entry, 127, "osd.%d:type", i);
 		osd_type = rk_param_get_string(entry, NULL);
 		if (osd_type == NULL)
+			continue;
+
+		snprintf(entry, 127, "osd.%d:enabled", i);	
+		osd_enable = rk_param_get_int(entry, 0);
+		if(0 ==osd_enable)
 			continue;
 		// Because enable has been set to 0, after skipping here, the destroy will also be skipped
 		// snprintf(entry, 127, "osd.%d:enabled", i);

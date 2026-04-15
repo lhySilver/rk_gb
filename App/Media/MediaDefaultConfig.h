@@ -22,6 +22,8 @@ public:
 	void setVoice();
 	void setSiren();
 	void setIpcVol();
+	void setVideo();
+	void setAudio();
 private:
 	void SetEventHandler(CConfigTable &table);
 };

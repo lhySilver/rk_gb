@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../../Lib/Package/liblog.a  CMakeFiles/log.dir/Source/LogManager.cpp.o CMakeFiles/log.dir/Source/XMDebug.cpp.o
-/usr/bin/ranlib ../../../Lib/Package/liblog.a

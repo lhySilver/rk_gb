@@ -73,6 +73,8 @@ public:
 	WLAN_FREQ GetCurlWifiFreq();
 	WLAN_BLE GetCurlWifiBleSupport();//add on 2025.01.11
 
+	bool GetQrcodeEnable();
+
 	typedef	enum {
 		NET_CHECK_ETH0_VALID = 0,
 		NET_CHECK_ETH0_INLINE,
@@ -119,8 +121,8 @@ private:
 	void ThreadProc(void);
 	/// 检查网卡是否有效
 	bool Check(char * name);
-	/// 检查网口连接状态
-	int Check_netlink_status(const char * if_name);
+	// /// 检查网口连接状态
+	// int Check_netlink_status(const char * if_name);
 	/// 调试接口
 	int Dump(int argc, char **argv);
 public:
@@ -128,6 +130,8 @@ public:
 	void SetWifi(const char *ssid, const char *pwd);
 	void SetWifiSwitch(bool enable);
 	int GetNetWorkIp(char *pIp, int len);
+	/// 检查网口连接状态
+	int Check_netlink_status(const char * if_name);
 private:
 	NetCommonConfig	m_ConfigNet;
 	NetWifiConfig m_ConfigWifi;
@@ -144,6 +148,8 @@ private:
 	WLAN_BLE m_wlanBleSupport;//add on 2025.01.11 WIFI_BLE_SUPPORT :支持蓝牙  WIFI_BLE_NOT_SUPPORT :不支持蓝牙
 
 	bool m_bWifiEnable;
+	
+	bool m_bCanScanQrCode; //插过网线或者超时后就不允许再启动
 };
 
 #define g_NetConfigHook (*CNetConfigHook::instance())

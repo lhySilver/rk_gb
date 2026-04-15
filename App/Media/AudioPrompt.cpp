@@ -276,9 +276,16 @@ std::string CAudioPrompt::get_play_siren_list(int list)
 
 int CAudioPrompt::playSiren()
 {
+		CConfigTable table;
+		SirenConfig SirenCfg;
+		g_configManager.getConfig(getConfigName(CFG_SIREN), table);
+		TExchangeAL<SirenConfig>::getConfig(table,SirenCfg);
+	//	printf("get sirenlist %d\n",SirenCfg.sirenlist);
+//		return SirenCfg.sirenlist;
+
 
 	CAudioPrompt::AudioFileParm audioFile;
-	audioFile.strFileName = get_play_siren_list(IPC_APP_get_Siren_Sound());
+	audioFile.strFileName = get_play_siren_list(SirenCfg.sirenlist);
 	audioFile.type = 1;
 	g_AudioPrompt.aoPlay(audioFile);
 	return 0;

@@ -96,6 +96,8 @@ int AvInit(float sd,int ispmode);
 int AvRelease();
 int CaptureGetChannels(void);
 int CaptureSetStreamCallBack(char *module_name, int media_type, dmc_media_input_fn proc);
+int CaptureInitEncParam(int channel, int enc_type, int bit_rate, int frmae_rate, int gop);
+int CaptureChangeEncParam(int channel, int enc_type, int bit_rate, int frmae_rate, int gop);
 int CaptureCreate(int channel);
 int CaptureDestroy(int channel);
 int CaptureStart(int  channel, unsigned int dwType);
@@ -105,6 +107,7 @@ int CaptureForceIFrame(int  channel, unsigned int dwType);
 int CaptureSetISPMode(int iMode);
 int CaptureSetBitRate(int Channel, int iTargetBitRate);
 int CaptureSetRotate(int enRotate);
+int CaptureSetMirrorAndFlip(unsigned char mirror, unsigned char flip);
 int CaptureSetfps(int fps);
 int CaptureGetResolution(int stream_id, int *pWith,int *pHeight);
 

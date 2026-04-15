@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../../Lib/Package/libManager.a  CMakeFiles/Manager.dir/Source/ConfigManager.cpp.o CMakeFiles/Manager.dir/Source/User.cpp.o CMakeFiles/Manager.dir/Source/UserManager.cpp.o CMakeFiles/Manager.dir/Source/Event.cpp.o CMakeFiles/Manager.dir/Source/MagicBox.cpp.o CMakeFiles/Manager.dir/Source/DefaultConfig.cpp.o CMakeFiles/Manager.dir/Source/Md5.cpp.o
-/usr/bin/ranlib ../../../Lib/Package/libManager.a

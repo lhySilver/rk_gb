@@ -117,6 +117,8 @@ int AvInit(float sd,int ispmode)
 	// init
 	rk_param_init(rkipc_ini_path_);
 
+	// WX
+	#if 0
 	if (rk_param_get_int("isp:group_mode", 1)) {
 		rk_isp_group_init(0, rkipc_iq_file_path_);
 		rk_isp_set_frame_rate(0, rk_param_get_int("isp.0.adjustment:fps", 30));
@@ -126,6 +128,15 @@ int AvInit(float sd,int ispmode)
 		rk_isp_set_frame_rate(0, rk_param_get_int("isp.0.adjustment:fps", 30));
 		rk_isp_set_frame_rate(1, rk_param_get_int("isp.0.adjustment:fps", 30));
 	}
+	#else
+	if (rk_param_get_int("video.source:enable_aiq", 1)) {
+		rk_isp_init(0, rkipc_iq_file_path_);
+		rk_isp_set_frame_rate(0, rk_param_get_int("isp.0.adjustment:fps", 30));
+//		rk_isp_set_frame_rate(0, 30); //shang
+//		if (rk_param_get_int("isp:init_form_ini", 1))
+//			rk_isp_set_from_ini(0);
+	}
+	#endif
 
 	RK_MPI_SYS_Init();
 
@@ -191,18 +202,95 @@ static void smart_ir_status(int status)
 	//MSG("=================dayornight : [%d]===============\n",status);
 	dayornight = status;
 }
+
+// 在 CaptureCreate 之前调用
+int s_is_video_inited = 0;
+int g_video_chn_0_enc_param_inited = 0;
+int g_video_chn_0_enc_type;			//0-264 1-265
+int g_video_chn_0_bit_rate;			//码率
+int g_video_chn_0_frmae_rate; 		//帧率
+int g_video_chn_0_gop;				//I帧间隔
+int g_video_chn_1_enc_param_inited = 0;
+int g_video_chn_1_enc_type;			//0-264 1-265
+int g_video_chn_1_bit_rate;			//码率
+int g_video_chn_1_frmae_rate; 		//帧率
+int g_video_chn_1_gop;				//I帧间隔
+int CaptureInitEncParam(int channel, int enc_type, int bit_rate, int frmae_rate, int gop)
+{
+	if (0 == channel)
+	{
+		g_video_chn_0_enc_param_inited = 1;
+		g_video_chn_0_enc_type = enc_type;
+		g_video_chn_0_bit_rate = bit_rate;
+		g_video_chn_0_frmae_rate = frmae_rate;
+		g_video_chn_0_gop = gop;
+		return 0;
+	}
+	if (1 == channel)
+	{
+		g_video_chn_1_enc_param_inited = 1;
+		g_video_chn_1_enc_type = enc_type;
+		g_video_chn_1_bit_rate = bit_rate;
+		g_video_chn_1_frmae_rate = frmae_rate;
+		g_video_chn_1_gop = gop;
+		return 0;
+	}
+
+	return -1;
+}
+
+int CaptureChangeEncParam(int channel, int enc_type, int bit_rate, int frmae_rate, int gop)
+{
+	if (0 == s_is_video_inited)
+		return -1;
+
+	int old_enc_type;
+	if (0 == channel && g_video_chn_0_enc_param_inited)
+	{
+		old_enc_type = g_video_chn_0_enc_type;
+		g_video_chn_0_enc_type = enc_type;
+		g_video_chn_0_bit_rate = bit_rate;
+		g_video_chn_0_frmae_rate = frmae_rate;
+		g_video_chn_0_gop = gop;
+		if (old_enc_type != enc_type)
+			my_video_0_restart();
+		else
+			my_video_set_param(0);
+	}
+	if (1 == channel && g_video_chn_1_enc_param_inited)
+	{
+		old_enc_type = g_video_chn_1_enc_type;
+		g_video_chn_1_enc_type = enc_type;
+		g_video_chn_1_bit_rate = bit_rate;
+		g_video_chn_1_frmae_rate = frmae_rate;
+		g_video_chn_1_gop = gop;
+		if (old_enc_type != enc_type)
+			my_video_1_restart();
+		else
+			my_video_set_param(0);
+	}
+
+	return 0;
+}
+
+
 int CaptureCreate(int channel)
 {
 	MSG("CaptureCreate CaptureCreate ch %d\n", channel);
 	
+//	rk_video_set_stitch_distance(stitch_distance);
+//	MSG("CaptureCreate rk_video_init stitch_distance = %f\n",stitch_distance);
+
 	rk_video_init();
 
-	MSG("CaptureCreate rk_smart_ir_start\n");
-	rk_smart_ir_start(smart_ir_status,50);
-	MSG("CaptureCreate rk_smart_ir_start end\n");
+//	MSG("CaptureCreate rk_smart_ir_start\n");
+//	rk_smart_ir_start(smart_ir_status,50);
+//	MSG("CaptureCreate rk_smart_ir_start end\n");
 
-	rk_video_set_stitch_distance(stitch_distance);
-	MSG("CaptureCreate rk_video_init stitch_distance = %f\n",stitch_distance);
+	// rk_video_set_stitch_distance(stitch_distance);
+	// MSG("CaptureCreate rk_video_init stitch_distance = %f\n",stitch_distance);
+
+	s_is_video_inited = 1;
 
 	return 0;
 }
@@ -241,6 +329,8 @@ int CaptureSetfps(int fps)
 
 int CaptureSetRotate(int enRotate)
 {
+	printf("===not use CaptureSetRotate===\n");
+	return 0 ;
 	MSG("Middleware CaptureSetRotate\n");
 	int ret = 0;
 	int vlaue = 0;
@@ -262,6 +352,21 @@ int CaptureSetRotate(int enRotate)
 	if (ret != 0)
 	{
 		EMSG("rk_video_set_rotation error! enRotate=%d ret=0x%x\n", enRotate, ret);
+	}
+
+	return 0;
+}
+
+int CaptureSetMirrorAndFlip(unsigned char mirror, unsigned char flip)
+{
+	MSG("Middleware CaptureSetMirrorAndFlip mirror: %d, flip: %d\n", mirror, flip);
+	int ret = 0;
+
+	ret = rk_video_set_vi_mirror_flip(mirror, flip);
+	if (ret != 0)
+	{
+		EMSG("rk_video_set_vi_mirror_flip error! ret=0x%x\n", ret);
+		return -1;
 	}
 
 	return 0;

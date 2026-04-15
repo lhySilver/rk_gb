@@ -12,11 +12,21 @@ echo $SDUPDATE_DIR
 
 CHIP_TYPE=RV1106_DUAL_IPC
 #BOARD_TYPE=RV1103_DUAL_IPC
-BOARD_TYPE=RC0240_LGV10
-# BLE_TYPE=ATBM6062
+#励国安保灯
+# BOARD_TYPE=RC0240_LGV10
 # BLE_TYPE=ATBM6012B
+#励国安保灯
+
+#双目枪
+BOARD_TYPE=RC0240
+BLE_TYPE=ATBM6062
+#双目枪
+
+
+PACKAGING=$ROOT/packaging
+
 # BLE_TYPE=ATBM6132
-BLE_TYPE=AIC8800DL
+#BLE_TYPE=AIC8800DL
 #DMODE=debug
 DMODE=release
 if [ -z $CROSS ];then
@@ -121,7 +131,7 @@ function usage()
 	echo "all             -build all [app image]"
 	echo "clean           -build clean all"
 	echo "app             -build app"
-
+	
 	# echo "app-clean     -build clean Middleware"
 	# echo "mw            -build Middleware"
 	# echo "mw-clean      -build clean Middleware"
@@ -131,54 +141,92 @@ function usage()
 	# echo "image-clean   -build packaging image clean"
 
 	echo ""
+	echo "Available Project :"
+	echo "----------------------------------------------------------------"
+	echo "         1: RC0240(cob atbm6062/rtl8818ftv + gc2063 )"
+	echo "----------------------------------------------------------------"
+	echo "         2: RC0240V30(cob aic8800dl + gc2063 )"
+	echo "----------------------------------------------------------------"
+	echo "         3: RC0240V40(cob atbm6132  + gc2063 )"
+	echo "----------------------------------------------------------------"
+	echo "         4: RC0240V20(cob atbm6062  + cv2003 )"
+	echo "----------------------------------------------------------------"
+	echo ""
+
 }
 #----------------------------
 function check()
 {
-	# CHIP_TYPE=RV1106_DUAL_IPC
-	BOARD_TYPE=RC0240_LGV10
-	# BLE_TYPE=ATBM6062
+	usage
+	echo 'Which project would you like?:[Select 1~3]'
+	read aNum
+	case $aNum in
+		1)  echo 'Select 1: RC0240(cob atbm6062/rtl8818ftv + gc2063 )'
+		BOARD_TYPE=RC0240
+		BLE_TYPE=ATBM6062
+		CHIP_TYPE=RV1106_DUAL_IPC
+		;;
+		2)  echo 'Select 2: RC0240V30(cob aic8800dl + gc2063 )'
+		BOARD_TYPE=RC0240V30
+		BLE_TYPE=AIC8800DL
+		CHIP_TYPE=RV1106_DUAL_IPC
+		;;
+		3)  echo 'Select 3: RC0240V40(cob atbm6132 + gc2063 )'
+		BOARD_TYPE=RC0240V40
+		BLE_TYPE=ATBM6132
+		CHIP_TYPE=RV1106_DUAL_IPC
+		;;
+		4)  echo 'Select 4: RC0240V20(cob atbm6062  + cv2003 )'
+		BOARD_TYPE=RC0240V20
+		BLE_TYPE=ATBM6062
+		CHIP_TYPE=RV1106_DUAL_IPC
+		;;		
+	esac
+
 	echo "CHIP_TYPE=$CHIP_TYPE"
 	echo "BOARD_TYPE=$BOARD_TYPE"
 	echo "BLE_TYPE=$BLE_TYPE"
 	PACKAGING=$ROOT/packaging-$BOARD_TYPE
 	echo "PACKAGING=$PACKAGING"
+	
+	sleep 3
 }
 
-if [ "$1" = "clean" ];then
+if [ "$1" == "clean" ];then
+#	check $2
 	clean_all
-#	image-clean
+	image-clean
 elif [ "$1" == "all" ];then
 	DMODE=release
-	check $2
-#	clean_all
+#	check $2
+	clean_all
 	make_all
 	echo "BOARD_TYPE=$BOARD_TYPE"
 	image
 elif [ "$1" == "debug" ];then
 	DMODE=debug
-	check $2
+#	check $2
 #	clean_all
 	make_all
 	echo "BOARD_TYPE=$BOARD_TYPE"
 	image
 elif [ "$1" == "app" ];then
-	check $2
+#	check $2
 	make_app
 elif [ "$1" == "app-clean" ];then
-	check $2
+#	check $2
 	clean_app
 elif [ "$1" == "mid" ];then
-	check $2
+#	check $2
 	make_mid
 elif [ "$1" == "mid-clean" ];then
-	check $2
+#	check $2
 	clean_mid
 elif [ "$1" == "image" ];then
-	check $2
+#	check $2
 	image
 elif [ "$1" == "image-clean" ];then
-	check $2
+#	check $2
 	image-clean
 else
 	usage

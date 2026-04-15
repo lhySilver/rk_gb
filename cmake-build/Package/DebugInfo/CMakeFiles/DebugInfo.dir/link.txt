@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../../Lib/Package/libDebugInfo.a  CMakeFiles/DebugInfo.dir/Source/debuginfo.cpp.o
-/usr/bin/ranlib ../../../Lib/Package/libDebugInfo.a

@@ -315,7 +315,7 @@ template<> void exchangeTableV2<BlindDetectConfigAll>(CConfigTable &table, Blind
 }
 
 static ConfigPair s_sensorTypeMap[] = 
-{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+{
 	{"NC", 0},
 	{"NO", 1},
 	{NULL, }
@@ -362,7 +362,7 @@ static ConfigPair s_AlarmOutTypeMap[] =
 };
 
 static ConfigPair s_AlarmOutStatusMap[] = 
-{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+{
 	{"OPEN", 0},
 	{"CLOSE", 1},
 	{NULL, }
@@ -681,3 +681,36 @@ template<> void exchangeTable<OnvifConf_S>(CConfigTable &table, OnvifConf_S &con
 	exchanger.exchange(table, "FirstEnable",    config.FirstEnable);
 	exchanger.exchange(table, "Password", 		config.Password);
 }
+
+//Video配置
+template<> void exchangeTable<VideoChannelConf_S>(CConfigTable &table, VideoChannelConf_S &config, int state)
+{
+	CKeyExchange exchanger;
+	
+	exchanger.setState(state);
+	exchanger.exchange(table, "enc_type", 		config.enc_type);
+	exchanger.exchange(table, "bit_rate",    	config.bit_rate);
+	exchanger.exchange(table, "frmae_rate", 	config.frmae_rate);
+	exchanger.exchange(table, "gop", 			config.gop);
+}
+template<> void exchangeTable<VideoConf_S>(CConfigTable &table, VideoConf_S &configAll, int state)
+{
+	for(int i = 0; i < VIDEO_CHANNEL_MAX; i++)
+	{
+		if(table[i] == Json::nullValue && state == CKeyExchange::ES_LOADING)
+		{
+			continue;
+		}
+		exchangeTable(table[i], configAll.chan[i], state);
+	}
+}
+
+//Audio配置
+template<> void exchangeTable<AudioConf_S>(CConfigTable &table, AudioConf_S &config, int state)
+{
+	CKeyExchange exchanger;
+	
+	exchanger.setState(state);
+	exchanger.exchange(table, "enc_type", 		config.enc_type);
+}
+

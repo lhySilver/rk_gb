@@ -35,6 +35,7 @@ typedef struct _PRODUCT_COF {
     unsigned char capture_vol;   	//采集音量
 	unsigned char lamp_board;       //灯板输入的逻辑 0-正， 1-反  默认0
 	unsigned short lamp_board_value; //灯板输入值 默认 900
+	unsigned short lamp_board_value_method; //
 
 
 //	unsigned char exterior_type;    //外观类型 0-浩方 1-宝锋 2-腾安达 3-海视泰80a

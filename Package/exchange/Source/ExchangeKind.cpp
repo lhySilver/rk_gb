@@ -78,6 +78,8 @@ static ConfigPair s_configKeyMaps[] =
 	{"LUX",CFG_LUX},
 	{"IPC_VOL",CFG_IPC_VOL},
 	{"REBOOT",CFG_REBOOT},
+	{"Video",CFG_VIDEO},
+	{"Audio",CFG_AUDIO},
 	{NULL,}
 };
 

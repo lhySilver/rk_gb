@@ -35,6 +35,7 @@ INT_T s_mqtt_status = 0;
 
 INT_T g_time_zone = 0;
 INT_T g_time_dst = 0;
+int g_iBleInitFlag = 0;
 
 #if defined BLE_AIC8800DL
 bool lbh_ble_advertising = false;
@@ -56,6 +57,14 @@ extern int open_tuya_ring_buffer_handle();
 //音视频初始化
 extern int create_streamout_thread();
 extern OPERATE_RET tuya_ipc_sdk_start(IN CONST TUYA_IPC_SDK_RUN_VAR_S * pRunInfo);
+
+//------------------------------- 由于使用有线时，无法获取到有效的mqtt状态，故利用回调的方式来对有线、无线进行监控
+static INT_T IPC_APP_Get_MqttStatus()
+{
+    return s_mqtt_status;
+}
+//---------------------------------
+
 
 static void *sync_time_func(void *arg)
 {
@@ -118,6 +127,7 @@ static void *check_network_status_thread(void *arg)
 	{
         //插入网口连上服务器tuya_ipc_get_mqtt_status还是返回离线的，目前不知道什么原因
         //此出插入网口不检查网络状态
+#if 0
         if(g_NetConfigHook.GetNetWorkLindMode() == NET_WORK_MODE_ETH0)
         {
             if (0 != reboot_count)
@@ -140,6 +150,10 @@ static void *check_network_status_thread(void *arg)
         }
 		int ret = tuya_ipc_get_mqtt_status();
         printf("tuya_ipc_get_mqtt_status=%d\n",tuya_ipc_get_mqtt_status());
+#else
+        int ret = IPC_APP_Get_MqttStatus();
+        printf("IPC_APP_Get_MqttStatus=%d\n",ret);
+#endif
 		if ( 1 == ret)
 		{
 			mqtt_status = 1;
@@ -207,22 +221,29 @@ STATIC VOID __IPC_APP_Get_Net_Status_cb(IN CONST BYTE_T stat)
     AppErr("Net status change to:%d", stat);
     switch(stat)
     {
-        // case STAT_CLOUD_CONN:        //for wifi ipc
+        case STAT_CLOUD_CONN:        //for wifi ipc //WiFi有线来回切换时，有概率会使Mqtt处于这个状态
         // case GB_STAT_CLOUD_CONN:     //for wired ipc
         case STAT_MQTT_ONLINE:
         {
             AppErr("mqtt is online\n");
-            g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
-            g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON);
+            if (tuya_ipc_get_register_status() == E_IPC_ACTIVEATED)
+            {
+                AppErr("ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON\n");
+                g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
+                g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON);
+            }
             s_mqtt_status = 1;
             break;
         }
         case STAT_MQTT_OFFLINE:
         {
             AppErr("mqtt is offline\n");
-			AppErr("ENUM_INDICATOR_LIGHT_FAST_FLICKER\n");
-			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_FAST_FLICKER);
-            g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
+            if (tuya_ipc_get_register_status() == E_IPC_ACTIVEATED)
+            {
+                AppErr("ENUM_INDICATOR_LIGHT_FAST_FLICKER\n"); 
+			    g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_FAST_FLICKER);
+                g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
+            }
             s_mqtt_status = 0;
             break;
         }
@@ -305,7 +326,7 @@ OPERATE_RET TUYA_IPC_SDK_START(WIFI_INIT_MODE_E connect_mode, CHAR_T *p_token)
     ipc_sdk_run_var.media_info.media_info.video_width[E_IPC_STREAM_VIDEO_SUB] = sub_videow; /* Single frame resolution of width */
     ipc_sdk_run_var.media_info.media_info.video_height[E_IPC_STREAM_VIDEO_SUB] = sub_videoh;/* Single frame resolution of height */
     ipc_sdk_run_var.media_info.media_info.video_freq[E_IPC_STREAM_VIDEO_SUB] = 90000; /* Clock frequency */
-    ipc_sdk_run_var.media_info.media_info.video_codec[E_IPC_STREAM_VIDEO_SUB] = TUYA_CODEC_VIDEO_H265; /* Encoding format */
+    ipc_sdk_run_var.media_info.media_info.video_codec[E_IPC_STREAM_VIDEO_SUB] = TUYA_CODEC_VIDEO_H264; /* Encoding format */
 
     /* Audio stream configuration.
     Note: The internal P2P preview, cloud storage, and local storage of the SDK are all use E_IPC_STREAM_AUDIO_MAIN data. */
@@ -580,7 +601,8 @@ void lib_ble_main_init(void)
 	int time_cut = 0;
     pthread_t thread;
 	//启动蓝牙lbh服务进程，并指定uuid配置文件路径
-	START_PROCESS("sh", "sh", "-c", "/oem/usr/bin/aic8800_ble/lbh_server -p /oem/usr/ko/aic8800dl/ble_userconfig.json -s ble usb &", NULL);
+	// START_PROCESS("sh", "sh", "-c", "/oem/usr/bin/aic8800_ble/lbh_server -p /oem/usr/ko/aic8800dl/ble_userconfig.json -s ble usb &", NULL);
+    START_PROCESS("sh", "sh", "-c", "/oem/usr/bin/lbh_server -p /oem/usr/ko/aic8800dl/ble_userconfig.json -s ble usb &", NULL);
 	//服务起来后会创建一个socket文件
 	while(access("/tmp/app_queue_tool_socket", F_OK) != 0)
 	{
@@ -736,7 +758,7 @@ int ble_smt_send_ble(const char *data, int len)
  */
 STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data_buf_t *scan_resp)
 {
-	if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+	if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -744,16 +766,20 @@ STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
 	//转存蓝牙广播数据，待蓝牙服务起来之后再发给蓝牙服务端
 	ble_smt_advertise_adv_data(adv->data, adv->len);
     ble_smt_advertise_adv_resp_data(scan_resp->data, scan_resp->len);
 	//启动蓝牙服务
     printf("\033[1;32m ==========================lib_ble_main_init============================ \033[0m\n");
-	lib_ble_main_init();
+    if(0 == g_iBleInitFlag)
+    {
+        lib_ble_main_init();
+        g_iBleInitFlag = 1;
+    }
     return 0;
 }
 
@@ -789,7 +815,7 @@ STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data
  */
 STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data_buf_t *scan_resp)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -797,10 +823,10 @@ STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_reset_adv\n");
     int ret = 0;
     #if 0
@@ -834,7 +860,12 @@ STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data
 
     AppErr("lib_ble_main_init\n");
     printf("\033[1;32m ==========================lib_ble_main_init============================ \033[0m\n");
-    lib_ble_main_init();
+    
+    if(0 == g_iBleInitFlag)
+    {
+        lib_ble_main_init();
+        g_iBleInitFlag = 1;
+    }
     #endif
     return 0;
 }
@@ -843,7 +874,7 @@ STATIC OPERATE_RET tuya_ext_bt_reset_adv(tuya_ble_data_buf_t *adv, tuya_ble_data
 #endif
 STATIC OPERATE_RET tuya_ext_bt_send(BYTE_T *data, UINT8_T len)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -851,10 +882,10 @@ STATIC OPERATE_RET tuya_ext_bt_send(BYTE_T *data, UINT8_T len)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_send\n");
     OPERATE_RET op_ret = OPRT_OK;
     if (data == NULL || len == 0) {
@@ -869,7 +900,7 @@ STATIC OPERATE_RET tuya_ext_bt_send(BYTE_T *data, UINT8_T len)
 STATIC OPERATE_RET tuya_ext_bt_port_init(ty_bt_param_t *p)
 {
     OPERATE_RET op_ret = OPRT_OK;
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport() )
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -878,26 +909,26 @@ STATIC OPERATE_RET tuya_ext_bt_port_init(ty_bt_param_t *p)
         return OPRT_OS_ADAPTER_OK;
     }
     AppErr("tuya_ext_bt_port_init\n");
-    //获取配置信息
-    NetWifiConfig m_ConfigWifi;
-	Json::Value WifiTable;
-	g_configManager.getConfig(getConfigName(CFG_WIFI), WifiTable);
-	TExchangeAL<NetWifiConfig>::getConfig(WifiTable, m_ConfigWifi);
+    // // 获取配置信息
+    // NetWifiConfig m_ConfigWifi;
+	// Json::Value WifiTable;
+	// g_configManager.getConfig(getConfigName(CFG_WIFI), WifiTable);
+	// TExchangeAL<NetWifiConfig>::getConfig(WifiTable, m_ConfigWifi);
 
     // printf("m_ConfigWifi.strSSID=%s\n",m_ConfigWifi.strSSID.c_str());
     // printf("m_ConfigWifi.strSSID.length=%d\n",m_ConfigWifi.strSSID.length());
     // printf("m_ConfigWifi.strKeys=%s\n",m_ConfigWifi.strKeys.c_str());
     // printf("m_ConfigWifi.strKeys.length=%d\n",m_ConfigWifi.strKeys.length());
 
-    if ( !(m_ConfigWifi.strSSID == ""))
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if ( !(m_ConfigWifi.strSSID == ""))
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
 
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
 
     g_adv_data.data = NULL;
 	g_adv_data.len = 0;
@@ -912,7 +943,7 @@ STATIC OPERATE_RET tuya_ext_bt_port_init(ty_bt_param_t *p)
 }
 STATIC OPERATE_RET tuya_ext_bt_port_deinit(void)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -920,10 +951,10 @@ STATIC OPERATE_RET tuya_ext_bt_port_deinit(void)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_port_deinit\n");
     return OPRT_OS_ADAPTER_OK;
 }
@@ -935,7 +966,7 @@ STATIC OPERATE_RET tuya_ext_bt_port_deinit(void)
  */
 STATIC OPERATE_RET tuya_ext_bt_gap_disconnect(void)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -943,10 +974,10 @@ STATIC OPERATE_RET tuya_ext_bt_gap_disconnect(void)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_gap_disconnect\n");
     OPERATE_RET ret = OPRT_OK;
     return ret;
@@ -959,7 +990,7 @@ STATIC OPERATE_RET tuya_ext_bt_gap_disconnect(void)
  */
 STATIC OPERATE_RET tuya_ext_bt_start_adv(void)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -967,10 +998,10 @@ STATIC OPERATE_RET tuya_ext_bt_start_adv(void)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_start_adv\n");
     return OPRT_OK;
 }
@@ -982,7 +1013,7 @@ STATIC OPERATE_RET tuya_ext_bt_start_adv(void)
  */
 STATIC OPERATE_RET tuya_ext_bt_stop_adv(void)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -990,10 +1021,10 @@ STATIC OPERATE_RET tuya_ext_bt_stop_adv(void)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_stop_adv\n");
     return OPRT_OK;
 }
@@ -1006,7 +1037,7 @@ STATIC OPERATE_RET tuya_ext_bt_stop_adv(void)
  */
 STATIC OPERATE_RET tuya_ext_bt_assign_scan(ty_bt_scan_info_t *info)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1014,10 +1045,10 @@ STATIC OPERATE_RET tuya_ext_bt_assign_scan(ty_bt_scan_info_t *info)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_assign_scan\n");
     return OPRT_OK;
 }
@@ -1030,7 +1061,7 @@ STATIC OPERATE_RET tuya_ext_bt_assign_scan(ty_bt_scan_info_t *info)
  */
 STATIC OPERATE_RET tuya_ext_bt_get_rssi(signed char *rssi)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1038,17 +1069,17 @@ STATIC OPERATE_RET tuya_ext_bt_get_rssi(signed char *rssi)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_get_rssi\n");
     return OPRT_OK;
 }
 
 STATIC OPERATE_RET tuya_ext_bt_start_scan()
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1056,17 +1087,17 @@ STATIC OPERATE_RET tuya_ext_bt_start_scan()
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_start_scan\n");
     return OPRT_OS_ADAPTER_BT_SCAN_FAILED;
 }
 
 STATIC OPERATE_RET tuya_ext_bt_stop_scan()
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1076,7 +1107,7 @@ STATIC OPERATE_RET tuya_ext_bt_stop_scan()
 
 STATIC OPERATE_RET tuya_ext_bt_setmac(CONST NW_MAC_S *mac)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1084,10 +1115,10 @@ STATIC OPERATE_RET tuya_ext_bt_setmac(CONST NW_MAC_S *mac)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_setmac\n");
     OPERATE_RET ret = OPRT_OK;
 
@@ -1109,7 +1140,7 @@ STATIC OPERATE_RET tuya_ext_bt_setmac(CONST NW_MAC_S *mac)
 
 STATIC OPERATE_RET tuya_ext_bt_getmac(NW_MAC_S *mac)
 {
-    if (OPRT_OS_ADAPTER_OK != wifi_model_check())
+    if (WIFI_BLE_NOT_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())
     {
         return OPRT_OS_ADAPTER_OK;
     }
@@ -1117,10 +1148,10 @@ STATIC OPERATE_RET tuya_ext_bt_getmac(NW_MAC_S *mac)
     {
         return OPRT_OS_ADAPTER_OK;
     }
-    if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
-    {
-        return OPRT_OS_ADAPTER_OK;
-    }
+    // if (NET_WORK_MODE_NONE != g_NetConfigHook.GetNetWorkLindMode())
+    // {
+    //     return OPRT_OS_ADAPTER_OK;
+    // }
     AppErr("tuya_ext_bt_getmac\n");
     OPERATE_RET ret = OPRT_OK;
     BYTE_T *p_mac = NULL;
@@ -1186,6 +1217,15 @@ INT_T tuay_main()
     {
         s_bFirstBound = true;
         usleep(100000);
+    }
+
+
+    //蓝牙初始化之后，才能够退出
+    if( (1 == g_iBleInitFlag) && (WIFI_BLE_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport()) )
+    {
+        printf("\033[1;32m ==========================lib_ble_main_exit============================ \033[0m\n");
+        lib_ble_main_exit();
+        g_iBleInitFlag = 0;
     }
 	g_NetConfigHook.SetWifiSwitch(true);
     

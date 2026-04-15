@@ -5,22 +5,36 @@
 
 #include "PAL/Capture.h"
 
-extern "C"
-{
-int rk_osd_get_enabled(int id, int *value);
-int rk_osd_set_enabled(int id, int value);
-int rk_osd_restart();
-int rk_osd_get_position_x(int id, int *value);
-int rk_osd_set_position_x(int id, int value);
-int rk_osd_get_position_y(int id, int *value);
-int rk_osd_set_position_y(int id, int value);
-int rk_osd_get_date_style(int id, const char **value);
-int rk_osd_set_date_style(int id, const char *value);
-int rk_osd_get_time_style(int id, const char **value);
-int rk_osd_set_time_style(int id, const char *value);
-int rk_osd_get_display_text(int id, const char **value);
-int rk_osd_set_display_text(int id, const char *value);
-}
+//extern "C"
+//{
+//int rk_osd_get_enabled(int id, int *value);
+//int rk_osd_set_enabled(int id, int value);
+//int rk_osd_restart();
+//int rk_osd_get_position_x(int id, int *value);
+//int rk_osd_set_position_x(int id, int value);
+//int rk_osd_get_position_y(int id, int *value);
+//int rk_osd_set_position_y(int id, int value);
+//int rk_osd_get_date_style(int id, const char **value);
+//int rk_osd_set_date_style(int id, const char *value);
+//int rk_osd_get_time_style(int id, const char **value);
+//int rk_osd_set_time_style(int id, const char *value);
+//int rk_osd_get_display_text(int id, const char **value);
+//int rk_osd_set_display_text(int id, const char *value);
+//}
+int rk_osd_get_enabled(int id, int *value){}
+int rk_osd_set_enabled(int id, int value){}
+int rk_osd_restart(){}
+int rk_osd_get_position_x(int id, int *value){}
+int rk_osd_set_position_x(int id, int value){}
+int rk_osd_get_position_y(int id, int *value){}
+int rk_osd_set_position_y(int id, int value){}
+int rk_osd_get_date_style(int id, const char **value){}
+int rk_osd_set_date_style(int id, const char *value){}
+int rk_osd_get_time_style(int id, const char **value){}
+int rk_osd_set_time_style(int id, const char *value){}
+int rk_osd_get_display_text(int id, const char **value){}
+int rk_osd_set_display_text(int id, const char *value){}
+
 
 namespace
 {

@@ -5,9 +5,15 @@
 #include "sdk_inc/tuya_ipc_api.h"
 
 #ifdef RC0240
-#define IPC_APP_VERSION         "202.302.14" 			//显示在涂鸦APP上的固件版本信息
+#define IPC_APP_VERSION         "202.302.32" 			//显示在涂鸦APP上的固件版本信息
+#elif defined  RC0240V20
+#define IPC_APP_VERSION         "202.306.04" 			//显示在涂鸦APP上的固件版本信息 双目枪机 6062 + CV2003
+#elif defined  RC0240V30
+#define IPC_APP_VERSION         "202.308.02" 			//显示在涂鸦APP上的固件版本信息 双目枪机爱科微版本
+#elif defined  RC0240V40
+#define IPC_APP_VERSION         "202.309.01" 			//显示在涂鸦APP上的固件版本信息 双目枪机ATBM6132版本
 #elif defined  RC0240_LGV10
-#define IPC_APP_VERSION         "202.305.01" 			//显示在涂鸦APP上的固件版本信息
+#define IPC_APP_VERSION         "202.304.01" 			//显示在涂鸦APP上的固件版本信息
 #elif defined  RC0330_V20
 #define IPC_APP_VERSION         "202.102.1" 			//显示在涂鸦APP上的固件版本信息
 #endif

@@ -65,6 +65,8 @@ enum ConfigKinds
 	CFG_LUX,                //联动开灯亮度
 	CFG_IPC_VOL,            //设备音量
 	CFG_REBOOT, 			//设备重启配置
+	CFG_VIDEO, 			//视频
+	CFG_AUDIO, 			//音频
 	CFG_NR,
 };
 

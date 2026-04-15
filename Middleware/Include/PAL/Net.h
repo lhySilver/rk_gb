@@ -7,7 +7,24 @@
 extern "C" {
 #endif
 
+//------------------------add on 2025.05.26
+typedef enum
+{
+	WIFI_MODEL_UNKNOWN 		= 0, 	//未知
+	WIFI_MODEL_RTL8188FTV,
+	WIFI_MODEL_SV6256P,
+	WIFI_MODEL_ATBM6012B,
+	WIFI_MODEL_ATBM6062,
+	WIFI_MODEL_ATBM6132,
+	WIFI_MODEL_AIC8800DL,
+}WIFI_MODEL_E;
 
+typedef struct{
+	WIFI_MODEL_E model;
+	int is5G;
+	int isBle;
+} Wifi_Model_info_S;
+//------------------------add on 2025.05.26
 
 enum network_media {
  NM_WIRED = 0,  //有线网卡
@@ -54,6 +71,11 @@ typedef struct WIFI_ST_s
 {
 	char ssid[64];
 	char psk[64];//mod by ale 16->64
+	unsigned int bStaticIp;
+	unsigned int ip;
+	unsigned int netmask;
+	unsigned int gateway;
+	unsigned int dns;
 }WIFI_ST_t;
 
 
@@ -147,6 +169,10 @@ typedef struct
 /// @return 
 int WifiIfconfigDown();
 
+/// @brief 初始化wifi模块
+/// @return 
+void WifiInit();
+
 /// @brief 获取wifi模式
 /// @return 
 int WifiGetMode();
@@ -160,6 +186,11 @@ int WifiApModeCreate(const char *ssid, const char *passwd);
 /// @brief 销毁ap模式
 /// @return 
 int WifiApModeDestroy();
+
+/// @brief 获取WiFi的连接状态
+/// @return 
+int NetGetWifiConnectStatus(WIFI_ST_t *pStm,int timeout);
+
 
 /// @brief 创建station模式
 /// @param pStm 
@@ -217,7 +248,7 @@ int NetSetEthMac(char* mac);
 
 /// @brief 启动有线
 /// @return 
-int NetSetEth();
+int NetSetEth(uint bStaticIp, uint ip, uint netmask, uint gateway, uint dns);
 
 /// @brief 有线配网
 /// @return 

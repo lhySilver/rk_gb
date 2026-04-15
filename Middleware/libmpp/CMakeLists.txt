@@ -6,6 +6,12 @@
 	
 	if (RC0240) 
 		add_definitions(-DRC0240)
+	elseif (RC0240V20)
+		add_definitions(-DRC0240V20)	
+	elseif (RC0240V30)
+		add_definitions(-DRC0240V30)
+	elseif (RC0240V40)
+		add_definitions(-DRC0240V40)
 	elseif (RC0240_LGV10)
 		add_definitions(-DRC0240_LGV10)
 	endif()

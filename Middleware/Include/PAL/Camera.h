@@ -16,6 +16,8 @@ struct CameraParam				// HI3518平台
 	int				nightVisionMode; 	// 夜视模式  单光 0-自动     1-关夜视   2-开夜视
 										//           双光 0-红外夜视 1-全彩夜视 2-智能夜视
 	int 			iAntiFlicker;		// 防闪烁  0-关闭 1-50HZ 2-60HZ
+	int mirror;
+	int flip;
 };
 //多个摄像头的参数
 struct CameraParamAll

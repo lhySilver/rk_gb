@@ -432,6 +432,12 @@ void CNetWifi::ThreadProc(void)
 
 				NET_START_PROCESS("sh", "sh", "-c", "ifconfig eth0 up", NULL);
 
+				//add  on 2025.05.06 start
+				memset(cmd,0,sizeof(cmd));
+				snprintf(cmd,sizeof(cmd),"arping -U -I wlan0 %s -c 3",m_ip.c_str());//避免外界长时间无法ping通当前设备 ,如果部分设备没有arping这条命令，可以找替代这条命令的代码（C语言无偿arp）
+				printf("cmd %s\n",cmd);
+				NET_START_PROCESS("sh", "sh", "-c", cmd, NULL);
+				//add  on 2025.05.06 end
 			}
 
 			m_wifi_check_status = CNetWifi::NET_CHECK_WAITE_FOR;

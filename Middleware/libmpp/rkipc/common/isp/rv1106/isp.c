@@ -185,7 +185,7 @@ int isp_camera_group_init(int cam_group_id, rk_aiq_working_mode_t WDRMode, bool 
 		LOG_ERROR("create camgroup ctx error!\n");
 		return -1;
 	}
-#if 1
+#if 0
 	char *calib_file_path = NULL;
 	if (access("/data/awb_calib.ini", F_OK) == 0) {
 		calib_file_path = "/data/awb_calib.ini";

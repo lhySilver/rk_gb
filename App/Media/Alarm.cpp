@@ -3,6 +3,7 @@
 #include "Common.h"
 
 extern unsigned char bStartPrivateMode; 		//是否开启隐私模式
+extern int gb_alarm_notify();
 
 PATTERN_SINGLETON_IMPLEMENT(CAlarm);
 
@@ -53,7 +54,7 @@ void CAlarm::ThreadProc()
 	bool bPirAlarmFlag = false;
 	bool bVehicleAlarmFlag = false;
 	bool bNonVehicleAlarmFlag = false;
-	bool alarm_is_triggerd = false;
+	bool alarm_is_triggerd = false;//用于控制时间录像的开始以及结束 add on 2025.05.21<添加注释>
 	bool bFloodLightTrigger = false;
 	bool bOtherTrigger = false;
 
@@ -86,7 +87,77 @@ void CAlarm::ThreadProc()
 		bPirAlarmFlag = false;
 		bVehicleAlarmFlag = false;
 		bNonVehicleAlarmFlag = false;
+#if 1
+	
+		//判断是否有联动警笛的基础条件
+//		if(MotionSwitch){
+//			g_Siren.SetMDEnable(true);
+//		}
+//		else{
+//			g_Siren.SetMDEnable(false);
+//		}
 
+
+		//移动侦测以及人形过滤的触发状态
+//		if (MotionSwitch){//移动侦测打开
+//			if(PersonSwitch){//人形检测打开
+//				bMotionAlarmFlag = MotionResult & PersonResult;
+//				m_AlarmType |= ALARM_TYPE_HUMAN;//人形检测类型
+//			}
+//			else{
+//				bMotionAlarmFlag = MotionResult;
+//				m_AlarmType |= ALARM_TYPE_MOTION;//移动侦测类型				
+//			}
+//		}
+		bMotionAlarmFlag = PersonResult;
+
+		if(bStartPrivateMode == 1){
+			bMotionAlarmFlag = false;
+		}
+
+
+		current_time = time(0);
+		if ( bMotionAlarmFlag )
+		{
+			// AppErr("------------->on\n");
+			last_time = current_time;
+
+			//推送消息
+//			g_TuyaHandle.EventNotification(1,m_AlarmType);
+			//联动控灯
+			g_Camera.SetAlarmTriggerStatus(1);
+			//联动警笛
+//			g_Siren.SetMDStatus(1);
+			
+            if(!alarm_is_triggerd)
+            {
+                alarm_is_triggerd = true;
+            }
+			//通知开始录像
+			g_RecordManager.DoRecord(0);
+			
+			gb_alarm_notify();
+		}
+		else
+		{
+			//No motion detect for more than 110 seconds, stop the event
+//			g_TuyaHandle.EventNotification(0,m_AlarmType);
+			g_Camera.SetAlarmTriggerStatus(0);
+//			g_Siren.SetMDStatus(0);
+
+            if(current_time - last_time > 110 && alarm_is_triggerd)
+            {
+				//通知停止录像
+				g_RecordManager.ClearRecord(0);
+                alarm_is_triggerd = false;
+            }
+		}
+		
+		usleep(50000);
+
+
+
+#else
 		// if( (MiddleDetSwitch || RightDetSwitch || LeftDetSwitch) && MotionSwitch )
 		//判断时候有联动警笛的基础条件
 		if( (MiddleDetSwitch || RightDetSwitch || LeftDetSwitch) || MotionSwitch )//此处若为与逻辑，则关闭PIR会导致移动侦测触发的情况下警笛不播
@@ -225,6 +296,7 @@ void CAlarm::ThreadProc()
 		}
 		m_bAlarmFlag = false;
 		usleep(50000);
+#endif
 	}
 }
 
@@ -235,7 +307,7 @@ bool CAlarm::GetAlarmStatus()
 
 int CAlarm::MotionDetectLightNotify(int status)
 {
-	return g_TuyaHandle.ReportAnbaoLightSwich(status);
+//	return g_TuyaHandle.ReportAnbaoLightSwich(status);
 }
 int CAlarm::GetAlarmInterval()
 {
@@ -252,7 +324,7 @@ int CAlarm::GetAlarmLightOnTime()
 	}
 	else if (1 == atime)
 	{
-		return 5*50;
+		return 5*60;
 	}
 	else if (2 == atime)
 	{

@@ -418,6 +418,7 @@ struct NetUPNPConfig
 struct NetWifiConfig
 {
 	bool bEnable;
+	bool bStaticIpEnable;
 	std::string strSSID;            //SSID Number
 	int nChannel;                   //channel
 	std::string strNetType;         //Infra, Adhoc
@@ -428,6 +429,7 @@ struct NetWifiConfig
 	IPAddress HostIP;		///< host ip
 	IPAddress Submask;		///< netmask
 	IPAddress Gateway;		///< gateway
+	IPAddress Dns; 	///<dns
 };
 
 //AP模式配置
