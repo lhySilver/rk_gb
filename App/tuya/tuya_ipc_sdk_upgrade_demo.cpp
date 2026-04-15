@@ -45,6 +45,12 @@ VOID __IPC_APP_upgrade_notify_cb(IN CONST FW_UG_S *fw, IN CONST INT_T download_r
 		{
 			CFeedDog::instance()->stop();
 			CFeedDog::instance()->destory();
+            
+            //add on 2025.03.13<避免逻辑冲突>
+            signal(SIGINT, SIG_DFL);
+            signal(SIGTERM, SIG_DFL);
+            //add on 2025.03.13<避免逻辑冲突>
+
 			START_PROCESS("sh", "sh", "-c", "touch /tmp/ota_upgrade_flag", NULL);
 		}
     }
@@ -133,7 +139,7 @@ INT_T IPC_APP_Upgrade_Inform_cb(IN CONST FW_UG_S *fw)
     AppErr("AudioDeInit\n");
     g_AVManager.AudioDeInit();
     AppErr("VideoDeInit\n");
-    // g_AVManager.VideoDeInit();
+    g_AVManager.VideoDeInit();
 
 	START_PROCESS("sh", "sh", "-c", "echo 3 > /proc/sys/vm/drop_caches;", NULL);
 	sync();

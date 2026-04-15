@@ -13,14 +13,15 @@ CProductCof::CProductCof()
 
 	m_productCof.enable = 0;
 	m_productCof.language = 0;
-	m_productCof.ircut_flip = 0;
+	m_productCof.ircut_flip = 1;
 	m_productCof.image_flip = 0;
 	m_productCof.manual_ircut = 0;
 	m_productCof.ptz_opposite_run = 0; // #云台控制方向反转状态 -- 0:默认双反（画面方向一致，拖地图） ; 1:电机方向一致 ；2.水平与电机方向一致； 3垂直电机方向一致
 	m_productCof.play_vol = 100;
 	m_productCof.capture_vol = 31;
 	m_productCof.lamp_board = 0;
-	m_productCof.lamp_board_value = 900;
+	m_productCof.lamp_board_value = 100;
+	m_productCof.lamp_board_value_method = 30;
 	m_productCof.ud_len = 100;
 	m_productCof.lr_len = 500;
 	m_productCof.ud_dir = 0;
@@ -38,7 +39,7 @@ CProductCof::CProductCof()
 	m_productCof.Night2Day = 35; // 640;
 	m_productCof.Day2Night = 14; // 16;//900;
 	m_productCof.light_ctrl = 0;
-	m_productCof.smartir_en = 1;
+	m_productCof.smartir_en = 0;
 	m_productCof.ir_led_ctrl = 1;
 	m_productCof.pwmfrequency = 1;
 	m_productCof.hardtype = 0;
@@ -95,7 +96,7 @@ int CProductCof::CheckProductConf()
 	int mode;
 	PRODUCT_COF_S conf = {0};
 
-	START_PROCESS("sh", "sh", "-c", "mount " MMCP1" " MOUNT_DIR, NULL);
+	//START_PROCESS("sh", "sh", "-c", "mount " MMCP1" " MOUNT_DIR, NULL);
 
 	//判断是否有audio目录存在
 	if(access(AUDIO_SD_DIR, F_OK) == 0)
@@ -151,7 +152,7 @@ int CProductCof::CheckProductConf()
 	mode = PRODUCT_NONE;
 
 end:
-	START_PROCESS("sh", "sh", "-c", "umount -l " MOUNT_DIR, NULL);
+	// START_PROCESS("sh", "sh", "-c", "umount -l " MOUNT_DIR, NULL);
 
 	return mode;
 }
@@ -205,161 +206,165 @@ int CProductCof::GetProductCof(PRODUCT_COF_S *pCof, const char *path, int type)
 	CInifile ini;
 	char valstr [64] = {'\0'};
 	
-	ret = ini.read_profile_string("CONST_PARAM", "ircut_flip",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ircut_flip = (int)strtol(valstr, NULL, 0);
-
-    ret = ini.read_profile_string("CONST_PARAM", "image_flip",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->image_flip = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "manual_ircut",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->manual_ircut = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "ptz_opposite_run",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ptz_opposite_run = (int)strtol(valstr, NULL, 0);
-
- ////////
-
-	ret = ini.read_profile_string("CONST_PARAM", "play_vol",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->play_vol = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "capture_vol",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->capture_vol = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "lamp_board",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->lamp_board = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "lamp_board_value",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->lamp_board_value = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "ud_len",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ud_len = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "lr_len",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->lr_len = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "ud_dir",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ud_dir = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "lr_dir",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->lr_dir = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "ud_notuse",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ud_notuse = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "check_speed",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->check_speed = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "Day2Night",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->Day2Night = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "Night2Day",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->Night2Day = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "run_speed",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->run_speed = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "run_ud_speed",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->run_ud_speed = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "track_speed",valstr, sizeof(valstr),path);
-		if (ret==0)
-			pCof->track_speed = (int)strtol(valstr, NULL, 0);
-		
-	ret = ini.read_profile_string("CONST_PARAM", "up_len",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->up_len = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "tracker_step_multiple",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->tracker_step_multiple = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "tracker_stop_overtime",valstr, sizeof(valstr),path);
-		if (ret==0)
-			pCof->tracker_stop_overtime = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "tracker_lr_dir",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->tracker_lr_dir = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "tracker_ud_dir",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->tracker_ud_dir = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "light_ctrl",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->light_ctrl = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "ir_led_ctrl",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->ir_led_ctrl = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "smartir_en",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->smartir_en = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "pwmfrequency",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->pwmfrequency = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "hardtype",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->hardtype = (int)strtol(valstr, NULL, 0);
-	
-	ret = ini.read_profile_string("CONST_PARAM", "speaker_reversed",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->speaker_reversed = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "auto_light_off",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->auto_light_off = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "auto_light_off_time",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->auto_light_off_time = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "private_motorstatus",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->private_motorstatus = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_low",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->md_threshold_low = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_mid",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->md_threshold_mid = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_high",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->md_threshold_high = (int)strtol(valstr, NULL, 0);
-
-	ret = ini.read_profile_string("CONST_PARAM", "stitch_distance",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->stitch_distance = (float)strtof(valstr, NULL);
-
- ///////
-
-	ret = ini.read_profile_string("DEFAULT_SETTING", "language",valstr, sizeof(valstr),path);
-	if (ret==0)
-		pCof->language = (int)strtol(valstr, NULL, 0);
+//	ret = ini.read_profile_string("CONST_PARAM", "ircut_flip",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ircut_flip = (int)strtol(valstr, NULL, 0);
+//
+//    ret = ini.read_profile_string("CONST_PARAM", "image_flip",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->image_flip = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "manual_ircut",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->manual_ircut = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "ptz_opposite_run",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ptz_opposite_run = (int)strtol(valstr, NULL, 0);
+//
+// ////////
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "play_vol",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->play_vol = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "capture_vol",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->capture_vol = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "lamp_board",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->lamp_board = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "lamp_board_value",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->lamp_board_value = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "lamp_board_value_method",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->lamp_board_value_method = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "ud_len",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ud_len = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "lr_len",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->lr_len = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "ud_dir",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ud_dir = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "lr_dir",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->lr_dir = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "ud_notuse",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ud_notuse = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "check_speed",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->check_speed = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "Day2Night",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->Day2Night = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "Night2Day",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->Night2Day = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "run_speed",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->run_speed = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "run_ud_speed",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->run_ud_speed = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "track_speed",valstr, sizeof(valstr),path);
+//		if (ret==0)
+//			pCof->track_speed = (int)strtol(valstr, NULL, 0);
+//		
+//	ret = ini.read_profile_string("CONST_PARAM", "up_len",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->up_len = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "tracker_step_multiple",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->tracker_step_multiple = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "tracker_stop_overtime",valstr, sizeof(valstr),path);
+//		if (ret==0)
+//			pCof->tracker_stop_overtime = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "tracker_lr_dir",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->tracker_lr_dir = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "tracker_ud_dir",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->tracker_ud_dir = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "light_ctrl",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->light_ctrl = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "ir_led_ctrl",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->ir_led_ctrl = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "smartir_en",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->smartir_en = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "pwmfrequency",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->pwmfrequency = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "hardtype",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->hardtype = (int)strtol(valstr, NULL, 0);
+//	
+//	ret = ini.read_profile_string("CONST_PARAM", "speaker_reversed",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->speaker_reversed = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "auto_light_off",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->auto_light_off = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "auto_light_off_time",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->auto_light_off_time = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "private_motorstatus",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->private_motorstatus = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_low",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->md_threshold_low = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_mid",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->md_threshold_mid = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "md_threshold_high",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->md_threshold_high = (int)strtol(valstr, NULL, 0);
+//
+//	ret = ini.read_profile_string("CONST_PARAM", "stitch_distance",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->stitch_distance = (float)strtof(valstr, NULL);
+//
+// ///////
+//
+//	ret = ini.read_profile_string("DEFAULT_SETTING", "language",valstr, sizeof(valstr),path);
+//	if (ret==0)
+//		pCof->language = (int)strtol(valstr, NULL, 0);
 
 	//读取外部配置
 	if( 1 == type )
@@ -411,6 +416,9 @@ int CProductCof::GetProductCof(PRODUCT_COF_S *pCof, const char *path, int type)
 }
 int CProductCof::SetProductCof(PRODUCT_COF_S *pCof, const char *path)
 {
+	return 0; // <shang>
+
+	
 	CInifile ini;
 	char ircut_flip[64] = {'\0'};
     char image_flip[64] = {'\0'};
@@ -419,6 +427,7 @@ int CProductCof::SetProductCof(PRODUCT_COF_S *pCof, const char *path)
     char capture_vol[64] = {'\0'};
 	char lamp_board[64] = {'\0'};
 	char lamp_board_value[64] = {'\0'};
+	char lamp_board_value_method[64] = {'\0'};
 	char ud_len[64] = {'\0'};
 	char lr_len[64] = {'\0'};
 	char ud_dir[64] = {'\0'};
@@ -467,6 +476,7 @@ int CProductCof::SetProductCof(PRODUCT_COF_S *pCof, const char *path)
     sprintf(capture_vol, "%d", pCof->capture_vol);
     sprintf(lamp_board, "%d", pCof->lamp_board);
     sprintf(lamp_board_value, "%d", pCof->lamp_board_value);
+    sprintf(lamp_board_value_method, "%d", pCof->lamp_board_value_method);
     sprintf(ud_len, "%d", pCof->ud_len);
     sprintf(lr_len, "%d", pCof->lr_len);
     sprintf(ud_dir, "%d", pCof->ud_dir);
@@ -538,6 +548,12 @@ int CProductCof::SetProductCof(PRODUCT_COF_S *pCof, const char *path)
 	ret = ini.write_profile_string("CONST_PARAM","lamp_board_value", lamp_board_value, path);
 	if (ret!=0) {
 		AppErr("write ini lamp_board_value error\n");
+		return -1;
+	}
+
+	ret = ini.write_profile_string("CONST_PARAM","lamp_board_value_method", lamp_board_value_method, path);
+	if (ret!=0) {
+		AppErr("write ini lamp_board_value_method error\n");
 		return -1;
 	}
 

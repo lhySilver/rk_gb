@@ -14,6 +14,8 @@ public:
 	static CAVManager* instance();
 
 	///	视频
+	void onConfigVideo(const CConfigTable &table, int &ret);
+	bool VideoParamInit();
 	bool VideoInit();
 	bool VideoDeInit();
 
@@ -44,6 +46,8 @@ private:
 	bool    m_videInit;
 
 	CMutex m_Mutex;
+
+	VideoConf_S m_VideoConfig;
 
 	static CAVManager* _instance;
 };

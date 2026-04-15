@@ -138,7 +138,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 	RockIvaBaResult *result;
     result = (RockIvaBaResult *)presult;
 
-	//人形检测功能开启
+	//人形检测功能开启 ///注释有误，这里应该是人形检测功能未开启 add on 2025.02.11
 	if (!rockiva_start_flag) {
 		result->objNum = 0;
 
@@ -178,7 +178,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 	memset(&new_result,0,sizeof(new_result));
 	pnew_result = (RockIvaBaResult *)&new_result;
 	int k = 0;
-	for (int i = 0; i < result->objNum; i++) {
+	for (int i = 0; i < result->objNum; i++) {//检测到的目标个数（框的个数）add on 2025.02.11
 		// LOG_INFO("topLeft:[%d,%d], bottomRight:[%d,%d],"
 		// 		"objId is %d, frameId is %d, score is %d, type is %d\n",
 		// 		result->triggerObjects[i].objInfo.rect.topLeft.x,
@@ -194,15 +194,15 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 		//          result->triggerObjects[i].firstTrigger.ruleID,
 		//          result->triggerObjects[i].firstTrigger.triggerType);
 		
-		for (int j = 0; j< rkba_info.areas.areaNum; j++) {
+		for (int j = 0; j< rkba_info.areas.areaNum; j++) {//遍历所有设置的区域 add on 2025.02.11
 			RockIvaRectangle rect;
 			rect.topLeft.x = rkba_info.areas.areas[j].points[0].x;
 			rect.topLeft.y = rkba_info.areas.areas[j].points[0].y;
 			rect.bottomRight.x = rkba_info.areas.areas[j].points[2].x;
 			rect.bottomRight.y = rkba_info.areas.areas[j].points[2].y;
 
-			if (doRectanglesIntersect(result->triggerObjects[i].objInfo.rect,rect)) {
-				if (pnew_result->triggerObjects[k].objInfo.type == ROCKIVA_OBJECT_TYPE_NONE) {
+			if (doRectanglesIntersect(result->triggerObjects[i].objInfo.rect,rect)) {//有交集，表明触发 add on 2025.02.11
+				if (pnew_result->triggerObjects[k].objInfo.type == ROCKIVA_OBJECT_TYPE_NONE) {//当前的数组没有被使用过 add on 2025.02.11
 					pnew_result->triggerObjects[k].objInfo.rect.topLeft.x = result->triggerObjects[i].objInfo.rect.topLeft.x;
 					pnew_result->triggerObjects[k].objInfo.rect.topLeft.y = result->triggerObjects[i].objInfo.rect.topLeft.y;
 					pnew_result->triggerObjects[k].objInfo.rect.bottomRight.x = result->triggerObjects[i].objInfo.rect.bottomRight.x;
@@ -211,9 +211,9 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 					triggerd = 1;
 				}
 			} else {
-				if (pnew_result->triggerObjects[k].objInfo.type != ROCKIVA_OBJECT_TYPE_NONE) {
+				if (pnew_result->triggerObjects[k].objInfo.type != ROCKIVA_OBJECT_TYPE_NONE) {//该数组被使用过，不能将其覆盖 add on 2025.02.11
 					//do nonething
-				} else {
+				} else {																	//该数组没有被使用过，但是当前的矩形不在设置的区域中 add on 2025.02.11		
 					pnew_result->triggerObjects[k].objInfo.rect.topLeft.x = result->triggerObjects[i].objInfo.rect.topLeft.x;
 					pnew_result->triggerObjects[k].objInfo.rect.topLeft.y = result->triggerObjects[i].objInfo.rect.topLeft.y;
 					pnew_result->triggerObjects[k].objInfo.rect.bottomRight.x = result->triggerObjects[i].objInfo.rect.bottomRight.x;
@@ -229,7 +229,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 
 	// LOG_INFO("new status is %d, frame %d, result->objNum is %d\n", status, pnew_result->frameId,pnew_result->objNum);
 
-	if (pnew_result->objNum == 0) {
+	if (pnew_result->objNum == 0) {	//没有触发人形检测 add on 2025.02.11
 		RockIvaRectangle rect;
 		rect.topLeft.x = 0;
 		rect.topLeft.y = 0;
@@ -238,8 +238,8 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 
 		if (human_detect_cb)
 			human_detect_cb(0,rect);
-	} else {
-		if (triggerd) {
+	} else {						//有触发人形检测 add on 2025.02.11
+		if (triggerd) {				//人形检测框在设置的区域中 add on 2025.02.11
 			for (int i = 0; i < pnew_result->objNum; i++) {
 				switch (pnew_result->triggerObjects[i].objInfo.type)
 				{
@@ -268,7 +268,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 					break;
 				}
 			}
-		} else {
+		} else {					//人形检测框不在设置的区域中（无效） add on 2025.02.11
 			RockIvaRectangle rect;
 			rect.topLeft.x = 0;
 			rect.topLeft.y = 0;
@@ -290,7 +290,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 
 void rockiva_frame_release_callback(const RockIvaReleaseFrames *releaseFrames, void *userdata) {
 	// LOG_INFO("%s: releaseFrames channelId is %d, count is %d\n", get_time_string());
-	rk_signal_give(rockiva_signal);
+	rk_signal_give(rockiva_signal);//释放信号量 add on 2025.02.11 注释
 }
 
 int rkipc_rockiva_init() {
@@ -393,10 +393,10 @@ int rkipc_rockiva_init() {
 	}
 	LOG_INFO("ROCKIVA_BA_Init success\n");
 
-	if (rockiva_signal)
+	if (rockiva_signal)							//如果前面已经创建了信号量，则先释放掉 add on 2025.02.11 注释
 		rk_signal_destroy(rockiva_signal);
-	rockiva_signal = rk_signal_create(0, 1);
-	if (!rockiva_signal) {
+	rockiva_signal = rk_signal_create(0, 1);	//创建信号量 add on 2025.02.11 注释
+	if (!rockiva_signal) {						//创建信号量失败 add on 2025.02.11 注释
 		LOG_ERROR("create signal fail\n");
 		return -1;
 	}
@@ -417,9 +417,9 @@ int rkipc_rockiva_deinit() {
 	LOG_INFO("ROCKIVA_BA_Release over\n");
 	ROCKIVA_Release(rkba_handle);
 	destory_rknn_list(&rknn_list_);
-	if (rockiva_signal) {
-		rk_signal_give(rockiva_signal);
-		rk_signal_destroy(rockiva_signal);
+	if (rockiva_signal) {						//如果有信号量 add on 2025.02.11 注释
+		rk_signal_give(rockiva_signal);			//释放信号量 add on 2025.02.11 注释
+		rk_signal_destroy(rockiva_signal);		//销毁信号量 add on 2025.02.11 注释
 		rockiva_signal = NULL;
 	}
 	LOG_INFO("end\n");

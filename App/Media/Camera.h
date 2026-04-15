@@ -53,6 +53,7 @@ public:
 	void onConfigFlightWarn(const CConfigTable &table, int &ret);
 
 	void onConfigAdcIRCut(uint arg);
+	void onCdsJudgeDayNight(uint arg);
 	void onSensorJudgeDayNight(uint arg);
 	
 	void setMode(CAMERA_MODE_E mode, bool bIrLed = true, bool bFilterMdAlarm = true);
@@ -78,6 +79,7 @@ public:
 	//获取白光灯状态
 	bool GetWhiteLedStatus();
 	bool GetDayNightStatus(void);
+	int GetLinkageLightTime(void);//获取联动控灯时长 add on 2025.01.15
 
 	//控制红外灯
 	int doIrLedCtrl(bool enable);
@@ -86,6 +88,7 @@ public:
 	int doWhiteLedCtrlBrightness(int brightness);
 	//控制白光灯 true-全透	false-截止
 	int doIrcutCtrl(bool enable);
+	int doMirrorFlipCtrl(bool mirror, bool flip);
 
 private:
 	bool m_bSingleLightMode; //true-单光 false-双光
@@ -103,7 +106,9 @@ private:
 	CAMERA_MODE_E m_eSenJudgeDayNight;
 	int m_iSmartIrLastValue;
 	int m_iSmartIrSwitchTime;
-
+	CTimer	m_cdsJudgeDayNightTimer;
+	int m_avg_cds_value;
+	
     bool m_bAutoDayNight; 		//单光时使用，是否自动夜视
     bool m_bManualOpenWhiteLed; //双光时使用，是否手动打开白光灯
     int m_iManualOpenWhiteLedWorktime; //双光时使用，手动打开白光灯时，白光灯亮灯时长，单位秒，<=0表示一直亮

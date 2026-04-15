@@ -29,6 +29,7 @@ enum class TestCode
     PARSE_DATA_FAILED = -3,
     UN_SUPPORT_PARAMETER = -4,
     DEVICE_REPORT_FAILED = -5,
+    NO_CLIENT_CONNECTED,
     END
 };
 enum class PTZCommand
@@ -74,12 +75,30 @@ enum class KeyTest
     CLICK,
     END
 };
+enum class EthernetStatus
+{
+    INSERT_CABLE = 0,
+    NOT_INSERT_CABLE,
+    NOT_SUPPORT,
+    END
+};
 typedef struct wifi_info
 {
     wifi_info(const std::string &ssid, const unsigned short &signal);
     const std::string mSsid;
     const unsigned short mSignal;
 } WifiInfo;
+typedef struct check_time
+{
+    check_time();
+    std::string mTimeZone;
+    unsigned short mYear;
+    unsigned short mMonth;
+    unsigned short mDay;
+    unsigned short mHour;
+    unsigned short mMinute;
+    unsigned short mSecond;
+} CheckTime;
 typedef struct device_info
 {
     device_info();
@@ -89,6 +108,7 @@ typedef struct device_info
     std::string mMac;
     std::string mPid;
     std::string mUid;
+    EthernetStatus mEthernetStatus;
 } DeviceInfo;
 class VTestAsk
 {
@@ -98,6 +118,13 @@ public:
     virtual TestCode Blocking(void);
     virtual bool NeedReply(void);
     virtual void ReplyFinished(const TestCode &code);
+    /**
+     * @brief Determines whether the request event object has timed out.
+     * @param integrationTime_ms [in] - The query interval is passed to the task object when the queryer calls this
+     * function regularly, and the task object performs timing.
+     * @return true
+     * @return false
+     */
     virtual bool IfTimeout(const unsigned int &integrationTime_ms);
 
 public:
@@ -155,6 +182,22 @@ public:
      * @return TestCode
      */
     virtual TestCode PeerGetRtspUrl(std::string &url, int &videoWidth, int &videoHeight, std::string &errorMessage);
+
+    /**
+     * @brief Get the URL address of the RTSP media stream, including the video resolution (used by the peer to frame
+     * the video area).
+     * @param url [out] - RTSP media stream Main URL
+     * @param videoWidth [out] - Main video resolution-height
+     * @param videoHeight [out] - Main video resolution-width
+     * @param urlSub [out] - RTSP media stream Sub URL
+     * @param videoWidthSub [out] - Sub video resolution-height
+     * @param videoHeightSub [out] - Sub video resolution-width
+     * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
+     * @return TestCode
+     */
+    virtual TestCode PeerGetRtspUrlV2(std::string &url, int &videoWidth, int &videoHeight,
+                                       std::string &urlSub, int &videoWidthSub, int &videoHeightSub,
+                                       std::string &errorMessage);
     /**
      * @brief Sets the frame area.
      * @param videoWidth [in]
@@ -210,7 +253,6 @@ public:
     virtual TestCode PeerIrcutSwitch(const bool &isOpen, std::string &errorMessage);
     /**
      * @brief Wireless speed test.
-     *
      * @param time_ms [in] - The time of the wireless speed test, in milliseconds.
      * @param speed [out] - Reply "speed" data.
      * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
@@ -219,11 +261,12 @@ public:
     virtual TestCode PeerGetLinkingWifiSignal(unsigned int &signal, std::string &errorMessage);
     /**
      * @brief Get the WiFi list.
+     * @param recvSsid [in] - .
      * @param wifiList [out] - Reply "wifiList" data. See WifiInfo for details.
      * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
      * @return TestCode
      */
-    virtual TestCode PeerGetWifiList(std::vector<WifiInfo> &wifiList, std::string &errorMessage);
+    virtual TestCode PeerGetWifiList(const std::string &recvSsid, std::vector<WifiInfo> &wifiList, std::string &errorMessage);
     /**
      * @brief Test the MIC function and link it to the speaker. Record the audio and play it back to complete the test
      * process.
@@ -259,7 +302,7 @@ public:
      * @param switchName [in] - The control name of the production test tool switch control is used to identify the
      * specific light name.
      * @param test [in] - See LEDTest for details.
-     * @param errorMessage
+     * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
      * @return TestCode
      */
     virtual TestCode PeerTestIndicatorLed(const std::string &switchName, const LEDTest &test,
@@ -275,11 +318,18 @@ public:
     /**
      * @brief The production test tool obtains device information.
      * @warning If a field of "DeviceInfo" does not exist, do not assign a value to it.
-     * @param info [out] - See DeviceInfo for details.
-     * @param errorMessage
+     * @param info [out] - See DeviceInfo for details. Fill in the information and reply to the other party.
+     * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
      * @return TestCode
      */
     virtual TestCode PeerGetDeviceInfo(DeviceInfo &info, std::string &errorMessage);
+    /**
+     * @brief The other end actively sends a timestamp for time calibration.
+     * @param time [in] - Timestamp actively sent by the peer end. See CheckTime for details.
+     * @param errorMessage [out] - Error message string. When the return fails, you can fill in the error message.
+     * @return TestCode
+     */
+    virtual TestCode PeerSendTimeForCheck(const CheckTime &time, std::string &errorMessage);
 };
 class ITestModuleV2
 {
@@ -302,8 +352,11 @@ public:
      */
     virtual StatusCode SetTestMointor(std::shared_ptr<VTestMonitor> &monitor);
     virtual TestCode SetRebootDeviceToPeer(std::shared_ptr<VTestAsk> &ask);
+    // // virtual TestCode SetRtspUrlToPeer(std::shared_ptr<VTestAsk> &ask, const std::string &url, const int &videoWidth,
+    //                                   const int &videoHeight);
     virtual TestCode SetRtspUrlToPeer(std::shared_ptr<VTestAsk> &ask, const std::string &url, const int &videoWidth,
-                                      const int &videoHeight);
+                                      const int &videoHeight, const std::string &urlSub, const int &videoWidthSub,
+                                      const int &videoHeightSub);
     virtual TestCode SetSNToPeer(std::shared_ptr<VTestAsk> &ask, const std::string &sn);
     virtual TestCode SetIrcutSwitchToPeer(std::shared_ptr<VTestAsk> &ask, const unsigned short &times,
                                           const std::string &errorMessage);
@@ -329,6 +382,15 @@ public:
                                        const std::string &errorMessage);
     virtual TestCode SendDeviceInfoToPeer(std::shared_ptr<VTestAsk> &ask, const DeviceInfo &info,
                                           const std::string &errorMessage);
+    /**
+     * @brief The device uses this interface to obtain the timestamp for time calibration as needed.
+     * @warning Get the timestamp data through the derived class of "VTestAsk",
+     * see://middleware/TestModuleV2/demo/TestMonitor.h
+     * @param ask [in] - Request instance. Blocking/non-blocking requests can be implemented through this instance.
+     * @param errorMessage
+     * @return TestCode
+     */
+    virtual TestCode AskCheckTimeFromPeer(std::shared_ptr<VTestAsk> &ask, const std::string &errorMessage);
 
 public:
     static const char *PrintfDayNightMode(const DayNightMode &mode);

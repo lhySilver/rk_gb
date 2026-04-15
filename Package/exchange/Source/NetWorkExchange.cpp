@@ -548,6 +548,7 @@ template<> void exchangeTable<NetWifiConfig>(CConfigTable& table, NetWifiConfig&
 
 	exchanger.setState(state);
 	exchanger.exchange(table, "Enable", config.bEnable);
+	exchanger.exchange(table, "StaticIP", config.bStaticIpEnable);
 	exchanger.exchange(table, "SSID", config.strSSID);
 	exchanger.exchange(table, "Channel", config.nChannel);
 	exchanger.exchange(table, "NetType", config.strNetType);
@@ -558,6 +559,7 @@ template<> void exchangeTable<NetWifiConfig>(CConfigTable& table, NetWifiConfig&
 	exchanger.exchange(table, "HostIP", config.HostIP.l);
 	exchanger.exchange(table, "Submask", config.Submask.l);
 	exchanger.exchange(table, "GateWay", config.Gateway.l);
+	exchanger.exchange(table, "DNS", config.Dns.l);
 }
 
 template<> void exchangeTable<NetAPConfig>(CConfigTable& table, NetAPConfig& config, int state)

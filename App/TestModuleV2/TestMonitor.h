@@ -48,6 +48,9 @@ public:
      * @brief Only one interface is implemented here, and other interfaces can refer to this interface for implementation.
      */
     TestCode PeerGetRtspUrl(std::string &url, int &videoWidth, int &videoHeight, std::string &errorMessage) override;
+    TestCode PeerGetRtspUrlV2(std::string &url, int &videoWidth, int &videoHeight,
+                                       std::string &urlSub, int &videoWidthSub, int &videoHeightSub,
+                                       std::string &errorMessage);//添加urlSub字段 add on 2025.05.15
 	
     TestCode PeerRebootDevice(std::string &errorMessage) override;
     TestCode PeerResetDevice(std::string &errorMessage) override;
@@ -57,7 +60,8 @@ public:
 	TestCode PeerGetSN(std::string &sn, std::string &errorMessage) override;
 	TestCode PeerControlPTZ(const PTZCommand &command, const unsigned int &step, std::string &errorMessage) override;//不用,暂且保留
     TestCode PeerControlPTZ(const PTZCommand &command, const bool &keep, std::string &errorMessage) override;
-	TestCode PeerGetWifiList(std::vector<WifiInfo> &wifiList, std::string &errorMessage) override;
+	// TestCode PeerGetWifiList(std::vector<WifiInfo> &wifiList, std::string &errorMessage) override;
+    TestCode PeerGetWifiList(const std::string &recvSsid, std::vector<WifiInfo> &wifiList, std::string &errorMessage) override;
     TestCode PeerTestInfraredLamp(const bool &isOpen, std::string &errorMessage) override;
 	TestCode PeerTestMicAndHorn(std::shared_ptr<VTestReply> reply, const bool &isOpen,
                                 std::string &errorMessage) override;
@@ -76,10 +80,12 @@ public:
 	TestCode PeerEraseLicense(std::string &errorMessage) override;
     TestCode PeerChangePid(const std::string &pid, std::string &errorMessage) override;
     TestCode PeerGetDeviceInfo(DeviceInfo &info, std::string &errorMessage) override;
+    TestCode PeerSendTimeForCheck(const CheckTime &time, std::string &errorMessage) override;//add on 2025.02.11 ????
 
 public:
     void SendPirReportEvent(const std::string &pirValue);//add on 2024.12.28 
     void SendKeyReportEvent(const std::string &keyName, const KeyTest &event); //add on 2024.12.28 
     void SendDeviceInfoToPeer(const DeviceInfo &info);//add on 2025.01.02 //????????
+    static void AskCheckTimeFromPeer(void);             //add on 2025.02.10
 };
 #endif

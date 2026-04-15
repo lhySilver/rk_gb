@@ -65,6 +65,8 @@ typedef struct
 static int bPirInited = 0;
 static void *thread_report(void *arg)
 {
+	int eth0_status_current = 0;	//当前网口连接状态 add on 2025.02.06
+	int eth0_status_last = 0;			//网口连接状态 add on 2025.02.06
 	int current_time = 0;
 	int iPirResultValidTime = 0; 	//时间大于该值，PIR检测结果才有效
 	int pir_det_result = 0;		//PIR检测结果
@@ -77,9 +79,13 @@ static void *thread_report(void *arg)
 	while(1)
 	{
 // #ifdef RC0240_LGV10
-#if 1
-		if(g_bDevInfoChanged)//add on 2025.01.02 设备信息同步
+
+		eth0_status_current = g_NetWifi.GetEthStatus();//获取网口状态add on 2025.02.06
+		
+		if(g_bDevInfoChanged || (eth0_status_current != eth0_status_last))//add on 2025.01.02 设备信息同步
 		{
+			eth0_status_last = eth0_status_current;//同步网口状态 //add on 2025.02.06
+			printf("\033[1;36m    eth0_status_last = %d   \033[0m\n",eth0_status_current);
 			g_bDevInfoChanged = false;
 			DeviceInfo dev_info;
 			GetDevInfo(&dev_info);
@@ -94,6 +100,7 @@ static void *thread_report(void *arg)
 		}
 
 		current_time = GetSystemUptime_s();
+#ifdef RC0240_LGV10
 		if (!bPirInited)//pir初始化
 		{
 			printf("\033[1;36m     SystemPirInit----------->start       \033[0m\n");
@@ -135,9 +142,8 @@ static void *thread_report(void *arg)
 				
 			}
 		}
-
 #endif
-		usleep(2000 *1000); 		//20ms检测一次
+		usleep(50 *1000); 		//50ms检测一次
 	}
 }
 
@@ -344,6 +350,7 @@ static void *rtspThread(void *data)
 	{
 		xop::MediaSession *session = xop::MediaSession::CreateNew("sub"); // url: rtsp://ip/live
 		session->AddSource(xop::channel_0, xop::H265Source::CreateNew(15)); 
+//		session->AddSource(xop::channel_0, xop::H264Source::CreateNew(15)); 
 		session->AddSource(xop::channel_1, xop::G711ASource::CreateNew());
 		//session->AddSource(xop::channel_1, xop::AACSource::CreateNew(8000,1));
 		//session->StartMulticast(); /* 开启组播(ip,端口随机生成), 默认使用 RTP_OVER_UDP, RTP_OVER_RTSP */
@@ -454,12 +461,14 @@ static int PD_RtspPutFrame_Main(int iFrmType, unsigned long long *pullTimestamp,
 static int PD_RtspPutFrame_Sub(int iFrmType, unsigned long long *pullTimestamp, char *pData, int iDataLen)
 {
 	//获取一帧 H265, 打包 去掉startcode 00 00 00 01
-	PD_NALU_H265_t nalu;
+	// PD_NALU_H265_t nalu;
+	PD_NALU_H264_t nalu;
     int32_t pos = 0, len = 0;
     
     while (pos<iDataLen) 
 	{
-        len = ReadOneNaluH265FromBuf(pData, iDataLen, pos, &nalu);
+        // len = ReadOneNaluH265FromBuf(pData, iDataLen, pos, &nalu);
+        len = ReadOneNaluFromBuf(pData, iDataLen, pos, &nalu);
 		//printf("len(%d)\n", len);
 		if (0==len)
 		{
@@ -474,7 +483,8 @@ static int PD_RtspPutFrame_Sub(int iFrmType, unsigned long long *pullTimestamp, 
 		xop::AVFrame videoFrame = {0};
 		videoFrame.type = (1 == iFrmType) ? xop::VIDEO_FRAME_I : xop::VIDEO_FRAME_P; // 建议确定帧类型。I帧(xop::VIDEO_FRAME_I) P帧(xop::VIDEO_FRAME_P)
 		videoFrame.size = nalu.len;  // 视频帧大小 
-		videoFrame.timestamp = xop::H265Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
+		// videoFrame.timestamp = xop::H265Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
+		videoFrame.timestamp = xop::H264Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
 		videoFrame.buffer.reset(new uint8_t[videoFrame.size]);                    
 		memcpy(videoFrame.buffer.get(), nalu.buf, videoFrame.size);					
 		if (!s_rtspThreadQuit && rtsp_server)
@@ -651,6 +661,7 @@ static int onCapture_fn(int media_chn,
 	return 0;
 }
 
+#if 0
 static int gProcessWifiRun = 1;
 static int gProcessWifiExit = 0;
 
@@ -708,7 +719,7 @@ static void *thread_search_wifi(void *arg)
 	gProcessWifiExit = 1;
 	return NULL;
 }
-
+#endif
 int TestModuleV2_start()
 {
 	//PIR模块
@@ -716,9 +727,9 @@ int TestModuleV2_start()
 	//启动音视频
 	g_AVManager.RealTimeStreamStart(DMC_MEDIA_TYPE_H264 | DMC_MEDIA_TYPE_H265 | DMC_MEDIA_TYPE_AUDIO, onCapture_fn);
 	//摄像头参数控制模块
-	g_Camera.start();
+//	g_Camera.start();
 	
-	CreateDetachedThread((char*)"thread_search_wifi",thread_search_wifi, (void *)NULL, true);
+	// CreateDetachedThread((char*)"thread_search_wifi",thread_search_wifi, (void *)NULL, true);
 
 	PD_StartRtspPthread();
 

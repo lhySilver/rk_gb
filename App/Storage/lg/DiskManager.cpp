@@ -227,8 +227,9 @@ Int32 CDiskManager::fork_fdisk_delete_partition_table()
 	//char* const path    = "/sbin/fdisk";
 	//使用应用自己的fdisk工具,目录为/usr/netview/mkdos/fdisk,不再使用/sbin目录下的fdisk,
 	char tmpBufSys[128] = "";
-
-	snprintf(tmpBufSys, 128, "echo \"\nd\n1\nd\n2\nd\n3\nd\nw\n\" | fdisk %s", "/dev/mmcblk0");
+	
+	// snprintf(tmpBufSys, 128, "echo \"\nd\n1\nd\n2\nd\n3\nd\nw\n\" | fdisk %s", "/dev/mmcblk0");
+	snprintf(tmpBufSys, 128, "echo \"\nd\n1\nd\n2\nd\n3\nd\nw\n\" | fdisk %s", "/dev/mmcblk1");//当前RK使用的是mmcblk1
     
 	AppInfo("cmd: %s\n", tmpBufSys);
 //	__STORAGE_SYSTEM__(tmpBufSys);

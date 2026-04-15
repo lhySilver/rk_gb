@@ -283,6 +283,8 @@ template<> void exchangeTable<CameraParam>(CConfigTable &table, CameraParam &con
 	exchanger.exchange(table, "OSDSwitch", config.osdSwitch);
 	exchanger.exchange(table, "NightVisionMode", config.nightVisionMode);
 	exchanger.exchange(table, "AntiFlicker", config.iAntiFlicker);
+	exchanger.exchange(table, "mirror", config.mirror);
+	exchanger.exchange(table, "flip", config.flip);
 }
 template<> void exchangeTable<CameraParamAll>(CConfigTable &table, CameraParamAll &configAll, int state)
 {

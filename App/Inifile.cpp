@@ -75,7 +75,7 @@ int CInifile::load_ini_file(const char *file, char *buf,int *file_size)
 		if( NULL == m_pFile) 
 		{
 			//_LogError<< "Fail to open file: " << file << _LogErrorEnd;
-			AppErr("Fail to open file%s\n",file);
+			AppWarning("Fail to open file%s\n",file);
 			return -1;
 		}
 		m_FileName = file;
@@ -292,7 +292,7 @@ int CInifile::read_profile_string( const char *section, const char *key,char *va
 	if ( -1 == load_ini_file(file,m_buf,&m_Filesize) )
 	{
 		//_LogError<< "Load ini file failed! "<< _LogErrorEnd;
-		AppErr("Load ini file[%s] failed! \n", file);
+		AppWarning("Load ini file[%s] failed! \n", file);
 		return -1;
 	}
 	

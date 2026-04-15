@@ -171,11 +171,17 @@ static unsigned char linear2alaw(short pcm_val){
 		return (unsigned char) (aval ^ mask);
 	}
 }
+//extern int get_local_ip_info(char *interface, char *ip);
+//extern int g_test_enc_type[2]; //for debug
 //extern char g_onvifPassword[33];
 static void *rtspThread(void *data)
 {
 	char ip[20] = {0};
 	g_NetConfigHook.GetNetWorkIp(ip,sizeof(ip));
+//	int ret; //<shang>
+//	ret = get_local_ip_info("eth0", ip);
+//	if (ret)
+//		ret = get_local_ip_info("wlan0", ip);
 	printf("rtspThread get ip : %s\n",ip);
 	
 	char url[100] = {0};
@@ -201,7 +207,10 @@ static void *rtspThread(void *data)
 
 	{
 		xop::MediaSession *session = xop::MediaSession::CreateNew("main"); // url: rtsp://ip/live
+//		if (g_test_enc_type[0])
 		session->AddSource(xop::channel_0, xop::H265Source::CreateNew(15)); 
+//		else
+//		session->AddSource(xop::channel_0, xop::H264Source::CreateNew(15)); 
 		session->AddSource(xop::channel_1, xop::G711ASource::CreateNew());
 		//session->StartMulticast(); /* 开启组播(ip,端口随机生成), 默认使用 RTP_OVER_UDP, RTP_OVER_RTSP */
 
@@ -221,7 +230,10 @@ static void *rtspThread(void *data)
 
 	{
 		xop::MediaSession *session = xop::MediaSession::CreateNew("sub"); // url: rtsp://ip/live
-		session->AddSource(xop::channel_0, xop::H265Source::CreateNew(15)); 
+//		if (g_test_enc_type[1])
+		session->AddSource(xop::channel_0, xop::H265Source::CreateNew(15));//H265
+//		else
+//		session->AddSource(xop::channel_0, xop::H264Source::CreateNew(15));  //H264
 		session->AddSource(xop::channel_1, xop::G711ASource::CreateNew());
 		//session->StartMulticast(); /* 开启组播(ip,端口随机生成), 默认使用 RTP_OVER_UDP, RTP_OVER_RTSP */
 
@@ -331,12 +343,14 @@ int RtspPutFrame_Main(int iFrmType, unsigned long long *pullTimestamp, char *pDa
 int RtspPutFrame_Sub(int iFrmType, unsigned long long *pullTimestamp, char *pData, int iDataLen)
 {
 	//获取一帧 H265, 打包 去掉startcode 00 00 00 01
-	NALU_H265_t nalu;
+	// NALU_H265_t nalu;
+	NALU_H264_t nalu;
     int32_t pos = 0, len = 0;
     
     while (pos<iDataLen) 
 	{
-        len = ReadOneNaluH265FromBuf(pData, iDataLen, pos, &nalu);
+        // len = ReadOneNaluH265FromBuf(pData, iDataLen, pos, &nalu);
+		len = ReadOneNaluFromBuf(pData, iDataLen, pos, &nalu);
 		//printf("len(%d)\n", len);
 		if (0==len)
 		{
@@ -351,7 +365,8 @@ int RtspPutFrame_Sub(int iFrmType, unsigned long long *pullTimestamp, char *pDat
 		xop::AVFrame videoFrame = {0};
 		videoFrame.type = (DMC_MEDIA_SUBTYPE_IFRAME == iFrmType) ? xop::VIDEO_FRAME_I : xop::VIDEO_FRAME_P; // 建议确定帧类型。I帧(xop::VIDEO_FRAME_I) P帧(xop::VIDEO_FRAME_P)
 		videoFrame.size = nalu.len;  // 视频帧大小 
-		videoFrame.timestamp = xop::H265Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
+		// videoFrame.timestamp = xop::H265Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
+		videoFrame.timestamp = xop::H264Source::GetTimestamp(); // 时间戳, 建议使用编码器提供的时间戳
 		videoFrame.buffer.reset(new uint8_t[videoFrame.size]);                    
 		memcpy(videoFrame.buffer.get(), nalu.buf, videoFrame.size);					
 		if (!s_rtspThreadQuit && rtsp_server)

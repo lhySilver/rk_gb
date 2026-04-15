@@ -925,6 +925,15 @@ static std::string info(std::string req)
 #ifdef RC0240
 		resq = PackOsdString(0,"success", osdKey,"RC0240");
 #endif
+#ifdef RC0240V20
+		resq = PackOsdString(0,"success", osdKey,"RC0240V20");
+#endif
+#ifdef RC0240V30
+		resq = PackOsdString(0,"success", osdKey,"RC0240V30");
+#endif
+#ifdef RC0240V40
+		resq = PackOsdString(0,"success", osdKey,"RC0240V40");
+#endif
 #ifdef RC0240_LGV10
 		resq = PackOsdString(0,"success", osdKey,"RC0240_LGV10");
 #endif

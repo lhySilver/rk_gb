@@ -23,6 +23,8 @@ bool CMediaDefaultConfig::start()
 	setVoice();
 	setSiren();
 	setIpcVol();
+	setVideo();
+	setAudio();
 	return true;
 }
 
@@ -39,7 +41,7 @@ void CMediaDefaultConfig::setRecord()
 		Record[i][Json::StaticString("Redundancy")] = false;
 		Record[i][Json::StaticString("MuteRecord")] = false;
 		Record[i][Json::StaticString("RecordEnable")] = true;
-		Record[i][Json::StaticString("RecordMode")] = 4;//事件录像 RECORD_MODE_ALARM
+		Record[i][Json::StaticString("RecordMode")] = 3;//全天录像 RECORD_MODE_FULLTIME_ALARM
 		
 		for (int j = 0; j < N_WEEKS; j++)
 		{
@@ -72,7 +74,7 @@ void CMediaDefaultConfig::setMotionDetect()
 
 	for (int i = 0; i < 1; i++)
 	{
-		MotionDetect[i][Json::StaticString("Enable")] = false;
+		MotionDetect[i][Json::StaticString("Enable")] = true;
 		MotionDetect[i][Json::StaticString("bRegionEnable")] = false;
 		MotionDetect[i][Json::StaticString("Level")] = 2;
         MotionDetect[i][Json::StaticString("Interval")] = 60;
@@ -95,7 +97,8 @@ void CMediaDefaultConfig::setMotionDetect()
 			MotionDetect[i][Json::StaticString("Region")][j] = Json::StaticString("0x00000000");// x:0,xlen:100;y:0,ylen:100 //Json::StaticString("0xFFFFFFFF");
 		}
 //		SetEventHandler(MotionDetect[i][Json::StaticString("EventHandler")]);
-		MotionDetect[i][Json::StaticString("PersonFilterEnable")] = false;
+		
+		MotionDetect[i][Json::StaticString("PersonFilterEnable")] = true;
 		MotionDetect[i][Json::StaticString("PersonDetectEnable")] = false;
 		MotionDetect[i][Json::StaticString("VehicleDetectEnable")] = false;
 		MotionDetect[i][Json::StaticString("NonVehicleDetectEnable")] = false;
@@ -183,9 +186,11 @@ void CMediaDefaultConfig::setPir()
 	//////////////////////////////////////////////////////////////////////////
 	/// pir默认配置
 	CConfigTable pir;
-    pir[Json::StaticString("bpir1")] = 1;
-	pir[Json::StaticString("bpir2")] = 1;
-	pir[Json::StaticString("bpir3")] = 1;
+
+	pir[Json::StaticString("bpir1")] = 0;
+	pir[Json::StaticString("bpir2")] = 0;
+	pir[Json::StaticString("bpir3")] = 0;
+
 	pir[Json::StaticString("Sensitivity")] = 0;//0-灵敏度低 1-灵敏度中 2-灵敏度高
 	pir[Json::StaticString("PirLightOnTime")] = 0;//pir触发亮灯时长 1分钟 5分钟 10分钟
 	
@@ -228,4 +233,28 @@ void CMediaDefaultConfig::setIpcVol()
 	g_configManager.setDefault(getConfigName(CFG_IPC_VOL), ipcvol);
 }
 
+void CMediaDefaultConfig::setVideo()
+{
+	/// video默认配置
+	CConfigTable video;
+	for (int i = 0; i < 2; i++)
+	{
+		video[i][Json::StaticString("enc_type")] = 1;
+		if (0 == i)
+			video[i][Json::StaticString("bit_rate")] = 2048;
+		else
+			video[i][Json::StaticString("bit_rate")] = 1024;
+		video[i][Json::StaticString("frmae_rate")] = 15;
+		video[i][Json::StaticString("gop")] = 50;
+	}
+	g_configManager.setDefault(getConfigName(CFG_VIDEO), video);
+}
+
+void CMediaDefaultConfig::setAudio()
+{
+	/// audio默认配置
+	CConfigTable audio;
+	audio[Json::StaticString("enc_type")] = 0;
+	g_configManager.setDefault(getConfigName(CFG_AUDIO), audio);
+}
 

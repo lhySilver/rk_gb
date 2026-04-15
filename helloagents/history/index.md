@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604151948 | dg_ipc_replay | 开发 | ✅已完成 | [2026-04/202604151948_dg_ipc_replay](2026-04/202604151948_dg_ipc_replay/) |
 | 202604131401 | issue44_gb_alarm_pack_local_id | 轻量迭代 | ✅已完成 | [2026-04/202604131401_issue44_gb_alarm_pack_local_id](2026-04/202604131401_issue44_gb_alarm_pack_local_id/) |
 | 202604131152 | issue44_gb_alarm_sip_local_id | 轻量迭代 | ✅已完成 | [2026-04/202604131152_issue44_gb_alarm_sip_local_id](2026-04/202604131152_issue44_gb_alarm_sip_local_id/) |
 | 202604131127 | issue44_gb_alarm_identity_trim | 轻量迭代 | ✅已完成 | [2026-04/202604131127_issue44_gb_alarm_identity_trim](2026-04/202604131127_issue44_gb_alarm_identity_trim/) |
@@ -100,6 +101,7 @@
 
 ### 2026-04
 
+- [202604151948_dg_ipc_replay](2026-04/202604151948_dg_ipc_replay/) - 以 `feature/gb-zero-config-macro-switch-20260326` 为协议基线，顺序吸收本地/远端独有协议提交并回放 `feature/dg_ipc` 的 IPC 适配，同时清理 `cmake-build`、调试目录、压缩包和资料类垃圾文件
 - [202604131401_issue44_gb_alarm_pack_local_id](2026-04/202604131401_issue44_gb_alarm_pack_local_id/) - 基于 `246.pcap` 和 `debug.log` 继续收口 issue 44，把报警 `NOTIFY` 的最终 `<DeviceID>` 约束下沉到 `PackAlarmNotify()`，强制对齐运行态 `m_local_code`
 - [202604131152_issue44_gb_alarm_sip_local_id](2026-04/202604131152_issue44_gb_alarm_sip_local_id/) - 基于 `245.pcap` 把 issue 44 的报警 `DeviceID` 来源继续收口为 SDK 当前真实连接的 SIP 本端 ID，改由 `GB28181ClientSDK::GetLocalGbCode()` 驱动
 - [202604131127_issue44_gb_alarm_identity_trim](2026-04/202604131127_issue44_gb_alarm_identity_trim/) - 按 issue 44 的后续收口意见删除独立 `GbAlarmIdentity` helper 文件与最小测试入口，把报警身份归一化逻辑内联回 `ProtocolManager.cpp`

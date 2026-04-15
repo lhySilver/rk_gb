@@ -228,7 +228,7 @@ void CPtz::ThreadProc()
 		{
 			iLastTime = time(0);
 
-			if( g_TuyaHandle.IsTuyaSdkStarted() && (s_bMotorUsed == MOTOR_IS_AUTO) )
+			if( /*g_TuyaHandle.IsTuyaSdkStarted() &&*/ (s_bMotorUsed == MOTOR_IS_AUTO) )
 			{
 				ret = MotorGetStatus(&pstMotorMessage);
 				if( 0 == ret )
@@ -244,7 +244,7 @@ void CPtz::ThreadProc()
 				}
 			}
 			
-			if( g_TuyaHandle.IsTuyaSdkStarted() && (s_bMotorUsed == MOTOR_IS_MANUAL) )
+			if( /*g_TuyaHandle.IsTuyaSdkStarted() &&*/ (s_bMotorUsed == MOTOR_IS_MANUAL) )
 			{
 				if(motion_track_check != 0)
 				{
@@ -280,7 +280,7 @@ void CPtz::ThreadProc()
 					}
 				}
 			}	
-			if( g_TuyaHandle.IsTuyaSdkStarted() && (s_bMotorUsed == MOTOR_IS_AUTO) )
+			if( /*g_TuyaHandle.IsTuyaSdkStarted() &&*/ (s_bMotorUsed == MOTOR_IS_AUTO) )
 			{
 				if(motion_track_check != motion_track_check_tmp)
 				{

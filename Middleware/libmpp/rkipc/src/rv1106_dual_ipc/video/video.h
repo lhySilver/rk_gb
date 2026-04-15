@@ -82,6 +82,9 @@ int rk_take_photo();
 
 //ADD
 
+int my_video_0_restart();
+int my_video_1_restart();
+int my_video_set_param(int stream_id);
 //sd
 int rk_video_set_stitch_distance(float sd);
 //cap

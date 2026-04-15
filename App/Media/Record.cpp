@@ -90,9 +90,6 @@ bool CRecordManager::Start()
 	struct RecordConfig &config = m_cCfgRecord.vRecordConfigAll[0];
 	g_configManager.getConfig(getConfigName(CFG_RECORD),tableRecord);
 	TExchangeAL<RecordConfigAll>::getConfigV2(tableRecord, m_cCfgRecord, 1);
-
-	config.bRecordEnable = true;
-	config.iRecordMode = RECORD_MODE_FULLTIME;
 	
 	printf("config.iRecordMode		= %d\n", config.iRecordMode);
 
@@ -181,6 +178,8 @@ void CRecordManager::StopRecordManual(int iChannel)
 }
 
 
+static bool s_bRecordPrintFlag = false;
+static bool s_bModeChangeFlag = false;
 //触发报警录像
 void CRecordManager::DoRecord(int iChannel)
 {
@@ -188,7 +187,16 @@ void CRecordManager::DoRecord(int iChannel)
 	AppErr("[record]---do lg record...\n");
 	g_StorageManager->DoAlarmRecord();
 #else
-	AppErr("[record]---do record...\n");
+	if (false == s_bRecordPrintFlag)
+	{
+		s_bRecordPrintFlag = true;
+		AppErr("[record]---do record...normal\n");
+	}
+	if (true == s_bModeChangeFlag)
+	{
+		s_bModeChangeFlag = false;
+		AppErr("[record]---do record...Mode or status change \n");
+	}
 	if (m_recMode == REC_ALM) 
 	{
 		g_StorageManager->DoAlarmRecord();
@@ -203,7 +211,11 @@ void CRecordManager::ClearRecord(int iChannel)
 	AppErr("[record]---clear lg record...\n");
 	g_StorageManager->ClearAlarmRecord();
 #else
+
+	s_bRecordPrintFlag = false;
 	AppErr("[record]---clear record...\n");
+	
+	
 	if (m_recMode == REC_ALM) 
 	{
 		g_StorageManager->ClearAlarmRecord();
@@ -257,6 +269,7 @@ void CRecordManager::onConfigRecord(const CConfigTable& table, int& iRet)
 					stopRecord(REC_CLS);
 					m_recMode = REC_ALM;
 					startRecord(m_recMode, 0);
+					s_bModeChangeFlag = true;//为了避免反复打印
 					break;
 			}
 		}
@@ -268,8 +281,11 @@ void CRecordManager::onConfigRecord(const CConfigTable& table, int& iRet)
 				if ( RECORD_MODE_FULLTIME == configOld.iRecordMode )
 					m_recMode = REC_TIM;
 				else if ( RECORD_MODE_ALARM == configOld.iRecordMode )
+				{
 					m_recMode = REC_ALM;
-
+					s_bModeChangeFlag = true;//为了避免反复打印	
+				}
+					
 				startRecord(m_recMode, 0);
 			}
 			else

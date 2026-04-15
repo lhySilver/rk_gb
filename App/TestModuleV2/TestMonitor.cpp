@@ -1,10 +1,16 @@
 #include "TestMonitor.h"
+#include "ITestModuleV2.h"//add on 2025.02.08
 #include "ILog.h"
 #include "Common.h"
 #include "NetWifi.h"
 
 #include "../../Include/PathDefinition.h"
 #include "TestAskBase.h"
+
+//add on 2025.02.10 同步产测时间
+#include <sys/time.h>
+#include <time.h>
+//add on 2025.02.10 同步产测时间
 
 extern char g_rtsp_url[100];
 extern char g_rtsp_url_sub[100];
@@ -36,6 +42,17 @@ void GetDevInfo(DeviceInfo *info)
     info->mMac 		    = str_wifi_mac;
 	info->mPid 		    = (char *)(DevInfoFromEEPROM_g.TUYA_PID);
 	info->mUid		    = (char *)(DevInfoFromEEPROM_g.TUYA_UID);
+#if defined(RC0240) || defined(RC0240V20) || defined(RC0240V30) || defined(RC0240V40)
+	if(g_NetWifi.GetEthStatus()){
+		info->mEthernetStatus = EthernetStatus::INSERT_CABLE;
+	}
+	else if(0 == g_NetWifi.GetEthStatus())
+	{
+		info->mEthernetStatus = EthernetStatus::NOT_INSERT_CABLE;
+	}
+#else
+	info->mEthernetStatus = EthernetStatus::NOT_SUPPORT;
+#endif
 }
 
 
@@ -69,6 +86,26 @@ TestCode TestMonitor::PeerGetRtspUrl(std::string &url, int &videoWidth, int &vid
     url = g_rtsp_url;//"rtsp://192.168.0.1:554/test";
     videoWidth = 1920*2;
     videoHeight = 1080;
+    return TestCode::SUCCESS;
+}
+
+TestCode TestMonitor::PeerGetRtspUrlV2(std::string &url, int &videoWidth, int &videoHeight,
+                                       std::string &urlSub, int &videoWidthSub, int &videoHeightSub,
+                                       std::string &errorMessage)
+{
+	LogWarning("Mock response peer get rtsp url.\n");
+    const std::string EMPTY_ERROR_MESSAGE = "";
+    errorMessage = EMPTY_ERROR_MESSAGE;	
+
+		//主码流
+    url = g_rtsp_url;
+    videoWidth = 1920 * 2;
+    videoHeight = 1080;
+
+	//子码流
+	urlSub = g_rtsp_url_sub;
+    videoWidthSub = 640 * 2;
+    videoHeightSub = 360;
     return TestCode::SUCCESS;
 }
 
@@ -201,28 +238,235 @@ TestCode TestMonitor::PeerControlPTZ(const PTZCommand &command, const bool &keep
     // return TestCode::SUCCESS;
 }
 
+
+
+#define MW_START_PROCESS( file, cmd, ... ) \
+{\
+	int status;\
+	pid_t pid = vfork( );\
+	if ( pid  == 0 )\
+	{\
+		execlp ( file, cmd, ##__VA_ARGS__ );\
+		exit ( -1 );\
+	}\
+	waitpid ( pid, &status, 0 );\
+}
+
+
+int WifiList_3(router_list_2_s* list, int MAX_Len)
+{
+	int wifi_num = 0;
+	int line_num = 0;
+	char tmp[512] = {0};
+	memset(tmp, 0, sizeof(tmp));
+	
+	MW_START_PROCESS("sh", "sh", "-c", "wpa_cli scan", NULL);
+	sleep(4);
+
+	FILE *pp = popen("wpa_cli scan_r", "r");
+	if(pp == NULL)
+	{
+		printf("WifiList--->popen fails\r\n");
+		goto exit;
+	}
+
+	/*
+	Selected interface 'wlan0'
+	bssid / frequency / signal level / flags / ssid
+	ec:b9:70:f0:66:e4       2462    -39     [WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]    DGIOT
+	*/
+	while (fgets(tmp, sizeof(tmp), pp) != NULL)
+	{
+		//printf("[line %d]: %s", line_num, tmp);
+		line_num++;
+		if (line_num < 3)
+			continue;
+
+		unsigned char SPACE_CHAR = 0x09;
+		int frequency = 0;
+		int iSignalLevel = 0;
+		char strSignalLevel[6];
+		char strFrequency[6];
+
+		int pos = 0;
+		int i = 0;
+		//bssid
+		for (; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos]; pos++);
+		for (; SPACE_CHAR == tmp[pos]; pos++);
+		if ('\0' == tmp[pos]) continue;
+		//frequency
+		// for (; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos]; pos++);
+		for (i = 0; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos] && i < sizeof(strFrequency)-1; pos++, i++)
+		{
+			strFrequency[i] = tmp[pos];
+		}
+		strFrequency[i] = '\0';
+		frequency = atoi(strFrequency);
+		printf("frequency = %d\r\n", frequency);
+		for (; SPACE_CHAR == tmp[pos]; pos++);
+		if ('\0' == tmp[pos]) continue;
+
+		//signal level
+		for (i = 0; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos] && i < sizeof(strSignalLevel)-1; pos++, i++)
+			strSignalLevel[i] = tmp[pos];
+		strSignalLevel[i] = '\0';
+		iSignalLevel = atoi(strSignalLevel);
+		//----------
+		if(frequency > 2000 && frequency < 3000)
+		{
+			printf("----------------->2.4G\r\n");
+			if (iSignalLevel > (-30))
+				iSignalLevel = -30;
+
+			if (iSignalLevel < (-100))
+				iSignalLevel = -100;
+
+			list[wifi_num].quality = (iSignalLevel - (-100)) * 100 / 70;
+
+		}
+		else if(frequency > 4000 && frequency < 6000)
+		{
+			printf("----------------->5G\r\n");
+			if (iSignalLevel > (-40))
+				iSignalLevel = -40;
+
+			if (iSignalLevel < (-100))
+				iSignalLevel = -100;
+
+			list[wifi_num].quality = (iSignalLevel - (-100)) * 100 / 60;
+		}
+		//------------
+		// if (iSignalLevel > (-40))
+		// 	iSignalLevel = -40;
+		// list[wifi_num].quality = (iSignalLevel - (-110)) * 100 / ((-40) - (-110));
+		printf("quality = %d\r\n", list[wifi_num].quality);
+		for (; SPACE_CHAR == tmp[pos]; pos++);
+		if ('\0' == tmp[pos]) continue;
+
+		//flags
+		for (; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos]; pos++);
+		for (; SPACE_CHAR == tmp[pos]; pos++);
+		if ('\0' == tmp[pos]) continue;
+		//ssid
+		for (i = 0; SPACE_CHAR != tmp[pos] && '\0' != tmp[pos] && '\r' != tmp[pos] && '\n' != tmp[pos] && i <= WIFI_ESSID_NAME_LEN; pos++, i++)
+			list[wifi_num].essid[i] = tmp[pos];
+		list[wifi_num].essid[i] = '\0';//这个地方会出现换行符，所以这里要减去1个字符的长度
+		// list[wifi_num].essid[i-1] = '\0';
+		printf("essid = %s\r\n", list[wifi_num].essid);
+
+		wifi_num++;
+		if (wifi_num >= MAX_Len)
+			break;
+		
+		memset(tmp, 0, sizeof(tmp));
+	}
+
+	pclose(pp);
+
+exit:
+
+	return wifi_num;
+}
+
+
 #define MAX_SEARCH_WIFI (50)
-extern CNetWifi::WIFI_LIST s_tpWifiList[MAX_SEARCH_WIFI];
-extern int wifi_num;
-TestCode TestMonitor::PeerGetWifiList(std::vector<WifiInfo> &wifiList, std::string &errorMessage)
+TestCode TestMonitor::PeerGetWifiList(const std::string &recvSsid, std::vector<WifiInfo> &wifiList, std::string &errorMessage)
 {
     LogWarning("get wifi list.\n");
-	for (int i = 0; i < wifi_num; i++)
-	{   
-		WifiInfo info0(s_tpWifiList[i].essid, s_tpWifiList[i].quality);
-		wifiList.push_back(info0);
-//		wifiList[i].mSsid = s_tpWifiList[i].essid;
-//		wifiList[i].mSignal = s_tpWifiList[i].quality;
-	}
-    const std::string EMPTY_ERROR_MESSAGE = "";
-    errorMessage = EMPTY_ERROR_MESSAGE;
-    return TestCode::SUCCESS;
+	std::string ssid = recvSsid;
+	LogWarning("ssid:%s\n", ssid.c_str());
+#if 1
+	int wifiNum = 0;
+	router_list_2_s tmpWifiList[MAX_SEARCH_WIFI];
+	router_list_2_s s_wifiResult = {0};
 
-//    const std::string EMPTY_ERROR_MESSAGE = "unsupport";
-//    errorMessage = EMPTY_ERROR_MESSAGE;
-//    return TestCode::UN_SUPPORT_FUNCTION;
+	memset(tmpWifiList, 0, sizeof(tmpWifiList));
+	memset(&s_wifiResult, 0, sizeof(router_list_2_s));
+
+	wifiNum = WifiList_3(tmpWifiList, MAX_SEARCH_WIFI);
+	if(wifiNum > 0)
+	{
+		for(int i = 0; i < wifiNum; i++)//查找指定ssid的wifi信息
+		{
+			printf("ssid:%s, quality:%d\n", tmpWifiList[i].essid, tmpWifiList[i].quality);
+			if(strcmp(tmpWifiList[i].essid, ssid.c_str()) == 0)
+			{
+				memcpy(&s_wifiResult, &tmpWifiList[i], sizeof(router_list_2_s));
+				printf("ssid:%s, quality:%d\n", s_wifiResult.essid, s_wifiResult.quality);
+				break;
+			}
+		}
+
+		if(s_wifiResult.essid[0] == '\0')
+		{
+			errorMessage = "wifi ssid not found!";
+			return TestCode::TEST_FAILED;
+		}
+		else
+		{
+			WifiInfo info0(s_wifiResult.essid, s_wifiResult.quality);
+			wifiList.push_back(info0);
+			errorMessage = "";
+			return TestCode::SUCCESS;
+
+		}
+				
+	}
+	else
+	{
+		errorMessage = "get wifi list failed!";
+		return TestCode::TEST_FAILED;	
+	}
+
+#else
+	//获取WiFi列表 add on 2025.03.07<添加代码---start> 
+	int wifiNum = 0;
+	int testResult = 0;
+	CNetWifi::WIFI_LIST stWifi = {0};
+	CNetWifi::WIFI_LIST s_getWifiList[MAX_SEARCH_WIFI];
+	// CNetWifi::WIFI_LIST s_tpWifiList = {0};
+	
+	memset(&stWifi, 0, sizeof(CNetWifi::WIFI_LIST));
+	memset(s_getWifiList, 0, sizeof(s_getWifiList));
+	// memset(s_tpWifiList, 0, sizeof(s_tpWifiList));
+
+	wifiNum = g_NetWifi.GetWifiWifiList(s_getWifiList, MAX_SEARCH_WIFI);
+
+	if(wifiNum > 0)
+	{	
+		for(int i = 0; i < wifiNum; i++)//查找指定ssid的wifi信息
+		{
+			if(strcmp(s_getWifiList[i].essid, recvSsid.c_str()) == 0)
+			{
+				memcpy(&stWifi, &s_getWifiList[i], sizeof(CNetWifi::WIFI_LIST));
+				break;
+			}
+		}
+		if(stWifi.essid[0] == '\0')
+		{
+			errorMessage = "wifi ssid not found!";
+			return TestCode::TEST_FAILED;
+		}
+		else
+		{
+			WifiInfo info0(stWifi.essid, stWifi.quality);
+			wifiList.push_back(info0);
+			errorMessage = "";
+			return TestCode::SUCCESS;
+		}
+
+	}
+	else
+	{
+		errorMessage = "get wifi list failed!";
+		return TestCode::TEST_FAILED;	
+	}
+#endif
 
 }
+
+
+
 //add on 2024.12.28 音频测试 ------------->start
 void DoProductAudioRecord(const unsigned char *pData, unsigned int size)
 {
@@ -394,7 +638,7 @@ TestCode TestMonitor::PeerTestPWMLamp(const unsigned short &brightness, std::str
 			brightness_value = 100;
 		}
 		g_Camera. doWhiteLedCtrlSwitch(true);
-		g_Camera. doWhiteLedCtrlBrightness(100);
+		g_Camera. doWhiteLedCtrlBrightness(brightness_value);
 	}
 		
     const std::string EMPTY_ERROR_MESSAGE = "";
@@ -448,6 +692,7 @@ TestCode TestMonitor::PeerIrcutSwitch(const bool &isOpen, std::string &errorMess
 }
 
 
+#define LIGHT_NO_SAMETIME //九联反馈不要让灯同时亮
 
 /**
  * @brief 根据LED测试类型设置指示灯状态
@@ -459,7 +704,7 @@ TestCode TestMonitor::PeerIrcutSwitch(const bool &isOpen, std::string &errorMess
  * @return 操作结果，成功则返回TestCode::SUCCESS
  */
 TestCode TestMonitor::PeerTestIndicatorLed(const std::string &switchName, const LEDTest &test,
-                                          std::string &errorMessage)//指示灯4红 3绿 2蓝
+                                          std::string &errorMessage)
 {
     LogWarning("test indicator led. switchName: %s ,test: %s\n", switchName.c_str(),ITestModuleV2::PrintfLEDTest(test));
 	
@@ -467,6 +712,9 @@ TestCode TestMonitor::PeerTestIndicatorLed(const std::string &switchName, const 
 	if(switchName == LED_RED){//指示灯红
 		if(LEDTest::ON == test){
 			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_ON);
+			#ifdef LIGHT_NO_SAMETIME
+			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
+			#endif
 		}
 		else if(LEDTest::OFF == test){
 			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
@@ -476,16 +724,21 @@ TestCode TestMonitor::PeerTestIndicatorLed(const std::string &switchName, const 
 	else if(switchName == LED_BLUE){//指示灯蓝
 		if(LEDTest::ON == test){
 			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON);
+			#ifdef LIGHT_NO_SAMETIME
+			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_ALWAYS_OFF);
+			#endif
 		}
 		else if(LEDTest::OFF == test){
 			g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
 		}
 		errorMessage = "";
+		return TestCode::SUCCESS;
 	}
 	else{//指示灯---其他指示灯
 		errorMessage = "Current LED is not Supported...";
+		return TestCode::TEST_FAILED;
 	}
-	return TestCode::SUCCESS;
+	
 #if 0
 	
 	switch (test)
@@ -613,10 +866,13 @@ TestCode TestMonitor::PeerSendLicense(const char *license, const unsigned int &l
 }
 /************************************烧号************************************/
 
-TestCode TestMonitor::PeerGetDeviceInfo(DeviceInfo &info, std::string &errorMessage)
+TestCode TestMonitor::PeerGetDeviceInfo(DeviceInfo &info, std::string &errorMessage)//工具主动向设备获取设备信息
 {
 
 	GetDevInfo(&info);
+#if 1
+	AskCheckTimeFromPeer();//主动询问设备时间
+#endif
 
 	const std::string EMPTY_ERROR_MESSAGE = "";
 	errorMessage = EMPTY_ERROR_MESSAGE;
@@ -752,5 +1008,116 @@ TestCode TestMonitor::PeerChangePid(const std::string &pid, std::string &errorMe
 	
 
 
+}
+
+//add on 2025.02.10 用于同步时间
+void TestMonitor::AskCheckTimeFromPeer(void)
+{
+    class TestAskForTest : public TestAsk<CheckTime>, public TestAskBase
+    {
+    public:
+        // TestAskForTest() : TestAskBase(TestAskBlock::BLOCK, TestAskReply::NEED_REPLY)
+		TestAskForTest() : TestAskBase(TestAskBlock::NOT_BLOCK, TestAskReply::NEED_NOT_REPLY)
+        {
+        }
+        virtual ~TestAskForTest() = default;
+#if 0	//当前版本暂时不支持当前接口一问一答，需要用别的接口接收数据，后续版本会进行优化 //add on 2025.02.10 用于同步时间
+        void ReplyFinished(const TestCode &code) override
+        {
+            TestAskBase::ReplyFinished(code);
+            LogTrace("Test ask finished, TestCode = %s.\n", ITestModuleV2::PrintfTestCode(code));
+            LogInfo("time zone = %s.\n", mDataReply.mTimeZone.c_str());
+            LogInfo("year = %d.\n", mDataReply.mYear);
+            LogInfo("month = %d.\n", mDataReply.mMonth);
+            LogInfo("day = %d.\n", mDataReply.mDay);
+            LogInfo("hour = %d.\n", mDataReply.mHour);
+            LogInfo("minute = %d.\n", mDataReply.mMinute);
+            LogInfo("second = %d.\n", mDataReply.mSecond);
+
+			//设置时间
+			if(TestCode::SUCCESS == code)
+			{
+				// 将年月日转换为自1970年1月1日以来的秒数
+				struct tm timeinfo = {0};
+				timeinfo.tm_year = 	mDataReply.mYear - 1900; // tm_year从1900年开始计数
+				timeinfo.tm_mon = 	mDataReply.mMonth - 1;    // tm_mon从0开始计数
+				timeinfo.tm_mday = 	mDataReply.mDay;
+				timeinfo.tm_hour = 	mDataReply.mHour;
+				timeinfo.tm_min = 	mDataReply.mMinute;
+				timeinfo.tm_sec = 	mDataReply.mSecond;
+
+				time_t seconds_since_epoch = mktime(&timeinfo);
+
+				// 将秒数转换为struct timeval
+				struct timeval tv;
+				tv.tv_sec = seconds_since_epoch;
+				tv.tv_usec = 0; // 微秒部分设置为0
+
+				// 设置系统时间
+				if (settimeofday(&tv, NULL) == -1) {
+					perror("settimeofday");
+					printf("\033[1;36m settimeofday fail... \033[0m\n");
+				}else{
+					printf("\033[1;36m settimeofday success... \033[0m\n");
+				}
+			}
+
+			
+        }
+#endif
+    };
+
+    std::shared_ptr<VTestAsk> ask = std::make_shared<TestAskForTest>();
+    const std::string NO_ERROR_MESSAGE = "";
+    ITestModuleV2::GetInstance()->AskCheckTimeFromPeer(ask, NO_ERROR_MESSAGE);
+    std::shared_ptr<TestAskForTest> askImpl = std::dynamic_pointer_cast<TestAskForTest>(ask);
+    LogInfo("time zone = %s.\n", askImpl->mDataReply.mTimeZone.c_str());
+    LogInfo("year = %d.\n", askImpl->mDataReply.mYear);
+    LogInfo("month = %d.\n", askImpl->mDataReply.mMonth);
+    LogInfo("day = %d.\n", askImpl->mDataReply.mDay);
+    LogInfo("hour = %d.\n", askImpl->mDataReply.mHour);
+    LogInfo("minute = %d.\n", askImpl->mDataReply.mMinute);
+    LogInfo("second = %d.\n", askImpl->mDataReply.mSecond);
+}
+
+//add on 2025.02.10 用于同步时间
+TestCode TestMonitor::PeerSendTimeForCheck(const CheckTime &time, std::string &errorMessage)
+{
+	//设置时间
+	LogInfo("time zone = %s.\n", time.mTimeZone.c_str());
+	LogInfo("year = %d.\n", time.mYear);
+	LogInfo("month = %d.\n", time.mMonth);
+	LogInfo("day = %d.\n", time.mDay);
+	LogInfo("hour = %d.\n", time.mHour);
+	LogInfo("minute = %d.\n", time.mMinute);
+	LogInfo("second = %d.\n", time.mSecond);
+	// 将年月日转换为自1970年1月1日以来的秒数
+	struct tm timeinfo = {0};
+	timeinfo.tm_year = 	time.mYear - 1900; // tm_year从1900年开始计数
+	timeinfo.tm_mon = 	time.mMonth - 1;    // tm_mon从0开始计数
+	timeinfo.tm_mday = 	time.mDay;
+	timeinfo.tm_hour = 	time.mHour;
+	timeinfo.tm_min = 	time.mMinute;
+	timeinfo.tm_sec = 	time.mSecond;
+
+	time_t seconds_since_epoch = mktime(&timeinfo);
+
+	// 将秒数转换为struct timeval
+	struct timeval tv;
+	tv.tv_sec = seconds_since_epoch;
+	tv.tv_usec = 0; // 微秒部分设置为0
+
+	// 设置系统时间
+	if (settimeofday(&tv, NULL) == -1) {
+		perror("settimeofday");
+		printf("\033[1;36m settimeofday fail... \033[0m\n");
+		errorMessage = "settimeofday fail...";
+		return TestCode::TEST_FAILED;	
+	}else{
+		printf("\033[1;36m settimeofday success... \033[0m\n");
+		errorMessage = "settimeofday success...";
+		return TestCode::SUCCESS;	
+	}
+	
 }
 

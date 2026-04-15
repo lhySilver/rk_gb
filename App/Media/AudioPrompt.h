@@ -7,39 +7,39 @@
 
 
 //系统提示音
-#define AUDIO_FILE_IAT 					"/oem/usr/audio/iat.g711u" 				//启动生产测试模式
-#define AUDIO_FILE_NOTHING				"/oem/usr/audio/nothing.g711u"
-#define AUDIO_FILE_DINGDINGDING 		"/oem/usr/audio/DingDingDing.g711u" 	//叮叮叮
-#define AUDIO_FILE_DIDI 				"/oem/usr/audio/a_o.g711u" 				//啊哦
-#define AUDIO_FILE_SIREN1               "/oem/usr/audio/siren1.g711u"
-#define AUDIO_FILE_SIREN2               "/oem/usr/audio/siren2.g711u"
-#define AUDIO_FILE_SIREN3               "/oem/usr/audio/siren3.g711u"
-#define AUDIO_FILE_SIREN4               "/oem/usr/audio/siren4.g711u"
-#define AUDIO_FILE_SIREN5               "/oem/usr/audio/siren5.g711u"
-#define AUDIO_FILE_SIREN6               "/oem/usr/audio/siren6.g711u"
+#define AUDIO_FILE_IAT 					"/oem/usr/audio/iat.g711a" 				//启动生产测试模式
+#define AUDIO_FILE_NOTHING				"/oem/usr/audio/nothing.g711a"
+#define AUDIO_FILE_DINGDINGDING 		"/oem/usr/audio/DingDingDing.g711a" 	//叮叮叮
+#define AUDIO_FILE_DIDI 				"/oem/usr/audio/a_o.g711a" 				//啊哦
+#define AUDIO_FILE_SIREN1               "/oem/usr/audio/siren1.g711a"
+#define AUDIO_FILE_SIREN2               "/oem/usr/audio/siren2.g711a"
+#define AUDIO_FILE_SIREN3               "/oem/usr/audio/siren3.g711a"
+#define AUDIO_FILE_SIREN4               "/oem/usr/audio/siren4.g711a"
+#define AUDIO_FILE_SIREN5               "/oem/usr/audio/siren5.g711a"
+#define AUDIO_FILE_SIREN6               "/oem/usr/audio/siren6.g711a"
 
 //自定义提示音
-#define AUDIO_FILE_AP_ESTABLISHED 		"/userdata/audio/ap-jianliwancheng.g711u" 					//AP建立完成
-#define AUDIO_FILE_AP_ESTABLISHING 		"/userdata/audio/ap-jianlizhong.g711u" 						//AP建立中
-#define AUDIO_FILE_DEV_RESET 			"/userdata/audio/chongzhishexiangjichenggong.g711u" 		//重置摄像机成功
-#define AUDIO_FILE_QRCODE_GET_COMPLETE 	"/userdata/audio/erweimasaomiaochenggong.g711u" 			//二维码扫描成功
-#define AUDIO_FILE_QRCODE_INVALID 		"/userdata/audio/erweimwuxiao-qingchongzhi.g711u" 			//二维码无效，请重试
-#define AUDIO_FILE_SD_FORMAT_FAILED 	"/userdata/audio/geshihuashibai.g711u" 						//格式化失败
-#define AUDIO_FILE_SD_FORMAT_COMPLETE 	"/userdata/audio/geshihuawancheng.g711u" 					//格式化完成
-#define AUDIO_FILE_DEV_UPDATING 		"/userdata/audio/userdata/audio/gujianshengjizhong-qingshaodeng.g711u" 				//固件升级中，请稍等
-#define AUDIO_FILE_WIFI_CONNECTING 		"/userdata/audio/lianjiezhong.g711u" 						//连接中，请稍等
-#define AUDIO_FILE_PLEASE_SET_WIFI 		"/userdata/audio/qingpeizhiwifi.g711u" 						//请配置WIFI
-#define AUDIO_FILE_SD_ERROR 			"/userdata/audio/sd-kayichang.g711u" 						//SD卡异常
-#define AUDIO_FILE_DEV_UPDATE_COMPLETE 	"/userdata/audio/shengjiwancheng.g711u" 					//升级完成
-#define AUDIO_FILE_WIFI_CONNECTED 		"/userdata/audio/wifi-lianjiechenggong.g711u" 				//WIFI连接成功
-#define AUDIO_FILE_WIFI_INCORRECT 		"/userdata/audio/wifi-mimacuowu.g711u" 						//WIFI密码错误
-#define AUDIO_FILE_WIFI_CONNECT_ERROR 	"/userdata/audio/wifi-connecterror.g711u" 					//WIFI连接失败
-#define AUDIO_FILE_BIND_SUCCESS         "/etc/conf/audio/bindsuccess.g711u" 						//绑定平台成功
-#define AUDIO_FILE_WIFI_MODULE_ERROR 	"/userdata/audio/WiFi-mokuaiyichang.g711u" 					//WIFI模块异常
-#define AUDIO_FILE_SYSTEM_STARTING 		"/userdata/audio/xitongqidongzhong.g711u" 					//系统启动中
-#define AUDIO_FILE_SD_FORMATING 		"/userdata/audio/zhengzaigeshihua-qingshaodeng.g711u" 		//正在格式化，请稍等
-#define AUDIO_FILE_SIREN 				"/userdata/audio/jingdi.g711u" 								//警笛声
-#define AUDIO_FILE_DINGDONG 			"/userdata/audio/dingdong.g711u"
+#define AUDIO_FILE_AP_ESTABLISHED 		"/userdata/audio/ap-jianliwancheng.g711a" 					//AP建立完成
+#define AUDIO_FILE_AP_ESTABLISHING 		"/userdata/audio/ap-jianlizhong.g711a" 						//AP建立中
+#define AUDIO_FILE_DEV_RESET 			"/userdata/audio/chongzhishexiangjichenggong.g711a" 		//重置摄像机成功
+#define AUDIO_FILE_QRCODE_GET_COMPLETE 	"/userdata/audio/erweimasaomiaochenggong.g711a" 			//二维码扫描成功
+#define AUDIO_FILE_QRCODE_INVALID 		"/userdata/audio/erweimwuxiao-qingchongzhi.g711a" 			//二维码无效，请重试
+#define AUDIO_FILE_SD_FORMAT_FAILED 	"/userdata/audio/geshihuashibai.g711a" 						//格式化失败
+#define AUDIO_FILE_SD_FORMAT_COMPLETE 	"/userdata/audio/geshihuawancheng.g711a" 					//格式化完成
+#define AUDIO_FILE_DEV_UPDATING 		"/userdata/audio/userdata/audio/gujianshengjizhong-qingshaodeng.g711a" 				//固件升级中，请稍等
+#define AUDIO_FILE_WIFI_CONNECTING 		"/userdata/audio/lianjiezhong.g711a" 						//连接中，请稍等
+#define AUDIO_FILE_PLEASE_SET_WIFI 		"/userdata/audio/qingpeizhiwifi.g711a" 						//请配置WIFI
+#define AUDIO_FILE_SD_ERROR 			"/userdata/audio/sd-kayichang.g711a" 						//SD卡异常
+#define AUDIO_FILE_DEV_UPDATE_COMPLETE 	"/userdata/audio/shengjiwancheng.g711a" 					//升级完成
+#define AUDIO_FILE_WIFI_CONNECTED 		"/userdata/audio/wifi-lianjiechenggong.g711a" 				//WIFI连接成功
+#define AUDIO_FILE_WIFI_INCORRECT 		"/userdata/audio/wifi-mimacuowu.g711a" 						//WIFI密码错误
+#define AUDIO_FILE_WIFI_CONNECT_ERROR 	"/userdata/audio/wifi-connecterror.g711a" 					//WIFI连接失败
+#define AUDIO_FILE_BIND_SUCCESS         "/etc/conf/audio/bindsuccess.g711a" 						//绑定平台成功
+#define AUDIO_FILE_WIFI_MODULE_ERROR 	"/userdata/audio/WiFi-mokuaiyichang.g711a" 					//WIFI模块异常
+#define AUDIO_FILE_SYSTEM_STARTING 		"/userdata/audio/xitongqidongzhong.g711a" 					//系统启动中
+#define AUDIO_FILE_SD_FORMATING 		"/userdata/audio/zhengzaigeshihua-qingshaodeng.g711a" 		//正在格式化，请稍等
+#define AUDIO_FILE_SIREN 				"/userdata/audio/jingdi.g711a" 								//警笛声
+#define AUDIO_FILE_DINGDONG 			"/userdata/audio/dingdong.g711a"
 
 class CAudioPrompt : public CThread
 {

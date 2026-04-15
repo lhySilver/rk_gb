@@ -402,6 +402,10 @@ int CStorageManager::Init()
 	{
 		m_bDiskFull = true;
 	}
+	else
+	{
+		m_bDiskFull = false;
+	}
 
 	memset(m_arrStPlaybackManager, 0, sizeof(m_arrStPlaybackManager));
 	pthread_mutex_init(&m_mutexPlaybackManager, NULL);
@@ -4927,3 +4931,4 @@ Int32 CStorageManager::PauseDownload(Int32 iDownloadHandle, bool bPause)
 	
 	return 0;
 }
+

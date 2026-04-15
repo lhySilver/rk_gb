@@ -113,7 +113,7 @@ void CSiren::ThreadProc()
 
 							printf("\033[1;32m""----------> SirenStatus_OPEN 1\n""\033[0m");
 							m_eSirentStatus = SirenStatus_OPEN;
-							g_TuyaHandle.ReportSirenSwitch(1);
+//							g_TuyaHandle.ReportSirenSwitch(1);
 							g_AudioPrompt.playSiren();
 							
 						}
@@ -151,7 +151,7 @@ void CSiren::ThreadProc()
 									int time_finish;
 									//通知联动开警笛结束
 									m_eSirentStatus = SirenStatus_CLOSE;
-									g_TuyaHandle.ReportSirenSwitch(0);
+//									g_TuyaHandle.ReportSirenSwitch(0);
 									g_AudioPrompt.stopPlay();
 									//退出循环, 从头开始执行
 									break;
@@ -171,7 +171,7 @@ void CSiren::ThreadProc()
 					printf("auot op siren countdown .....\n");
 					//通知联动开警笛结束
 					m_eSirentStatus = SirenStatus_CLOSE;
-					g_TuyaHandle.ReportSirenSwitch(0);
+//					g_TuyaHandle.ReportSirenSwitch(0);
 					g_AudioPrompt.stopPlay();	
 				}
 				
@@ -183,7 +183,7 @@ void CSiren::ThreadProc()
 			{
 				printf("\033[1;32m""----------> SirenStatus_OPEN 2\n""\033[0m");
 				m_eSirentStatus = SirenStatus_OPEN;
-				g_TuyaHandle.ReportSirenSwitch(1);
+//				g_TuyaHandle.ReportSirenSwitch(1);
 				g_AudioPrompt.playSiren();
 			}
 
@@ -210,7 +210,7 @@ void CSiren::ThreadProc()
 			if( SirenOperation_OPEN == m_eOperation )//时间到，上报关闭状态
 			{
 				//超时关警笛需要通知APP
-				g_TuyaHandle.ReportSirenSwitch(0);
+//				g_TuyaHandle.ReportSirenSwitch(0);
 			}
 			m_eSirentStatus = SirenStatus_CLOSE;
 			g_AudioPrompt.stopPlay();
@@ -231,7 +231,7 @@ void CSiren::ThreadProc()
 			{
 				//关警笛
 				m_eSirentStatus = SirenStatus_CLOSE;
-				g_TuyaHandle.ReportSirenSwitch(0);
+//				g_TuyaHandle.ReportSirenSwitch(0);
 				g_AudioPrompt.stopPlay();
 			}
 

@@ -14,11 +14,72 @@ bool check_firtst_connectfail = 0;
 void wifi_connect_callback(wifi_status_enum status);
 
 
+static int s_QrcodeExit = 0;
+//提取到二维码信息时的回调
+static bool QrCodeExtractedCB(const std::string &strResult)
+{
+	//WIFI:S:TP-LINK_18A5;T:WPA;P:dgiot0202;;
+	AppErr("strResult: %s\n", strResult.c_str());
+
+	int ret;
+	char ssid[64] = {0};
+	char psw[64] = {0};
+	const char *str_qrcode = strResult.c_str();
+	char * p = NULL;
+
+	memset(ssid, 0, sizeof(ssid));
+	memset(psw, 0, sizeof(psw));
+
+	ret = sscanf(str_qrcode, "WIFI:S:%63[^;];T:%*[^;];P:%63[^;];;", ssid, psw);
+	if (2 != ret)
+	{
+		AppErr("parse ssid or psw failed\n");
+		return false;
+	}
+		
+	s_QrcodeExit = 1;
+	
+	AppErr("ssid: %s, psw: %s\n", ssid, psw);
+	
+	CAudioPrompt::AudioFileParm audioFile;
+	audioFile.strFileName = AUDIO_FILE_QRCODE_GET_COMPLETE;	
+    audioFile.type = 0;
+	g_AudioPrompt.aoPlay(audioFile);
+	
+	g_NetConfigHook.SetWifi(ssid, psw);
+
+	return true;
+}
+static void* DoQrcode(void* args)
+{
+	printf("DoQrcode start\n");
+
+	CAudioPrompt::AudioFileParm audioFile;
+	audioFile.strFileName = AUDIO_FILE_PLEASE_SET_WIFI;
+	audioFile.type = 0;
+	g_AudioPrompt.aoPlay(audioFile);
+	
+	int count = 15;
+	while (!s_QrcodeExit) {
+
+		if (count -- < 0) {
+			count = 15;
+			
+			g_AudioPrompt.aoPlay(audioFile);
+		}
+		sleep(1);
+	}
+	return NULL;
+}
+
+
 
 PATTERN_SINGLETON_IMPLEMENT(CNetConfigHook)
 
 CNetConfigHook::CNetConfigHook():CThread("NetInterFace", TP_DEFAULT)
 {
+	m_bCanScanQrCode = true;
+	
 	m_wlanModel = WIFI_NONE;
 	m_wlanFreq = WIFI_SINGLE_FREQ;
 	m_wlanBleSupport = WIFI_BLE_NOT_SUPPORT;
@@ -110,6 +171,13 @@ int CNetConfigHook::StartWifiStationMode(void)
 	memset(&par, 0, sizeof(par));
 	strcpy(par.ssid, m_ConfigWifi.strSSID.c_str());
 	strcpy(par.psk, m_ConfigWifi.strKeys.c_str());
+
+	par.bStaticIp = m_ConfigWifi.bStaticIpEnable;
+	par.ip = m_ConfigWifi.HostIP.l;
+	par.netmask = m_ConfigWifi.Submask.l;
+	par.gateway = m_ConfigWifi.Gateway.l;
+	par.dns = m_ConfigWifi.Dns.l;
+	
 	return WifiStationModeCreate(&par, wifi_connect_callback);
 }
 
@@ -165,11 +233,13 @@ int CNetConfigHook::Check_netlink_status(const char * if_name)
     // 检查接口的插入状态
     if (ifr.ifr_flags & IFF_RUNNING) {
         // printf("%s interface link up\n",if_name);
-//		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_EPI_INDICATOR_LIGHT_FAST_FLICKER);
+		//printf("\033[1;36m %s interface link up \033[0m\n",if_name);
+		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_EPI_INDICATOR_LIGHT_FAST_FLICKER);// change on 2025.01.20 取消注释
 		status = 1;
     } else {
         // printf("%s interface link down\n",if_name);
-//		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_EPI_INDICATOR_LIGHT_ALWAYS_OFF);
+		//printf("\033[1;35m %s interface link down \033[0m\n",if_name);
+		g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_EPI_INDICATOR_LIGHT_ALWAYS_OFF);// change on 2025.01.20 取消注释
 		status = 0;
     }
 
@@ -306,22 +376,55 @@ void CNetConfigHook::ThreadProc(void)
 	CAudioPrompt::AudioFileParm audioFile;
 	Json::Value networkStatus;
 
+//	bool bCanScanQrCode = true; //插过网线或者超时后就不允许再启动
+	bool bWifiConfig = false;
+	bool bApQrcodeStart = false;
+	int QrcodeStartTime = 0;
+
+	bool bFirstCheckEth0 = true;
+
 	while (m_bLoop)
 	{
+		if (bApQrcodeStart && GetSystemUptime_s() > (QrcodeStartTime + 300))
+		{
+			m_bCanScanQrCode = false;
+			bApQrcodeStart = false;
+			s_QrcodeExit = 1;		//停止播报
+			if( true == g_QrCodeConHandle.GetCreatedStatus() )
+			{
+				g_QrCodeConHandle.Stop();
+				g_QrCodeConHandle.Destory();		//退出二维码配网模式
+				// g_Camera.SetNightModeQrcode(0);
+			}
+		}
+	
 		//测试模式时,只用wifi连接网络
 		//正常模式
 		if( 0 == DeviceMode_g )
 		{
 			ret = Check_netlink_status("eth0");
+			if (bFirstCheckEth0) //因为插着网线，第一次返回也是0
+			{
+				AppErr("Check_netlink_status(\"eth0\") -> ret: %d\n", ret);
+				bFirstCheckEth0 = false;
+				sleep(3);
+				continue;
+			}
+//			if((m_ConfigWifi.strSSID == "") )//未配网，则不跑当前线程的联网逻辑 强制进行wifi配网
+//			{
+//				ret = 0;//走无线去配网
+//			}
 		}
 		else
 		{
 			ret = 0;
 		}
+//		ret = 0; //<shang> debug
 
 		//网线已插入
 		if( 1 == ret )
 		{
+			
 			count = 0;
 			wifi_connect_result_g = WIFI_DISCONNECTED;
 			wifi_connect_result_last_g = WIFI_DISCONNECTED;
@@ -329,24 +432,38 @@ void CNetConfigHook::ThreadProc(void)
 			
 			if( NET_CHECK_ETH0_VALID ==  m_eth0_status)
 			{
+				if (bApQrcodeStart)
+				{
+					bApQrcodeStart = false;
+					s_QrcodeExit = 1;		//停止播报
+					if( true == g_QrCodeConHandle.GetCreatedStatus() )
+					{
+						g_QrCodeConHandle.Stop();
+						g_QrCodeConHandle.Destory();		//退出二维码配网模式
+						// g_Camera.SetNightModeQrcode(0);
+					}
+				}
+				
 				//通知其他模块，网络未连接
 				networkStatus["param"] = 0;
 				IEventManager::instance()->notify("NetWorkStatus", 0, appEventPulse, NULL, NULL, &networkStatus);
+				memset(m_ip,0,sizeof(m_ip));
 				m_nwLinkMode = NET_WORK_MODE_NONE;
 				m_eWlanStat = WLAN_IDLE;
 				if( Check((char*)"eth0") )
 				{
+					g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_FAST_FLICKER);
 					StopWifiStationMode();
-					if( true == g_TuyaHandle.GetRegisterStatus() )
+//					if( true == g_TuyaHandle.GetRegisterStatus() )
 					{
 						WifiIfconfigDown();
 						CTime::sleep(1000);
-						NetSetEth();
+						NetSetEth(m_ConfigWifi.bStaticIpEnable, m_ConfigWifi.HostIP.l, m_ConfigWifi.Submask.l, m_ConfigWifi.Gateway.l, m_ConfigWifi.Dns.l);
 					}
-					else
-					{
-						NetSetEth_Peiwang();
-					}
+//					else
+//					{
+//						NetSetEth_Peiwang();
+//					}
 					
 					CTime::sleep(3 * 1000);
 					m_eth0_status = NET_CHECK_ETH0_INLINE;
@@ -365,14 +482,17 @@ void CNetConfigHook::ThreadProc(void)
 				int b = NetGetLocalIp("eth0",ip);
 				if ((b == 0)&& (ip[0] != '\0')&&(NetIfInLine((char*)"eth0") == 0))
 				{
+					m_bCanScanQrCode = false;
+					
+					g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON);
 					uchEthUnexpectedCount = 0;
 					m_nActiveNet = 0;//eth0
 					m_eWlanStat = WLAN_IDLE;
 					//通知其他模块，网络连接成功
 					networkStatus["param"] = 1;
 					IEventManager::instance()->notify("NetWorkStatus", 0, appEventPulse, NULL, NULL, &networkStatus);
-					m_nwLinkMode = NET_WORK_MODE_ETH0;
 					strncpy(m_ip,ip,20);
+					m_nwLinkMode = NET_WORK_MODE_ETH0;
 				}
 				else
 				{
@@ -390,12 +510,37 @@ void CNetConfigHook::ThreadProc(void)
 		else if( m_bWifiEnable ) 	//网线未插入
 		{
 			m_eth0_status = NET_CHECK_ETH0_VALID;
+			
+			if ((true == m_bCanScanQrCode) && (m_ConfigWifi.strSSID.length() == 0)) //插过有线 && 没配网
+			{
+				bWifiConfig = true;
+				if (false == bApQrcodeStart)
+				{
+					bApQrcodeStart = true;
+					QrcodeStartTime = GetSystemUptime_s();
+					
+					g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_SLOW_FLICKER);
+					//启动二维码扫描
+					if( false == g_QrCodeConHandle.GetCreatedStatus() )
+					{
+						g_Camera.setMode_ScanQrcode(1);
+						g_QrCodeConHandle.Create(QrCodeExtractedCB);
+						g_QrCodeConHandle.Start();
+					}
+					
+					//间隔30 s 循环播报请配置WiFi语音提示
+					s_QrcodeExit = 0;		//停止播报
+					CreateDetachedThread((char*)"DoQrcode",DoQrcode, (void *)NULL, true);	
+				}
+			}
+			else
 			{
 				if( NET_CHECK_WLAN0_VALID ==  m_wifi_status)
 				{
 					//通知其他模块，网络未连接
 					networkStatus["param"] = 0;
 					IEventManager::instance()->notify("NetWorkStatus", 0, appEventPulse, NULL, NULL, &networkStatus);
+					memset(m_ip,0,sizeof(m_ip));
 					m_nwLinkMode = NET_WORK_MODE_NONE;
 					m_eWlanStat = WLAN_IDLE;
 					AppInfo("check wlan0...\n");
@@ -408,6 +553,21 @@ void CNetConfigHook::ThreadProc(void)
 	
 						if ( !(m_ConfigWifi.strSSID == "") /*&& !(m_ConfigWifi.strKeys == "")*/ ) 
 						{
+							m_bCanScanQrCode = false;
+							if (bApQrcodeStart)
+							{
+								bApQrcodeStart = false;
+								s_QrcodeExit = 1;		//停止播报
+								if( true == g_QrCodeConHandle.GetCreatedStatus() )
+								{
+									g_QrCodeConHandle.Stop();
+									g_QrCodeConHandle.Destory();		//退出二维码配网模式
+									// g_Camera.SetNightModeQrcode(0);
+								}
+							}
+							
+							g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_FAST_FLICKER);
+
 							wifi_connect_result_g = WIFI_DISCONNECTED;
 							wifi_connect_result_last_g = WIFI_DISCONNECTED;
 							StartWifiStationMode(); 		//开始连接WiFi
@@ -458,10 +618,11 @@ void CNetConfigHook::ThreadProc(void)
 							wifi_connect_result_last_g = wifi_connect_result_g;
 						}
 
-						//如果在配网阶段密码错误，直接重启，让用户重启配网
-						if( false == g_TuyaHandle.GetRegisterStatus() )
+						//如果在配网阶段密码错误，重启配网
+						if (bWifiConfig)
 						{                            
-							SystemReset();
+							m_ConfigWifi.strSSID = "";
+							m_ConfigWifi.strKeys = "";
 						}
 						
 						m_wifi_status = NET_CHECK_WLAN0_VALID;
@@ -484,8 +645,6 @@ void CNetConfigHook::ThreadProc(void)
 						{
 							wifi_connecting_aoPlay_time = time(NULL);
 							AppErr("ENUM_INDICATOR_LIGHT_FAST_FLICKER\n");
-							g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_FAST_FLICKER);
-							g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
 							
 							if(access(NO_VOICE_PROMPT_FLAG, F_OK) != 0)
 							{
@@ -511,6 +670,7 @@ void CNetConfigHook::ThreadProc(void)
 						int b = NetGetLocalIp((char*)"wlan0",ip);
 						if ((b == 0) && (ip[0] != '\0')&&(NetIfInLine((char*)"wlan0") == 0)) 
 						{
+							g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_ON);
 							//printf("wlan0 is inline...\n");
 							uchWifiUnexpectedCount = 0;
 							m_nActiveNet = 1;//wifi
@@ -535,9 +695,18 @@ void CNetConfigHook::ThreadProc(void)
 							
 							networkStatus["param"] = 3;
 							IEventManager::instance()->notify("NetWorkStatus", 0, appEventPulse, NULL, NULL, &networkStatus);
+							strncpy(m_ip,ip,20);
 							m_nwLinkMode = NET_WORK_MODE_STA;
 							wifi_connect_failed_count = 0;
-							strncpy(m_ip,ip,20);
+							
+							//如果在配网阶段，保存WiFi信息
+							if (bWifiConfig)
+							{
+								bWifiConfig = false;
+								Json::Value WifiTable;
+								TExchangeAL<NetWifiConfig>::setConfig(m_ConfigWifi, WifiTable);
+								g_configManager.setConfig(getConfigName(CFG_WIFI), WifiTable, 0, IConfigManager::applyOK);
+							}
 						}
 						else
 						{
@@ -608,13 +777,13 @@ void CNetConfigHook::OnCfgNetComm(const CConfigTable & table, int &ret)
 void CNetConfigHook::OnCfgWifiComm(const CConfigTable& table, int &ret)
 {
 	//WiFi配置每次有改动都会调用次函数更新m_ConfigWifi
-	AppInfo("OnCfgWifiComm---------wifi cogfni change------------------------ret=%d>\n",ret);
+	AppInfo("OnCfgWifiComm---------wifi config change------------------------ret=%d>\n",ret);
 	TExchangeAL<NetWifiConfig>::getConfig(table, m_ConfigWifi);
 }
 void CNetConfigHook::OnCfgAPComm(const CConfigTable& table, int &ret)
 {
 	//AP配置每次有改动都会调用次函数更新m_ConfigAP
-	AppInfo("OnCfgAPComm---------AP cogfni change------------------------ret=%d>\n",ret);
+	AppInfo("OnCfgAPComm---------AP config change------------------------ret=%d>\n",ret);
 	TExchangeAL<NetAPConfig>::getConfig(table, m_ConfigAP);
 }
 
@@ -659,6 +828,7 @@ void CNetConfigHook::ReConn()
 {
 	AppErr("ReConn\n");
 	m_eWlanStat = WLAN_IDLE;
+	memset(m_ip,0,sizeof(m_ip));
 	m_nwLinkMode = NET_WORK_MODE_NONE;
 
 	m_eth0_status = NET_CHECK_ETH0_VALID;
@@ -676,3 +846,9 @@ void CNetConfigHook::onAppEvent(std::string code, int index, appEventAction acti
     }
 	return;
 }
+
+bool CNetConfigHook::GetQrcodeEnable()
+{
+	return m_bCanScanQrCode;
+}
+

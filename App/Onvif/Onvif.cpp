@@ -78,6 +78,7 @@ COnvif::COnvif():CThread("NetInterFace", TP_DEFAULT)
 	g_configManager.getConfig(getConfigName(CFG_ONVIF), table);
 	TExchangeAL<OnvifConf_S>::getConfig(table, m_stOnvifCfg);
 
+//m_stOnvifCfg.Enable = true; //<shang> debug
 	g_configManager.attach(getConfigName(CFG_ONVIF), IConfigManager::Proc(&COnvif::onConfigOnvif, this));
 	IEventManager::instance()->attach(IEventManager::Proc(&COnvif::onAppEvent, this));
 }
@@ -198,7 +199,7 @@ void COnvif::ThreadProc()
 				
 				if( (strcmp(strOldIpAddr, ip) != 0) && (ip[0] != '\0') )
 				{
-					if (0 == g_TuyaHandle.ReportOnvifIp(ip))
+//					if (0 == g_TuyaHandle.ReportOnvifIp(ip))
 					{
 						strcpy(strOldIpAddr, ip);
 					}

@@ -94,11 +94,10 @@ static short search(int val, short *table, int size)
  * For further information see John C. Bellamy's Digital Telephony, 1982, 
  * John Wiley & Sons, pps 98-111 and 472-476. 
  */  
-static unsigned char linear2alaw(int pcm_val)/* 2's complement (16-bit range) */  
+static unsigned char linear2alaw(short pcm_val)/* 2's complement (16-bit range) */  
 {  
-   
-    int mask;  
-    int seg;  
+    short mask;  
+    short seg;  
     unsigned char aval;  
    
     pcm_val = pcm_val >> 3;  
@@ -132,10 +131,9 @@ static unsigned char linear2alaw(int pcm_val)/* 2's complement (16-bit range) */
  * alaw2linear() - Convert an A-law value to 16-bit linear PCM 
  * 
  */  
-static int alaw2linear(unsigned char a_val)  
+static short alaw2linear(unsigned char a_val)  
 {  
-   
-    int t;  
+    short t;  
     int seg;  
    
     a_val ^= 0x55;  

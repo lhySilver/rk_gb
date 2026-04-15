@@ -16,7 +16,7 @@ public:
 	bool start();
 	/// 启动后收尾工作
 	bool postStart();
-
+	
 private:
 	/// 启动与 Tuya 线程解耦的本地业务
 	void StartLocalRuntimeServices();
@@ -27,7 +27,7 @@ private:
 	void OnCheckButton(Param wParam);
 	void OnCheckStreamInfo(Param wParam);
 	void OnCheckButton_Produce(Param wParam);//add on 2025.01.02 产测模式，按键检测
-
+	
 	void onAppEvent(std::string code, int index, appEventAction action, const EventHandler *param, Json::Value* data);
 
 private:

@@ -12,6 +12,9 @@ option(debug "compile for debug" OFF)
 
 option(RC0240 "compile for RC0240 Board" OFF)
 option(RC0240_LGV10 "compile for RC0240_LGV10 Board" OFF)
+option(RC0240V30 "compile for RC0240V30 Board" OFF)
+option(RC0240V40 "compile for RC0240V40 Board" OFF)
+option(RC0240V20 "compile for RC0240V20 Board" OFF)
 
 option(ATBM6052 "compile for ATBM6052" OFF)
 option(ATBM6012B "compile for ATBM6012B" OFF)

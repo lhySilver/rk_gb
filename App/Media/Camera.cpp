@@ -195,10 +195,10 @@ CCamera* CCamera::instance()
 
 CCamera::CCamera() : CThread("Camera", TP_PLAY), m_ircutCfgTimer("IRCutCfg")
 {
-//	m_bSingleLightMode = true;
 	m_bSingleLightMode = false;//双光
 	m_bScanQrcodeMode = false;
 	m_last_mode = -1;
+	m_avg_cds_value = -1;
 	doIrcutCtrl(false);
 	doIrLedCtrl(false);
 	doWhiteLedCtrlSwitch(false);
@@ -251,6 +251,7 @@ bool CCamera::start()
 
 
 	//画面翻转初始化
+	#if 0
 	if(1 == ProductCof_g.image_flip)
 	{
 		if (RA_NONE == m_configAll.vCameraParamAll[0].rotateAttr)
@@ -266,13 +267,16 @@ bool CCamera::start()
 	{
 		CaptureSetRotate(m_configAll.vCameraParamAll[0].rotateAttr);
 	}
+	#else
+	doMirrorFlipCtrl(m_configAll.vCameraParamAll[0].mirror, m_configAll.vCameraParamAll[0].flip);
+	#endif
 
 	//宽动态初始化
 //	CaptureSetWdr(m_stCameraParam.wdrSwitch);
 
 	//防闪烁
-//	CaptureSetAntiFlicker(m_stCameraParam.iAntiFlicker);
-	CreateDetachedThread((char*)"flicker_time_func",flicker_time_func, (void *)NULL, true);
+	CaptureSetAntiFlicker(m_configAll.vCameraParamAll[0].iAntiFlicker);//双目枪用这个 change on 2025.01.15
+	// CreateDetachedThread((char*)"flicker_time_func",flicker_time_func, (void *)NULL, true);//励国有对应的需求才需要开启
 
 	//时间水印初始化
 //	CaptureSetOSDSwitch(m_stCameraParam.osdSwitch);
@@ -327,6 +331,7 @@ bool CCamera::start()
 			DoDayNightMode(m_configAll.vCameraParamAll[0].nightVisionMode);
 		}
 		m_iGetLvxCount = 0;
+		m_cdsJudgeDayNightTimer.Start(CTimer::Proc(&CCamera::onCdsJudgeDayNight, this), 0, 100);
 		m_sensorJudgeDayNightTimer.Start(CTimer::Proc(&CCamera::onSensorJudgeDayNight, this), 0, 500);//软光敏判断白天黑夜的状态 add on  2025.01.15 添加注释
 		m_ircutCfgTimer.Start(CTimer::Proc(&CCamera::onConfigAdcIRCut, this), 0, 2*1000);
 		if( !m_bSingleLightMode ) //双光
@@ -372,6 +377,7 @@ int CCamera::configure(int chn, CameraParam* pNewConfig)
 //		m_configAll.vCameraParamAll[0].iAntiFlicker = pNewConfig->iAntiFlicker;
 //	}
 
+	#if 0
 	if(m_configAll.vCameraParamAll[0].rotateAttr != pNewConfig->rotateAttr)
 	{
 //		allowMotionDetTIme_g = GetSystemUptime_s() + 10;
@@ -392,6 +398,14 @@ int CCamera::configure(int chn, CameraParam* pNewConfig)
             CaptureSetRotate(pNewConfig->rotateAttr);
         }
 	}
+	#else
+	if(m_configAll.vCameraParamAll[0].mirror != pNewConfig->mirror || 
+		m_configAll.vCameraParamAll[0].flip != pNewConfig->flip)
+	{
+		g_Alarm.SetAllowMotionDetTime(time(NULL)+10);
+		doMirrorFlipCtrl(pNewConfig->mirror, pNewConfig->flip);
+	}
+	#endif
 	
 	if(m_configAll.vCameraParamAll[0].osdSwitch != pNewConfig->osdSwitch)
 	{
@@ -409,6 +423,7 @@ int CCamera::configure(int chn, CameraParam* pNewConfig)
 		}
 		else //双光
 		{
+			CGuard guard(m_mutex);				//为了避免m_eDayNightStatus的值被修改，导致出现“手动切换不生效，第二次切换连续切换两次的情况”
 			m_iAllowGetDayNightStatusTime = 0; //模式切换，取消不获取日夜状态的操作，强制开启状态判断
 			m_iForceNightStatusEndTime = 0;
 			m_eDayNightStatus = CAMERA_MODE_NONE;
@@ -487,10 +502,10 @@ void CCamera::ThreadProc()
 		iAntiFlickerMode = m_iCheckAntiFlickerMode;
 		if( false == m_bManualOpenWhiteLed )//未手动开白光灯
 		{
-			night_vision_mode = m_configAll.vCameraParamAll[0].nightVisionMode;//当前的夜视模式 add on 2025.01.15 添加注释
+			night_vision_mode = m_configAll.vCameraParamAll[0].nightVisionMode;//获取当前的夜视模式 add on 2025.01.15 添加注释
 			bStartTime = false;
-			//eNewDayNightStatus = m_eNewDayNightStatus;
-			if (GetSystemUptime_s() > m_iAllowGetDayNightStatusTime)
+//			eNewDayNightStatus = m_eNewDayNightStatus;
+			if (GetSystemUptime_s() > m_iAllowGetDayNightStatusTime)//允许获取日夜状态的时间 add on 2025.05.19 
 				eNewDayNightStatus = m_eNewDayNightStatus;
 			else
 				eNewDayNightStatus = m_eDayNightStatus; //m_eNewDayNightStatus 2秒更新一次，防止未更新时切到旧的状态，现象有报警关灯后切黑白了马上又切彩色
@@ -499,7 +514,7 @@ void CCamera::ThreadProc()
 			current_time = GetSystemUptime_s();
 			if( m_bAlarmTrigger )//报警状态触发
 			{
-				last_md_time = current_time;
+				last_md_time = current_time;	//将当前的时间 记录移动侦测触发的时间 add on 2025.05.21<添加注释>
 				if( !motion_alarm_is_triggerd ) 		//移动开始
 				{
 					motion_alarm_is_triggerd = true;
@@ -510,7 +525,8 @@ void CCamera::ThreadProc()
 			else//报警状态触发结束
 			{
 //				if( motion_alarm_is_triggerd && ((current_time - last_md_time) > m_CfgFlightWarn.iDuration) )
-				if( motion_alarm_is_triggerd && ((current_time - last_md_time) > g_Alarm.GetAlarmLightOnTime()) )
+				// if( motion_alarm_is_triggerd && ((current_time - last_md_time) > GetLinkageLightTime()) )//犇哥确认使用旧的逻辑，移动侦测开关关闭之后，就把联动亮灯关闭
+				if( motion_alarm_is_triggerd && ((current_time - last_md_time) > GetLinkageLightTime()) ||  (0 == CAlarmMotion::instance()->GetMotionSwitch()) )
 				{
 					motion_alarm_is_triggerd = false;
 				}
@@ -522,56 +538,38 @@ void CCamera::ThreadProc()
 //				printf("mode[%s] cur[%s] judge[%s]-----md trigger.\n", test_get_ir_mode(night_vision_mode), 
 //						test_get_camera_mode(m_eDayNightStatus), test_get_camera_mode(eNewDayNightStatus));
 //			test_time = current_time;
-			
+			// printf("night_vision_mode:%d,eNewDayNightStatus:%d,m_eDayNightStatus---%d,m_eNewDayNightStatus---%d",night_vision_mode,eNewDayNightStatus,m_eDayNightStatus,m_eNewDayNightStatus);
+			//夜视模式--------强制白天
 			if (SINGLE_IRMODE_CLOSE == night_vision_mode)//关闭夜视——白天 add on 2025.01.15 添加注释
 			{
-				//先确定当前的日夜状态 add on 2025.01.15 添加注释
+				//如果为CAMERA_MODE_NONE表明刚切换为强制白天的模式 add on 2025.01.15 添加注释
 				if( CAMERA_MODE_NONE == m_eDayNightStatus )
 				{
 					motion_alarm_is_triggerd = false;
 					m_bAlarmTurnOnWihte = false;
 					//白天模式	
 					AppErr("camera mode[%d]. init switch day.\n", night_vision_mode);
-					setMode(CAMERA_MODE_DAY);
+//					setMode(CAMERA_MODE_DAY);
+					setMode(CAMERA_MODE_NIGHT, false);
 					m_eDayNightStatus = CAMERA_MODE_DAY;
 				}
-
-				if( false == motion_alarm_is_triggerd ) 		//没有触发移动侦测
+			}
+			else if (SINGLE_IRMODE_OPEN == night_vision_mode)//开启夜视
+			{	
+				//如果为CAMERA_MODE_NONE表明刚切换为强制夜视黑白的模式
+				if( CAMERA_MODE_NONE == m_eDayNightStatus )
 				{
-					if( true == m_bAlarmTurnOnWihte )
-					{
-						m_bAlarmTurnOnWihte = false;
-						m_iAllowGetDayNightStatusTime = GetSystemUptime_s() + 10; //定时忽略灯对白天黑夜状态判断的影响
-						AppErr("camera mode[%d]. alarm end. close lights.\n", night_vision_mode);
-						setMode(CAMERA_MODE_DAY);
-						m_eDayNightStatus = CAMERA_MODE_DAY;
-					}					
-				}
-				else
-				{
-					if( CAMERA_MODE_NIGHT == eNewDayNightStatus )
-					{
-						if( false == m_bAlarmTurnOnWihte )
-						{
-							m_bAlarmTurnOnWihte = true;
-							m_iAllowGetDayNightStatusTime = GetSystemUptime_s() + 10; //定时忽略灯对白天黑夜状态判断的影响
-							m_u64AutoOpenLightTime_ms = GetSystemUptime_ms();
-							AppErr("camera mode[%d]. alarm trigger. turn on light.\n", night_vision_mode);
-//							//设置成联动亮度
-//							if (0 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(20);
-//							else if (1 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(50);
-//							else// if (2 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(100);
-							setMode(CAMERA_MODE_NIGHT, false, false);
-						}
-					}
+					motion_alarm_is_triggerd = false;
+					m_bAlarmTurnOnWihte = false;
+					//黑夜模式
+					AppErr("camera mode[%d]. init switch night.\n", night_vision_mode);
+					setMode(CAMERA_MODE_NIGHT, true);
+					m_eDayNightStatus = CAMERA_MODE_NIGHT;//同步当前所处的状态 add on 2025.05.19
 				}
 			}
-			else//自动 或者 开启夜视
+			else//自动
 			{	
-				//先确定当前的日夜状态 add on 2025.01.15 添加注释
+				//先确定当前的日夜状态 add on 2025.05.19 添加注释
 				if( CAMERA_MODE_NONE == m_eDayNightStatus )//当前状态未定的情况下，以检测的结果为准//add on 2025.01.15 添加注释
 				{
 					motion_alarm_is_triggerd = false;
@@ -602,6 +600,8 @@ void CCamera::ThreadProc()
 						AppErr("camera mode[%d]. alarm end. close lights.\n", night_vision_mode);
 						setMode(CAMERA_MODE_NIGHT, true);//夜视——红外灯 add on 2025.01.15 添加注释
 						m_eDayNightStatus = CAMERA_MODE_NIGHT;
+						
+						g_Siren.SetSirenStatus(0); //关警笛
 					}
 					else//根据实际的状态判断是否需要切换状态 add on 2025.01.15 添加注释
 					{
@@ -647,14 +647,9 @@ void CCamera::ThreadProc()
 							m_iAllowGetDayNightStatusTime = GetSystemUptime_s() + 10; //定时忽略灯对白天黑夜状态判断的影响
 							m_u64AutoOpenLightTime_ms = GetSystemUptime_ms();
 							AppErr("camera mode[%d]. alarm trigger. turn on light.\n", night_vision_mode);
-//							//设置成联动亮度
-//							if (0 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(20);
-//							else if (1 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(50);
-//							else// if (2 == m_CfgLightWarn.iLuminance_link)
-//								doWhiteLedCtrlBrightness(100);
-							setMode(CAMERA_MODE_NIGHT, false, false);
+							setMode(CAMERA_MODE_NIGHT, false, false);//避免联动时长小于10s时，持续触发报警的状态下无法持续亮灯 add on 2025.05.19<添加注释>
+							
+							g_Siren.SetSirenStatus(1); //开警笛
 						}
 					}
 				}
@@ -663,7 +658,7 @@ void CCamera::ThreadProc()
 			if( bLastWhiteLedStatus != m_bCurrWhiteLedStatus )
 			{
 //				if( g_TuyaHandle.IsTuyaSdkStarted() )	//双光自动控白光灯需要主动上报状态
-				if (! g_Alarm.MotionDetectLightNotify(m_bCurrWhiteLedStatus))	//双光自动控白光灯需要主动上报状态
+//				if (! g_Alarm.MotionDetectLightNotify(m_bCurrWhiteLedStatus))	//双光自动控白光灯需要主动上报状态
 				{
 					bLastWhiteLedStatus = m_bCurrWhiteLedStatus;
 //					IPC_APP_report_anbao_light_status(bLastWhiteLedStatus);
@@ -736,62 +731,64 @@ void CCamera::ThreadProc()
 //通过光敏判断白天黑夜状态
 CAMERA_MODE_E CCamera::CheckDayNightByCds(int cdsValue, CAMERA_MODE_E oldStatus)
 {
-//	if (ProductCof_g.lamp_board == 0)
-//	{
-//		if( CAMERA_MODE_NONE == oldStatus )
-//		{
-//			if (cdsValue < ProductCof_g.lamp_board_value)			//黑夜模式
-//			{
-//				return CAMERA_MODE_NIGHT;
-//			}
-//			else						//白天模式	
-//			{
-//				return CAMERA_MODE_DAY;
-//			}
-//		}
-//		else if( CAMERA_MODE_DAY == oldStatus )
-//		{
-//			if (cdsValue < ProductCof_g.lamp_board_value-ProductCof_g.lamp_board_value_method)			//黑夜模式
-//			{
-//				return CAMERA_MODE_NIGHT;
-//			}
-//		}
-//		else if( CAMERA_MODE_NIGHT == oldStatus )
-//		{
-//			if(cdsValue > ProductCof_g.lamp_board_value+ProductCof_g.lamp_board_value_method)	//白天模式	
-//			{
-//				return CAMERA_MODE_DAY;
-//			}
-//		}
-//	}
-//	else
-//	{
-//		if( CAMERA_MODE_NONE == oldStatus )
-//		{
-//			if (cdsValue > ProductCof_g.lamp_board_value)	//黑夜模式
-//			{
-//				return CAMERA_MODE_NIGHT;
-//			}
-//			else				//白天模式	
-//			{
-//				return CAMERA_MODE_DAY;
-//			}
-//		}
-//		else if( CAMERA_MODE_DAY == oldStatus )
-//		{
-//			if (cdsValue > ProductCof_g.lamp_board_value+ProductCof_g.lamp_board_value_method)	//黑夜模式
-//			{
-//				return CAMERA_MODE_NIGHT;
-//			}
-//		}
-//		else if( CAMERA_MODE_NIGHT == oldStatus )
-//		{
-//			if (cdsValue < ProductCof_g.lamp_board_value-ProductCof_g.lamp_board_value_method)	//白天模式	
-//			{
-//				return CAMERA_MODE_DAY;
-//			}
-//		}
-//	}	
+//	printf("cdsValue: %d, oldStatus: %d\n", cdsValue, oldStatus);
+//	printf("lamp_board: %d, lamp_board_value: %d, lamp_board_value_method: %d\n", ProductCof_g.lamp_board, ProductCof_g.lamp_board_value, ProductCof_g.lamp_board_value_method);
+	if (ProductCof_g.lamp_board == 0)
+	{
+		if( CAMERA_MODE_NONE == oldStatus )
+		{
+			if (cdsValue < ProductCof_g.lamp_board_value)			//黑夜模式
+			{
+				return CAMERA_MODE_NIGHT;
+			}
+			else						//白天模式	
+			{
+				return CAMERA_MODE_DAY;
+			}
+		}
+		else if( CAMERA_MODE_DAY == oldStatus )
+		{
+			if (cdsValue < ProductCof_g.lamp_board_value-ProductCof_g.lamp_board_value_method)			//黑夜模式
+			{
+				return CAMERA_MODE_NIGHT;
+			}
+		}
+		else if( CAMERA_MODE_NIGHT == oldStatus )
+		{
+			if(cdsValue > ProductCof_g.lamp_board_value+ProductCof_g.lamp_board_value_method)	//白天模式	
+			{
+				return CAMERA_MODE_DAY;
+			}
+		}
+	}
+	else
+	{
+		if( CAMERA_MODE_NONE == oldStatus )
+		{
+			if (cdsValue > ProductCof_g.lamp_board_value)	//黑夜模式
+			{
+				return CAMERA_MODE_NIGHT;
+			}
+			else				//白天模式	
+			{
+				return CAMERA_MODE_DAY;
+			}
+		}
+		else if( CAMERA_MODE_DAY == oldStatus )
+		{
+			if (cdsValue > ProductCof_g.lamp_board_value+ProductCof_g.lamp_board_value_method)	//黑夜模式
+			{
+				return CAMERA_MODE_NIGHT;
+			}
+		}
+		else if( CAMERA_MODE_NIGHT == oldStatus )
+		{
+			if (cdsValue < ProductCof_g.lamp_board_value-ProductCof_g.lamp_board_value_method)	//白天模式	
+			{
+				return CAMERA_MODE_DAY;
+			}
+		}
+	}	
 	return oldStatus;
 }
 
@@ -821,9 +818,16 @@ CAMERA_MODE_E CCamera::CheckDayNight()
 	const int FORCE_NIGHT_TIME = 30*60; 	//检测到频繁切换后强制成夜晚状态的时长，单位秒。这里暂定半小时
 	const int FULLCOLOR_FORCE_NIGHT_TIME = 2*60*60; //双光全彩模式下强制成夜晚状态的时长，单位秒。
 
-	//不获取白天黑夜状态
 	int cur_absolute_time = GetSystemUptime_s();
-	if (cur_absolute_time < m_iAllowGetDayNightStatusTime || cur_absolute_time < m_iForceNightStatusEndTime)
+	//开关白光灯
+	if (cur_absolute_time < m_iAllowGetDayNightStatusTime)
+	{
+		last_day_night_status = m_eDayNightStatus;
+		return last_day_night_status;
+	}
+
+	//不获取白天黑夜状态
+	if (cur_absolute_time < m_iForceNightStatusEndTime)
 	{
 		static int dbg_last_time = 0;
 		if ((cur_absolute_time - dbg_last_time) > 10)
@@ -835,27 +839,28 @@ CAMERA_MODE_E CCamera::CheckDayNight()
 		return last_day_night_status;
 	}
 
-	#if 0
-	if (false == m_bSingleLightMode && 
-		DOUBLE_IRMODE_FULLCOLOR == night_vision_mode && 
-		CAMERA_MODE_NIGHT == m_eDayNightStatus)
-	{
-		/* 双光 且 全彩模式下从夜晚切到白天通过sensor判断 */
-		cur_day_night_status = CheckDayNightBySensor();
-	}
-	else
+	#if 01
+//	if (false == m_bSingleLightMode && 
+//		DOUBLE_IRMODE_FULLCOLOR == night_vision_mode && 
+//		CAMERA_MODE_NIGHT == m_eDayNightStatus)
+//	{
+//		/* 双光 且 全彩模式下从夜晚切到白天通过sensor判断 */
+//		cur_day_night_status = CheckDayNightBySensor();
+//	}
+//	else
 	{
 		//可以选择使用硬光敏还是软光敏
 		if(ProductCof_g.smartir_en == 0)
 		{
-			static int dbg_last_time = 0;
-			int iCdsValue = SystemReadAdc();
-			if ((cur_absolute_time - dbg_last_time) > 10)
-			{
-				dbg_last_time = cur_absolute_time;
-				AppInfo("CheckDayNight ---> iCdsValue: %d\n", iCdsValue);
-			}
-			cur_day_night_status = CheckDayNightByCds(iCdsValue, m_eDayNightStatus);
+//			static int dbg_last_time = 0;
+//			int iCdsValue = SystemReadAdc();
+//			if ((cur_absolute_time - dbg_last_time) > 10)
+//			{
+//				dbg_last_time = cur_absolute_time;
+//				AppInfo("CheckDayNight ---> iCdsValue: %d\n", iCdsValue);
+//			}
+			cur_day_night_status = CheckDayNightByCds(m_avg_cds_value, m_eDayNightStatus);
+//			printf("cur_day_night_status: %d\n", cur_day_night_status);
 		}
 		else
 		{
@@ -931,6 +936,44 @@ CAMERA_MODE_E CCamera::CheckDayNight()
 	
 	//printf("CheckDayNight ---> last_day_night_status: %d\n", last_day_night_status);
 	return last_day_night_status;
+}
+
+void CCamera::onCdsJudgeDayNight(uint arg)
+{
+	static int s_count = 0;
+	static int value_arr[20];
+	
+	int iCdsValue = SystemReadAdc();
+	if (-1 == m_avg_cds_value)
+		m_avg_cds_value = iCdsValue;
+
+	int i;
+	for (i = 0; i < s_count; i++)
+	{
+		if (iCdsValue >= value_arr[i])
+			break;
+	}
+	memmove(&value_arr[i+1], &value_arr[i], (s_count-i)*sizeof(int));
+	value_arr[i] = iCdsValue;
+	s_count++;
+
+	if (s_count < 20)
+		return;
+
+//	printf("cds value: ");
+//	for (i = 0; i < s_count; i++)
+//		printf("%d ", value_arr[i]);
+//	printf("\n");
+
+	// 测试发现开了红外灯后，采样值都是跳高，把最高9个和最低1个去掉再求平均
+	int average = 0;
+	for (i = 9; i < s_count-1; i++)
+		average += value_arr[i];
+	average /= 10;
+//	printf("average value: %d\n", average);
+
+	s_count = 0;
+	m_avg_cds_value = average;
 }
 
 void CCamera::onSensorJudgeDayNight(uint arg)
@@ -1208,6 +1251,10 @@ bool CCamera::GetDayNightStatus(void)
 	return m_bCurrDayNightStatus;
 }
 
+int CCamera::GetLinkageLightTime(void)
+{
+	return m_CfgFlightWarn.iDuration;
+}
 
 //报警抓图推送时调用，判断是否需要延时抓图
 /* 富翰平台上ISP切换黑白和彩色时图像会有短时间颜色偏绿的情况，所以增加此接口在需要时延时抓图 */
@@ -1242,6 +1289,7 @@ bool CCamera::SnapCheckNeedWait(uint64 *pu64AutoOpenLightTime_ms)
 void CCamera::SetAlarmTriggerStatus(bool bTrigger)
 {
 	m_bAlarmTrigger = bTrigger;
+//	printf("bTrigger: %d\n", bTrigger);
 }
 
 //获取白光灯状态
@@ -1276,7 +1324,7 @@ int CCamera::doWhiteLedCtrlSwitch(bool enable)
 	{
 		printf("\n====================================light on===============================================\n");
 		
-		#if defined(RC0240)
+		#if defined(RC0240) || defined(RC0240V20) || defined(RC0240V30) || defined(RC0240V40)
 		if(m_CfgFlightWarn.iLuminance <= 15 )
 		{
 			SystemSetIncandescentLampLumi(15,m_CfgFlightWarn.iLuminance_yellow);
@@ -1305,7 +1353,7 @@ int CCamera::doWhiteLedCtrlSwitch(bool enable)
 	else
 	{
 		printf("\n====================================light off===============================================\n");
-		#if defined(RC0240)
+		#if defined(RC0240) || defined(RC0240V20) || defined(RC0240V30) || defined(RC0240V40)
 		SystemSetIncandescentLampLumi(0,m_CfgFlightWarn.iLuminance_yellow);
 		SystemSetIncandescentLampLumi_yellow(0,1000-m_CfgFlightWarn.iLuminance_yellow);
 		#endif
@@ -1333,7 +1381,7 @@ int CCamera::doWhiteLedCtrlBrightness(int brightness)
 //	return SystemSetIncandescentLampPwm(LAMP_BRIGHTNESS, brightness);
 #endif
 	g_Alarm.SetAllowMotionDetTime(time(NULL)+10);
-	#if defined(RC0240)
+	#if defined(RC0240) || defined(RC0240V20) || defined(RC0240V30) || defined(RC0240V40)
 	if(brightness <= 15 )
 	{
 		SystemSetIncandescentLampLumi(15,m_CfgFlightWarn.iLuminance_yellow);
@@ -1383,5 +1431,18 @@ int CCamera::doIrcutCtrl(bool enable)
 	
 	return SystemSetIrcut(value);	
 }
+
+//控制镜像和翻转
+int CCamera::doMirrorFlipCtrl(bool mirror, bool flip)
+{
+	if( ProductCof_g.image_flip )
+	{
+		mirror = !mirror;
+		flip = !flip;
+	}
+	
+	return CaptureSetMirrorAndFlip(mirror, flip);	
+}
+
 /*****************************底层控制接口*****************************/
 

@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include <signal.h>
+
 #include "PAL/MW_Common.h"
 #include "PAL/I2c.h"
 
@@ -26,6 +28,11 @@ void SystemReboot(void)
 	printf("\033[1;36m  SystemReboot    \033[0m\n");
 	FILE *fp = NULL;
 
+	//add on 2025.03.13<±ÜÃâÂß¼­³åÍ»>
+	signal(SIGINT, SIG_DFL);
+	signal(SIGTERM, SIG_DFL);
+	//add on 2025.03.13<±ÜÃâÂß¼­³åÍ»>
+	
 	fp = popen("reboot", "r");
 	if(fp == 0)
 	{

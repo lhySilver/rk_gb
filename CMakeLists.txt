@@ -15,6 +15,9 @@ option(ATBM6012B "compile for ATBM6012B" OFF)
 option(ATBM6132 "compile for ATBM6132" OFF)
 option(AIC8800DL "compile for AIC8800DL" OFF)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
 #系统
 SET(CMAKE_SYSTEM_NAME Linux)
 

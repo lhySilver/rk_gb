@@ -1,11 +1,78 @@
 #include "VideoImageControl.h"
 
 #include <stdio.h>
+#include <string.h>
+#include "Common.h"
 
-extern "C"
+
+static int get_image_mirror_flip(int cam_id, const char **value)
 {
-int rk_isp_get_image_flip(int cam_id, const char **value);
-int rk_isp_set_image_flip(int cam_id, const char *value);
+	if (!value)
+		return -1;
+	
+	CConfigTable table;
+	CameraParamAll cpa;
+	memset(&cpa, 0, sizeof(cpa));
+	g_configManager.getConfig(getConfigName(CFG_CAMERA_PARAM), table);
+	TExchangeAL<CameraParamAll>::getConfigV2(table, cpa, 1);
+
+	unsigned char mirror = cpa.vCameraParamAll[0].mirror;
+	unsigned char flip = cpa.vCameraParamAll[0].flip;
+
+	if ( !mirror && !flip)
+		*value = "close";
+	else if ( mirror && !flip)
+		*value = "mirror";
+	else if ( !mirror && flip)
+		*value = "flip";
+	else
+		*value = "centrosymmetric";
+	return 0;
+}
+static int set_image_mirror_flip(int cam_id, const char *value)
+{
+	if (!value)
+		return -1;
+	
+	unsigned char mirror;
+	unsigned char flip;
+
+	if (strcmp(value, "close") == 0)
+	{
+		mirror = 0;
+		flip = 0;
+	}
+	else if (strcmp(value, "mirror") == 0)
+	{
+		mirror = 1;
+		flip = 0;
+	}
+	else if (strcmp(value, "flip") == 0)
+	{
+		mirror = 0;
+		flip = 1;
+	}
+	else
+	{
+		mirror = 1;
+		flip = 1;
+	}
+
+	CConfigTable table;
+	CameraParamAll cpa;
+	memset(&cpa, 0, sizeof(cpa));
+	g_configManager.getConfig(getConfigName(CFG_CAMERA_PARAM), table);
+	TExchangeAL<CameraParamAll>::getConfigV2(table, cpa, 1);
+
+	if (mirror != cpa.vCameraParamAll[0].mirror || flip != cpa.vCameraParamAll[0].flip)
+	{
+		cpa.vCameraParamAll[0].mirror = mirror;
+		cpa.vCameraParamAll[0].flip = flip;
+		TExchangeAL<CameraParamAll>::setConfigV2(cpa, table, 1);
+		g_configManager.setConfig(getConfigName(CFG_CAMERA_PARAM), table,0, IConfigManager::applyOK);
+	}
+
+	return 0;
 }
 
 namespace
@@ -62,7 +129,7 @@ bool QueryVideoImageFlipMode(std::string* value)
     }
 
     const char* raw = NULL;
-    if (rk_isp_get_image_flip(0, &raw) != 0 || raw == NULL || raw[0] == '\0') {
+    if (get_image_mirror_flip(0, &raw) != 0 || raw == NULL || raw[0] == '\0') {
         if (g_cached_image_flip_mode.empty()) {
             return false;
         }
@@ -93,7 +160,7 @@ int ApplyVideoImageFlipMode(const std::string& desiredMode)
         return 0;
     }
 
-    const int ret = rk_isp_set_image_flip(0, normalizedMode.c_str());
+    const int ret = set_image_mirror_flip(0, normalizedMode.c_str());
     printf("[VideoImageControl] apply image_flip ret=%d value=%s current=%s\n",
            ret,
            normalizedMode.c_str(),

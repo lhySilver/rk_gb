@@ -382,4 +382,24 @@ struct OnvifConf_S
 	std::string Password; 	//密码
 };
 
+#define VIDEO_CHANNEL_MAX (2)
+//Video配置
+struct VideoChannelConf_S
+{
+	int enc_type; 			//0-264 1-265
+	int bit_rate; 			//码率
+	int frmae_rate; 		//帧率
+	int gop; 				//I帧间隔
+};
+struct VideoConf_S
+{
+	VideoChannelConf_S chan[VIDEO_CHANNEL_MAX];
+};
+
+//Audio配置
+struct AudioConf_S
+{
+	int enc_type; 			//0-g711a 1-g711u 2-aac
+};
+
 #endif

@@ -6,7 +6,7 @@
 ## 模块概述
 - **职责:** 区分 `RK/` 与 `rk_gb/`；描述主程序启动顺序和协议初始化入口
 - **状态:** ✅稳定
-- **最后更新:** 2026-03-12
+- **最后更新:** 2026-04-15
 - **关键入口:** `PROTOCOL_CONFIG_ENDPOINT = http://127.0.0.1:18080/openapi/v1/ipc/protocol`
 - **隔离构建结论:** 不要直接用 `rk_gb/build.sh`，优先使用独立 build 目录和命令级 `PATH` 注入
 
@@ -33,6 +33,19 @@
 - 预期结果2: 主工程使用独立目录 `rk_gb/build-rk830`
 - 预期结果3: 仅当前命令临时注入工具链路径，其他 SoC 构建环境不受影响
 - 预期结果4: 最终产物为 `rk_gb/Bin/dgiot`
+
+### 需求: 协议基线叠加 dg_ipc 板级适配
+**模块:** BuildRuntime
+在 `GB28181/GAT1400` 协议线继续前进的前提下，回放 `feature/dg_ipc` 的 IPC 适配改动，避免把 `dg_ipc` 误当成新的协议基线。
+
+#### 场景: replay 分支整理
+前置条件:
+- 本地 `feature/gb-zero-config-macro-switch-20260326` 与远端协议分支各自多出 `1` 个提交
+- `feature/dg_ipc` 的核心适配提交为 `0fb527e`
+- 仓库长期版本化管理板级库、固件和打包资源，不能把所有二进制一律当作构建垃圾删除
+- 预期结果1: 新分支先补齐协议线本地/远端独有提交，再吸收 `dg_ipc` 改动
+- 预期结果2: 只清理 `cmake-build`、调试目录、压缩包、资料类等明显残留
+- 预期结果3: 新 IPC 对应的构建选项、板型和打包目录关系被保留
 
 ## API接口
 
@@ -69,6 +82,9 @@
 - 交叉编译结果已验证为 ARM 目标: `ELF 32-bit LSB executable, ARM, EABI5, interpreter /lib/ld-uClibc.so.0`
 - GitHub issue repair 工作流复用了同一套隔离交叉编译命令，并封装在 `rk_gb/tools/issue_bot/build_verify.sh`
 - 自动化 repair 必须运行在专用 self-hosted runner 上，使用独立 worktree 和临时 build 根目录，避免污染人工开发工作区
+- `dg_ipc` 整理分支采用“协议线独有提交先合流，再回放 `0fb527e`”的顺序，避免遗漏 `feature/gb-zero-config-macro-switch-20260326` 分叉后继续前进的协议修复
+- 当前 `build.sh` 已补充 `RC0240/RC0240V20/RC0240V30/RC0240V40` 板型选择，默认 IPC 打包目录与 `packaging/`、`packaging-$BOARD_TYPE` 相关联
+- 对这类仓库进行分支整理时，`cmake-build/`、`Middleware/cmake-build/`、调试目录、压缩包和资料文件属于可直接清理项；板级库、固件、rootfs、打包脚本需按项目既有版本管理口径保留
 
 ## 依赖
 - `rk_gb/CMakeLists.txt`
@@ -78,6 +94,9 @@
 - `rk_gb/Middleware/CMakeLists.txt`
 - `rk_gb/App/Main.cpp`
 - `rk_gb/App/Protocol/ProtocolManager.cpp`
+- `rk_gb/packaging/`
+- `rk_gb/packaging-RC0240_LGV10/`
 
 ## 变更历史
 - 2026-03-12: 修复主工程和 Middleware 的 `-o3` 构建参数错误，补齐隔离交叉编译命令，验证 `rk_gb/Bin/dgiot` 交叉编译通过
+- 2026-04-15: 以协议基线回放 `feature/dg_ipc` 的 IPC 适配改动，记录板型、打包目录与“只清理明显构建残留”的分支整理原则

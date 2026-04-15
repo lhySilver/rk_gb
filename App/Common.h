@@ -82,6 +82,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <sys/syscall.h> 
+
 typedef void *(*funcThreadRoute)(void*);
 bool CreateDetachedThread(funcThreadRoute route, void *param, bool scope);
 bool CreateDefaultThread(pthread_t *tid, funcThreadRoute route, void *param);

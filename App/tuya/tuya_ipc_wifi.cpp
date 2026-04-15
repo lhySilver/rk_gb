@@ -45,6 +45,7 @@ int net_peiwang_status = 0;
 int success_get_ip = 0;
 static int s_all_wifi_num = 0;
 static AP_IF_S s_all_wifi_list[MAX_AP_SEARCH];
+extern int g_iBleInitFlag;
 
 //降序排序
 int descending_sort_wifi_list_by_quality(AP_IF_S *wifi_lsit, int num)
@@ -194,10 +195,45 @@ OPERATE_RET tuya_adapter_wifi_station_connect(IN CONST CHAR_T *ssid,IN CONST CHA
 		if (0 == ret)
 			snprintf(final_ssid, sizeof(final_ssid), (char *)stWifi.ssid);
 		printf("final_ssid: %s\n", final_ssid);
-		if(g_NetConfigHook.GetCurlWifiFreq() == WIFI_SINGLE_FREQ)
-			g_NetConfigHook.SetWifi(final_ssid, passwd);
-		else
-			g_NetConfigHook.SetWifi(ssid, passwd);
+		// if(g_NetConfigHook.GetCurlWifiFreq() == WIFI_SINGLE_FREQ)
+		// 	g_NetConfigHook.SetWifi(final_ssid, passwd);
+		// else
+		// 	g_NetConfigHook.SetWifi(ssid, passwd);
+        if ((1 == g_NetConfigHook.Check_netlink_status("eth0")))//有线
+        {
+            WIFI_ST_t par = {0};
+            memset(&par, 0, sizeof(par));
+            if(g_NetConfigHook.GetCurlWifiFreq() == WIFI_SINGLE_FREQ)//区分单频双频
+                strcpy(par.ssid, final_ssid);
+            else
+                strcpy(par.ssid, ssid);
+
+            strcpy(par.psk, passwd);
+            if (1 == (NetGetWifiConnectStatus(&par,30)))//手动连接，验证WiFi账号密码是否正确
+            {
+                printf("\033[1;36m    NetGetWifiConnectStatus --------> correct     \033[0m\n");
+                    if(g_NetConfigHook.GetCurlWifiFreq() == WIFI_SINGLE_FREQ)
+                        g_NetConfigHook.SetWifi(final_ssid, passwd);
+                    else
+                        g_NetConfigHook.SetWifi(ssid, passwd);
+            }
+            else
+            {
+                printf("\033[1;36m    NetGetWifiConnectStatus --------> error     \033[0m\n");
+                SystemReset();
+                return OPRT_OK;
+            }
+        }
+        else//wifi
+        {
+            if(g_NetConfigHook.GetCurlWifiFreq() == WIFI_SINGLE_FREQ)
+                g_NetConfigHook.SetWifi(final_ssid, passwd);
+            else
+                g_NetConfigHook.SetWifi(ssid, passwd);
+            
+        }
+
+
 	}
 	g_NetConfigHook.SetWifiSwitch(true);
 
@@ -850,8 +886,12 @@ void Stop_net_peiwang(void)
 
         if(WIFI_BLE_SUPPORT == g_NetConfigHook.GetCurlWifiBleSupport())//change on 2025.01.11
         {
-            printf("\033[1;32m ==========================lib_ble_main_exit============================ \033[0m\n");
-            lib_ble_main_exit();
+            if(1 == g_iBleInitFlag)
+            {
+                printf("\033[1;32m ==========================lib_ble_main_exit============================ \033[0m\n");
+                lib_ble_main_exit();
+                g_iBleInitFlag = 0;
+            }
         }
 
         // if ( (g_NetConfigHook.GetCurlWifiModel() == WIFI_ATBM6062) || (g_NetConfigHook.GetCurlWifiModel() == WIFI_ATBM6012B))
@@ -864,6 +904,39 @@ void Stop_net_peiwang(void)
     }
 	return;
 }
+
+//---------------------add on 2025.05.21
+//为了避免退出蓝牙的接口被调用，导致蓝牙配网还未结束的时候，调用send_ble产生段错误
+void Stop_net_ap(void)
+{
+    if (net_peiwang_status)
+    {
+        net_peiwang_status = 0;
+        if(s_pSnifferCall != NULL)
+        {
+            s_enable_sniffer = FALSE;
+            pthread_join(sniffer_thId, NULL);
+            s_pSnifferCall = NULL;
+        }
+        
+        if( true == g_QrCodeConHandle.GetCreatedStatus() )
+        {
+            g_QrCodeConHandle.Stop();
+            g_QrCodeConHandle.Destory();		//退出二维码配网模式
+            // g_Camera.SetNightModeQrcode(0);
+        }
+        WifiApModeDestroy();
+
+        s_QrcodeExit = 1;		//停止播报
+    }
+	return;
+}
+
+
+
+
+//---------------------add on 2025.05.21
+
 
 //需要防止重复被调用
 int tuya_adapter_wifi_sniffer_set(const bool en, const SNIFFER_CALLBACK cb)
@@ -1249,7 +1322,7 @@ OPERATE_RET tuya_adapter_wifi_station_disconnect(VOID)
 
 
 
-
+#if 0
 int WifiSignalStrength(router_signal_s* stSignal)
 {
 	int ret = -1;
@@ -1334,7 +1407,157 @@ exit:
 
 	return ret;
 }
+#else
+int WifiSignalStrength(router_signal_s* stSignal)
+{
+    float frequency = 0.0;
 
+	int ret = -1;
+
+	if( ! stSignal )
+	{
+		return -1;
+	}
+	
+	FILE *pp = popen("iwconfig wlan0", "r");
+	if(pp == NULL)
+	{
+		printf("WifiSignal--->popen fails\r\n");
+		return -1;
+	}
+
+	char tmp[512] = {0};
+	memset(tmp, 0, sizeof(tmp));
+
+	unsigned char bNeedFindHead = 1;
+	int recordIdx = -1;
+	while (fgets(tmp, sizeof(tmp), pp) != NULL)
+	{
+		printf("%s", tmp);
+		
+		{
+			/* 查找ssid  */
+			char *pSSIDStart = strstr(tmp, "ESSID:\"");
+			if(pSSIDStart != NULL)
+			{
+			#if 01
+				char *pSSIDEnd = strchr(pSSIDStart+strlen("ESSID:\""), '"');
+				if( pSSIDEnd )
+				{
+					int s_len = pSSIDEnd - pSSIDStart - strlen("ESSID:\"");
+					strncpy(stSignal->essid, pSSIDStart+strlen("ESSID:\""), s_len);
+					stSignal->essid[s_len] = '\0';
+					
+					goto ReadNext;
+				}
+			#else
+				sscanf(pSSIDStart + strlen("ESSID:") , "\"%s\" ", stSignal->essid);
+				goto ReadNext;
+			#endif
+			}
+		}
+
+
+        
+        {
+            /* 查找 Frequency  */
+            char *pSSIDStart = strstr(tmp, "Frequency:");
+            if(pSSIDStart != NULL)
+            {
+                char *endptr;
+                frequency = strtod(pSSIDStart + strlen("Frequency:"), &endptr);
+                // 检查转换是否成功
+                if (endptr == pSSIDStart || *endptr != ' ') {
+                    printf("Conversion failed or invalid format.\n");
+                } else {
+                    printf("Extracted frequency: %f\n", frequency);
+                }
+            }
+        }
+        //------------------------add on 2025.04.18
+        //8188的格式不太一样 Signal level=69/100
+        if(WIFI_RTL8188 == g_NetConfigHook.GetCurlWifiModel())
+        {
+            char *pSIGNALStart = strstr(tmp, "Signal level=");
+            if(pSIGNALStart != NULL)
+            {
+                int val = 0;
+                int y = 0;
+                sscanf(pSIGNALStart + strlen("Signal level="), "%d/%d",&val,&y);
+                
+                //0~75
+                if( val <= 1 )
+                    val = 1;
+
+                if( val >= 75)
+                    val = 75;
+
+                stSignal->uchSignal = val * 100 / 75;
+                if(stSignal->uchSignal < 1)
+                    stSignal->uchSignal = 1;
+                else if(stSignal->uchSignal > 98)
+                    stSignal->uchSignal = 98;
+
+                ret = 0;				
+                break;
+            }
+        }
+        //------------------------add on 2025.04.18
+        else
+		{
+			/* 查找signal  */
+			char *pSIGNALStart = strstr(tmp, "Signal level=");
+			if(pSIGNALStart != NULL)
+			{
+				//[-30, -100]
+				int iDbmVal = strtol(pSIGNALStart+strlen("Signal level="), NULL, 10);
+//				printf("wlan rssi %d dbm\n", iDbmVal);
+				
+
+                if( iDbmVal < -100 )
+					iDbmVal = -100;
+
+                if(frequency < 3.0 && frequency > 2.0)
+                {
+                    if( iDbmVal > -30 )
+					    iDbmVal = -30;
+
+
+                    stSignal->uchSignal = ((iDbmVal - (-100)) * 100) / 70;
+                }
+                else if(frequency > 4.0 && frequency < 6.0)
+                {
+                    if( iDbmVal > -40 )
+					    iDbmVal = -40;
+
+                    stSignal->uchSignal = ((iDbmVal - (-100)) * 100) / 60;
+                }
+				    
+					
+                if(stSignal->uchSignal < 1)
+                    stSignal->uchSignal = 1;
+                if(stSignal->uchSignal > 98)
+                    stSignal->uchSignal = 98;
+
+
+				ret = 0;				
+				break;
+			}
+		}
+
+ReadNext:
+		memset(tmp, 0, sizeof(tmp));
+	}
+
+	pclose(pp);
+
+exit:
+
+	return ret;
+}
+
+
+#endif
 
 router_signal_s stSignal;
 
@@ -1490,7 +1713,8 @@ OPERATE_RET tuya_adapter_wifi_ap_start(IN CONST WF_AP_CFG_IF_S *cfg)
 OPERATE_RET tuya_adapter_wifi_ap_stop(VOID)
 {
     printf("Stop AP \r\n");
-    Stop_net_peiwang();
+    // Stop_net_peiwang();
+    Stop_net_ap();
     return OPRT_OK;
 }
 
