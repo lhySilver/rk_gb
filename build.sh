@@ -12,15 +12,15 @@ echo $SDUPDATE_DIR
 
 CHIP_TYPE=RV1106_DUAL_IPC
 #BOARD_TYPE=RV1103_DUAL_IPC
-#Àø¹ú°²±£µÆ
+#åŠ±å›½å®‰ä¿ç¯
 # BOARD_TYPE=RC0240_LGV10
 # BLE_TYPE=ATBM6012B
-#Àø¹ú°²±£µÆ
+#åŠ±å›½å®‰ä¿ç¯
 
-#Ë«Ä¿Ç¹
+#åŒç›®æª
 BOARD_TYPE=RC0240
 BLE_TYPE=ATBM6062
-#Ë«Ä¿Ç¹
+#åŒç›®æª
 
 
 PACKAGING=$ROOT/packaging
@@ -35,6 +35,26 @@ if [ -z $CROSS ];then
 else
 	echo "CROSS = $CROSS"
 fi
+
+function ensure_packaging_dir()
+{
+	local pkg_dir=$1
+	local pkg_archive=${pkg_dir}.tar.xz
+	local pkg_parent=
+
+	if [ -d "$pkg_dir" ]; then
+		return 0
+	fi
+
+	if [ ! -f "$pkg_archive" ]; then
+		echo "missing packaging dir and archive: $pkg_dir / $pkg_archive"
+		return 1
+	fi
+
+	pkg_parent=$(dirname "$pkg_dir")
+	echo "restore packaging from archive: $pkg_archive"
+	tar -C "$pkg_parent" -xJf "$pkg_archive"
+}
 
 function daemon-clean()
 {
@@ -109,6 +129,7 @@ function make_all()
 #----------------------------
 function image()
 {
+	ensure_packaging_dir "$PACKAGING" || return 1
 	echo "make image ..."
 	make -C $PACKAGING;
 	echo "make image $PACKAGING $BOARD_TYPE $BLE_TYPE end ..."
@@ -116,6 +137,7 @@ function image()
 #----------------------------
 function image-clean()
 {
+	ensure_packaging_dir "$PACKAGING" || return 1
 	echo "clean image ..."
 	make clean -C $PACKAGING;
 	echo "clean image $PACKAGING $BOARD_TYPE $BLE_TYPE end ..."

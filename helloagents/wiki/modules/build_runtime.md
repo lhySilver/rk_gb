@@ -6,7 +6,7 @@
 ## 模块概述
 - **职责:** 区分 `RK/` 与 `rk_gb/`；描述主程序启动顺序和协议初始化入口
 - **状态:** ✅稳定
-- **最后更新:** 2026-04-15
+- **最后更新:** 2026-04-16
 - **关键入口:** `PROTOCOL_CONFIG_ENDPOINT = http://127.0.0.1:18080/openapi/v1/ipc/protocol`
 - **隔离构建结论:** 不要直接用 `rk_gb/build.sh`，优先使用独立 build 目录和命令级 `PATH` 注入
 
@@ -84,6 +84,7 @@
 - 自动化 repair 必须运行在专用 self-hosted runner 上，使用独立 worktree 和临时 build 根目录，避免污染人工开发工作区
 - `dg_ipc` 整理分支采用“协议线独有提交先合流，再回放 `0fb527e`”的顺序，避免遗漏 `feature/gb-zero-config-macro-switch-20260326` 分叉后继续前进的协议修复
 - 当前 `build.sh` 已补充 `RC0240/RC0240V20/RC0240V30/RC0240V40` 板型选择，默认 IPC 打包目录与 `packaging/`、`packaging-$BOARD_TYPE` 相关联
+- 当前 `feature/dg_ipc_replay_20260415` 分支已将默认 `packaging/` 收敛为 `packaging.tar.xz`；`build.sh` 会在目录缺失但归档存在时自动解压恢复，再继续执行原有 `make -C $PACKAGING`
 - 对这类仓库进行分支整理时，`cmake-build/`、`Middleware/cmake-build/`、调试目录、压缩包和资料文件属于可直接清理项；板级库、固件、rootfs、打包脚本需按项目既有版本管理口径保留
 
 ## 依赖
@@ -94,9 +95,10 @@
 - `rk_gb/Middleware/CMakeLists.txt`
 - `rk_gb/App/Main.cpp`
 - `rk_gb/App/Protocol/ProtocolManager.cpp`
-- `rk_gb/packaging/`
+- `rk_gb/packaging.tar.xz`
 - `rk_gb/packaging-RC0240_LGV10/`
 
 ## 变更历史
 - 2026-03-12: 修复主工程和 Middleware 的 `-o3` 构建参数错误，补齐隔离交叉编译命令，验证 `rk_gb/Bin/dgiot` 交叉编译通过
 - 2026-04-15: 以协议基线回放 `feature/dg_ipc` 的 IPC 适配改动，记录板型、打包目录与“只清理明显构建残留”的分支整理原则
+- 2026-04-16: 将默认 `packaging/` 目录收敛为 `packaging.tar.xz`，并在 `build.sh` 中增加缺目录时的自动解压恢复逻辑

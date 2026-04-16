@@ -26,6 +26,7 @@
 - 新增 `App/Media/GAT1400CaptureControl.*` 抓拍桥接层，供编码侧 / 算法侧以“人脸 / 机动车 + 图片 / 视频 / 文件”事件方式向 1400 模块投递待上传数据，并补齐调用方接入使用说明。
 
 ### 变更
+- 将 `feature/dg_ipc_replay_20260415` 分支中的默认 `packaging/` 目录收敛为单个 `packaging.tar.xz` 归档；`build.sh` 现会在目标打包目录缺失但同名归档存在时自动解压恢复，`.gitignore` 也同步忽略解压后的 `packaging/` 工作目录，减少板级二进制资源对 Git 差异和历史浏览的噪声。
 - 在独立回放分支中先补齐 `feature/gb-zero-config-macro-switch-20260326` 的本地/远端独有提交，再吸收 `feature/dg_ipc` 的 IPC 适配改动；回放过程中仅清理 `cmake-build`、调试目录、压缩包和资料类垃圾文件，保留仓库中原本版本化管理的板级库、固件与打包资源。
 - 按 issue 44 继续收口 GB28181 报警通知的设备编号来源：结合 `245.pcap`、`246.pcap` 与 `debug.log` 可见，报警 XML 应与设备当前真实连接的 SIP 本端 ID 保持一致。当前除了 `ProtocolManager::NotifyGbAlarm()` 会优先读取 `GB28181ClientSDK` 的 `local_code` 归一化 `DeviceID/AlarmID` 外，最终 `CGB28181XmlParser::PackAlarmNotify()` 组包时也会优先使用运行态 `m_local_code` 写 `<DeviceID>`，避免上层仍带旧 `C044...` 时报警 `NOTIFY` 体继续发错 ID。
 - 按 issue 43 最新评论完成 GAT1400 收口：`ProtocolManager` 当前只保留 `NotifyGatFaces()` / `NotifyGatMotorVehicles()` / `NotifyGatNonMotorVehicles()` 3 个结构化对象上报接口，分别对接 `PostFaces/PostMotorVehicles/PostNonMotorVehicles`；已注册时直接发送，未注册时直接写入现有失败补传队列。同时删除 `ProtocolManager::NotifyGatAlarm()`、keepalive demo，以及 `GAT1400CaptureControl` / `GAT1400CaptureEvent` / `GAT1400ClientService::NotifyCaptureEvent()` 这条未再被调用的抓拍桥接链路。

@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604161016 | packaging_archive | 开发 | ✅已完成 | [2026-04/202604161016_packaging_archive](2026-04/202604161016_packaging_archive/) |
 | 202604151948 | dg_ipc_replay | 开发 | ✅已完成 | [2026-04/202604151948_dg_ipc_replay](2026-04/202604151948_dg_ipc_replay/) |
 | 202604131401 | issue44_gb_alarm_pack_local_id | 轻量迭代 | ✅已完成 | [2026-04/202604131401_issue44_gb_alarm_pack_local_id](2026-04/202604131401_issue44_gb_alarm_pack_local_id/) |
 | 202604131152 | issue44_gb_alarm_sip_local_id | 轻量迭代 | ✅已完成 | [2026-04/202604131152_issue44_gb_alarm_sip_local_id](2026-04/202604131152_issue44_gb_alarm_sip_local_id/) |
@@ -101,6 +102,7 @@
 
 ### 2026-04
 
+- [202604161016_packaging_archive](2026-04/202604161016_packaging_archive/) - 将默认 `packaging/` 目录收敛为 `packaging.tar.xz`，并在 `build.sh` 中增加目录缺失时的自动解压恢复逻辑，减少板级二进制资源在 Git 中的路径噪声
 - [202604151948_dg_ipc_replay](2026-04/202604151948_dg_ipc_replay/) - 以 `feature/gb-zero-config-macro-switch-20260326` 为协议基线，顺序吸收本地/远端独有协议提交并回放 `feature/dg_ipc` 的 IPC 适配，同时清理 `cmake-build`、调试目录、压缩包和资料类垃圾文件
 - [202604131401_issue44_gb_alarm_pack_local_id](2026-04/202604131401_issue44_gb_alarm_pack_local_id/) - 基于 `246.pcap` 和 `debug.log` 继续收口 issue 44，把报警 `NOTIFY` 的最终 `<DeviceID>` 约束下沉到 `PackAlarmNotify()`，强制对齐运行态 `m_local_code`
 - [202604131152_issue44_gb_alarm_sip_local_id](2026-04/202604131152_issue44_gb_alarm_sip_local_id/) - 基于 `245.pcap` 把 issue 44 的报警 `DeviceID` 来源继续收口为 SDK 当前真实连接的 SIP 本端 ID，改由 `GB28181ClientSDK::GetLocalGbCode()` 驱动
