@@ -37,6 +37,8 @@
 #include "Media/VideoOsdControl.h"
 #include "GB28181ProtocolConstants.h"
 #include "ExchangeAL/CameraExchange.h"
+#include "ExchangeAL/CommExchange.h"
+#include "ExchangeAL/Exchange.h"
 #include "ExchangeAL/ExchangeKind.h"
 #include "Update/update.h"
 
@@ -2313,6 +2315,27 @@ static std::string NormalizeGbLiveVideoCodec(const std::string& codecIn)
 
     return codec;
 
+}
+
+static std::string BuildGbLiveVideoCodecFromVideoEncType(int encType)
+{
+    return (encType == 1) ? "h265" : "h264";
+}
+
+static bool TryLoadGbLiveVideoCodecFromVideoConfig(int requestedStreamNum, std::string& codecOut)
+{
+    CConfigTable table;
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return false;
+    }
+
+    VideoConf_S localVideoConfig;
+    memset(&localVideoConfig, 0, sizeof(localVideoConfig));
+    TExchangeAL<VideoConf_S>::getConfig(table, localVideoConfig);
+
+    const int channelIndex = (requestedStreamNum > 0 && VIDEO_CHANNEL_MAX > 1) ? 1 : 0;
+    codecOut = NormalizeGbLiveVideoCodec(BuildGbLiveVideoCodecFromVideoEncType(localVideoConfig.chan[channelIndex].enc_type));
+    return !codecOut.empty();
 }
 
 
@@ -11065,21 +11088,37 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
                             ? m_cfg.gb_live.ssrc
                             : static_cast<int>(GenerateGbMediaSsrc(remotePort));
 
+    const char* codecSource = "gb_live_config";
+    bool codecResolved = false;
     media::VideoEncodeStreamState runtimeVideoState;
     if (media::QueryVideoEncodeStreamState(requestedStreamNum, &runtimeVideoState) &&
         runtimeVideoState.has_codec) {
         const std::string normalizedRuntimeCodec = NormalizeGbLiveVideoCodec(runtimeVideoState.codec);
         if (!normalizedRuntimeCodec.empty()) {
             runtimeParam.video_codec = normalizedRuntimeCodec;
+            codecSource = "runtime";
+            codecResolved = true;
         }
-    } else {
+    }
+
+    if (!codecResolved && requestType == kLiveStream) {
+        std::string configVideoCodec;
+        if (TryLoadGbLiveVideoCodecFromVideoConfig(requestedStreamNum, configVideoCodec)) {
+            runtimeParam.video_codec = configVideoCodec;
+            codecSource = "cfg_video";
+            codecResolved = true;
+        }
+    }
+
+    if (!codecResolved) {
         runtimeParam.video_codec = NormalizeGbLiveVideoCodec(runtimeParam.video_codec);
     }
 
-    printf("[ProtocolManager] gb %s stream runtime codec stream=%s codec=%s remote=%s:%d requested_stream_num=%d media_f=%s\n",
+    printf("[ProtocolManager] gb %s stream runtime codec stream=%s codec=%s source=%s remote=%s:%d requested_stream_num=%d media_f=%s\n",
            StreamRequestTypeName(requestType),
            runtimeParam.video_stream_id.c_str(),
            runtimeParam.video_codec.c_str(),
+           codecSource,
            runtimeParam.target_ip.c_str(),
            runtimeParam.target_port,
            requestedStreamNum,

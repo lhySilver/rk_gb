@@ -22,7 +22,7 @@
 
 ## 注意事项
 - `LocalConfigProvider` 现在读取 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；其中 `gb28181.ini` / `gat1400.ini` 缺失时仍可按默认值自动生成。`gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关：`standard` 模式下忽略 `zero_config.ini` 缺失，`zero_config` 模式下若 `zero_config.ini` 缺失则会直接记录日志并返回错误；`gat1400.ini` 当前也新增 `enable` 作为 1400 注册生命周期开关。旧的 `/userdata/conf/Config/gb28181.ini` 路径不再兼容，也不自动迁移。
-- `LocalConfigProvider::InitDefaultLocalConfig()` 现在会额外读取 `CFG_VIDEO`，把主辅码流 `enc_type` 映射到 `gb_live.video_codec`、`gb_video.main_codec`、`gb_video.sub_codec` 的兜底值；当 GB 运行态编码 getter 暂时不可用时，协议默认 codec 不再固定回退成 `H.265`。
+- `ProtocolManager::ReconfigureGbLiveSender()` 现在会在每次 GB 实时预览开始建链时重新确定 `video_codec`：优先读取 `media::QueryVideoEncodeStreamState()` 的运行态 codec；若 live 预览场景下运行态 getter 暂时不可用，则实时读取 `CFG_VIDEO` 的主辅码流 `enc_type` 映射 `h264/h265` 作为兜底。`LocalConfigProvider::InitDefaultLocalConfig()` 不再承担这条 `CFG_VIDEO` 读取逻辑。
 - `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。
 - `ProtocolManager` 当前对 GAT1400 服务实例和 GB28181 receiver 只保留运行中真实使用的非 `const` getter；此前零调用的 `const GetGatClientService()` / `const GetGbClientReceiver()` 已从协议胶水层移除。
 - `GB28181ClientSDK` 的创建、绑定、释放现全部下沉到 `ProtocolManager` 私有生命周期中；`CSofia` 不再持有 SDK 指针，也不再负责 `Bind/Unbind`。

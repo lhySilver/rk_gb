@@ -4,7 +4,8 @@ import re
 import sys
 
 
-TARGET = Path("/home/jerry/silver/rk_gb/App/Protocol/config/LocalConfigProvider.cpp")
+PROTOCOL_TARGET = Path("/home/jerry/silver/rk_gb/App/Protocol/ProtocolManager.cpp")
+LOCAL_CONFIG_TARGET = Path("/home/jerry/silver/rk_gb/App/Protocol/config/LocalConfigProvider.cpp")
 
 
 def require(text: str, pattern: str, message: str) -> None:
@@ -18,35 +19,31 @@ def reject(text: str, pattern: str, message: str) -> None:
 
 
 def main() -> int:
-    text = TARGET.read_text(encoding="utf-8-sig")
+    protocol_text = PROTOCOL_TARGET.read_text(encoding="utf-8-sig")
+    local_config_text = LOCAL_CONFIG_TARGET.read_text(encoding="utf-8-sig")
 
     require(
-        text,
+        protocol_text,
         r"g_configManager\.getConfig\(getConfigName\(CFG_VIDEO\),\s*table\)",
-        "LocalConfigProvider should read CFG_VIDEO instead of relying on fixed GB codec defaults.",
+        "GB preview should read CFG_VIDEO when starting the preview stream.",
     )
     require(
-        text,
+        protocol_text,
         r"TExchangeAL<VideoConf_S>::getConfig\(table,\s*[A-Za-z_][A-Za-z0-9_]*\)",
-        "LocalConfigProvider should decode CFG_VIDEO into VideoConf_S.",
+        "GB preview should decode CFG_VIDEO into VideoConf_S when starting the preview stream.",
+    )
+    require(
+        protocol_text,
+        r"ReconfigureGbLiveSender",
+        "Regression target should stay on the GB preview startup path.",
     )
     reject(
-        text,
-        r'cfg\.gb_live\.video_codec\s*=\s*"h265"\s*;',
-        "GB live codec is still hardcoded to h265.",
-    )
-    reject(
-        text,
-        r'cfg\.gb_video\.main_codec\s*=\s*"H\.265"\s*;',
-        "GB main stream codec is still hardcoded to H.265.",
-    )
-    reject(
-        text,
-        r'cfg\.gb_video\.sub_codec\s*=\s*"H\.265"\s*;',
-        "GB sub stream codec is still hardcoded to H.265.",
+        local_config_text,
+        r"g_configManager\.getConfig\(getConfigName\(CFG_VIDEO\),\s*table\)",
+        "CFG_VIDEO lookup should not live in LocalConfigProvider defaults anymore.",
     )
 
-    print("PASS: issue46 gb codec defaults follow CFG_VIDEO regression checks")
+    print("PASS: issue46 gb preview codec is fetched from CFG_VIDEO at stream start")
     return 0
 
 

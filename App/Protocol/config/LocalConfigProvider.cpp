@@ -9,10 +9,6 @@
 #include <unistd.h>
 
 #include "Inifile.h"
-#include "ExchangeAL/CommExchange.h"
-#include "ExchangeAL/Exchange.h"
-#include "ExchangeAL/ExchangeKind.h"
-#include "Manager/ConfigManager.h"
 
 namespace
 {
@@ -339,45 +335,6 @@ int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
     return 0;
 }
 
-bool TryLoadLocalVideoConfig(VideoConf_S& out)
-{
-    memset(&out, 0, sizeof(out));
-
-    CConfigTable table;
-    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
-        return false;
-    }
-
-    TExchangeAL<VideoConf_S>::getConfig(table, out);
-    return true;
-}
-
-std::string BuildGbLiveCodecFromVideoEncType(int encType)
-{
-    return (encType == 1) ? "h265" : "h264";
-}
-
-std::string BuildGbVideoCodecFromVideoEncType(int encType)
-{
-    return (encType == 1) ? "H.265" : "H.264";
-}
-
-void ApplyDefaultGbVideoCodecFromLocalVideoConfig(protocol::ProtocolExternalConfig& cfg)
-{
-    VideoConf_S localVideoConfig;
-    if (!TryLoadLocalVideoConfig(localVideoConfig)) {
-        return;
-    }
-
-    cfg.gb_live.video_codec = BuildGbLiveCodecFromVideoEncType(localVideoConfig.chan[0].enc_type);
-    cfg.gb_video.main_codec = BuildGbVideoCodecFromVideoEncType(localVideoConfig.chan[0].enc_type);
-
-    const int subEncType = (VIDEO_CHANNEL_MAX > 1) ?
-        localVideoConfig.chan[1].enc_type :
-        localVideoConfig.chan[0].enc_type;
-    cfg.gb_video.sub_codec = BuildGbVideoCodecFromVideoEncType(subEncType);
-}
-
 void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
 {
     cfg.version = "v1-default";
@@ -388,21 +345,20 @@ void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
     cfg.gb_live.target_ip = "127.0.0.1";
     cfg.gb_live.target_port = 30000;
     cfg.gb_live.video_stream_id = "main";
-    cfg.gb_live.video_codec = BuildGbLiveCodecFromVideoEncType(1);
+    cfg.gb_live.video_codec = "h265";
     cfg.gb_live.audio_codec = "g711a";
     cfg.gb_live.mtu = 1200;
     cfg.gb_live.payload_type = 96;
     cfg.gb_live.ssrc = 0;
     cfg.gb_live.clock_rate = 90000;
-    cfg.gb_video.main_codec = BuildGbVideoCodecFromVideoEncType(1);
+    cfg.gb_video.main_codec = "H.265";
     cfg.gb_video.main_resolution = "3840x1080";
     cfg.gb_video.main_fps = 25;
     cfg.gb_video.main_bitrate_kbps = 2048;
-    cfg.gb_video.sub_codec = BuildGbVideoCodecFromVideoEncType(1);
+    cfg.gb_video.sub_codec = "H.265";
     cfg.gb_video.sub_resolution = "640x360";
     cfg.gb_video.sub_fps = 15;
     cfg.gb_video.sub_bitrate_kbps = 512;
-    ApplyDefaultGbVideoCodecFromLocalVideoConfig(cfg);
     cfg.gb_image.flip_mode = "close";
 
     cfg.gat_register = BuildDefaultGatRegisterParam();

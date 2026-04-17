@@ -105,6 +105,7 @@
 
 ### 2026-04
 
+- [202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) - 按 issue 46 最新反馈把 GB28181 实时预览 codec 的 `CFG_VIDEO` 获取时机收口到预览建链阶段：`ReconfigureGbLiveSender()` 在 live 启动时实时确定 codec，`LocalConfigProvider` 恢复为普通默认值初始化
 - [202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) - 按 issue 45 最新评论补齐 `ProtocolManager::GetGatOnlineStatus()`，供外部模块查询 1400 是否已注册到平台
 - [202604161722_issue45_gb_gat_register_enabled](2026-04/202604161722_issue45_gb_gat_register_enabled/) - 按 issue 45 为 GAT1400 注册配置补齐 `enabled` 与停服语义，并复核 GB28181 现有 `enabled` 停服行为已满足要求
 - [202604161016_packaging_archive](2026-04/202604161016_packaging_archive/) - 将默认 `packaging/` 目录收敛为 `packaging.tar.xz`，并在 `build.sh` 中增加目录缺失时的自动解压恢复逻辑，减少板级二进制资源在 Git 中的路径噪声
