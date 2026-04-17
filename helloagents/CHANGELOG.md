@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 按 issue 46 收口 GB 默认预览码流 codec 来源：`LocalConfigProvider::InitDefaultLocalConfig()` 不再把 `gb_live.video_codec`、`gb_video.main_codec`、`gb_video.sub_codec` 固定写成 `h265/H.265`，而是读取 `CFG_VIDEO` 中主辅码流 `enc_type` 进行映射，保证运行态 getter 不可用时的 GB codec 兜底值仍与本地视频配置一致。
 - 按 issue 45 补齐 GAT1400 注册配置 `enabled`：`gat1400.ini` 新增 `enable` 持久化字段，`ProtocolManager::Start()` 与 `RestartGatRegisterService()` 现按开关决定是否启动或注销停服；同时复核 GB28181 现有 `enabled` 语义，确认 `RestartGbRegisterService()` 已支持关闭后停服且不重启。
 - 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。
 

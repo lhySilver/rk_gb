@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604171408 | issue46_gb_codec_from_cfg_video | 轻量迭代 | ✅已完成 | [2026-04/202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) |
 | 202604171011 | issue45_gat_online_status | 轻量迭代 | ✅已完成 | [2026-04/202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) |
 | 202604161722 | issue45_gb_gat_register_enabled | 修复 | ✅已完成 | [2026-04/202604161722_issue45_gb_gat_register_enabled](2026-04/202604161722_issue45_gb_gat_register_enabled/) |
 | 202604161016 | packaging_archive | 开发 | ✅已完成 | [2026-04/202604161016_packaging_archive](2026-04/202604161016_packaging_archive/) |
