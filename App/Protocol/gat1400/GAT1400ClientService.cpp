@@ -1034,6 +1034,12 @@ bool GAT1400ClientService::IsStarted() const
     return m_started;
 }
 
+bool GAT1400ClientService::IsRegistered() const
+{
+    std::lock_guard<std::mutex> lock(m_state_mutex);
+    return m_registered;
+}
+
 void GAT1400ClientService::UpdateRegistState(regist_state state)
 {
     std::vector<CLower1400RegistStatusObserver*> observers;

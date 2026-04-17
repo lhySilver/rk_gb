@@ -8,6 +8,7 @@
 
 ### 修复
 - 按 issue 45 补齐 GAT1400 注册配置 `enabled`：`gat1400.ini` 新增 `enable` 持久化字段，`ProtocolManager::Start()` 与 `RestartGatRegisterService()` 现按开关决定是否启动或注销停服；同时复核 GB28181 现有 `enabled` 语义，确认 `RestartGbRegisterService()` 已支持关闭后停服且不重启。
+- 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。
 
 ### 新增
 - 初始化 `helloagents/` 知识库。

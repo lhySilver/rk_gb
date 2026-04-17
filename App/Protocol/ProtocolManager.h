@@ -99,6 +99,7 @@ public:
 
     const ProtocolExternalConfig& GetConfig() const;
     bool GetGbOnlineStatus() const;
+    bool GetGatOnlineStatus() const;
 
     int SetGbZeroConfig(const GbZeroConfigParam& param);
     GbZeroConfigParam GetGbZeroConfig() const;

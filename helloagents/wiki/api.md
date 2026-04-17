@@ -64,6 +64,14 @@
 - `ProtocolManager::Start()` 会在启动阶段读取 `gat_register.enabled`；当其为 `0` 时不会自动拉起 GAT1400 生命周期
 - 当前本地注册配置只认 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini` 三个新路径；旧的 `/userdata/conf/Config/gb28181.ini` 不再作为读取或迁移来源
 
+### ProtocolManager 状态查询接口
+
+#### `GetGbOnlineStatus()`
+**描述:** 返回 GB28181 当前是否已注册到平台；语义直接等同于 `m_gb_client_registered`，启动中、重试中、已停止或配置关闭时都会返回 `false`。
+
+#### `GetGatOnlineStatus()`
+**描述:** 返回 GAT1400 当前是否已注册到平台；该接口供外部模块统一读取 1400 在线态，内部透传 `GAT1400ClientService::IsRegistered()`，未初始化、未注册或已停服时都返回 `false`。
+
 ### ProtocolManager 核心回调
 
 #### `HandleGbLiveStreamRequest`

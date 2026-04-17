@@ -57,6 +57,7 @@ public:
     int Reload(const ProtocolExternalConfig& cfg, const GbRegisterParam& gbRegister);
 
     bool IsStarted() const;
+    bool IsRegistered() const;
 
     void AddSubscribeObserver(CLower1400SubscribeObserver* observer);
     void RemoveSubscribeObserver(CLower1400SubscribeObserver* observer);
