@@ -6,7 +6,7 @@
 ## 模块概述
 - **职责:** 区分 `RK/` 与 `rk_gb/`；描述主程序启动顺序和协议初始化入口
 - **状态:** ✅稳定
-- **最后更新:** 2026-04-16
+- **最后更新:** 2026-04-18
 - **关键入口:** `PROTOCOL_CONFIG_ENDPOINT = http://127.0.0.1:18080/openapi/v1/ipc/protocol`
 - **隔离构建结论:** 不要直接用 `rk_gb/build.sh`，优先使用独立 build 目录和命令级 `PATH` 注入
 
@@ -47,6 +47,20 @@
 - 预期结果2: 只清理 `cmake-build`、调试目录、压缩包、资料类等明显残留
 - 预期结果3: 新 IPC 对应的构建选项、板型和打包目录关系被保留
 
+
+### 需求: 清理 platform_sdk_port 历史冗余
+**模块:** BuildRuntime
+在不改变当前 GB28181、SIP、GAT1400 构建入口的前提下，按当前分支真实构建和引用关系清理 `third_party/platform_sdk_port` 历史遗留的未接入文件。
+
+#### 场景: issue47 冗余文件清理
+前置条件:
+- `App/CMakeLists.txt` 与 `App/Protocol/gb28181/sdk_port/CMakeLists.txt` 对 `platform_sdk_port` 采用显式源码列举
+- `CommonFile` 与 `CommonLibSrc` 中存在大量只在旧 SDK 内部互相引用、但未接入当前活代码链路的历史文件
+- issue 附件只能作为初筛线索，不能直接作为删除清单
+- 预期结果1: 仅删除当前构建入口和仓库活代码 include 图之外的文件
+- 预期结果2: 清理后现有主工程配置与编译验证仍能通过
+- 预期结果3: 知识库中沉淀本次清理口径，便于后续继续收敛第三方移植目录
+
 ## API接口
 
 ### main -> CSofia::preStart
@@ -86,6 +100,7 @@
 - 当前 `build.sh` 已补充 `RC0240/RC0240V20/RC0240V30/RC0240V40` 板型选择，默认 IPC 打包目录与 `packaging/`、`packaging-$BOARD_TYPE` 相关联
 - 当前 `feature/dg_ipc_replay_20260415` 分支已将默认 `packaging/` 收敛为 `packaging.tar.xz`；`build.sh` 会在目录缺失但归档存在时自动解压恢复，再继续执行原有 `make -C $PACKAGING`
 - 对这类仓库进行分支整理时，`cmake-build/`、`Middleware/cmake-build/`、调试目录、压缩包和资料文件属于可直接清理项；板级库、固件、rootfs、打包脚本需按项目既有版本管理口径保留
+- issue 47 基于当前 CMake 显式源码入口、仓库级 include 图和人工抽样复核，删除了 `213` 个未接入当前构建的 `platform_sdk_port` 头文件 / 源码文件，主要集中在 `CommonFile/CommonLib`、`Common/Layer3_Abstract` 以及未启用的 `GB28181SDK/SipSDK` 历史分支
 
 ## 依赖
 - `rk_gb/CMakeLists.txt`
@@ -97,8 +112,11 @@
 - `rk_gb/App/Protocol/ProtocolManager.cpp`
 - `rk_gb/packaging.tar.xz`
 - `rk_gb/packaging-RC0240_LGV10/`
+- `rk_gb/third_party/platform_sdk_port/CommonFile/`
+- `rk_gb/third_party/platform_sdk_port/CommonLibSrc/`
 
 ## 变更历史
 - 2026-03-12: 修复主工程和 Middleware 的 `-o3` 构建参数错误，补齐隔离交叉编译命令，验证 `rk_gb/Bin/dgiot` 交叉编译通过
 - 2026-04-15: 以协议基线回放 `feature/dg_ipc` 的 IPC 适配改动，记录板型、打包目录与“只清理明显构建残留”的分支整理原则
 - 2026-04-16: 将默认 `packaging/` 目录收敛为 `packaging.tar.xz`，并在 `build.sh` 中增加缺目录时的自动解压恢复逻辑
+- 2026-04-18: 按 issue 47 基于真实构建入口与 include 图清理 `platform_sdk_port` 历史冗余文件，并顺手恢复当前分支顶层 / Middleware 的 `-O3` 构建参数以重新跑通交叉编译验证

@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604181529 | issue47_platform_sdk_port_trim | 开发 | ✅已完成 | [2026-04/202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) |
 | 202604171408 | issue46_gb_codec_from_cfg_video | 轻量迭代 | ✅已完成 | [2026-04/202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) |
 | 202604171011 | issue45_gat_online_status | 轻量迭代 | ✅已完成 | [2026-04/202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) |
 | 202604161722 | issue45_gb_gat_register_enabled | 修复 | ✅已完成 | [2026-04/202604161722_issue45_gb_gat_register_enabled](2026-04/202604161722_issue45_gb_gat_register_enabled/) |
@@ -105,6 +106,7 @@
 
 ### 2026-04
 
+- [202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) - 按 issue 47 基于当前 CMake 显式源码入口与仓库 include 图清理 `platform_sdk_port` 下 `213` 个冗余头文件 / 源码文件，并恢复本分支 `-O3` 与 `cmake_minimum_required=3.5` 构建基线后重新跑通交叉编译验证
 - [202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) - 按 issue 46 最新反馈把 GB28181 实时预览 codec 的 `CFG_VIDEO` 获取时机收口到预览建链阶段：`ReconfigureGbLiveSender()` 在 live 启动时实时确定 codec，`LocalConfigProvider` 恢复为普通默认值初始化
 - [202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) - 按 issue 45 最新评论补齐 `ProtocolManager::GetGatOnlineStatus()`，供外部模块查询 1400 是否已注册到平台
 - [202604161722_issue45_gb_gat_register_enabled](2026-04/202604161722_issue45_gb_gat_register_enabled/) - 按 issue 45 为 GAT1400 注册配置补齐 `enabled` 与停服语义，并复核 GB28181 现有 `enabled` 停服行为已满足要求

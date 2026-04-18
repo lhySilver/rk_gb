@@ -11,6 +11,10 @@
 - 按 issue 45 补齐 GAT1400 注册配置 `enabled`：`gat1400.ini` 新增 `enable` 持久化字段，`ProtocolManager::Start()` 与 `RestartGatRegisterService()` 现按开关决定是否启动或注销停服；同时复核 GB28181 现有 `enabled` 语义，确认 `RestartGbRegisterService()` 已支持关闭后停服且不重启。
 - 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。
 
+### 优化
+- 按 issue 47 基于当前 CMake 显式源码入口、仓库级 include 图和人工抽样复核，删除 `third_party/platform_sdk_port/CommonFile` 与 `third_party/platform_sdk_port/CommonLibSrc` 下 `213` 个未接入当前构建的冗余头文件 / 源码文件，主要集中在 `CommonFile/CommonLib`、`Common/Layer3_Abstract` 以及未启用的 `GB28181SDK/SipSDK` 历史分支。
+- 为恢复该分支的交叉编译验证能力，将根目录与 `Middleware` 的 `CMakeLists.txt` 优化参数从错误的 `-o3` 修正为 `-O3`，并重新跑通 `tools/issue_bot/build_verify.sh`。
+
 ### 新增
 - 初始化 `helloagents/` 知识库。
 - 新增 `rk_gb` 项目总览、架构、接口、数据模型文档。
