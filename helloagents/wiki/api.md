@@ -210,20 +210,21 @@
 
 | 接口 | 说明 |
 |------|------|
-| `protocol::ProtocolManager::Instance().NotifyGatFaces(faceList)` | 外部模块上报人脸对象；已注册直接发送，未注册时直接写失败补传队列 |
-| `protocol::ProtocolManager::Instance().NotifyGatMotorVehicles(motorList)` | 外部模块上报机动车对象；已注册直接发送，未注册时直接写失败补传队列 |
-| `protocol::ProtocolManager::Instance().NotifyGatNonMotorVehicles(nonMotorList)` | 外部模块上报非机动车对象；已注册直接发送，未注册时直接写失败补传队列 |
+| `protocol::ProtocolManager::Instance().NotifyGatFaces(faceList)` | 外部模块上报人脸对象；接口快速返回并先入异步队列，已注册时立即后台发送，单条最多总发送 2 次 |
+| `protocol::ProtocolManager::Instance().NotifyGatMotorVehicles(motorList)` | 外部模块上报机动车对象；接口快速返回并先入异步队列，已注册时立即后台发送，单条最多总发送 2 次 |
+| `protocol::ProtocolManager::Instance().NotifyGatNonMotorVehicles(nonMotorList)` | 外部模块上报非机动车对象；接口快速返回并先入异步队列，已注册时立即后台发送，单条最多总发送 2 次 |
 
 **当前约束:**
 - 结构化对象 3 个新接口只负责 `Faces/MotorVehicles/NonMotorVehicles` 本体上报，不帮调用方自动补图片 / 视频 / 文件。
 - 当前没有额外的“抓拍事件打包上传”高层接口；如果调用方还需要图片 / 视频 / 文件上报，需继续走现有 `PostImages/PostVideoSlices/PostFiles` 或 `LOWER_1400_POST_*` 链路自行编排。
-- 结构化对象 3 个接口未就绪时会直接落 `gat_upload.queue_dir`，后续按现有失败补传机制恢复。
+- 结构化对象 3 个接口现在统一先入 `gat_upload.queue_dir` 对应的异步队列；若 1400 已注册会立即唤醒后台回放，若未注册则等待注册恢复后回放。
+- issue49 当前额外限制这 3 个接口的单条上报最多总发送 2 次（首次发送 + 1 次重发）；达到上限后直接丢弃，不继续长期补传。
 
 **接入步骤:**
 1. 若只是结构化对象上报，直接准备好 `std::list<GAT_1400_Face>`、`std::list<GAT_1400_Motor>` 或 `std::list<GAT_1400_NonMotor>`。
 2. 分别调用 `NotifyGatFaces()`、`NotifyGatMotorVehicles()`、`NotifyGatNonMotorVehicles()`。
 3. 若还要补图片 / 视频 / 文件，请按调用方自己的业务顺序继续走现有 `Post*` / `LOWER_1400_POST_*` 链路。
-4. 返回 `0` 表示协议模块已接收这次上报；若 1400 当前未就绪，请求体会直接进入失败补传队列。
+4. 返回 `0` 表示协议模块已接收并完成入队；若 1400 当前已注册，会立即触发后台异步发送；若未就绪，则等待注册恢复后回放。当前单条上报最多总发送 2 次。
 
 **最小示例:**
 ```cpp

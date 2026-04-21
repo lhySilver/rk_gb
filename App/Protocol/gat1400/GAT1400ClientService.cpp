@@ -40,6 +40,7 @@ static const char* kResponseKindList = "list";
 static const char* kResponseKindStatus = "status";
 static const int kClientErrorUnsupportedUri = -6;
 static const int kClientErrorApePostCompatDisabled = -7;
+static const int kNotifyAsyncMaxAttemptCount = 2;
 
 struct RequestTarget
 {
@@ -533,6 +534,7 @@ std::string SerializePendingUpload(const GAT1400ClientService::PendingUploadItem
     oss << "category=" << item.category << "\n";
     oss << "object_id=" << item.object_id << "\n";
     oss << "attempt_count=" << item.attempt_count << "\n";
+    oss << "max_attempt_count=" << item.max_attempt_count << "\n";
     oss << "enqueue_time=" << static_cast<long long>(item.enqueue_time) << "\n";
     oss << "last_error=" << item.last_error << "\n\n";
     std::string text = oss.str();
@@ -575,6 +577,8 @@ bool ParsePendingUploadText(const std::string& raw, GAT1400ClientService::Pendin
             item.object_id = value;
         } else if (key == "attempt_count") {
             item.attempt_count = atoi(value.c_str());
+        } else if (key == "max_attempt_count") {
+            item.max_attempt_count = atoi(value.c_str());
         } else if (key == "enqueue_time") {
             item.enqueue_time = static_cast<time_t>(atoll(value.c_str()));
         } else if (key == "last_error") {
@@ -1006,6 +1010,8 @@ GAT1400ClientService::GAT1400ClientService()
       m_listen_fd(-1),
       m_server_running(false),
       m_heartbeat_running(false),
+      m_pending_replay_running(false),
+      m_pending_replay_requested(false),
       m_pending_seq(0),
       m_last_replay_time(0)
 {
@@ -1058,6 +1064,45 @@ void GAT1400ClientService::UpdateRegistState(regist_state state)
         if (observers[i] != NULL) {
             observers[i]->UpdateRegistStatus(state);
         }
+    }
+}
+
+void GAT1400ClientService::RequestPendingReplay()
+{
+    if (!m_pending_replay_running.load()) {
+        return;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(m_pending_replay_request_mutex);
+        m_pending_replay_requested = true;
+    }
+    m_pending_replay_cv.notify_one();
+}
+
+void GAT1400ClientService::PendingReplayLoop()
+{
+    while (m_pending_replay_running.load()) {
+        std::unique_lock<std::mutex> lock(m_pending_replay_request_mutex);
+        m_pending_replay_cv.wait(lock, [this]() {
+            return !m_pending_replay_running.load() || m_pending_replay_requested;
+        });
+        if (!m_pending_replay_running.load()) {
+            break;
+        }
+        m_pending_replay_requested = false;
+        lock.unlock();
+
+        bool registered = false;
+        {
+            std::lock_guard<std::mutex> stateLock(m_state_mutex);
+            registered = m_registered;
+        }
+        if (!registered) {
+            continue;
+        }
+
+        ReplayPendingUploadsInternal(true);
     }
 }
 
@@ -1607,7 +1652,8 @@ int GAT1400ClientService::EnqueuePendingUpload(const char* action,
                                                const std::string& responseKind,
                                                const std::string& body,
                                                const std::string& objectId,
-                                               const std::string& lastError)
+                                               const std::string& lastError,
+                                               int maxAttemptCount)
 {
     ProtocolExternalConfig cfg;
     std::string deviceId;
@@ -1634,6 +1680,7 @@ int GAT1400ClientService::EnqueuePendingUpload(const char* action,
         item.category = action != NULL ? action : "post";
         item.object_id = objectId;
         item.last_error = lastError;
+        item.max_attempt_count = maxAttemptCount;
         item.enqueue_time = time(NULL);
         item.persist_path = JoinFilePath(cfg.gat_upload.queue_dir, item.id);
 
@@ -1656,6 +1703,7 @@ int GAT1400ClientService::EnqueuePendingUpload(const char* action,
            lastError.c_str());
     return 0;
 }
+
 
 void GAT1400ClientService::LoadPendingUploadsLocked(const ProtocolExternalConfig& cfg)
 {
@@ -1717,6 +1765,13 @@ void GAT1400ClientService::ClearPendingUploadsLocked()
 
 int GAT1400ClientService::ReplayPendingUploads()
 {
+    return ReplayPendingUploadsInternal(false);
+}
+
+int GAT1400ClientService::ReplayPendingUploadsInternal(bool limitedOnly)
+{
+    std::lock_guard<std::mutex> replayLock(m_replay_mutex);
+
     ProtocolExternalConfig cfg;
     std::string deviceId;
     if (SnapshotConfig(cfg, deviceId) != 0) {
@@ -1750,12 +1805,33 @@ int GAT1400ClientService::ReplayPendingUploads()
     int droppedCount = 0;
     for (std::list<PendingUploadItem>::const_iterator itemIt = replayItems.begin(); itemIt != replayItems.end(); ++itemIt) {
         const PendingUploadItem& pending = *itemIt;
+        if (limitedOnly && pending.max_attempt_count <= 0) {
+            continue;
+        }
+
+        const int allowedAttempts = pending.max_attempt_count > 0
+                                        ? (pending.max_attempt_count - pending.attempt_count)
+                                        : static_cast<int>(retryPolicy.size()) + 1;
+        if (allowedAttempts <= 0) {
+            std::lock_guard<std::mutex> lock(m_pending_mutex);
+            std::list<PendingUploadItem>::iterator current = std::find_if(
+                m_pending_uploads.begin(),
+                m_pending_uploads.end(),
+                [&](const PendingUploadItem& item) { return item.id == pending.id; });
+            if (current != m_pending_uploads.end()) {
+                RemoveFileIfExists(current->persist_path);
+                m_pending_uploads.erase(current);
+                ++droppedCount;
+            }
+            continue;
+        }
+
         bool success = false;
         int finalRet = 0;
         int attemptsUsed = 0;
         std::string lastError;
 
-        for (size_t attempt = 0;; ++attempt) {
+        for (int attempt = 0; attempt < allowedAttempts; ++attempt) {
             ++attemptsUsed;
             HttpResponse response;
             const std::string* overrideUrl = pending.path.find("://") != std::string::npos ? &pending.path : NULL;
@@ -1786,10 +1862,13 @@ int GAT1400ClientService::ReplayPendingUploads()
             snprintf(errorText, sizeof(errorText), "ret=%d", finalRet);
             lastError = errorText;
 
-            if (attempt >= retryPolicy.size()) {
+            if (attempt + 1 >= allowedAttempts) {
                 break;
             }
-            sleep(static_cast<unsigned int>(retryPolicy[attempt]));
+            if (!retryPolicy.empty()) {
+                const size_t delayIndex = std::min(static_cast<size_t>(attempt), retryPolicy.size() - 1);
+                sleep(static_cast<unsigned int>(retryPolicy[delayIndex]));
+            }
         }
 
         std::lock_guard<std::mutex> lock(m_pending_mutex);
@@ -1808,15 +1887,16 @@ int GAT1400ClientService::ReplayPendingUploads()
             continue;
         }
 
-        if (!ShouldPersistFailedUpload(finalRet)) {
+        current->attempt_count += attemptsUsed;
+        current->last_error = lastError;
+        const bool attemptsExhausted = current->max_attempt_count > 0 && current->attempt_count >= current->max_attempt_count;
+        if (!ShouldPersistFailedUpload(finalRet) || attemptsExhausted) {
             RemoveFileIfExists(current->persist_path);
             m_pending_uploads.erase(current);
             ++droppedCount;
             continue;
         }
 
-        current->attempt_count += attemptsUsed;
-        current->last_error = lastError;
         WriteFileText(current->persist_path, SerializePendingUpload(*current));
         ++failedCount;
     }
@@ -1828,6 +1908,7 @@ int GAT1400ClientService::ReplayPendingUploads()
            failedCount);
     return failedCount == 0 ? 0 : -1;
 }
+
 
 int GAT1400ClientService::ReplayPendingUploadsIfDue()
 {
@@ -1951,27 +2032,25 @@ int GAT1400ClientService::NotifyFaces(const std::list<GAT_1400_Face>& faceList)
         readyToUpload = m_started && m_registered;
     }
 
-    if (readyToUpload) {
-        const int ret = PostFaces(faceList);
-        printf("[GAT1400] module=gat1400 event=notify_faces trace=bridge error=%d mode=direct count=%zu\n",
-               ret,
-               faceList.size());
-        return ret;
-    }
-
-    const int ret = EnqueuePendingUpload("post_faces",
+    const int ret = EnqueuePendingUpload("notify_faces",
                                          "POST",
                                          "/VIID/Faces",
                                          kJsonContentType,
                                          kResponseKindList,
                                          GAT1400Json::PackFaceListJson(faceList),
                                          "",
-                                         "ret=not_ready");
-    printf("[GAT1400] module=gat1400 event=notify_faces trace=bridge error=%d mode=queue_only count=%zu\n",
+                                         readyToUpload ? "ret=async" : "ret=not_ready",
+                                         kNotifyAsyncMaxAttemptCount);
+    if (ret == 0 && readyToUpload) {
+        RequestPendingReplay();
+    }
+    printf("[GAT1400] module=gat1400 event=notify_faces trace=bridge error=%d mode=%s count=%zu\n",
            ret,
+           readyToUpload ? "async_queue" : "queue_only",
            faceList.size());
     return ret;
 }
+
 
 int GAT1400ClientService::NotifyMotorVehicles(const std::list<GAT_1400_Motor>& motorList)
 {
@@ -1985,27 +2064,25 @@ int GAT1400ClientService::NotifyMotorVehicles(const std::list<GAT_1400_Motor>& m
         readyToUpload = m_started && m_registered;
     }
 
-    if (readyToUpload) {
-        const int ret = PostMotorVehicles(motorList);
-        printf("[GAT1400] module=gat1400 event=notify_motor trace=bridge error=%d mode=direct count=%zu\n",
-               ret,
-               motorList.size());
-        return ret;
-    }
-
-    const int ret = EnqueuePendingUpload("post_motor",
+    const int ret = EnqueuePendingUpload("notify_motor",
                                          "POST",
                                          "/VIID/MotorVehicles",
                                          kJsonContentType,
                                          kResponseKindList,
                                          GAT1400Json::PackMotorVehicleListJson(motorList),
                                          "",
-                                         "ret=not_ready");
-    printf("[GAT1400] module=gat1400 event=notify_motor trace=bridge error=%d mode=queue_only count=%zu\n",
+                                         readyToUpload ? "ret=async" : "ret=not_ready",
+                                         kNotifyAsyncMaxAttemptCount);
+    if (ret == 0 && readyToUpload) {
+        RequestPendingReplay();
+    }
+    printf("[GAT1400] module=gat1400 event=notify_motor trace=bridge error=%d mode=%s count=%zu\n",
            ret,
+           readyToUpload ? "async_queue" : "queue_only",
            motorList.size());
     return ret;
 }
+
 
 int GAT1400ClientService::NotifyNonMotorVehicles(const std::list<GAT_1400_NonMotor>& nonMotorList)
 {
@@ -2019,27 +2096,25 @@ int GAT1400ClientService::NotifyNonMotorVehicles(const std::list<GAT_1400_NonMot
         readyToUpload = m_started && m_registered;
     }
 
-    if (readyToUpload) {
-        const int ret = PostNonMotorVehicles(nonMotorList);
-        printf("[GAT1400] module=gat1400 event=notify_non_motor trace=bridge error=%d mode=direct count=%zu\n",
-               ret,
-               nonMotorList.size());
-        return ret;
-    }
-
-    const int ret = EnqueuePendingUpload("post_non_motor",
+    const int ret = EnqueuePendingUpload("notify_non_motor",
                                          "POST",
                                          "/VIID/NonMotorVehicles",
                                          kJsonContentType,
                                          kResponseKindList,
                                          GAT1400Json::PackNonmotorVehicleListJson(nonMotorList),
                                          "",
-                                         "ret=not_ready");
-    printf("[GAT1400] module=gat1400 event=notify_non_motor trace=bridge error=%d mode=queue_only count=%zu\n",
+                                         readyToUpload ? "ret=async" : "ret=not_ready",
+                                         kNotifyAsyncMaxAttemptCount);
+    if (ret == 0 && readyToUpload) {
+        RequestPendingReplay();
+    }
+    printf("[GAT1400] module=gat1400 event=notify_non_motor trace=bridge error=%d mode=%s count=%zu\n",
            ret,
+           readyToUpload ? "async_queue" : "queue_only",
            nonMotorList.size());
     return ret;
 }
+
 
 int GAT1400ClientService::PostJsonWithResponseStatus(const char* action,
                                                      const char* path,
@@ -2482,6 +2557,13 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
         m_last_replay_time = 0;
     }
 
+    m_pending_replay_running.store(true);
+    {
+        std::lock_guard<std::mutex> lock(m_pending_replay_request_mutex);
+        m_pending_replay_requested = false;
+    }
+    m_pending_replay_thread = std::thread(&GAT1400ClientService::PendingReplayLoop, this);
+
     const int regRet = RegisterNow();
     if (regRet != 0) {
         printf("[GAT1400] module=gat1400 event=register trace=client error=%d device=%s note=defer_retry\n",
@@ -2515,7 +2597,16 @@ void GAT1400ClientService::Stop()
         m_started = false;
         m_heartbeat_running.store(false);
     }
+    m_pending_replay_running.store(false);
+    {
+        std::lock_guard<std::mutex> lock(m_pending_replay_request_mutex);
+        m_pending_replay_requested = false;
+    }
+    m_pending_replay_cv.notify_all();
 
+    if (m_pending_replay_thread.joinable()) {
+        m_pending_replay_thread.join();
+    }
     if (m_heartbeat_thread.joinable()) {
         m_heartbeat_thread.join();
     }

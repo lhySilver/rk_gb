@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 按 issue 49 收口 GAT1400 结构化对象上报阻塞：`NotifyGatFaces()` / `NotifyGatMotorVehicles()` / `NotifyGatNonMotorVehicles()` 现统一改为快速入异步队列，不再在外部调用线程里同步发 HTTP；若 1400 已注册会立即唤醒后台 worker 回放，若未注册则等待注册恢复后继续发送。同时这 3 个入口的单条上报最多总发送 `2` 次（首次发送 + `1` 次重发），达到上限后直接丢弃，不再继续长期补传。
 - 按 issue 46 收口 GB28181 实时预览 codec 获取时机：`ProtocolManager::ReconfigureGbLiveSender()` 现在会在开始预览建链时优先读取运行态编码信息，若 live 场景下运行态 getter 暂时不可用，则实时读取 `CFG_VIDEO` 中主辅码流 `enc_type` 映射 `h264/h265` 作为兜底；`LocalConfigProvider::InitDefaultLocalConfig()` 不再承担这条 `CFG_VIDEO` 读取逻辑。
 - 按 issue 45 补齐 GAT1400 注册配置 `enabled`：`gat1400.ini` 新增 `enable` 持久化字段，`ProtocolManager::Start()` 与 `RestartGatRegisterService()` 现按开关决定是否启动或注销停服；同时复核 GB28181 现有 `enabled` 语义，确认 `RestartGbRegisterService()` 已支持关闭后停服且不重启。
 - 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。

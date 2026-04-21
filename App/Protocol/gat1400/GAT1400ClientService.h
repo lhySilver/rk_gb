@@ -2,6 +2,7 @@
 #define __GAT1400_CLIENT_SERVICE_H__
 
 #include <atomic>
+#include <condition_variable>
 #include <ctime>
 #include <list>
 #include <map>
@@ -44,9 +45,10 @@ public:
         std::string last_error;
         std::string persist_path;
         int attempt_count;
+        int max_attempt_count;
         time_t enqueue_time;
 
-        PendingUploadItem() : attempt_count(0), enqueue_time(0) {}
+        PendingUploadItem() : attempt_count(0), max_attempt_count(0), enqueue_time(0) {}
     };
 
     GAT1400ClientService();
@@ -111,6 +113,8 @@ private:
     int UnregisterNow();
     int SendKeepaliveNow();
     void HeartbeatLoop();
+    void PendingReplayLoop();
+    void RequestPendingReplay();
 
     int ExecuteRequest(const ProtocolExternalConfig& cfg,
                        const std::string& deviceId,
@@ -136,11 +140,13 @@ private:
                              const std::string& responseKind,
                              const std::string& body,
                              const std::string& objectId,
-                             const std::string& lastError);
+                             const std::string& lastError,
+                             int maxAttemptCount = 0);
     void LoadPendingUploadsLocked(const ProtocolExternalConfig& cfg);
     void ClearPendingUploadsLocked();
     int ReplayPendingUploads();
     int ReplayPendingUploadsIfDue();
+    int ReplayPendingUploadsInternal(bool limitedOnly);
 
     int SnapshotConfig(ProtocolExternalConfig& cfg, std::string& deviceId) const;
     void UpdateRegistState(regist_state state);
@@ -160,11 +166,17 @@ private:
     std::atomic<bool> m_server_running;
     std::thread m_heartbeat_thread;
     std::atomic<bool> m_heartbeat_running;
+    std::thread m_pending_replay_thread;
+    std::atomic<bool> m_pending_replay_running;
 
     mutable std::mutex m_subscribe_mutex;
     std::map<std::string, GAT_1400_Subscribe> m_subscriptions;
     mutable std::mutex m_pending_mutex;
+    std::condition_variable m_pending_replay_cv;
+    std::mutex m_pending_replay_request_mutex;
+    std::mutex m_replay_mutex;
     std::list<PendingUploadItem> m_pending_uploads;
+    bool m_pending_replay_requested;
     unsigned long long m_pending_seq;
     time_t m_last_replay_time;
 

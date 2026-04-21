@@ -348,5 +348,5 @@
 - 实时流关联: `GbLiveSession -> GB28181RtpPsSender`
 - 回放关联: `GbReplaySession -> Storage_Module_*`
 - 订阅关联: `m_subscriptions -> observer 回调 -> 上层业务`
-- 1400 结构化上报关联: `外部模块 -> ProtocolManager::NotifyGatFaces/NotifyGatMotorVehicles/NotifyGatNonMotorVehicles -> GAT1400ClientService::NotifyFaces/NotifyMotorVehicles/NotifyNonMotorVehicles -> (已注册直接 Post* / 未注册 EnqueuePendingUpload) -> ReplayPendingUploads`
+- 1400 结构化上报关联: `外部模块 -> ProtocolManager::NotifyGatFaces/NotifyGatMotorVehicles/NotifyGatNonMotorVehicles -> GAT1400ClientService::NotifyFaces/NotifyMotorVehicles/NotifyNonMotorVehicles -> EnqueuePendingUpload(max_attempt_count=2) -> PendingReplayLoop/ReplayPendingUploads`
 - 1400 基线: `GAT1400.pdf -> helloagents/wiki/modules/gat1400.md -> 本文件 / api.md`

@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604211730 | issue49_gat1400_notify_async_once_retry | 开发 | ✅已完成 | [2026-04/202604211730_issue49_gat1400_notify_async_once_retry](2026-04/202604211730_issue49_gat1400_notify_async_once_retry/) |
 | 202604181529 | issue47_platform_sdk_port_trim | 开发 | ✅已完成 | [2026-04/202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) |
 | 202604171408 | issue46_gb_codec_from_cfg_video | 轻量迭代 | ✅已完成 | [2026-04/202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) |
 | 202604171011 | issue45_gat_online_status | 轻量迭代 | ✅已完成 | [2026-04/202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) |
