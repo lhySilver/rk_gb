@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(dgiot)
 
 #add_definitions(-Werror)
 #add_definitions(-Wno-error=deprecated-declarations)
-add_definitions(-O3)
+add_definitions(-o3)
 
 #add_definitions(-Wall -o3)
 add_definitions(-w -Wno-psabi)
