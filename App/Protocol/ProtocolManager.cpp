@@ -6232,6 +6232,15 @@ bool ProtocolManager::GetGatOnlineStatus() const
     return m_gat_client.get() != NULL && m_gat_client->IsRegistered();
 }
 
+int ProtocolManager::GetGatDeviceId(std::string& deviceId) const
+{
+    if (m_gat_client.get() == NULL) {
+        deviceId.clear();
+        return -1;
+    }
+    return m_gat_client->GetRuntimeDeviceId(deviceId);
+}
+
 int ProtocolManager::SetGbZeroConfig(const GbZeroConfigParam& param)
 {
     printf("[ProtocolManager] module=config event=gb_zero_config_set_start trace=manager error=0 started=%d\n",

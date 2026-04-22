@@ -60,6 +60,7 @@ public:
 
     bool IsStarted() const;
     bool IsRegistered() const;
+    int GetRuntimeDeviceId(std::string& deviceId) const;
 
     void AddSubscribeObserver(CLower1400SubscribeObserver* observer);
     void RemoveSubscribeObserver(CLower1400SubscribeObserver* observer);
@@ -190,5 +191,4 @@ private:
 }
 
 #endif
-
 

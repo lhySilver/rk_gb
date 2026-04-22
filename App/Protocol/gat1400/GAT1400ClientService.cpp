@@ -1269,6 +1269,13 @@ bool GAT1400ClientService::IsRegistered() const
     return m_registered;
 }
 
+int GAT1400ClientService::GetRuntimeDeviceId(std::string& deviceId) const
+{
+    std::lock_guard<std::mutex> lock(m_state_mutex);
+    deviceId = ResolveGatRuntimeDeviceId(m_cfg);
+    return deviceId.empty() ? -1 : 0;
+}
+
 void GAT1400ClientService::UpdateRegistState(regist_state state)
 {
     std::vector<CLower1400RegistStatusObserver*> observers;
@@ -3157,5 +3164,4 @@ int GAT1400ClientService::PostFiles(const std::list<GAT_1400_FileSet>& fileList)
 }
 
 }  // namespace protocol
-
 
