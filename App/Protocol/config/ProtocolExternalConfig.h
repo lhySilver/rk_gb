@@ -45,8 +45,8 @@ struct GbRegisterParam
           expires_sec(3600),
           line_id("1"),
           custom_protocol_version("3.0"),
-          manufacturer("IPC"),
-          model("RC0240") {}
+          manufacturer("中移物联"),
+          model("C4611") {}
 };
 
 inline std::string NormalizeGbRegisterMode(const std::string& value)
@@ -304,7 +304,7 @@ struct GatUploadParam
           flush_interval_ms(500),
           retry_policy("1,2,5"),
           queue_dir("/tmp/gat1400_queue"),
-          max_pending_count(200),
+          max_pending_count(10),
           replay_interval_sec(15),
           enable_apes_post_compat(0) {}
 };
@@ -354,7 +354,7 @@ struct ProtocolExternalConfig
 
     CloudFastAccessParam cloud_fast_access;
 
-    ProtocolExternalConfig() : version("v1") {}
+    ProtocolExternalConfig() : version("1.0.3") {}
 };
 
 }

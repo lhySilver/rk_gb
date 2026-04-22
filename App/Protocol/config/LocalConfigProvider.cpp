@@ -213,8 +213,8 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     param.redirect_domain = "35010000002000000001";
     param.redirect_server_id = "35010000002000000001";
     param.custom_protocol_version = "3.0";
-    param.manufacturer = "IPC";
-    param.model = "RC0240";
+    param.manufacturer = "中移物联";
+    param.model = "C4611";
     return param;
 }
 
@@ -337,7 +337,7 @@ int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
 
 void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
 {
-    cfg.version = "v1-default";
+    cfg.version = "1.0.3";
 
     cfg.gb_register = BuildDefaultGbRegisterParam();
 
@@ -363,7 +363,7 @@ void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
 
     cfg.gat_register = BuildDefaultGatRegisterParam();
     cfg.gat_upload.queue_dir = "/tmp/gat1400_queue";
-    cfg.gat_upload.max_pending_count = 200;
+    cfg.gat_upload.max_pending_count = 10;
     cfg.gat_upload.replay_interval_sec = 15;
     cfg.gat_upload.enable_apes_post_compat = 0;
 
@@ -659,7 +659,7 @@ LocalConfigProvider::LocalConfigProvider(const std::string& sourceTag)
     } else if (sync.gb_source != kLocalConfigLoadNone ||
                sync.zero_source != kLocalConfigLoadNone ||
                sync.gat_source != kLocalConfigLoadNone) {
-        m_cached_cfg.version = "v1-local-file";
+        m_cached_cfg.version = "1.0.3";
         printf("[Protocol][Config] module=config event=config_file_load_success trace=provider gb_path=%s gb_source=%s gb_ret=%d zero_path=%s zero_source=%s zero_ret=%d gat_path=%s gat_source=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
                DescribeLocalConfigSource(sync.gb_source),
@@ -822,7 +822,7 @@ int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
     if (sync.gb_source != kLocalConfigLoadNone ||
         sync.zero_source != kLocalConfigLoadNone ||
         sync.gat_source != kLocalConfigLoadNone) {
-        next.version = "v1-local-file";
+        next.version = "1.0.3";
         m_cached_cfg = next;
     }
 
