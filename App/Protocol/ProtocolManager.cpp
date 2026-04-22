@@ -9244,17 +9244,17 @@ int ProtocolManager::HandleGbDeviceUpgradeControl(const DevControlCmd* cmd)
 
     }
 
-    if (!manufacturer.empty()) {
+    // if (!manufacturer.empty()) {
 
-        const std::string localManufacturer = ToLowerCopy(TrimWhitespaceCopy(ResolveGbManufacturerName(m_cfg)));
-        if (!localManufacturer.empty() &&
-            ToLowerCopy(manufacturer) != localManufacturer) {
+    //     const std::string localManufacturer = ToLowerCopy(TrimWhitespaceCopy(ResolveGbManufacturerName(m_cfg)));
+    //     if (!localManufacturer.empty() &&
+    //         ToLowerCopy(manufacturer) != localManufacturer) {
 
-            return fail(-104, "manufacturer_mismatch");
+    //         return fail(-104, "manufacturer_mismatch");
 
-        }
+    //     }
 
-    }
+    // }
 
     if (!IsUpgradeUrlAllowed(fileUrl, m_cfg.gb_upgrade.url_whitelist)) {
 

@@ -213,7 +213,7 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     param.redirect_domain = "35010000002000000001";
     param.redirect_server_id = "35010000002000000001";
     param.custom_protocol_version = "3.0";
-    param.manufacturer = "中移物联";
+    param.manufacturer = "CMIoT";
     param.model = "C4611";
     return param;
 }

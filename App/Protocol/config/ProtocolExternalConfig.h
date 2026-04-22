@@ -45,7 +45,7 @@ struct GbRegisterParam
           expires_sec(3600),
           line_id("1"),
           custom_protocol_version("3.0"),
-          manufacturer("中移物联"),
+          manufacturer("CMIoT"),
           model("C4611") {}
 };
 
