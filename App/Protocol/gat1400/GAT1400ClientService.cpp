@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include "GAT1400Json.h"
+#include "Base64Coder.h"
 #include "http_auth.h"
 
 #define printf protocol::ProtocolPrintf
@@ -41,6 +42,12 @@ static const char* kResponseKindStatus = "status";
 static const int kClientErrorUnsupportedUri = -6;
 static const int kClientErrorApePostCompatDisabled = -7;
 static const int kNotifyAsyncMaxAttemptCount = 2;
+static const char* kKeepaliveDemoPanoramaPath = "/mnt/sdcard/test.jpeg";
+static const char* kKeepaliveDemoFacePath = "/mnt/sdcard/face.jpeg";
+static const int kKeepaliveDemoPanoramaWidth = 1920;
+static const int kKeepaliveDemoPanoramaHeight = 1080;
+static const int kKeepaliveDemoDefaultFaceWidth = 320;
+static const int kKeepaliveDemoDefaultFaceHeight = 320;
 
 struct RequestTarget
 {
@@ -143,6 +150,224 @@ std::string FormatCurrentTimeWithMilliseconds()
 bool IsEmptyCString(const char* value)
 {
     return value == NULL || value[0] == '\0';
+}
+
+bool ReadBinaryFile(const std::string& path, std::string& data)
+{
+    data.clear();
+
+    FILE* fp = fopen(path.c_str(), "rb");
+    if (fp == NULL) {
+        return false;
+    }
+
+    if (fseek(fp, 0, SEEK_END) != 0) {
+        fclose(fp);
+        return false;
+    }
+
+    const long size = ftell(fp);
+    if (size < 0) {
+        fclose(fp);
+        return false;
+    }
+
+    if (fseek(fp, 0, SEEK_SET) != 0) {
+        fclose(fp);
+        return false;
+    }
+
+    data.resize(static_cast<size_t>(size));
+    if (size > 0) {
+        const size_t read_size = fread(&data[0], 1, data.size(), fp);
+        if (read_size != data.size()) {
+            fclose(fp);
+            data.clear();
+            return false;
+        }
+    }
+
+    fclose(fp);
+    return true;
+}
+
+bool EncodeBase64Binary(const std::string& input, std::string& output)
+{
+    output.clear();
+    if (input.empty()) {
+        return true;
+    }
+    return CBase64Coder::Encode(reinterpret_cast<const unsigned char*>(input.data()),
+                                static_cast<unsigned long>(input.size()),
+                                output);
+}
+
+bool IsJpegSofMarker(unsigned char marker)
+{
+    switch (marker) {
+    case 0xC0:
+    case 0xC1:
+    case 0xC2:
+    case 0xC3:
+    case 0xC5:
+    case 0xC6:
+    case 0xC7:
+    case 0xC9:
+    case 0xCA:
+    case 0xCB:
+    case 0xCD:
+    case 0xCE:
+    case 0xCF:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool ExtractJpegDimensions(const std::string& data, int& width, int& height)
+{
+    width = 0;
+    height = 0;
+
+    const unsigned char* bytes = reinterpret_cast<const unsigned char*>(data.data());
+    const size_t size = data.size();
+    if (size < 4 || bytes[0] != 0xFF || bytes[1] != 0xD8) {
+        return false;
+    }
+
+    size_t pos = 2;
+    while (pos + 3 < size) {
+        while (pos < size && bytes[pos] != 0xFF) {
+            ++pos;
+        }
+        while (pos < size && bytes[pos] == 0xFF) {
+            ++pos;
+        }
+        if (pos >= size) {
+            break;
+        }
+
+        const unsigned char marker = bytes[pos++];
+        if (marker == 0xD8 || marker == 0x01) {
+            continue;
+        }
+        if (marker == 0xD9 || marker == 0xDA) {
+            break;
+        }
+        if (pos + 1 >= size) {
+            break;
+        }
+
+        const unsigned int segment_len = (static_cast<unsigned int>(bytes[pos]) << 8) |
+                                         static_cast<unsigned int>(bytes[pos + 1]);
+        if (segment_len < 2 || pos + segment_len > size) {
+            break;
+        }
+
+        if (IsJpegSofMarker(marker) && segment_len >= 7) {
+            height = (static_cast<int>(bytes[pos + 3]) << 8) | static_cast<int>(bytes[pos + 4]);
+            width = (static_cast<int>(bytes[pos + 5]) << 8) | static_cast<int>(bytes[pos + 6]);
+            return width > 0 && height > 0;
+        }
+
+        pos += segment_len;
+    }
+
+    return false;
+}
+
+std::string BuildBoundedObjectId(const std::string& deviceId,
+                                 const std::string& suffix,
+                                 size_t maxLen)
+{
+    const std::string timestamp = FormatCurrentTimeWithMilliseconds();
+    const std::string prefix = deviceId.empty() ? "00000000000000000000" : deviceId;
+    std::string value = prefix + timestamp + suffix;
+    if (value.size() <= maxLen) {
+        return value;
+    }
+
+    const size_t tailLen = timestamp.size() + suffix.size();
+    if (tailLen >= maxLen) {
+        return value.substr(value.size() - maxLen);
+    }
+
+    const size_t headLen = maxLen - tailLen;
+    return prefix.substr(0, headLen) + timestamp + suffix;
+}
+
+int BuildKeepaliveDemoImageSet(const std::string& deviceId, GAT_1400_ImageSet& imageSet)
+{
+    std::string panoramaData;
+    if (!ReadBinaryFile(kKeepaliveDemoPanoramaPath, panoramaData)) {
+        return -1;
+    }
+
+    std::string faceData;
+    if (!ReadBinaryFile(kKeepaliveDemoFacePath, faceData)) {
+        return -2;
+    }
+
+    std::string faceBase64;
+    if (!EncodeBase64Binary(faceData, faceBase64)) {
+        return -3;
+    }
+
+    int faceWidth = 0;
+    int faceHeight = 0;
+    if (!ExtractJpegDimensions(faceData, faceWidth, faceHeight)) {
+        faceWidth = kKeepaliveDemoDefaultFaceWidth;
+        faceHeight = kKeepaliveDemoDefaultFaceHeight;
+    }
+
+    const std::string shotTime = FormatCurrentTimeWithMilliseconds();
+    const std::string imageId = BuildBoundedObjectId(deviceId, "I01", GAT1400_BASIC_OBJECT_ID_TYPE - 1);
+    const std::string faceId = BuildBoundedObjectId(deviceId, "F01", GAT1400_IMAGE_CNT_OBJECT_ID_TYPE - 1);
+    const std::string faceImageId = BuildBoundedObjectId(deviceId, "FI01", GAT1400_BASIC_OBJECT_ID_TYPE - 1);
+
+    CopyToArray(imageSet.ImageInfo.ImageID, sizeof(imageSet.ImageInfo.ImageID), imageId);
+    imageSet.ImageInfo.InfoKind = INFO_TYPE_AUTOMATIC;
+    imageSet.ImageInfo.ImageSource = GOVERNMENT_AGENCY_MONITORING;
+    imageSet.ImageInfo.EventSort = FACE_DETECT_EVENT;
+    CopyToArray(imageSet.ImageInfo.DeviceID, sizeof(imageSet.ImageInfo.DeviceID), deviceId);
+    CopyToArray(imageSet.ImageInfo.FileFormat, sizeof(imageSet.ImageInfo.FileFormat), "Jpeg");
+    CopyToArray(imageSet.ImageInfo.ShotTime, sizeof(imageSet.ImageInfo.ShotTime), shotTime);
+    CopyToArray(imageSet.ImageInfo.Title, sizeof(imageSet.ImageInfo.Title), "gat1400_keepalive_demo");
+    CopyToArray(imageSet.ImageInfo.ContentDescription, sizeof(imageSet.ImageInfo.ContentDescription), "heartbeat face detect demo");
+    CopyToArray(imageSet.ImageInfo.ShotPlaceFullAdress,
+                sizeof(imageSet.ImageInfo.ShotPlaceFullAdress),
+                "keepalive demo");
+    imageSet.ImageInfo.SecurityLevel = 5;
+    imageSet.ImageInfo.Width = kKeepaliveDemoPanoramaWidth;
+    imageSet.ImageInfo.Height = kKeepaliveDemoPanoramaHeight;
+    imageSet.ImageInfo.FileSize = static_cast<int>(panoramaData.size());
+    imageSet.Data = panoramaData;
+
+    GAT_1400_Face face;
+    CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
+    face.InfoKind = INFO_TYPE_AUTOMATIC;
+    CopyToArray(face.SourceID, sizeof(face.SourceID), imageId);
+    CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
+    CopyToArray(face.LocationMarkTime, sizeof(face.LocationMarkTime), shotTime);
+    face.LeftTopX = 640;
+    face.LeftTopY = 180;
+    face.RightBtmX = 1280;
+    face.RightBtmY = 900;
+
+    GAT_1400_SubImage subImage;
+    CopyToArray(subImage.ImageID, sizeof(subImage.ImageID), faceImageId);
+    subImage.EventSort = FACE_DETECT_EVENT;
+    CopyToArray(subImage.DeviceID, sizeof(subImage.DeviceID), deviceId);
+    subImage.Type = IMAGE_FACE;
+    CopyToArray(subImage.FileFormat, sizeof(subImage.FileFormat), "Jpeg");
+    CopyToArray(subImage.ShotTime, sizeof(subImage.ShotTime), shotTime);
+    subImage.Width = faceWidth;
+    subImage.Height = faceHeight;
+    subImage.Data = faceBase64;
+
+    face.SubImageList.push_back(subImage);
+    imageSet.FaceList.push_back(face);
+    return 0;
 }
 
 bool ParseCompactTime(const char* text, time_t& out)
@@ -1010,6 +1235,7 @@ GAT1400ClientService::GAT1400ClientService()
       m_listen_fd(-1),
       m_server_running(false),
       m_heartbeat_running(false),
+      m_keepalive_demo_pending(false),
       m_pending_replay_running(false),
       m_pending_replay_requested(false),
       m_pending_seq(0),
@@ -2272,6 +2498,7 @@ int GAT1400ClientService::RegisterNow()
         std::lock_guard<std::mutex> lock(m_state_mutex);
         m_registered = true;
     }
+    m_keepalive_demo_pending.store(true);
     UpdateRegistState(EM_REGIST_ON);
     printf("[GAT1400] module=gat1400 event=register trace=client error=0 endpoint=%s:%d device=%s listen=%d\n",
            cfg.gat_register.server_ip.c_str(),
@@ -2345,6 +2572,36 @@ int GAT1400ClientService::SendKeepaliveNow()
         return -2;
     }
     return 0;
+}
+
+int GAT1400ClientService::PostKeepaliveImageDemo()
+{
+    ProtocolExternalConfig cfg;
+    std::string deviceId;
+    if (SnapshotConfig(cfg, deviceId) != 0) {
+        return -1;
+    }
+
+    GAT_1400_ImageSet imageSet;
+    const int buildRet = BuildKeepaliveDemoImageSet(deviceId, imageSet);
+    if (buildRet != 0) {
+        printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d device=%s panorama=%s face=%s\n",
+               buildRet,
+               deviceId.c_str(),
+               kKeepaliveDemoPanoramaPath,
+               kKeepaliveDemoFacePath);
+        return buildRet;
+    }
+
+    std::list<GAT_1400_ImageSet> image_list;
+    image_list.push_back(imageSet);
+    const int ret = PostImages(image_list);
+    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d device=%s image=%s face=%s\n",
+           ret,
+           deviceId.c_str(),
+           imageSet.ImageInfo.ImageID,
+           imageSet.FaceList.empty() ? "" : imageSet.FaceList.front().FaceID);
+    return ret;
 }
 
 int GAT1400ClientService::GetTime(std::string& outTime)
@@ -2507,6 +2764,10 @@ void GAT1400ClientService::HeartbeatLoop()
         } while (retry < maxRetry && m_heartbeat_running.load());
 
         if (ret == 0) {
+            const bool should_post_demo = m_keepalive_demo_pending.exchange(false);
+            if (should_post_demo) {
+                (void)PostKeepaliveImageDemo();
+            }
             ReplayPendingUploadsIfDue();
             continue;
         }
@@ -2544,6 +2805,7 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
         m_cfg = cfg;
         m_started = true;
         m_registered = false;
+        m_keepalive_demo_pending.store(false);
         m_regist_state = EM_REGIST_OFF;
         if (StartServerLocked() != 0) {
             m_started = false;
@@ -2596,6 +2858,7 @@ void GAT1400ClientService::Stop()
         deviceId = ResolveGatRuntimeDeviceId(m_cfg);
         m_started = false;
         m_heartbeat_running.store(false);
+        m_keepalive_demo_pending.store(false);
     }
     m_pending_replay_running.store(false);
     {

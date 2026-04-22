@@ -112,6 +112,7 @@ private:
     int RegisterNow();
     int UnregisterNow();
     int SendKeepaliveNow();
+    int PostKeepaliveImageDemo();
     void HeartbeatLoop();
     void PendingReplayLoop();
     void RequestPendingReplay();
@@ -166,6 +167,7 @@ private:
     std::atomic<bool> m_server_running;
     std::thread m_heartbeat_thread;
     std::atomic<bool> m_heartbeat_running;
+    std::atomic<bool> m_keepalive_demo_pending;
     std::thread m_pending_replay_thread;
     std::atomic<bool> m_pending_replay_running;
 
