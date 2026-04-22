@@ -45,6 +45,16 @@ void CSipClientImpl::Stop()
     m_event_manager->Stop();
 }
 
+const char* CSipClientImpl::GetLocalIp() const
+{
+    return m_event_manager->GetLocalIp();
+}
+
+uint16_t CSipClientImpl::GetLocalPort() const
+{
+    return m_event_manager->GetLocalPort();
+}
+
 void CSipClientImpl::SetHandler(const SipClientHandler* handler)
 {
      m_sip_server_handler->client_handler = (SipClientHandler*)handler;

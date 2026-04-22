@@ -13,6 +13,8 @@ public:
     ~SipUserAgentClient();
     int   Start(SipTransportType type , const NetAddress* local,const char* local_name);
     void Stop();
+    const char* GetLocalIp() const;
+    uint16_t GetLocalPort() const;
     void SetHandler(const SipClientHandler* handler);
 
     // Sip register

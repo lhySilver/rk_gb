@@ -34,6 +34,16 @@ void SipUserAgentClient::Stop()
     return m_client_impl->Stop();
 }
 
+const char* SipUserAgentClient::GetLocalIp() const
+{
+    return m_client_impl->GetLocalIp();
+}
+
+uint16_t SipUserAgentClient::GetLocalPort() const
+{
+    return m_client_impl->GetLocalPort();
+}
+
 void SipUserAgentClient::SetHandler(const SipClientHandler* handler)
 {
     return m_client_impl->SetHandler(handler);

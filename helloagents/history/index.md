@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604221113 | gb_broadcast_invite_local_endpoint | 修复 | ✅已完成 | [2026-04/202604221113_gb_broadcast_invite_local_endpoint](2026-04/202604221113_gb_broadcast_invite_local_endpoint/) |
 | 202604211730 | issue49_gat1400_notify_async_once_retry | 开发 | ✅已完成 | [2026-04/202604211730_issue49_gat1400_notify_async_once_retry](2026-04/202604211730_issue49_gat1400_notify_async_once_retry/) |
 | 202604181529 | issue47_platform_sdk_port_trim | 开发 | ✅已完成 | [2026-04/202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) |
 | 202604171408 | issue46_gb_codec_from_cfg_video | 轻量迭代 | ✅已完成 | [2026-04/202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) |
@@ -107,6 +108,7 @@
 
 ### 2026-04
 
+- [202604221113_gb_broadcast_invite_local_endpoint](2026-04/202604221113_gb_broadcast_invite_local_endpoint/) - 基于 `23.pcap` 把 GB 广播主动音频 `INVITE` 的 `From` 地址收口为优先读取 SipSDK 运行态本地 SIP `IP/Port`，避免继续发出 `0.0.0.0:0`
 - [202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) - 按 issue 47 基于当前 CMake 显式源码入口与仓库 include 图清理 `platform_sdk_port` 下 `213` 个冗余头文件 / 源码文件，并恢复本分支 `-O3` 与 `cmake_minimum_required=3.5` 构建基线后重新跑通交叉编译验证
 - [202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) - 按 issue 46 最新反馈把 GB28181 实时预览 codec 的 `CFG_VIDEO` 获取时机收口到预览建链阶段：`ReconfigureGbLiveSender()` 在 live 启动时实时确定 codec，`LocalConfigProvider` 恢复为普通默认值初始化
 - [202604171011_issue45_gat_online_status](2026-04/202604171011_issue45_gat_online_status/) - 按 issue 45 最新评论补齐 `ProtocolManager::GetGatOnlineStatus()`，供外部模块查询 1400 是否已注册到平台

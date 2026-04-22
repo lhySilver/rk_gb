@@ -72,6 +72,11 @@ static const char* ResolveSipRemoteName(const ConnectParam* connect)
     return "";
 }
 
+static bool HasValidRuntimeLocalSipEndpoint(const char* ip, uint16_t port)
+{
+    return HasText(ip) && port > 0 && std::string(ip) != "0.0.0.0";
+}
+
 static void PrepareSipRegisterParam(SipRegistParam* sip_param,
                                     const GBRegistParam* gb_param,
                                     GB28181Version version,
@@ -4480,9 +4485,21 @@ int   CGBClientImpl::StreamRequestEx(const MediaInfo* input,
     if (request_id && request_id[0] != '\0') {
 
 
+        std::string local_sip_ip = m_xml_parser->m_local_ip;
+        uint16_t local_sip_port = m_xml_parser->m_port;
+        if (m_sip_client != NULL) {
+            const char* runtime_local_ip = m_sip_client->GetLocalIp();
+            const uint16_t runtime_local_port = m_sip_client->GetLocalPort();
+            if (HasValidRuntimeLocalSipEndpoint(runtime_local_ip, runtime_local_port)) {
+                local_sip_ip = runtime_local_ip;
+                local_sip_port = runtime_local_port;
+            }
+        }
+
+
         std::ostringstream from_builder;
         from_builder << "sip:" << m_xml_parser->m_local_code << "@"
-                     << m_xml_parser->m_local_ip << ":" << m_xml_parser->m_port;
+                     << local_sip_ip << ":" << local_sip_port;
         from = from_builder.str();
 
 

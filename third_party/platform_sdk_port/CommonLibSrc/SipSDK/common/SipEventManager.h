@@ -23,6 +23,7 @@ public:
     ~CSipEventManager();
     int StartSipListen(SipTransportType type , const NetAddress* local, const char* local_name);
     void Stop();
+    const char* GetLocalIp() const { return m_local_ip.c_str(); }
     uint16_t GetLocalPort() const { return m_local_port; }
     int SetSipHandler( const SipServerHandler* );
     int Register(ClientInfo* info , int timeout , SipData** result );
