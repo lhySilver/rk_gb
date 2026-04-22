@@ -13,6 +13,11 @@ def require(text: str, pattern: str, message: str) -> None:
         raise AssertionError(message)
 
 
+def forbid(text: str, pattern: str, message: str) -> None:
+    if re.search(pattern, text, re.MULTILINE | re.DOTALL) is not None:
+        raise AssertionError(message)
+
+
 def main() -> int:
     require(
         HEADER,
@@ -51,8 +56,18 @@ def main() -> int:
     )
     require(
         SOURCE,
+        r"NotifyFaces\(face_list\)",
+        "demo helper 应改为复用现有 NotifyFaces() 发送人脸通知。",
+    )
+    require(
+        SOURCE,
+        r"IMAGE_SENCE",
+        "demo 人脸通知应携带全景图子图。",
+    )
+    forbid(
+        SOURCE,
         r"PostImages\(image_list\)",
-        "demo helper 应复用现有 PostImages() 上报图像集合。",
+        "demo helper 不应继续直接调用 PostImages()。",
     )
     require(
         SOURCE,
@@ -65,7 +80,7 @@ def main() -> int:
         "全景图高度应固定为 1080。",
     )
 
-    print("PASS: gat1400 keepalive image demo is wired for one-shot post-register upload")
+    print("PASS: gat1400 keepalive face demo is wired for one-shot post-register notify upload")
     return 0
 
 

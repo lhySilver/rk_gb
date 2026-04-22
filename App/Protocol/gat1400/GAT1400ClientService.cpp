@@ -296,21 +296,26 @@ std::string BuildBoundedObjectId(const std::string& deviceId,
     return prefix.substr(0, headLen) + timestamp + suffix;
 }
 
-int BuildKeepaliveDemoImageSet(const std::string& deviceId, GAT_1400_ImageSet& imageSet)
+int BuildKeepaliveDemoFace(const std::string& deviceId, GAT_1400_Face& face)
 {
     std::string panoramaData;
     if (!ReadBinaryFile(kKeepaliveDemoPanoramaPath, panoramaData)) {
         return -1;
     }
 
+    std::string panoramaBase64;
+    if (!EncodeBase64Binary(panoramaData, panoramaBase64)) {
+        return -2;
+    }
+
     std::string faceData;
     if (!ReadBinaryFile(kKeepaliveDemoFacePath, faceData)) {
-        return -2;
+        return -3;
     }
 
     std::string faceBase64;
     if (!EncodeBase64Binary(faceData, faceBase64)) {
-        return -3;
+        return -4;
     }
 
     int faceWidth = 0;
@@ -321,32 +326,13 @@ int BuildKeepaliveDemoImageSet(const std::string& deviceId, GAT_1400_ImageSet& i
     }
 
     const std::string shotTime = FormatCurrentTimeWithMilliseconds();
-    const std::string imageId = BuildBoundedObjectId(deviceId, "I01", GAT1400_BASIC_OBJECT_ID_TYPE - 1);
+    const std::string sourceImageId = BuildBoundedObjectId(deviceId, "I01", GAT1400_BASIC_OBJECT_ID_TYPE - 1);
     const std::string faceId = BuildBoundedObjectId(deviceId, "F01", GAT1400_IMAGE_CNT_OBJECT_ID_TYPE - 1);
     const std::string faceImageId = BuildBoundedObjectId(deviceId, "FI01", GAT1400_BASIC_OBJECT_ID_TYPE - 1);
 
-    CopyToArray(imageSet.ImageInfo.ImageID, sizeof(imageSet.ImageInfo.ImageID), imageId);
-    imageSet.ImageInfo.InfoKind = INFO_TYPE_AUTOMATIC;
-    imageSet.ImageInfo.ImageSource = GOVERNMENT_AGENCY_MONITORING;
-    imageSet.ImageInfo.EventSort = FACE_DETECT_EVENT;
-    CopyToArray(imageSet.ImageInfo.DeviceID, sizeof(imageSet.ImageInfo.DeviceID), deviceId);
-    CopyToArray(imageSet.ImageInfo.FileFormat, sizeof(imageSet.ImageInfo.FileFormat), "Jpeg");
-    CopyToArray(imageSet.ImageInfo.ShotTime, sizeof(imageSet.ImageInfo.ShotTime), shotTime);
-    CopyToArray(imageSet.ImageInfo.Title, sizeof(imageSet.ImageInfo.Title), "gat1400_keepalive_demo");
-    CopyToArray(imageSet.ImageInfo.ContentDescription, sizeof(imageSet.ImageInfo.ContentDescription), "heartbeat face detect demo");
-    CopyToArray(imageSet.ImageInfo.ShotPlaceFullAdress,
-                sizeof(imageSet.ImageInfo.ShotPlaceFullAdress),
-                "keepalive demo");
-    imageSet.ImageInfo.SecurityLevel = 5;
-    imageSet.ImageInfo.Width = kKeepaliveDemoPanoramaWidth;
-    imageSet.ImageInfo.Height = kKeepaliveDemoPanoramaHeight;
-    imageSet.ImageInfo.FileSize = static_cast<int>(panoramaData.size());
-    imageSet.Data = panoramaData;
-
-    GAT_1400_Face face;
     CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
     face.InfoKind = INFO_TYPE_AUTOMATIC;
-    CopyToArray(face.SourceID, sizeof(face.SourceID), imageId);
+    CopyToArray(face.SourceID, sizeof(face.SourceID), sourceImageId);
     CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
     CopyToArray(face.LocationMarkTime, sizeof(face.LocationMarkTime), shotTime);
     face.LeftTopX = 640;
@@ -354,19 +340,30 @@ int BuildKeepaliveDemoImageSet(const std::string& deviceId, GAT_1400_ImageSet& i
     face.RightBtmX = 1280;
     face.RightBtmY = 900;
 
-    GAT_1400_SubImage subImage;
-    CopyToArray(subImage.ImageID, sizeof(subImage.ImageID), faceImageId);
-    subImage.EventSort = FACE_DETECT_EVENT;
-    CopyToArray(subImage.DeviceID, sizeof(subImage.DeviceID), deviceId);
-    subImage.Type = IMAGE_FACE;
-    CopyToArray(subImage.FileFormat, sizeof(subImage.FileFormat), "Jpeg");
-    CopyToArray(subImage.ShotTime, sizeof(subImage.ShotTime), shotTime);
-    subImage.Width = faceWidth;
-    subImage.Height = faceHeight;
-    subImage.Data = faceBase64;
+    GAT_1400_SubImage sceneImage;
+    CopyToArray(sceneImage.ImageID, sizeof(sceneImage.ImageID), sourceImageId);
+    sceneImage.EventSort = FACE_DETECT_EVENT;
+    CopyToArray(sceneImage.DeviceID, sizeof(sceneImage.DeviceID), deviceId);
+    sceneImage.Type = IMAGE_SENCE;
+    CopyToArray(sceneImage.FileFormat, sizeof(sceneImage.FileFormat), "Jpeg");
+    CopyToArray(sceneImage.ShotTime, sizeof(sceneImage.ShotTime), shotTime);
+    sceneImage.Width = kKeepaliveDemoPanoramaWidth;
+    sceneImage.Height = kKeepaliveDemoPanoramaHeight;
+    sceneImage.Data = panoramaBase64;
 
-    face.SubImageList.push_back(subImage);
-    imageSet.FaceList.push_back(face);
+    GAT_1400_SubImage faceImage;
+    CopyToArray(faceImage.ImageID, sizeof(faceImage.ImageID), faceImageId);
+    faceImage.EventSort = FACE_DETECT_EVENT;
+    CopyToArray(faceImage.DeviceID, sizeof(faceImage.DeviceID), deviceId);
+    faceImage.Type = IMAGE_FACE;
+    CopyToArray(faceImage.FileFormat, sizeof(faceImage.FileFormat), "Jpeg");
+    CopyToArray(faceImage.ShotTime, sizeof(faceImage.ShotTime), shotTime);
+    faceImage.Width = faceWidth;
+    faceImage.Height = faceHeight;
+    faceImage.Data = faceBase64;
+
+    face.SubImageList.push_back(sceneImage);
+    face.SubImageList.push_back(faceImage);
     return 0;
 }
 
@@ -2582,8 +2579,8 @@ int GAT1400ClientService::PostKeepaliveImageDemo()
         return -1;
     }
 
-    GAT_1400_ImageSet imageSet;
-    const int buildRet = BuildKeepaliveDemoImageSet(deviceId, imageSet);
+    GAT_1400_Face face;
+    const int buildRet = BuildKeepaliveDemoFace(deviceId, face);
     if (buildRet != 0) {
         printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d device=%s panorama=%s face=%s\n",
                buildRet,
@@ -2593,14 +2590,14 @@ int GAT1400ClientService::PostKeepaliveImageDemo()
         return buildRet;
     }
 
-    std::list<GAT_1400_ImageSet> image_list;
-    image_list.push_back(imageSet);
-    const int ret = PostImages(image_list);
-    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d device=%s image=%s face=%s\n",
+    std::list<GAT_1400_Face> face_list;
+    face_list.push_back(face);
+    const int ret = NotifyFaces(face_list);
+    printf("[GAT1400] module=gat1400 event=keepalive_demo trace=client error=%d device=%s source=%s face=%s\n",
            ret,
            deviceId.c_str(),
-           imageSet.ImageInfo.ImageID,
-           imageSet.FaceList.empty() ? "" : imageSet.FaceList.front().FaceID);
+           face.SourceID,
+           face.FaceID);
     return ret;
 }
 
