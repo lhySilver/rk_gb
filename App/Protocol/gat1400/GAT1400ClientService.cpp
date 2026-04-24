@@ -1232,7 +1232,6 @@ GAT1400ClientService::GAT1400ClientService()
       m_listen_fd(-1),
       m_server_running(false),
       m_heartbeat_running(false),
-      m_keepalive_demo_pending(false),
       m_pending_replay_running(false),
       m_pending_replay_requested(false),
       m_pending_seq(0),
@@ -2502,7 +2501,6 @@ int GAT1400ClientService::RegisterNow()
         std::lock_guard<std::mutex> lock(m_state_mutex);
         m_registered = true;
     }
-    m_keepalive_demo_pending.store(true);
     UpdateRegistState(EM_REGIST_ON);
     printf("[GAT1400] module=gat1400 event=register trace=client error=0 endpoint=%s:%d device=%s listen=%d\n",
            cfg.gat_register.server_ip.c_str(),
@@ -2768,10 +2766,10 @@ void GAT1400ClientService::HeartbeatLoop()
         } while (retry < maxRetry && m_heartbeat_running.load());
 
         if (ret == 0) {
-            const bool should_post_demo = m_keepalive_demo_pending.exchange(false);
-            if (should_post_demo) {
-                (void)PostKeepaliveImageDemo();
-            }
+            // const bool should_post_demo = 0;
+            // if (should_post_demo) {
+            //     (void)PostKeepaliveImageDemo();
+            // }
             ReplayPendingUploadsIfDue();
             continue;
         }
@@ -2809,7 +2807,6 @@ int GAT1400ClientService::Start(const ProtocolExternalConfig& cfg, const GbRegis
         m_cfg = cfg;
         m_started = true;
         m_registered = false;
-        m_keepalive_demo_pending.store(false);
         m_regist_state = EM_REGIST_OFF;
         if (StartServerLocked() != 0) {
             m_started = false;
@@ -2862,7 +2859,6 @@ void GAT1400ClientService::Stop()
         deviceId = ResolveGatRuntimeDeviceId(m_cfg);
         m_started = false;
         m_heartbeat_running.store(false);
-        m_keepalive_demo_pending.store(false);
     }
     m_pending_replay_running.store(false);
     {
