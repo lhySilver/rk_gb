@@ -22,6 +22,7 @@
 
 ## 注意事项
 - `LocalConfigProvider` 现在读取 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；其中 `gb28181.ini` / `gat1400.ini` 缺失时仍可按默认值自动生成。`gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关：`standard` 模式下忽略 `zero_config.ini` 缺失，`zero_config` 模式下若 `zero_config.ini` 缺失则会直接记录日志并返回错误；`gat1400.ini` 当前也新增 `enable` 作为 1400 注册生命周期开关。旧的 `/userdata/conf/Config/gb28181.ini` 路径不再兼容，也不自动迁移。
+- `ProtocolExternalConfig::version` 与 GB 默认 `CustomProtocolVersion/manufacturer/model` 统一由 `ProtocolExternalConfig.h` 中的 `kProtocolDefaultVersion`、`kGbDefaultCustomProtocolVersion`、`kGbDefaultManufacturer`、`kGbDefaultModel` 提供，结构默认值和本地默认配置不再各自写死。
 - `ProtocolManager::ReconfigureGbLiveSender()` 现在会在每次 GB 实时预览开始建链时重新确定 `video_codec`：优先读取 `media::QueryVideoEncodeStreamState()` 的运行态 codec；若 live 预览场景下运行态 getter 暂时不可用，则实时读取 `CFG_VIDEO` 的主辅码流 `enc_type` 映射 `h264/h265` 作为兜底。`LocalConfigProvider::InitDefaultLocalConfig()` 不再承担这条 `CFG_VIDEO` 读取逻辑。
 - `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。
 - `ProtocolManager` 当前对 GAT1400 服务实例和 GB28181 receiver 只保留运行中真实使用的非 `const` getter；此前零调用的 `const GetGatClientService()` / `const GetGbClientReceiver()` 已从协议胶水层移除。
@@ -39,7 +40,7 @@
 - `StartGbClientLifecycle()` 现在把“SDK 已启动但首次 `Register()` 失败”的场景视为可恢复错误：生命周期不会直接退出，而是打印 `note=defer_retry` 日志并继续保留后台线程。
 - `GbHeartbeatLoop()` 在未注册态下会按 `gb_keepalive.interval_sec` 节奏重试注册；只有 `server_ip/server_port/device_id` 这类静态配置校验失败时，GB 生命周期才会立即返回错误。
 - 当前 `gb28181.ini` 只保留 7 个国标注册字段；`image_flip_mode`、`gb_talk`、`gb_reboot`、`gb_upgrade`、`gb_broadcast`、`gb_listen` 等其余 GB 协议项都不再写入本地 ini，而是固定使用代码默认值。
-- 当前 `zero_config.ini` 独立持久化 `StringCode/Mac` 2 个零配置外部可编辑字段；`Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 固定走代码默认值，不再和 `gb28181.ini` 混存。`register_mode=zero_config` 时，运行态还会把首次重定向入口 `server_id/server_ip/server_port` 固定到代码默认值，与 `gb28181.ini` 中保存的标准国标注册参数彻底分离。
+- 当前 `zero_config.ini` 独立持久化 `StringCode/Mac` 2 个零配置外部可编辑字段；`Line/redirect_domain/redirect_server_id/CustomProtocolVersion/manufacturer/model` 固定走代码默认常量，不再和 `gb28181.ini` 混存。`register_mode=zero_config` 时，运行态还会把首次重定向入口 `server_id/server_ip/server_port` 固定到代码默认值，与 `gb28181.ini` 中保存的标准国标注册参数彻底分离。
 - `ProtocolManager::NotifyGbAlarm()` 现在会直接向 `GB28181ClientSDK` 读取当前 `local_code` 作为报警 `DeviceID/AlarmID` 的优先来源，不再额外缓存订阅回调里的 `gbCode`。同时最终 `Alarm NOTIFY` 的 XML 组包层也会再次优先使用 `GB28181XmlParser::m_local_code` 写 `<DeviceID>`，把“报警体设备号必须跟随当前 SIP 本端 ID”收口到最后一跳，避免上层仍带旧值时报文回退。
 - 当前 `gat1400.ini` 只持久化 `GatRegisterParam`；其中 `enable` 控制 1400 生命周期启停，`gat_upload`、`gat_capture` 等其他 1400 相关参数继续使用代码默认值或 HTTP 配置链路。
 - `gb_register.enabled` 与 `gat_register.enabled` 现在分别控制 GB28181 和 GAT1400 生命周期；两条协议链路的启停互不隐式联动，但都会在 `ProtocolManager::Start()` 和对应的 `Restart*RegisterService()` 中按各自开关决定是否启动或停服。

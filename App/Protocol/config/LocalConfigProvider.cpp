@@ -212,9 +212,9 @@ protocol::GbRegisterParam BuildDefaultGbRegisterParam()
     param.line_id = "1";
     param.redirect_domain = "35010000002000000001";
     param.redirect_server_id = "35010000002000000001";
-    param.custom_protocol_version = "3.0";
-    param.manufacturer = "CMIoT";
-    param.model = "C4611";
+    param.custom_protocol_version = protocol::kGbDefaultCustomProtocolVersion;
+    param.manufacturer = protocol::kGbDefaultManufacturer;
+    param.model = protocol::kGbDefaultModel;
     return param;
 }
 
@@ -337,7 +337,7 @@ int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
 
 void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
 {
-    cfg.version = "1.0.3";
+    cfg.version = protocol::kProtocolDefaultVersion;
 
     cfg.gb_register = BuildDefaultGbRegisterParam();
 
@@ -659,7 +659,7 @@ LocalConfigProvider::LocalConfigProvider(const std::string& sourceTag)
     } else if (sync.gb_source != kLocalConfigLoadNone ||
                sync.zero_source != kLocalConfigLoadNone ||
                sync.gat_source != kLocalConfigLoadNone) {
-        m_cached_cfg.version = "1.0.3";
+        m_cached_cfg.version = protocol::kProtocolDefaultVersion;
         printf("[Protocol][Config] module=config event=config_file_load_success trace=provider gb_path=%s gb_source=%s gb_ret=%d zero_path=%s zero_source=%s zero_ret=%d gat_path=%s gat_source=%s gat_ret=%d tag=%s\n",
                kLocalGbConfigFile,
                DescribeLocalConfigSource(sync.gb_source),
@@ -822,7 +822,7 @@ int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
     if (sync.gb_source != kLocalConfigLoadNone ||
         sync.zero_source != kLocalConfigLoadNone ||
         sync.gat_source != kLocalConfigLoadNone) {
-        next.version = "1.0.3";
+        next.version = protocol::kProtocolDefaultVersion;
         m_cached_cfg = next;
     }
 

@@ -10,6 +10,10 @@ namespace protocol
 
 static const char* const kGbRegisterModeStandard = "standard";
 static const char* const kGbRegisterModeZeroConfig = "zero_config";
+static const char* const kProtocolDefaultVersion = "1.0.3";
+static const char* const kGbDefaultCustomProtocolVersion = "3.0";
+static const char* const kGbDefaultManufacturer = "CMIoT";
+static const char* const kGbDefaultModel = "C4611";
 
 struct GbZeroConfigParam
 {
@@ -44,9 +48,9 @@ struct GbRegisterParam
           device_name("IPC"),
           expires_sec(3600),
           line_id("1"),
-          custom_protocol_version("3.0"),
-          manufacturer("CMIoT"),
-          model("C4611") {}
+          custom_protocol_version(kGbDefaultCustomProtocolVersion),
+          manufacturer(kGbDefaultManufacturer),
+          model(kGbDefaultModel) {}
 };
 
 inline std::string NormalizeGbRegisterMode(const std::string& value)
@@ -354,7 +358,7 @@ struct ProtocolExternalConfig
 
     CloudFastAccessParam cloud_fast_access;
 
-    ProtocolExternalConfig() : version("1.0.3") {}
+    ProtocolExternalConfig() : version(kProtocolDefaultVersion) {}
 };
 
 }

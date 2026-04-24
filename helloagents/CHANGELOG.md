@@ -7,6 +7,8 @@
 ## [Unreleased]
 
 ### 修复
+- 收敛协议配置默认值维护入口：`ProtocolExternalConfig::version`、`GbRegisterParam::custom_protocol_version/manufacturer/model` 现统一由 `ProtocolExternalConfig.h` 中的默认常量驱动，`LocalConfigProvider` 不再重复写死版本、厂商和型号字面值。
+- 修复 GB28181 主动广播/对讲 `INVITE` 的 `Subject` 设备 ID 顺序反向问题：`StartBroadcastStreamRequest()` 现在把平台 Broadcast `SourceID` 对应的邀请目标作为 `Subject` 首段，本端媒体设备 ID 作为第二段，避免平台因 `Subject` 不符合预期拒绝对讲。
 - 修复 GB28181 广播通知后的主动音频 `INVITE` 仍使用启动占位本地 SIP 地址的问题：`SipEventManager/CSipClientImpl/SipUserAgentClient` 现补齐运行态本地 `IP/Port` 只读 getter，`GBClientImpl::StreamRequestEx()` 在广播主动 `INVITE` 的 `From` 组包时优先读取这组运行态值，避免再发出 `0.0.0.0:0`。
 - 按 issue 49 收口 GAT1400 结构化对象上报阻塞：`NotifyGatFaces()` / `NotifyGatMotorVehicles()` / `NotifyGatNonMotorVehicles()` 现统一改为快速入异步队列，不再在外部调用线程里同步发 HTTP；若 1400 已注册会立即唤醒后台 worker 回放，若未注册则等待注册恢复后继续发送。同时这 3 个入口的单条上报最多总发送 `2` 次（首次发送 + `1` 次重发），达到上限后直接丢弃，不再继续长期补传。
 - 按 issue 46 收口 GB28181 实时预览 codec 获取时机：`ProtocolManager::ReconfigureGbLiveSender()` 现在会在开始预览建链时优先读取运行态编码信息，若 live 场景下运行态 getter 暂时不可用，则实时读取 `CFG_VIDEO` 中主辅码流 `enc_type` 映射 `h264/h265` 作为兜底；`LocalConfigProvider::InitDefaultLocalConfig()` 不再承担这条 `CFG_VIDEO` 读取逻辑。

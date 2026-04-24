@@ -4251,8 +4251,9 @@ int CGBClientImpl::StartBroadcastStreamRequest(const char* target_id,
     }
 
     MediaInfo request = *input;
-    const char* subject_sender_id = request.DeviceID[0] != '\0' ? request.DeviceID : target_id;
-    return StreamRequestEx(&request, target_id, subject_sender_id, target_id, result, stream_handle);
+    const char* subject_sender_id = target_id;
+    const char* subject_receiver_id = request.DeviceID[0] != '\0' ? request.DeviceID : target_id;
+    return StreamRequestEx(&request, target_id, subject_sender_id, subject_receiver_id, result, stream_handle);
 }
 
 

@@ -59,6 +59,10 @@
 - 当前不再强依赖 SDP 中第一个 payload，而是会在多个 `rtpmap` 中优先选择本端支持 codec。
 - 现阶段仍需通过真实平台包进一步验证多 payload、静态 payload、以及 `PCMA/PCMU` 混排场景。
 
+### 4.7 主动对讲 `Subject` 顺序已按平台反馈修正
+- 基于 `对讲失败.pcap`，失败主动 `INVITE` 中 `Subject` 曾表现为本端媒体设备 ID 在前、平台 Broadcast `SourceID` 对应目标 ID 在后。
+- 当前 `StartBroadcastStreamRequest()` 已调整为将平台邀请目标 ID 放在 `Subject` 首段，本端媒体设备 ID 放在第二段，避免平台按 `Subject` 解析时把双方设备 ID 识别反向。
+
 ## 5. 风险判断
 - 若平台以 `UDP` 或设备主动 `TCP` 建链，对讲链路已经具备基础双向能力。
 - 若平台要求设备在 `TCP passive` 场景下复用已建立的下行连接回传上行音频，则当前实现仍不完整。
@@ -70,6 +74,7 @@
   - `UDP`
   - 设备主动 `TCP active`
   - 平台主动 `TCP passive`
+- 使用修复后的固件复测主动对讲，确认新 `INVITE` 的 `Subject` 顺序与平台期望一致且不再返回 `503`。
 
 ### P1
 - 若要完整支持 `TCP passive` 双向对讲，需要让上行发送复用 `m_talk_broadcast` 接受到的已连接 socket，或重构 `GB28181ListenBridge` 的传输层。

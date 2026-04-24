@@ -108,6 +108,8 @@
 
 ### 2026-04
 
+- [202604241750_protocol_config_defaults_single_source](2026-04/202604241750_protocol_config_defaults_single_source/) - 收敛 `ProtocolExternalConfig::version` 与 GB 默认协议版本、厂商、型号的默认值来源，避免改版本或设备信息时需要多处同步修改
+- [202604241741_gb_broadcast_invite_subject_order](2026-04/202604241741_gb_broadcast_invite_subject_order/) - 基于 `对讲失败.pcap` 修复 GB28181 主动广播/对讲 `INVITE` 的 `Subject` 设备 ID 顺序，调整为平台源 ID 在前、本端媒体设备 ID 在后，并补充静态回归测试
 - [202604221113_gb_broadcast_invite_local_endpoint](2026-04/202604221113_gb_broadcast_invite_local_endpoint/) - 基于 `23.pcap` 把 GB 广播主动音频 `INVITE` 的 `From` 地址收口为优先读取 SipSDK 运行态本地 SIP `IP/Port`，避免继续发出 `0.0.0.0:0`
 - [202604181529_issue47_platform_sdk_port_trim](2026-04/202604181529_issue47_platform_sdk_port_trim/) - 按 issue 47 基于当前 CMake 显式源码入口与仓库 include 图清理 `platform_sdk_port` 下 `213` 个冗余头文件 / 源码文件，并恢复本分支 `-O3` 与 `cmake_minimum_required=3.5` 构建基线后重新跑通交叉编译验证
 - [202604171408_issue46_gb_codec_from_cfg_video](2026-04/202604171408_issue46_gb_codec_from_cfg_video/) - 按 issue 46 最新反馈把 GB28181 实时预览 codec 的 `CFG_VIDEO` 获取时机收口到预览建链阶段：`ReconfigureGbLiveSender()` 在 live 启动时实时确定 codec，`LocalConfigProvider` 恢复为普通默认值初始化
