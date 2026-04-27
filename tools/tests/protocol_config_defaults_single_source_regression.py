@@ -19,6 +19,11 @@ def require(text: str, pattern: str, message: str) -> None:
         raise AssertionError(message)
 
 
+def require_absent(text: str, pattern: str, message: str) -> None:
+    if re.search(pattern, text, re.MULTILINE | re.DOTALL) is not None:
+        raise AssertionError(message)
+
+
 def require_count(text: str, needle: str, expected: int, message: str) -> None:
     count = text.count(needle)
     if count != expected:
@@ -54,8 +59,8 @@ def main() -> int:
     )
     require(
         LOCAL_PROVIDER_SOURCE,
-        r"cfg\.version\s*=\s*protocol::kProtocolDefaultVersion\s*;",
-        "InitDefaultLocalConfig 应使用默认版本常量。",
+        r"cfg\s*=\s*protocol::ProtocolExternalConfig\(\)\s*;",
+        "InitDefaultLocalConfig 应通过 ProtocolExternalConfig 构造函数恢复默认版本和通用默认值。",
     )
     require(
         LOCAL_PROVIDER_SOURCE,
@@ -67,15 +72,15 @@ def main() -> int:
         r"next\.version\s*=\s*protocol::kProtocolDefaultVersion\s*;",
         "PullLatest 刷新版本时应使用默认版本常量。",
     )
-    require(
+    require_absent(
         LOCAL_PROVIDER_SOURCE,
         r"param\.manufacturer\s*=\s*protocol::kGbDefaultManufacturer\s*;",
-        "BuildDefaultGbRegisterParam 应使用默认厂商常量。",
+        "BuildDefaultGbRegisterParam 应复用 GbRegisterParam 构造函数中的默认厂商。",
     )
-    require(
+    require_absent(
         LOCAL_PROVIDER_SOURCE,
         r"param\.model\s*=\s*protocol::kGbDefaultModel\s*;",
-        "BuildDefaultGbRegisterParam 应使用默认型号常量。",
+        "BuildDefaultGbRegisterParam 应复用 GbRegisterParam 构造函数中的默认型号。",
     )
 
     require_count(combined, '"1.0.3"', 1, "默认版本字面值只能保留在单一常量定义处。")

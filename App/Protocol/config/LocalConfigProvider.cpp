@@ -48,27 +48,17 @@ struct LocalConfigSyncState
 const int kZeroConfigFileMissingError = -29;
 const int kInvalidGbRegisterModeError = -30;
 
-int RequiredZeroConfigFileError()
-{
-    return kZeroConfigFileMissingError;
-}
-
-bool IsZeroConfigFileRequired(const protocol::GbRegisterParam& param)
-{
-    return protocol::IsGbRegisterModeZeroConfig(param);
-}
-
 bool IsZeroConfigFileMissing(const LocalConfigSyncState& state,
                              const protocol::GbRegisterParam& param)
 {
-    return IsZeroConfigFileRequired(param) &&
+    return protocol::IsGbRegisterModeZeroConfig(param) &&
            state.zero_source != kLocalConfigLoadCurrent;
 }
 
 void LogZeroConfigFileMissing(const char* tag)
 {
     printf("[Protocol][Config] module=config event=zero_config_file_missing trace=provider error=%d path=%s tag=%s\n",
-           RequiredZeroConfigFileError(),
+           kZeroConfigFileMissingError,
            kLocalZeroConfigFile,
            tag != NULL ? tag : "");
 }
@@ -206,40 +196,18 @@ int FinishConfigFileWrite(FILE* fp)
     return 0;
 }
 
-void WriteConfigHeader(FILE* fp, const char* section)
-{
-    fprintf(fp, "[%s]\n", section);
-}
-
-void WriteConfigInt(FILE* fp, const char* key, int value)
-{
-    fprintf(fp, "%s=%d\n", key, value);
-}
-
-void WriteConfigString(FILE* fp, const char* key, const std::string& value)
-{
-    fprintf(fp, "%s=%s\n", key, value.c_str());
-}
-
 protocol::GbRegisterParam BuildDefaultGbRegisterParam()
 {
     protocol::GbRegisterParam param;
-    param.enabled = 1;
-    param.register_mode = protocol::kGbRegisterModeStandard;
     param.server_ip = "183.252.186.135";
     param.server_port = 16656;
     param.device_id = "35010101001320124929";
-    param.device_name = "IPC";
     param.username = "35010000002000000001";
     param.password = "2CE09989747C";
     param.string_code = "C04403261010000000101";
     param.mac_address = "2CE09989747C";
-    param.line_id = "1";
     param.redirect_domain = "35010000002000000001";
     param.redirect_server_id = "35010000002000000001";
-    param.custom_protocol_version = protocol::kGbDefaultCustomProtocolVersion;
-    param.manufacturer = protocol::kGbDefaultManufacturer;
-    param.model = protocol::kGbDefaultModel;
     return param;
 }
 
@@ -255,7 +223,7 @@ protocol::GbZeroConfigParam BuildDefaultGbZeroConfigParam()
 void ApplyGbRuntimeZeroConfigFields(protocol::GbRegisterParam& param)
 {
     param.register_mode = protocol::NormalizeGbRegisterMode(param.register_mode);
-    if (!protocol::IsGbRegisterModeZeroConfig(param)) {
+    if (param.register_mode != protocol::kGbRegisterModeZeroConfig) {
         return;
     }
 
@@ -269,21 +237,11 @@ void ApplyGbRuntimeZeroConfigFields(protocol::GbRegisterParam& param)
 protocol::GatRegisterParam BuildDefaultGatRegisterParam()
 {
     protocol::GatRegisterParam param;
-    param.enabled = 1;
     param.server_ip = "183.252.186.166";
     param.server_port = 33855;
-    param.scheme = "http";
-    param.base_path = "";
     param.device_id = "35010200001190000010";
     param.username = "admin";
     param.password = "Dz8h6kM9";
-    param.auth_method = "digest";
-    param.listen_port = 18080;
-    param.expires_sec = 3600;
-    param.keepalive_interval_sec = 60;
-    param.max_retry = 3;
-    param.request_timeout_ms = 5000;
-    param.retry_backoff_policy = "5,10,30";
     return param;
 }
 
@@ -298,15 +256,14 @@ void ApplyGbRegisterEditableFields(protocol::GbRegisterParam& target, const prot
     target.password = source.password;
 }
 
-void ApplyGbZeroConfigEditableFields(protocol::GbRegisterParam& target, const protocol::GbZeroConfigParam& source)
-{
-    target.string_code = source.string_code;
-    target.mac_address = source.mac_address;
-}
-
 int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
 {
-    if (!protocol::IsValidGbRegisterMode(param.register_mode)) {
+    const std::string registerMode =
+        protocol::NormalizeGbRegisterMode(param.register_mode);
+    const bool useZeroConfig =
+        (registerMode == protocol::kGbRegisterModeZeroConfig);
+    if (registerMode != protocol::kGbRegisterModeStandard &&
+        registerMode != protocol::kGbRegisterModeZeroConfig) {
         return kInvalidGbRegisterModeError;
     }
 
@@ -315,23 +272,17 @@ int ValidateGbRegisterEditableFields(const protocol::GbRegisterParam& param)
     }
 
     if (param.enabled != 0 &&
-        protocol::IsGbRegisterModeZeroConfig(param) &&
+        useZeroConfig &&
         param.string_code.empty()) {
         return -2;
     }
 
     if (param.enabled != 0 &&
-        protocol::IsGbRegisterModeZeroConfig(param) &&
+        useZeroConfig &&
         param.redirect_server_id.empty()) {
         return -3;
     }
     return 0;
-}
-
-void ApplyGatRegisterEditableFields(protocol::GatRegisterParam& target, const protocol::GatRegisterParam& source)
-{
-    target = source;
-    target.enabled = (source.enabled != 0) ? 1 : 0;
 }
 
 int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
@@ -362,58 +313,21 @@ int ValidateGatRegisterEditableFields(const protocol::GatRegisterParam& param)
 
 void InitDefaultLocalConfig(protocol::ProtocolExternalConfig& cfg)
 {
-    cfg.version = protocol::kProtocolDefaultVersion;
+    cfg = protocol::ProtocolExternalConfig();
 
     cfg.gb_register = BuildDefaultGbRegisterParam();
 
-    cfg.gb_live.transport = "udp";
-    cfg.gb_live.target_ip = "127.0.0.1";
-    cfg.gb_live.target_port = 30000;
-    cfg.gb_live.video_stream_id = "main";
     cfg.gb_live.video_codec = "h265";
-    cfg.gb_live.audio_codec = "g711a";
-    cfg.gb_live.mtu = 1200;
-    cfg.gb_live.payload_type = 96;
-    cfg.gb_live.ssrc = 0;
-    cfg.gb_live.clock_rate = 90000;
     cfg.gb_video.main_codec = "H.265";
     cfg.gb_video.main_resolution = "3840x1080";
-    cfg.gb_video.main_fps = 25;
-    cfg.gb_video.main_bitrate_kbps = 2048;
     cfg.gb_video.sub_codec = "H.265";
-    cfg.gb_video.sub_resolution = "640x360";
-    cfg.gb_video.sub_fps = 15;
-    cfg.gb_video.sub_bitrate_kbps = 512;
     cfg.gb_image.flip_mode = "close";
 
     cfg.gat_register = BuildDefaultGatRegisterParam();
-    cfg.gat_upload.queue_dir = "/tmp/gat1400_queue";
-    cfg.gat_upload.max_pending_count = 10;
-    cfg.gat_upload.replay_interval_sec = 15;
-    cfg.gat_upload.enable_apes_post_compat = 0;
-
-    cfg.gb_talk.codec = "g711a";
-    cfg.gb_talk.recv_port = 30003;
-    cfg.gb_talk.sample_rate = 8000;
-    cfg.gb_talk.jitter_buffer_ms = 80;
-    cfg.gb_reboot.cooldown_sec = 60;
-    cfg.gb_reboot.require_auth_level = 1;
-    cfg.gb_upgrade.url_whitelist.clear();
-    cfg.gb_upgrade.max_package_mb = 128;
-    cfg.gb_upgrade.verify_mode = "md5";
-    cfg.gb_upgrade.timeout_sec = 120;
-
-    cfg.gb_broadcast.input_mode = "stream";
-    cfg.gb_broadcast.codec = "g711a";
     cfg.gb_broadcast.recv_port = 30001;
-    cfg.gb_broadcast.file_cache_dir = "/tmp";
-    cfg.gb_broadcast.transport = "tcp";
 
-    cfg.gb_listen.transport = "udp";
     cfg.gb_listen.target_ip = "127.0.0.1";
     cfg.gb_listen.target_port = 30002;
-    cfg.gb_listen.codec = "g711a";
-    cfg.gb_listen.sample_rate = 8000;
 }
 
 bool ReadIniString(CInifile& ini,
@@ -444,11 +358,6 @@ bool ReadIniInt(CInifile& ini,
     return true;
 }
 
-void NormalizeGbRegisterConfig(protocol::GbRegisterParam& param)
-{
-    param.register_mode = protocol::NormalizeGbRegisterMode(param.register_mode);
-}
-
 bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& out)
 {
     if (path == NULL || access(path, F_OK) != 0) {
@@ -466,7 +375,7 @@ bool LoadGbRegisterConfigFromFile(const char* path, protocol::GbRegisterParam& o
     ReadIniInt(ini, kLocalGbConfigSection, "server_port", path, out.server_port);
     ReadIniString(ini, kLocalGbConfigSection, "device_id", path, out.device_id);
     ReadIniString(ini, kLocalGbConfigSection, "password", path, out.password);
-    NormalizeGbRegisterConfig(out);
+    out.register_mode = protocol::NormalizeGbRegisterMode(out.register_mode);
     return true;
 }
 
@@ -480,7 +389,6 @@ bool LoadGbZeroConfigFromFile(const char* path, protocol::GbRegisterParam& out)
     bool loaded = false;
     loaded = ReadIniString(ini, kLocalZeroConfigSection, "string_code", path, out.string_code) || loaded;
     loaded = ReadIniString(ini, kLocalZeroConfigSection, "mac_address", path, out.mac_address) || loaded;
-    NormalizeGbRegisterConfig(out);
     return loaded;
 }
 
@@ -539,7 +447,7 @@ LocalConfigLoadSource LoadExistingGatRegisterConfig(protocol::GatRegisterParam& 
 int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
 {
     protocol::GbRegisterParam normalized = param;
-    NormalizeGbRegisterConfig(normalized);
+    normalized.register_mode = protocol::NormalizeGbRegisterMode(normalized.register_mode);
 
     if (!EnsureDirectoryExists(kLocalConfigDir)) {
         return -1;
@@ -550,21 +458,20 @@ int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
         return -2;
     }
 
-    WriteConfigHeader(fp, kLocalGbConfigSection);
-    WriteConfigInt(fp, "enable", normalized.enabled != 0 ? 1 : 0);
-    WriteConfigString(fp, "register_mode", protocol::NormalizeGbRegisterMode(normalized.register_mode));
-    WriteConfigString(fp, "username", normalized.username);
-    WriteConfigString(fp, "server_ip", normalized.server_ip);
-    WriteConfigInt(fp, "server_port", normalized.server_port);
-    WriteConfigString(fp, "device_id", normalized.device_id);
-    WriteConfigString(fp, "password", normalized.password);
+    fprintf(fp, "[%s]\n", kLocalGbConfigSection);
+    fprintf(fp, "enable=%d\n", normalized.enabled != 0 ? 1 : 0);
+    fprintf(fp, "register_mode=%s\n", normalized.register_mode.c_str());
+    fprintf(fp, "username=%s\n", normalized.username.c_str());
+    fprintf(fp, "server_ip=%s\n", normalized.server_ip.c_str());
+    fprintf(fp, "server_port=%d\n", normalized.server_port);
+    fprintf(fp, "device_id=%s\n", normalized.device_id.c_str());
+    fprintf(fp, "password=%s\n", normalized.password.c_str());
     return FinishConfigFileWrite(fp);
 }
 
 int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
 {
     protocol::GbRegisterParam normalized = param;
-    NormalizeGbRegisterConfig(normalized);
 
     if (!EnsureDirectoryExists(kLocalConfigDir)) {
         return -1;
@@ -575,9 +482,9 @@ int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
         return -2;
     }
 
-    WriteConfigHeader(fp, kLocalZeroConfigSection);
-    WriteConfigString(fp, "string_code", normalized.string_code);
-    WriteConfigString(fp, "mac_address", normalized.mac_address);
+    fprintf(fp, "[%s]\n", kLocalZeroConfigSection);
+    fprintf(fp, "string_code=%s\n", normalized.string_code.c_str());
+    fprintf(fp, "mac_address=%s\n", normalized.mac_address.c_str());
     return FinishConfigFileWrite(fp);
 }
 
@@ -592,22 +499,22 @@ int SaveLocalGatConfigFile(const protocol::GatRegisterParam& param)
         return -2;
     }
 
-    WriteConfigHeader(fp, kLocalGatConfigSection);
-    WriteConfigInt(fp, "enable", param.enabled != 0 ? 1 : 0);
-    WriteConfigString(fp, "scheme", param.scheme);
-    WriteConfigString(fp, "server_ip", param.server_ip);
-    WriteConfigInt(fp, "server_port", param.server_port);
-    WriteConfigString(fp, "base_path", param.base_path);
-    WriteConfigString(fp, "device_id", param.device_id);
-    WriteConfigString(fp, "username", param.username);
-    WriteConfigString(fp, "password", param.password);
-    WriteConfigString(fp, "auth_method", param.auth_method);
-    WriteConfigInt(fp, "listen_port", param.listen_port);
-    WriteConfigInt(fp, "expires_sec", param.expires_sec);
-    WriteConfigInt(fp, "keepalive_interval_sec", param.keepalive_interval_sec);
-    WriteConfigInt(fp, "max_retry", param.max_retry);
-    WriteConfigInt(fp, "request_timeout_ms", param.request_timeout_ms);
-    WriteConfigString(fp, "retry_backoff_policy", param.retry_backoff_policy);
+    fprintf(fp, "[%s]\n", kLocalGatConfigSection);
+    fprintf(fp, "enable=%d\n", param.enabled != 0 ? 1 : 0);
+    fprintf(fp, "scheme=%s\n", param.scheme.c_str());
+    fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
+    fprintf(fp, "server_port=%d\n", param.server_port);
+    fprintf(fp, "base_path=%s\n", param.base_path.c_str());
+    fprintf(fp, "device_id=%s\n", param.device_id.c_str());
+    fprintf(fp, "username=%s\n", param.username.c_str());
+    fprintf(fp, "password=%s\n", param.password.c_str());
+    fprintf(fp, "auth_method=%s\n", param.auth_method.c_str());
+    fprintf(fp, "listen_port=%d\n", param.listen_port);
+    fprintf(fp, "expires_sec=%d\n", param.expires_sec);
+    fprintf(fp, "keepalive_interval_sec=%d\n", param.keepalive_interval_sec);
+    fprintf(fp, "max_retry=%d\n", param.max_retry);
+    fprintf(fp, "request_timeout_ms=%d\n", param.request_timeout_ms);
+    fprintf(fp, "retry_backoff_policy=%s\n", param.retry_backoff_policy.c_str());
     return FinishConfigFileWrite(fp);
 }
 
@@ -626,15 +533,13 @@ LocalConfigSyncState SyncLocalConfigFiles(protocol::ProtocolExternalConfig& cfg)
     LocalConfigSyncState state;
 
     state.gb_source = LoadExistingGbRegisterConfig(cfg.gb_register);
-    NormalizeGbRegisterConfig(cfg.gb_register);
     if (state.gb_source != kLocalConfigLoadCurrent) {
         state.gb_sync_ret = SaveLocalGbConfigFile(cfg.gb_register);
     }
 
     state.zero_source = LoadExistingGbZeroConfig(cfg.gb_register);
-    NormalizeGbRegisterConfig(cfg.gb_register);
     if (IsZeroConfigFileMissing(state, cfg.gb_register)) {
-        state.zero_sync_ret = RequiredZeroConfigFileError();
+        state.zero_sync_ret = kZeroConfigFileMissingError;
     }
     ApplyGbRuntimeZeroConfigFields(cfg.gb_register);
 
@@ -727,9 +632,9 @@ int LocalConfigProvider::LoadOrCreateGbRegisterConfig(GbRegisterParam& out)
         }
     }
 
-    if (IsZeroConfigFileRequired(out) && zeroSource != kLocalConfigLoadCurrent) {
+    if (protocol::IsGbRegisterModeZeroConfig(out) && zeroSource != kLocalConfigLoadCurrent) {
         LogZeroConfigFileMissing("LoadOrCreateGbRegisterConfig");
-        return RequiredZeroConfigFileError();
+        return kZeroConfigFileMissingError;
     }
 
     return 0;
@@ -752,7 +657,6 @@ int LocalConfigProvider::UpdateGbRegisterConfig(const GbRegisterParam& param)
     LoadExistingGbRegisterConfig(next);
     LoadExistingGbZeroConfig(next);
     ApplyGbRegisterEditableFields(next, param);
-    NormalizeGbRegisterConfig(next);
     const int check = ValidateGbRegisterEditableFields(next);
     if (check != 0) {
         return check;
@@ -771,8 +675,8 @@ int LocalConfigProvider::UpdateGbZeroConfig(const GbZeroConfigParam& param)
     GbRegisterParam next = BuildDefaultGbRegisterConfig();
     LoadExistingGbRegisterConfig(next);
     LoadExistingGbZeroConfig(next);
-    ApplyGbZeroConfigEditableFields(next, param);
-    NormalizeGbRegisterConfig(next);
+    next.string_code = param.string_code;
+    next.mac_address = param.mac_address;
     const int check = ValidateGbRegisterEditableFields(next);
     if (check != 0) {
         return check;
@@ -798,9 +702,8 @@ int LocalConfigProvider::LoadOrCreateGatRegisterConfig(GatRegisterParam& out)
 
 int LocalConfigProvider::UpdateGatRegisterConfig(const GatRegisterParam& param)
 {
-    GatRegisterParam next = BuildDefaultGatRegisterConfig();
-    LoadExistingGatRegisterConfig(next);
-    ApplyGatRegisterEditableFields(next, param);
+    GatRegisterParam next = param;
+    next.enabled = (param.enabled != 0) ? 1 : 0;
     const int check = ValidateGatRegisterEditableFields(next);
     if (check != 0) {
         return check;
@@ -820,7 +723,7 @@ int LocalConfigProvider::PullLatest(ProtocolExternalConfig& out)
     const LocalConfigSyncState sync = SyncLocalConfigFiles(next);
     if (IsZeroConfigFileMissing(sync, next.gb_register)) {
         LogZeroConfigFileMissing(m_source_tag.c_str());
-        return RequiredZeroConfigFileError();
+        return kZeroConfigFileMissingError;
     }
 
     if (sync.gb_source != kLocalConfigLoadNone ||
@@ -863,7 +766,8 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
     }
 
     ProtocolExternalConfig normalized = cfg;
-    NormalizeGbRegisterConfig(normalized.gb_register);
+    normalized.gb_register.register_mode =
+        protocol::NormalizeGbRegisterMode(normalized.gb_register.register_mode);
     m_cached_cfg = normalized;
 
     GbRegisterParam persistedGb = BuildDefaultGbRegisterConfig();
@@ -917,7 +821,12 @@ int LocalConfigProvider::PushApply(const ProtocolExternalConfig& cfg)
 
 int LocalConfigProvider::Validate(const ProtocolExternalConfig& cfg)
 {
-    if (!protocol::IsValidGbRegisterMode(cfg.gb_register.register_mode)) {
+    const std::string registerMode =
+        protocol::NormalizeGbRegisterMode(cfg.gb_register.register_mode);
+    const bool useZeroConfig =
+        (registerMode == protocol::kGbRegisterModeZeroConfig);
+    if (registerMode != protocol::kGbRegisterModeStandard &&
+        registerMode != protocol::kGbRegisterModeZeroConfig) {
         LogConfigValidateFail(cfg, kInvalidGbRegisterModeError, "gb_register_mode");
         return kInvalidGbRegisterModeError;
     }
@@ -928,14 +837,12 @@ int LocalConfigProvider::Validate(const ProtocolExternalConfig& cfg)
             return -1;
         }
 
-        if (protocol::IsGbRegisterModeZeroConfig(cfg.gb_register) &&
-            cfg.gb_register.string_code.empty()) {
+        if (useZeroConfig && cfg.gb_register.string_code.empty()) {
             LogConfigValidateFail(cfg, -27, "gb_register_string_code");
             return -27;
         }
 
-        if (protocol::IsGbRegisterModeZeroConfig(cfg.gb_register) &&
-            cfg.gb_register.redirect_server_id.empty()) {
+        if (useZeroConfig && cfg.gb_register.redirect_server_id.empty()) {
             LogConfigValidateFail(cfg, -28, "gb_register_redirect_server_id");
             return -28;
         }

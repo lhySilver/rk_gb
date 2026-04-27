@@ -8,6 +8,7 @@
 
 | 时间戳 | 功能名称 | 类型 | 状态 | 方案包路径 |
 |--------|----------|------|------|------------|
+| 202604271503 | gb_config_redundancy_trim | 轻量迭代 | ✅已完成 | [2026-04/202604271503_gb_config_redundancy_trim](2026-04/202604271503_gb_config_redundancy_trim/) |
 | 202604271125 | external_module_demos | 文档 | ✅已完成 | [2026-04/202604271125_external_module_demos](2026-04/202604271125_external_module_demos/) |
 | 202604271057 | protocol_config_cleanup | 轻量迭代 | ✅已完成 | [2026-04/202604271057_protocol_config_cleanup](2026-04/202604271057_protocol_config_cleanup/) |
 | 202604221113 | gb_broadcast_invite_local_endpoint | 修复 | ✅已完成 | [2026-04/202604221113_gb_broadcast_invite_local_endpoint](2026-04/202604221113_gb_broadcast_invite_local_endpoint/) |
@@ -110,6 +111,7 @@
 
 ### 2026-04
 
+- [202604271503_gb_config_redundancy_trim](2026-04/202604271503_gb_config_redundancy_trim/) - 删除主程序重复读取并写回 `zero_config.ini` 的启动导入逻辑，去掉 `LocalConfigProvider` 中一行包装和重复默认赋值，保持配置字段显式写入
 - [202604271125_external_module_demos](2026-04/202604271125_external_module_demos/) - 新增外部模块接入 Demo 文档，覆盖 GB 标准注册配置、零配置串码/MAC、GAT1400 注册配置、在线状态查询和 1400 结构化对象上报示例
 - [202604271057_protocol_config_cleanup](2026-04/202604271057_protocol_config_cleanup/) - 保持嵌入式简单边界，收口 `LocalConfigProvider` 中 GB/Zero/GAT INI 写入 helper，并修正启动零配置导入为当前 `zero_config.ini` 路径与键名
 - [202604241750_protocol_config_defaults_single_source](2026-04/202604241750_protocol_config_defaults_single_source/) - 收敛 `ProtocolExternalConfig::version` 与 GB 默认协议版本、厂商、型号的默认值来源，避免改版本或设备信息时需要多处同步修改

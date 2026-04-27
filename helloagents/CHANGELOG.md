@@ -17,7 +17,7 @@
 - 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。
 
 ### 优化
-- 优化协议配置文件写入实现：`LocalConfigProvider` 保持 GB/Zero/GAT 三组 INI 字段显式输出，只抽取文件内小 helper 复用 header、int/string 写入和 `fflush/fclose` 收尾逻辑，避免为嵌入式构建新增编译单元或改动 Makefile/CMake。
+- 收口国标配置链路冗余：删除主程序启动阶段重复读取并写回 `zero_config.ini` 的 `init_gb_zero_config()`；`zero_config` 统一由 `LocalConfigProvider` 负责读写。同时去掉 `WriteConfigHeader/WriteConfigInt/WriteConfigString`、`RequiredZeroConfigFileError/IsZeroConfigFileRequired`、`NormalizeGbRegisterConfig` 等不必要的一行包装，GB/Zero/GAT 三组 INI 保存函数恢复字段逐行显式输出；默认配置初始化改为复用结构构造函数，只覆盖本地差异项，并删除 GAT 配置更新时会被新值覆盖的旧配置读取，只保留 `FinishConfigFileWrite()` 统一处理 `fflush/fclose` 收尾。
 - 按 issue 47 基于当前 CMake 显式源码入口、仓库级 include 图和人工抽样复核，删除 `third_party/platform_sdk_port/CommonFile` 与 `third_party/platform_sdk_port/CommonLibSrc` 下 `213` 个未接入当前构建的冗余头文件 / 源码文件，主要集中在 `CommonFile/CommonLib`、`Common/Layer3_Abstract` 以及未启用的 `GB28181SDK/SipSDK` 历史分支。
 - 为恢复该分支的交叉编译验证能力，将根目录与 `Middleware` 的 `CMakeLists.txt` 优化参数从错误的 `-o3` 修正为 `-O3`，并重新跑通 `tools/issue_bot/build_verify.sh`。
 

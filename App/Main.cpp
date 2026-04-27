@@ -1,8 +1,6 @@
 #include "Main.h"
-#include "Inifile.h"
 
 #include "Protocol/ProtocolManager.h"
-#include "Protocol/config/LocalConfigProvider.h"
 #include "ProduceNew/Produce.h"
 #include "ProduceNew/NetWifi.h"
 #include "config/ProtocolExternalConfig.h"
@@ -448,40 +446,6 @@ static void *thread_web_server(void *args)
 		sleep(2);
 	}
 	return NULL;
-}
-
-static int init_gb_zero_config()
-{
-	int ret = -1;
-	CInifile ini;
-	char valstr [64] = {'\0'};
-	const char *path = "/userdata/conf/Config/GB/zero_config.ini";
-	protocol::GbZeroConfigParam local_config;
-
-	ret = ini.read_profile_string("zero_config", "string_code",valstr, sizeof(valstr), path);
-	if (ret)
-	{
-		AppErr("read [zero_config] string_code=? failed.\n");
-		return -1;
-	}
-	local_config.string_code = valstr;
-	ret = ini.read_profile_string("zero_config", "mac_address",valstr, sizeof(valstr), path);
-	if (ret)
-	{
-		AppErr("read [zero_config] mac_address=? failed.\n");
-		return -1;
-	}
-	local_config.mac_address = valstr;
-
-	protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
-    protocol::GbZeroConfigParam curr_config = pm.GetGbZeroConfig();
-
-	if (local_config.string_code != curr_config.string_code || 
-		local_config.mac_address != curr_config.mac_address)
-	{
-		pm.SetGbZeroConfig(local_config);
-	}
-	return 0;
 }
 
 static void *do_audio_test(void *args)
@@ -1000,8 +964,6 @@ bool CSofia::start()
 //		}
 
         DeviceMode_g = 0; // 正常模式
-
-		init_gb_zero_config();
 
 		// 定时检查复位按钮
 		m_timerCheckButton.Start(CTimer::Proc(&CSofia::OnCheckButton, this), 0, 50);
