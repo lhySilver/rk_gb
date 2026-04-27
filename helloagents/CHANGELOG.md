@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复启动阶段零配置导入仍读取旧 `/userdata/zero_config.ini` 与旧键名 `code/mac` 的问题，现统一读取 `/userdata/conf/Config/GB/zero_config.ini` 的 `string_code/mac_address` 并走 `ProtocolManager::SetGbZeroConfig()` 同步差异。
 - 收敛协议配置默认值维护入口：`ProtocolExternalConfig::version`、`GbRegisterParam::custom_protocol_version/manufacturer/model` 现统一由 `ProtocolExternalConfig.h` 中的默认常量驱动，`LocalConfigProvider` 不再重复写死版本、厂商和型号字面值。
 - 修复 GB28181 主动广播/对讲 `INVITE` 的 `Subject` 设备 ID 顺序反向问题：`StartBroadcastStreamRequest()` 现在把平台 Broadcast `SourceID` 对应的邀请目标作为 `Subject` 首段，本端媒体设备 ID 作为第二段，避免平台因 `Subject` 不符合预期拒绝对讲。
 - 修复 GB28181 广播通知后的主动音频 `INVITE` 仍使用启动占位本地 SIP 地址的问题：`SipEventManager/CSipClientImpl/SipUserAgentClient` 现补齐运行态本地 `IP/Port` 只读 getter，`GBClientImpl::StreamRequestEx()` 在广播主动 `INVITE` 的 `From` 组包时优先读取这组运行态值，避免再发出 `0.0.0.0:0`。
@@ -16,10 +17,12 @@
 - 按 issue 45 最新评论新增 `ProtocolManager::GetGatOnlineStatus()` 外部查询接口，供其他模块读取 1400 当前是否已注册到平台。
 
 ### 优化
+- 优化协议配置文件写入实现：`LocalConfigProvider` 保持 GB/Zero/GAT 三组 INI 字段显式输出，只抽取文件内小 helper 复用 header、int/string 写入和 `fflush/fclose` 收尾逻辑，避免为嵌入式构建新增编译单元或改动 Makefile/CMake。
 - 按 issue 47 基于当前 CMake 显式源码入口、仓库级 include 图和人工抽样复核，删除 `third_party/platform_sdk_port/CommonFile` 与 `third_party/platform_sdk_port/CommonLibSrc` 下 `213` 个未接入当前构建的冗余头文件 / 源码文件，主要集中在 `CommonFile/CommonLib`、`Common/Layer3_Abstract` 以及未启用的 `GB28181SDK/SipSDK` 历史分支。
 - 为恢复该分支的交叉编译验证能力，将根目录与 `Middleware` 的 `CMakeLists.txt` 优化参数从错误的 `-o3` 修正为 `-O3`，并重新跑通 `tools/issue_bot/build_verify.sh`。
 
 ### 新增
+- 新增 `helloagents/wiki/modules/external_module_demos.md`，给外部模块开发提供 GB 标准注册配置、零配置串码/MAC、GAT1400 注册配置、在线状态查询和 1400 结构化对象上报的文档型 C++ demo；不新增编译目标，也不改 Makefile/CMake。
 - 初始化 `helloagents/` 知识库。
 - 新增 `rk_gb` 项目总览、架构、接口、数据模型文档。
 - 新增 `gb28181`、`gat1400`、构建运行模块文档，沉淀 RK IPC 协议分析结果。

@@ -33,6 +33,7 @@
 | GB28181 Talk Review | 负责对讲链路审查结论、风险判断与待办事项 | 🚧持续完善 | [modules/gb28181-talk-review.md](modules/gb28181-talk-review.md) |
 | GB28181 SnapshotSubscribe Review | 负责远程抓拍、目录/报警/移动位置订阅审查结论与待办事项 | 🚧持续完善 | [modules/gb28181-snapshot-subscribe-review.md](modules/gb28181-snapshot-subscribe-review.md) |
 | GAT1400 | 负责 VIID 注册、保活、订阅、本地 HTTP 服务和对象上报 | 🚧部分接线 | [modules/gat1400.md](modules/gat1400.md) |
+| ExternalModuleDemos | 负责外部模块调用协议配置、在线状态和 1400 上报入口的最小示例 | ✅文档示例 | [modules/external_module_demos.md](modules/external_module_demos.md) |
 | TerminalRequirements | 负责终端白皮书、测试用例和当前实现的对齐基线 | ✅已建立基线 | [modules/terminal_requirements.md](modules/terminal_requirements.md) |
 | ZeroConfig | 负责零配置、注册重定向、出厂预置和装维接入专题知识 | ✅已建立专题 | [modules/zero_config.md](modules/zero_config.md) |
 | GitHubAutomation | 负责 issue 自动巡检、自动修复入口和 PR 收口 | 🚧已落骨架 | [modules/github_automation.md](modules/github_automation.md) |
@@ -43,6 +44,7 @@
 - [API 手册](api.md)
 - [数据模型](data.md)
 - [Protocol 模块](modules/protocol.md)
+- [外部模块接入 Demo](modules/external_module_demos.md)
 - [GB/T 28181-2022 调试基线](modules/gb28181-2022-baseline.md)
 - [GB28181 对讲审查记录](modules/gb28181-talk-review.md)
 - [GB28181 远程抓拍与目录订阅审查记录](modules/gb28181-snapshot-subscribe-review.md)

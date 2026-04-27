@@ -19,7 +19,7 @@ if 'GatRegisterParam()' in protocol_header and ': scheme("http")' in protocol_he
 
 required_local_config_snippets = [
     'ReadIniInt(ini, kLocalGatConfigSection, "enable", path, ivalue)',
-    'fprintf(fp, "enable=%d\\n", param.enabled != 0 ? 1 : 0);',
+    'WriteConfigInt(fp, "enable", param.enabled != 0 ? 1 : 0);',
     'target.enabled = (source.enabled != 0) ? 1 : 0;',
     'if (param.enabled != 0 &&',
 ]

@@ -136,6 +136,8 @@
 
 默认路径: `/userdata/conf/Config/GB/zero_config.ini`
 
+启动导入路径也使用这同一份文件和同一组键名；主程序不再读取旧 `/userdata/zero_config.ini`，也不再使用旧键名 `code/mac`。
+
 ### `gat1400.ini`
 
 | 键名 | 说明 |

@@ -22,6 +22,9 @@
 
 ## 注意事项
 - `LocalConfigProvider` 现在读取 `/userdata/conf/Config/GB/gb28181.ini`、`/userdata/conf/Config/GB/zero_config.ini` 与 `/userdata/conf/Config/GB/gat1400.ini`；其中 `gb28181.ini` / `gat1400.ini` 缺失时仍可按默认值自动生成。`gb28181.ini` 新增 `register_mode=standard|zero_config` 作为运行时模式开关：`standard` 模式下忽略 `zero_config.ini` 缺失，`zero_config` 模式下若 `zero_config.ini` 缺失则会直接记录日志并返回错误；`gat1400.ini` 当前也新增 `enable` 作为 1400 注册生命周期开关。旧的 `/userdata/conf/Config/gb28181.ini` 路径不再兼容，也不自动迁移。
+- `LocalConfigProvider` 的 GB/Zero/GAT 三组 INI 写入仍保持字段逐行显式输出，只在文件内通过 `WriteConfigHeader()`、`WriteConfigInt()`、`WriteConfigString()` 与 `FinishConfigFileWrite()` 复用低价值重复的格式化和 `fflush/fclose` 处理；本轮未新增编译单元，也未改动 Makefile/CMake。
+- 主程序启动阶段 `init_gb_zero_config()` 现在读取 `/userdata/conf/Config/GB/zero_config.ini` 的 `string_code/mac_address`，并通过 `ProtocolManager::SetGbZeroConfig()` 同步差异；不再读取旧 `/userdata/zero_config.ini` 的 `code/mac`。
+- 外部模块调用协议配置、在线状态和 1400 上报入口时，可直接参考 [外部模块接入 Demo](external_module_demos.md)。
 - `ProtocolExternalConfig::version` 与 GB 默认 `CustomProtocolVersion/manufacturer/model` 统一由 `ProtocolExternalConfig.h` 中的 `kProtocolDefaultVersion`、`kGbDefaultCustomProtocolVersion`、`kGbDefaultManufacturer`、`kGbDefaultModel` 提供，结构默认值和本地默认配置不再各自写死。
 - `ProtocolManager::ReconfigureGbLiveSender()` 现在会在每次 GB 实时预览开始建链时重新确定 `video_codec`：优先读取 `media::QueryVideoEncodeStreamState()` 的运行态 codec；若 live 预览场景下运行态 getter 暂时不可用，则实时读取 `CFG_VIDEO` 的主辅码流 `enc_type` 映射 `h264/h265` 作为兜底。`LocalConfigProvider::InitDefaultLocalConfig()` 不再承担这条 `CFG_VIDEO` 读取逻辑。
 - `ProtocolManager` 现已改为进程内单例；主程序在正常启动路径中通过 `ProtocolManager::Instance().Init()/Start()` 拉起协议栈，`LowerGAT1400SDK` 等外部模块也统一直接取这个单例，不再经过 `CSofia::GetProtocolManager()` 转发。

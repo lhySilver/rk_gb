@@ -455,20 +455,20 @@ static int init_gb_zero_config()
 	int ret = -1;
 	CInifile ini;
 	char valstr [64] = {'\0'};
-	const char *path = "/userdata/zero_config.ini";
+	const char *path = "/userdata/conf/Config/GB/zero_config.ini";
 	protocol::GbZeroConfigParam local_config;
 
-	ret = ini.read_profile_string("zero_config", "code",valstr, sizeof(valstr), path);
+	ret = ini.read_profile_string("zero_config", "string_code",valstr, sizeof(valstr), path);
 	if (ret)
 	{
-		AppErr("read [zero_config] code=? failed.\n");
+		AppErr("read [zero_config] string_code=? failed.\n");
 		return -1;
 	}
 	local_config.string_code = valstr;
-	ret = ini.read_profile_string("zero_config", "mac",valstr, sizeof(valstr), path);
+	ret = ini.read_profile_string("zero_config", "mac_address",valstr, sizeof(valstr), path);
 	if (ret)
 	{
-		AppErr("read [zero_config] mac=? failed.\n");
+		AppErr("read [zero_config] mac_address=? failed.\n");
 		return -1;
 	}
 	local_config.mac_address = valstr;

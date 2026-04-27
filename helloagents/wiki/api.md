@@ -6,6 +6,8 @@
 - GAT1400 作为下级系统发起 / 接收的 HTTP VIID 接口
 - GB28181 通过 SDK 回调暴露的媒体与控制接口
 
+外部模块接入示例见 [外部模块接入 Demo](modules/external_module_demos.md)。
+
 ## 认证方式
 - 本地注册配置接口: 当前代码中未体现额外认证
 - GAT1400 对上 HTTP: 支持 Digest / Basic 类认证流程，401 后通过 `http_auth` 重试

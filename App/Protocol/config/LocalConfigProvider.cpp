@@ -196,6 +196,31 @@ bool EnsureDirectoryExists(const char* dir)
     return true;
 }
 
+int FinishConfigFileWrite(FILE* fp)
+{
+    const int flushRet = fflush(fp);
+    const int closeRet = fclose(fp);
+    if (flushRet != 0 || closeRet != 0) {
+        return -3;
+    }
+    return 0;
+}
+
+void WriteConfigHeader(FILE* fp, const char* section)
+{
+    fprintf(fp, "[%s]\n", section);
+}
+
+void WriteConfigInt(FILE* fp, const char* key, int value)
+{
+    fprintf(fp, "%s=%d\n", key, value);
+}
+
+void WriteConfigString(FILE* fp, const char* key, const std::string& value)
+{
+    fprintf(fp, "%s=%s\n", key, value.c_str());
+}
+
 protocol::GbRegisterParam BuildDefaultGbRegisterParam()
 {
     protocol::GbRegisterParam param;
@@ -525,22 +550,15 @@ int SaveLocalGbConfigFile(const protocol::GbRegisterParam& param)
         return -2;
     }
 
-    fprintf(fp, "[%s]\n", kLocalGbConfigSection);
-    fprintf(fp, "enable=%d\n", normalized.enabled != 0 ? 1 : 0);
-    fprintf(fp, "register_mode=%s\n", protocol::NormalizeGbRegisterMode(normalized.register_mode).c_str());
-    fprintf(fp, "username=%s\n", normalized.username.c_str());
-    fprintf(fp, "server_ip=%s\n", normalized.server_ip.c_str());
-    fprintf(fp, "server_port=%d\n", normalized.server_port);
-    fprintf(fp, "device_id=%s\n", normalized.device_id.c_str());
-    fprintf(fp, "password=%s\n", normalized.password.c_str());
-
-    const int flushRet = fflush(fp);
-    const int closeRet = fclose(fp);
-    if (flushRet != 0 || closeRet != 0) {
-        return -3;
-    }
-
-    return 0;
+    WriteConfigHeader(fp, kLocalGbConfigSection);
+    WriteConfigInt(fp, "enable", normalized.enabled != 0 ? 1 : 0);
+    WriteConfigString(fp, "register_mode", protocol::NormalizeGbRegisterMode(normalized.register_mode));
+    WriteConfigString(fp, "username", normalized.username);
+    WriteConfigString(fp, "server_ip", normalized.server_ip);
+    WriteConfigInt(fp, "server_port", normalized.server_port);
+    WriteConfigString(fp, "device_id", normalized.device_id);
+    WriteConfigString(fp, "password", normalized.password);
+    return FinishConfigFileWrite(fp);
 }
 
 int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
@@ -557,17 +575,10 @@ int SaveLocalGbZeroConfigFile(const protocol::GbRegisterParam& param)
         return -2;
     }
 
-    fprintf(fp, "[%s]\n", kLocalZeroConfigSection);
-    fprintf(fp, "string_code=%s\n", normalized.string_code.c_str());
-    fprintf(fp, "mac_address=%s\n", normalized.mac_address.c_str());
-
-    const int flushRet = fflush(fp);
-    const int closeRet = fclose(fp);
-    if (flushRet != 0 || closeRet != 0) {
-        return -3;
-    }
-
-    return 0;
+    WriteConfigHeader(fp, kLocalZeroConfigSection);
+    WriteConfigString(fp, "string_code", normalized.string_code);
+    WriteConfigString(fp, "mac_address", normalized.mac_address);
+    return FinishConfigFileWrite(fp);
 }
 
 int SaveLocalGatConfigFile(const protocol::GatRegisterParam& param)
@@ -581,30 +592,23 @@ int SaveLocalGatConfigFile(const protocol::GatRegisterParam& param)
         return -2;
     }
 
-    fprintf(fp, "[%s]\n", kLocalGatConfigSection);
-    fprintf(fp, "enable=%d\n", param.enabled != 0 ? 1 : 0);
-    fprintf(fp, "scheme=%s\n", param.scheme.c_str());
-    fprintf(fp, "server_ip=%s\n", param.server_ip.c_str());
-    fprintf(fp, "server_port=%d\n", param.server_port);
-    fprintf(fp, "base_path=%s\n", param.base_path.c_str());
-    fprintf(fp, "device_id=%s\n", param.device_id.c_str());
-    fprintf(fp, "username=%s\n", param.username.c_str());
-    fprintf(fp, "password=%s\n", param.password.c_str());
-    fprintf(fp, "auth_method=%s\n", param.auth_method.c_str());
-    fprintf(fp, "listen_port=%d\n", param.listen_port);
-    fprintf(fp, "expires_sec=%d\n", param.expires_sec);
-    fprintf(fp, "keepalive_interval_sec=%d\n", param.keepalive_interval_sec);
-    fprintf(fp, "max_retry=%d\n", param.max_retry);
-    fprintf(fp, "request_timeout_ms=%d\n", param.request_timeout_ms);
-    fprintf(fp, "retry_backoff_policy=%s\n", param.retry_backoff_policy.c_str());
-
-    const int flushRet = fflush(fp);
-    const int closeRet = fclose(fp);
-    if (flushRet != 0 || closeRet != 0) {
-        return -3;
-    }
-
-    return 0;
+    WriteConfigHeader(fp, kLocalGatConfigSection);
+    WriteConfigInt(fp, "enable", param.enabled != 0 ? 1 : 0);
+    WriteConfigString(fp, "scheme", param.scheme);
+    WriteConfigString(fp, "server_ip", param.server_ip);
+    WriteConfigInt(fp, "server_port", param.server_port);
+    WriteConfigString(fp, "base_path", param.base_path);
+    WriteConfigString(fp, "device_id", param.device_id);
+    WriteConfigString(fp, "username", param.username);
+    WriteConfigString(fp, "password", param.password);
+    WriteConfigString(fp, "auth_method", param.auth_method);
+    WriteConfigInt(fp, "listen_port", param.listen_port);
+    WriteConfigInt(fp, "expires_sec", param.expires_sec);
+    WriteConfigInt(fp, "keepalive_interval_sec", param.keepalive_interval_sec);
+    WriteConfigInt(fp, "max_retry", param.max_retry);
+    WriteConfigInt(fp, "request_timeout_ms", param.request_timeout_ms);
+    WriteConfigString(fp, "retry_backoff_policy", param.retry_backoff_policy);
+    return FinishConfigFileWrite(fp);
 }
 
 const char* DescribeLocalConfigSource(LocalConfigLoadSource source)
