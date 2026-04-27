@@ -676,7 +676,7 @@ struct ImageSetting
     char FlipMode[32];                 //???????????
 };
 
-#define MAX_OSD_TEXT_NUM 8
+#define MAX_OSD_TEXT_NUM 10
 #define OSD_TEXT_LEN 64
 
 struct OsdTextItem
