@@ -61,7 +61,7 @@
 | `has_time_position/time_x/time_y` | 时间 OSD 坐标 |
 | `has_text_items/text_items[]` | 文本项数组；每项包含 `has_text/text/has_position/x/y` |
 
-**说明:** 白皮书 `OSDConfig.SumNum + Item[]` 当前直接映射到 `VideoOsdState.text_items[]`。协议态支持多文本回显，但当前 SoC 真实只会尽力显示第 `1` 个文本项；额外项由媒体层缓存并供 GB 查询回显。
+**说明:** 白皮书 `OSDConfig.SumNum + Item[]` 当前直接映射到 `VideoOsdState.text_items[]`。GB28181 平台下发的 `Item.Text` 中文按 GBK 输入处理，进入 `VideoOsdState` 前已由协议层转成 UTF-8；`VideoOsdState` 本身不再修改字符编码。协议态支持多文本回显，但当前 SoC 真实只会尽力显示第 `1` 个文本项；额外项由媒体层缓存并供 GB 查询回显。
 
 ### `GbRegisterParam` 本地持久化子集
 

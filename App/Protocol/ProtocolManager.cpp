@@ -48,6 +48,7 @@ extern "C"
 {
 #include "PAL/Capture.h"
 #include "PAL/Audio_coder.h"
+int RK_encode_gbk_to_utf8(unsigned char *src, int len, unsigned char *dst);
 }
 
 
@@ -2815,6 +2816,47 @@ static std::string NormalizeGbOsdTextTemplate(const std::string& textIn)
 {
     const std::string text = TrimWhitespaceCopy(textIn);
     return (ToLowerCopy(text) == "null") ? "" : text;
+}
+
+static int GetCompleteGbkByteLength(const std::string& text)
+{
+    size_t index = 0;
+    while (index < text.size()) {
+        const unsigned char ch = static_cast<unsigned char>(text[index]);
+        if (ch < 0x80) {
+            ++index;
+            continue;
+        }
+        if (index + 1 >= text.size()) {
+            break;
+        }
+        index += 2;
+    }
+
+    return static_cast<int>(index);
+}
+
+static std::string ConvertGbOsdTextToUtf8(const std::string& gbkText)
+{
+    if (gbkText.empty()) {
+        return "";
+    }
+
+    const int inputLen = GetCompleteGbkByteLength(gbkText);
+    if (inputLen <= 0) {
+        return "";
+    }
+
+    std::vector<unsigned char> src(gbkText.begin(), gbkText.begin() + inputLen);
+    src.push_back('\0');
+
+    std::vector<unsigned char> dst(static_cast<size_t>(inputLen) * 3 + 1, 0);
+    const int convertedLen = RK_encode_gbk_to_utf8(&src[0], inputLen, &dst[0]);
+    if (convertedLen <= 0 || convertedLen >= static_cast<int>(dst.size())) {
+        return "";
+    }
+
+    return std::string(reinterpret_cast<const char*>(&dst[0]), static_cast<size_t>(convertedLen));
 }
 
 static bool ContainsToken(const std::string& text, const char* token)
@@ -8686,8 +8728,9 @@ int ProtocolManager::HandleGbConfigControl(const DevControlCmd* cmd)
                 const unsigned int itemCount = (osd.SumNum > MAX_OSD_TEXT_NUM) ? MAX_OSD_TEXT_NUM : osd.SumNum;
                 for (unsigned int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
                     media::VideoOsdTextItem item;
-                    const std::string nextText = NormalizeGbOsdTextTemplate(
-                        SafeStr(osd.Item[itemIndex].Text, sizeof(osd.Item[itemIndex].Text)));
+                    const std::string nextText = ConvertGbOsdTextToUtf8(
+                        NormalizeGbOsdTextTemplate(
+                            SafeStr(osd.Item[itemIndex].Text, sizeof(osd.Item[itemIndex].Text))));
                     if (!nextText.empty()) {
                         item.has_text = true;
                         item.text = nextText;

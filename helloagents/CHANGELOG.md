@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 GB28181 白皮书 `OSDConfig.Item.Text` 中文 OSD 下发乱码风险：平台按 GBK 字节下发的文本现在会在 `ProtocolManager` 映射到 `VideoOsdState` 前转成 UTF-8，video 相关模块继续只接收 UTF-8 字符串；同时对 `OSD_TEXT_LEN` 字节截断导致的半个 GBK 字符做输入长度保护。
 - 修复启动阶段零配置导入仍读取旧 `/userdata/zero_config.ini` 与旧键名 `code/mac` 的问题，现统一读取 `/userdata/conf/Config/GB/zero_config.ini` 的 `string_code/mac_address` 并走 `ProtocolManager::SetGbZeroConfig()` 同步差异。
 - 收敛协议配置默认值维护入口：`ProtocolExternalConfig::version`、`GbRegisterParam::custom_protocol_version/manufacturer/model` 现统一由 `ProtocolExternalConfig.h` 中的默认常量驱动，`LocalConfigProvider` 不再重复写死版本、厂商和型号字面值。
 - 修复 GB28181 主动广播/对讲 `INVITE` 的 `Subject` 设备 ID 顺序反向问题：`StartBroadcastStreamRequest()` 现在把平台 Broadcast `SourceID` 对应的邀请目标作为 `Subject` 首段，本端媒体设备 ID 作为第二段，避免平台因 `Subject` 不符合预期拒绝对讲。
