@@ -15,6 +15,8 @@ public:
 
 	///	视频
 	void onConfigVideo(const CConfigTable &table, int &ret);
+	void onConfigOSDTime(const CConfigTable &table, int &ret);
+	void onConfigOSDText(const CConfigTable &table, int &ret);
 	bool VideoParamInit();
 	bool VideoInit();
 	bool VideoDeInit();
@@ -48,6 +50,9 @@ private:
 	CMutex m_Mutex;
 
 	VideoConf_S m_VideoConfig;
+
+	OSDTimeConf_S m_OSDTimeConf;
+	OSDTextAllConf_S m_OSDTextAllConf;
 
 	static CAVManager* _instance;
 };

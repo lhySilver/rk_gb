@@ -25,6 +25,8 @@ bool CMediaDefaultConfig::start()
 	setIpcVol();
 	setVideo();
 	setAudio();
+	setOSDTime();
+	setOSDText();
 	return true;
 }
 
@@ -76,7 +78,7 @@ void CMediaDefaultConfig::setMotionDetect()
 	{
 		MotionDetect[i][Json::StaticString("Enable")] = true;
 		MotionDetect[i][Json::StaticString("bRegionEnable")] = false;
-		MotionDetect[i][Json::StaticString("Level")] = 2;
+		MotionDetect[i][Json::StaticString("Level")] = 0;
         MotionDetect[i][Json::StaticString("Interval")] = 60;
 		
 		MotionDetect[i][Json::StaticString("TimerCount")] = 0;
@@ -256,5 +258,31 @@ void CMediaDefaultConfig::setAudio()
 	CConfigTable audio;
 	audio[Json::StaticString("enc_type")] = 0;
 	g_configManager.setDefault(getConfigName(CFG_AUDIO), audio);
+}
+
+void CMediaDefaultConfig::setOSDTime()
+{
+	/// OSD time默认配置
+	CConfigTable table;
+	table[Json::StaticString("date_type")] = 0;
+	table[Json::StaticString("time_type")] = 0;
+	table[Json::StaticString("x")] = 0;
+	table[Json::StaticString("y")] = 0;
+	table[Json::StaticString("show")] = 1;
+	g_configManager.setDefault(getConfigName(CFG_OSD_TIME), table);
+}
+
+void CMediaDefaultConfig::setOSDText()
+{
+	/// OSD text默认配置
+	CConfigTable table;
+	for (int i = 0; i < 7; i++)
+	{
+		table[i][Json::StaticString("text")] = "";
+		table[i][Json::StaticString("x")] = 0;
+		table[i][Json::StaticString("y")] = 0;
+		table[i][Json::StaticString("show")] = 0;
+	}
+	g_configManager.setDefault(getConfigName(CFG_OSD_TEXT), table);
 }
 

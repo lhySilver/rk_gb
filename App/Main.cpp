@@ -1,12 +1,26 @@
 #include "Main.h"
+#include "Inifile.h"
 
 #include "Protocol/ProtocolManager.h"
+#include "Protocol/config/LocalConfigProvider.h"
 #include "ProduceNew/Produce.h"
 #include "ProduceNew/NetWifi.h"
 #include "config/ProtocolExternalConfig.h"
+#include "GAT1400ClientService.h"
+#include "Base64Coder.h"
 
 #include "web_server.h"
 
+#if 0
+int g_test_enc_type_change; //for debug
+int g_test_enc_type[2]; //for debug
+
+extern "C" {
+int gb_rkipc_video_det_init(DETECT_INIT *pAttr);
+int rkipc_osd_bmp_create_test();
+int gb_rkipc_osd_time_set(int date_type, int time_type, int x, int y, int show);
+}
+#endif
 
 //--------------------
 unsigned char bStartPrivateMode; 		//是否开启隐私模式
@@ -31,8 +45,6 @@ extern int g_iKeyboardReport;//add on 2025.01.02 按键上报标志位
 #define PROTOCOL_CONFIG_ENDPOINT "local-provider"
 #endif
 
-
-
 static int my_config_handler(const device_state_t *state) {
     // 在这里实现您的设备控制逻辑，例如写入配置文件、调用硬件接口等
     printf("My custom handler: received new config\n");
@@ -47,6 +59,8 @@ static int my_config_handler(const device_state_t *state) {
     printf("wifi_ssid       : %s\n", state->wifi_ssid);
     printf("wifi_password   : %s\n", state->wifi_password);
     printf("gb-----\n");
+    printf("gb_enable    : %d\n", state->gb_enable);
+    printf("gb_config_mode: %d\n", state->gb_config_mode);
     printf("gb_code      : %s\n", state->gb_code);
     printf("gb_ip        : %s\n", state->gb_ip);
     printf("gb_port      : %s\n", state->gb_port);
@@ -73,6 +87,7 @@ static int my_config_handler(const device_state_t *state) {
     printf("night_mode   : %d\n", state->night_mode);
     // ... 其他字段处理
     printf("GA/T 1400-----\n");
+    printf("gat1400_enable    : %d\n", state->gat1400_enable);
     printf("gat1400_ip        : %s\n", state->gat1400_ip);
     printf("gat1400_port      : %s\n", state->gat1400_port);
     printf("gat1400_user      : %s\n", state->gat1400_user);
@@ -176,14 +191,11 @@ static int my_config_handler(const device_state_t *state) {
 	g_configManager.getConfig(getConfigName(CFG_AUDIO), table);
 	TExchangeAL<AudioConf_S>::getConfig(table, AudioConfig);
 	if (AUDIO_CODEC_G711A == state->audio_codec)
-		AudioConfig.enc_type = 0;
-
+		AudioConfig.enc_type = 0;
 	else if (AUDIO_CODEC_G711U == state->audio_codec)
-		AudioConfig.enc_type = 1;
-
+		AudioConfig.enc_type = 1;
 	else if (AUDIO_CODEC_AAC == state->audio_codec)
-		AudioConfig.enc_type = 2;
-
+		AudioConfig.enc_type = 2;
 	TExchangeAL<AudioConf_S>::setConfig(AudioConfig, table);
 	g_configManager.setConfig(getConfigName(CFG_AUDIO), table, 0, IConfigManager::applyOK);
 
@@ -209,8 +221,8 @@ static int my_config_handler(const device_state_t *state) {
 	protocol::GbRegisterParam gbParam = pm.GetGbRegisterConfig();
 	protocol::GatRegisterParam gatParam = pm.GetGatRegisterConfig();
 
-    gbParam.enabled = 1;
-	if (state->gb_enable)
+    gbParam.enabled = state->gb_enable;
+	if (state->gb_config_mode)
 		gbParam.register_mode = "standard";
 	else
 		gbParam.register_mode = "zero_config";
@@ -222,6 +234,7 @@ static int my_config_handler(const device_state_t *state) {
 	pm.SetGbRegisterConfig(gbParam);
 	pm.RestartGbRegisterService();
 
+    gatParam.enabled = state->gat1400_enable;
     gatParam.server_ip = state->gat1400_ip;
     gatParam.server_port = atoi(state->gat1400_port);
     gatParam.device_id = state->gat1400_device_id;
@@ -321,10 +334,13 @@ static void *thread_update_gb_status(void *args)
 {
 	protocol::ProtocolManager& protocolManager = protocol::ProtocolManager::Instance();
 	bool sonline = false;
+	bool last_gat_online = false;
 	while (1)
 	{
 		sleep(2);
 		bool online = protocolManager.GetGbOnlineStatus();
+		bool gat_online = protocolManager.GetGatOnlineStatus();
+		
 		//printf("gb online===========>%d\n",online);
 		if (sonline != online)
 		{
@@ -334,7 +350,15 @@ static void *thread_update_gb_status(void *args)
 				update_gb_status(GB_STATUS_OFFLINE);
 			
 			sonline = online;
+		}
+		if (last_gat_online != gat_online)
+		{
+			if (gat_online)
+				update_gat1400_status(GAT1400_STATUS_ONLINE);
+			else 
+				update_gat1400_status(GAT1400_STATUS_OFFLINE);
 			
+			last_gat_online = gat_online;
 		}
 	}
 
@@ -355,7 +379,7 @@ static void *thread_web_server(void *args)
 		
 		//设置参数 注：目前不支持实时更新本地的配置信息，因此需要在web_server启动之前，把相应的信息配置好
 		verify_status.ip_mode = WifiConfig.bStaticIpEnable;
-		strcpy(verify_status.version, "1.0.2"); 	//设备版本号
+		strcpy(verify_status.version, "1.0.6"); 	//设备版本号
 		inet_ntop(AF_INET, &WifiConfig.HostIP.l, verify_status.ip_addr, sizeof(verify_status.ip_addr));	//IP地址
 		inet_ntop(AF_INET, &WifiConfig.Gateway.l, verify_status.gateway, sizeof(verify_status.gateway));	//网关地址
 		inet_ntop(AF_INET, &WifiConfig.Submask.l, verify_status.netmask, sizeof(verify_status.netmask));	//子网掩码
@@ -404,17 +428,18 @@ static void *thread_web_server(void *args)
 		protocol::GbRegisterParam gbParam = pm.GetGbRegisterConfig();
 		protocol::GatRegisterParam gatParam = pm.GetGatRegisterConfig();
 
+		verify_status.gb_enable = gbParam.enabled;
 		if (gbParam.register_mode == "standard")
-			verify_status.gb_enable = 1;
+			verify_status.gb_config_mode = 1;
 		else
-			verify_status.gb_enable = 0;
-		
+			verify_status.gb_config_mode = 0;
 		snprintf(verify_status.gb_code, sizeof(verify_status.gb_code), gbParam.username.c_str());		//接入编码
 		snprintf(verify_status.gb_ip, sizeof(verify_status.gb_ip), gbParam.server_ip.c_str());			//接入IP地址
 		snprintf(verify_status.gb_port, sizeof(verify_status.gb_port), "%d", gbParam.server_port);					//接入端口号
 		snprintf(verify_status.gb_device_id, sizeof(verify_status.gb_device_id), gbParam.device_id.c_str()); //设备编码
 		snprintf(verify_status.gb_password, sizeof(verify_status.gb_password), gbParam.password.c_str());				 //设备密码
-		
+
+		verify_status.gat1400_enable = gatParam.enabled;
 		snprintf(verify_status.gat1400_ip, sizeof(verify_status.gat1400_ip), gatParam.server_ip.c_str());		//接入IP
 		snprintf(verify_status.gat1400_port, sizeof(verify_status.gat1400_port), "%d", gatParam.server_port);					//接入端口号
 		snprintf(verify_status.gat1400_user, sizeof(verify_status.gat1400_user), gatParam.username.c_str());		//设备用户
@@ -446,6 +471,40 @@ static void *thread_web_server(void *args)
 		sleep(2);
 	}
 	return NULL;
+}
+
+static int init_gb_zero_config()
+{
+	int ret = -1;
+	CInifile ini;
+	char valstr [64] = {'\0'};
+	const char *path = "/userdata/zero_config.ini";
+	protocol::GbZeroConfigParam local_config;
+
+	ret = ini.read_profile_string("zero_config", "code",valstr, sizeof(valstr), path);
+	if (ret)
+	{
+		AppErr("read [zero_config] code=? failed.\n");
+		return -1;
+	}
+	local_config.string_code = valstr;
+	ret = ini.read_profile_string("zero_config", "mac",valstr, sizeof(valstr), path);
+	if (ret)
+	{
+		AppErr("read [zero_config] mac=? failed.\n");
+		return -1;
+	}
+	local_config.mac_address = valstr;
+
+	protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
+    protocol::GbZeroConfigParam curr_config = pm.GetGbZeroConfig();
+
+	if (local_config.string_code != curr_config.string_code || 
+		local_config.mac_address != curr_config.mac_address)
+	{
+		pm.SetGbZeroConfig(local_config);
+	}
+	return 0;
 }
 
 static void *do_audio_test(void *args)
@@ -505,7 +564,7 @@ int gb_alarm_notify()
 {
 	static int last_notify_time = 0;
 
-	if (0 != last_notify_time && GetSystemUptime_s() < (last_notify_time+60))
+	if (0 != last_notify_time && GetSystemUptime_s() < (last_notify_time+30))
 		return -1;
 
 	last_notify_time = GetSystemUptime_s();
@@ -526,6 +585,340 @@ int gb_alarm_notify()
 	snprintf(alarmInfo.AlarmDescription, sizeof(alarmInfo.AlarmDescription) - 1, "Human detection alarm");
 	protocol::ProtocolManager::Instance().NotifyGbAlarm(&alarmInfo);
 	return 0;
+}
+
+static void CopyToArray(char* dst, size_t dstSize, const std::string& value)
+{
+    if (dst == NULL || dstSize == 0) {
+        return;
+    }
+    memset(dst, 0, dstSize);
+    if (!value.empty()) {
+        strncpy(dst, value.c_str(), dstSize - 1);
+    }
+}
+
+static std::string FormatCurrentTime()
+{
+    char buffer[32] = {0};
+    time_t now = time(NULL);
+    struct tm tmNow;
+    localtime_r(&now, &tmNow);
+    strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &tmNow);
+    return std::string(buffer);
+}
+
+static std::string FormatCurrentTimeWithMilliseconds()
+{
+    char buffer[32] = {0};
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    struct tm tmNow;
+    localtime_r(&tv.tv_sec, &tmNow);
+    const size_t prefixLen = strftime(buffer, sizeof(buffer), "%Y%m%d%H%M%S", &tmNow);
+    snprintf(buffer + prefixLen, sizeof(buffer) - prefixLen, "%03ld", tv.tv_usec / 1000);
+    return std::string(buffer);
+}
+
+static int gat1400_send_resource(DET_PIC_S *snap, DET_THUM_S *thum, int thum_num)
+{
+	static int last_notify_time = 0;
+
+	if (0 != last_notify_time && GetSystemUptime_s() < (last_notify_time+30))
+		return -1;
+
+	//只推人脸、机动车、非机动车
+	bool snap_valid = false;
+	for (int i = 0; i < thum_num; i++)
+	{
+		if (DETECT_OBJECT_OBJECT_TYPE_VEHICLE == thum[i].type || 
+			DETECT_OBJECT_OBJECT_TYPE_NON_VEHICLE == thum[i].type || 
+			DETECT_OBJECT_OBJECT_TYPE_FACE == thum[i].type)
+		{
+			snap_valid = true;
+			break;
+		}
+	}
+	if (false == snap_valid)
+		return -1;
+	
+	protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
+	protocol::GatRegisterParam gatParam = pm.GetGatRegisterConfig();
+    std::string deviceId = gatParam.device_id;
+	
+    const std::string eventTime = FormatCurrentTime();
+    const std::string sequenceTag = FormatCurrentTimeWithMilliseconds();
+
+    const std::string faceSceneImageId = std::string("IMGSCENEFACEDEMO_") + sequenceTag;
+    const std::string faceCropImageId = std::string("IMGCROPFACEDEMO_") + sequenceTag;
+    const std::string faceId = std::string("FACEDEMO_") + sequenceTag;
+
+    const std::string motorSceneImageId = std::string("IMGSCENEMOTORDEMO_") + sequenceTag;
+    const std::string motorCloseImageId = std::string("IMGVIEWMOTORDEMO_") + sequenceTag;
+    const std::string motorId = std::string("MOTORDEMO_") + sequenceTag;
+	
+    const std::string nonMotorSceneImageId = std::string("IMGSCENENONMOTORDEMO_") + sequenceTag;
+    const std::string nonMotorCloseImageId = std::string("IMGVIEWNONMOTORDEMO_") + sequenceTag;
+    const std::string nonMotorId = std::string("NONMOTORDEMO_") + sequenceTag;
+
+    std::string sceneImageData;
+    if (!CBase64Coder::Encode((unsigned char *)snap->data, snap->size, sceneImageData)) {
+        AppErr("CBase64Coder::Encode failed.\n");
+        return -1;
+    }
+	
+    std::string cropImageData;
+
+    GAT_1400_SubImage sceneImage;
+    GAT_1400_SubImage CropImage;
+
+    GAT_1400_Face face;
+    GAT_1400_Motor motorVehicle;
+    GAT_1400_NonMotor nonMotorVehicle;
+
+//	CopyToArray(sceneImage.ImageID, sizeof(sceneImage.ImageID), motorSceneImageId);
+//	sceneImage.EventSort = PASS_VEHICLE_EVENT;
+	CopyToArray(sceneImage.DeviceID, sizeof(sceneImage.DeviceID), deviceId);
+//	sceneImage.Type = IMAGE_CAR_ORIGINAL;
+	CopyToArray(sceneImage.FileFormat, sizeof(sceneImage.FileFormat), "Jpeg");
+	CopyToArray(sceneImage.ShotTime, sizeof(sceneImage.ShotTime), eventTime);
+	sceneImage.Width = snap->width;
+	sceneImage.Height = snap->height;
+	sceneImage.Data = sceneImageData;
+
+	for (int i = 0; i < thum_num; i++)
+	{
+		if (DETECT_OBJECT_OBJECT_TYPE_PERSON == thum[i].type)
+		{
+		}
+		else if (DETECT_OBJECT_OBJECT_TYPE_VEHICLE == thum[i].type)
+		{
+			if (motorVehicle.SubImageList.size() == 0)
+			{
+				CopyToArray(sceneImage.ImageID, sizeof(sceneImage.ImageID), motorSceneImageId);
+				sceneImage.EventSort = PASS_VEHICLE_EVENT;
+				sceneImage.Type = IMAGE_CAR_ORIGINAL;
+				
+				CopyToArray(motorVehicle.MotorVehicleID, sizeof(motorVehicle.MotorVehicleID), motorId);
+				motorVehicle.InfoKind = INFO_TYPE_AUTOMATIC;
+				CopyToArray(motorVehicle.SourceID, sizeof(motorVehicle.SourceID), motorSceneImageId);
+				CopyToArray(motorVehicle.DeviceID, sizeof(motorVehicle.DeviceID), deviceId);
+				CopyToArray(motorVehicle.StorageUrl1, sizeof(motorVehicle.StorageUrl1), "Not Support");
+				motorVehicle.LeftTopX = thum[i].rect.s32Xpos;
+				motorVehicle.LeftTopY = thum[i].rect.s32Ypos;
+				motorVehicle.RightBtmX = thum[i].rect.s32Xpos + thum[i].rect.u32Width;
+				motorVehicle.RightBtmY = thum[i].rect.s32Ypos + thum[i].rect.u32Height;
+				CopyToArray(motorVehicle.MarkTime, sizeof(motorVehicle.MarkTime), eventTime);
+				CopyToArray(motorVehicle.AppearTime, sizeof(motorVehicle.AppearTime), eventTime);
+				CopyToArray(motorVehicle.DisappearTime, sizeof(motorVehicle.DisappearTime), eventTime);
+				motorVehicle.LaneNo = 1;
+				motorVehicle.HasPlate = false;
+				motorVehicle.VehicleColor = static_cast<ColorType>(99);
+				motorVehicle.Speed = 0.0;
+				motorVehicle.Direction = 3;
+				motorVehicle.VehicleLength = 0;
+				CopyToArray(motorVehicle.PassTime, sizeof(motorVehicle.PassTime), eventTime);
+				motorVehicle.SubImageList.push_back(sceneImage);
+			}
+
+			if (!CBase64Coder::Encode((unsigned char *)thum[i].pic.data, thum[i].pic.size, cropImageData)) {
+				AppErr("CBase64Coder::Encode failed.\n");
+			}else {
+				CopyToArray(CropImage.ImageID, sizeof(CropImage.ImageID), motorCloseImageId);
+				CropImage.EventSort = PASS_VEHICLE_EVENT;
+				CopyToArray(CropImage.DeviceID, sizeof(CropImage.DeviceID), deviceId);
+				CropImage.Type = IMAGE_VEHICLE_VIEW;
+				CopyToArray(CropImage.FileFormat, sizeof(CropImage.FileFormat), "Jpeg");
+				CopyToArray(CropImage.ShotTime, sizeof(CropImage.ShotTime), eventTime);
+				CropImage.Width = thum[i].pic.width;
+				CropImage.Height = thum[i].pic.height;
+				CropImage.Data = cropImageData;
+				motorVehicle.SubImageList.push_back(CropImage);
+			}
+		}
+		else if (DETECT_OBJECT_OBJECT_TYPE_NON_VEHICLE == thum[i].type)
+		{
+			if (nonMotorVehicle.SubImageList.size() == 0)
+			{
+				CopyToArray(sceneImage.ImageID, sizeof(sceneImage.ImageID), nonMotorSceneImageId);
+				sceneImage.EventSort = PASS_VEHICLE_EVENT;
+				sceneImage.Type = IMAGE_CAR_ORIGINAL;
+				
+				CopyToArray(nonMotorVehicle.NonMotorVehicleID, sizeof(nonMotorVehicle.NonMotorVehicleID), nonMotorId);
+				nonMotorVehicle.InfoKind = INFO_TYPE_AUTOMATIC;
+				CopyToArray(nonMotorVehicle.SourceID, sizeof(nonMotorVehicle.SourceID), nonMotorSceneImageId);
+				CopyToArray(nonMotorVehicle.DeviceID, sizeof(nonMotorVehicle.DeviceID), deviceId);
+				nonMotorVehicle.LeftTopX = thum[i].rect.s32Xpos;
+				nonMotorVehicle.LeftTopY = thum[i].rect.s32Ypos;
+				nonMotorVehicle.RightBtmX = thum[i].rect.s32Xpos + thum[i].rect.u32Width;
+				nonMotorVehicle.RightBtmY = thum[i].rect.s32Ypos + thum[i].rect.u32Height;
+				CopyToArray(nonMotorVehicle.MarkTime, sizeof(nonMotorVehicle.MarkTime), eventTime);
+				CopyToArray(nonMotorVehicle.AppearTime, sizeof(nonMotorVehicle.AppearTime), eventTime);
+				CopyToArray(nonMotorVehicle.DisappearTime, sizeof(nonMotorVehicle.DisappearTime), eventTime);
+				nonMotorVehicle.HasPlate = false;
+				nonMotorVehicle.VehicleColor = static_cast<ColorType>(99);
+				nonMotorVehicle.Speed = 0.0;
+				nonMotorVehicle.VehicleLength = 0;
+				nonMotorVehicle.SubImageList.push_back(sceneImage);
+			}
+
+			if (!CBase64Coder::Encode((unsigned char *)thum[i].pic.data, thum[i].pic.size, cropImageData)) {
+				AppErr("CBase64Coder::Encode failed.\n");
+			}else {
+				CopyToArray(CropImage.ImageID, sizeof(CropImage.ImageID), nonMotorCloseImageId);
+				CropImage.EventSort = PASS_VEHICLE_EVENT;
+				CopyToArray(CropImage.DeviceID, sizeof(CropImage.DeviceID), deviceId);
+				CropImage.Type = IMAGE_VEHICLE_VIEW;
+				CopyToArray(CropImage.FileFormat, sizeof(CropImage.FileFormat), "Jpeg");
+				CopyToArray(CropImage.ShotTime, sizeof(CropImage.ShotTime), eventTime);
+				CropImage.Width = thum[i].pic.width;
+				CropImage.Height = thum[i].pic.height;
+				CropImage.Data = cropImageData;
+				nonMotorVehicle.SubImageList.push_back(CropImage);
+			}
+		}
+		else if (DETECT_OBJECT_OBJECT_TYPE_FACE == thum[i].type)
+		{
+			if (face.SubImageList.size() == 0)
+			{				
+				CopyToArray(sceneImage.ImageID, sizeof(sceneImage.ImageID), faceSceneImageId);
+				sceneImage.EventSort = FACE_DETECT_EVENT;
+				sceneImage.Type = IMAGE_SENCE;
+				
+				CopyToArray(face.FaceID, sizeof(face.FaceID), faceId);
+				face.InfoKind = INFO_TYPE_AUTOMATIC;
+				CopyToArray(face.SourceID, sizeof(face.SourceID), faceSceneImageId);
+				CopyToArray(face.DeviceID, sizeof(face.DeviceID), deviceId);
+				face.LeftTopX = thum[i].rect.s32Xpos;
+				face.LeftTopY = thum[i].rect.s32Ypos;
+				face.RightBtmX = thum[i].rect.s32Xpos + thum[i].rect.u32Width;
+				face.RightBtmY = thum[i].rect.s32Ypos + thum[i].rect.u32Height;
+				CopyToArray(face.LocationMarkTime, sizeof(face.LocationMarkTime), eventTime);
+				CopyToArray(face.FaceAppearTime, sizeof(face.FaceAppearTime), eventTime);
+				CopyToArray(face.FaceDisAppearTime, sizeof(face.FaceDisAppearTime), eventTime);
+				face.IsDriver = 2;
+				face.IsForeigner = 2;
+				face.IsSuspectedTerrorist = 2;
+				face.IsCriminalInvolved = 2;
+				face.IsDetainees = 2;
+				face.IsVictim = 2;
+				face.IsSuspiciousPerson = 2;
+				face.SubImageList.push_back(sceneImage);
+			}
+
+			if (!CBase64Coder::Encode((unsigned char *)thum[i].pic.data, thum[i].pic.size, cropImageData)) {
+				AppErr("CBase64Coder::Encode failed.\n");
+			}else {
+				CopyToArray(CropImage.ImageID, sizeof(CropImage.ImageID), faceCropImageId);
+				CropImage.EventSort = FACE_DETECT_EVENT;
+				CopyToArray(CropImage.DeviceID, sizeof(CropImage.DeviceID), deviceId);
+				CropImage.Type = IMAGE_FACE;
+				CopyToArray(CropImage.FileFormat, sizeof(CropImage.FileFormat), "Jpeg");
+				CopyToArray(CropImage.ShotTime, sizeof(CropImage.ShotTime), eventTime);
+				CropImage.Width = thum[i].pic.width;
+				CropImage.Height = thum[i].pic.height;
+				CropImage.Data = cropImageData;
+				face.SubImageList.push_back(CropImage);
+			}
+		}
+	}
+
+	if (motorVehicle.SubImageList.size() > 1)
+	{
+		std::list<GAT_1400_Motor> motorList;
+		motorList.push_back(motorVehicle);
+		
+//		protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
+//		protocol::GAT1400ClientService *gatClient = pm.GetGatClientService();
+		AppErr("start post.\n");
+//		int ret = gatClient->PostMotorVehicles(motorList);
+		int ret = protocol::ProtocolManager::Instance().NotifyGatMotorVehicles(motorList);
+		if (ret)
+			AppErr("gatClient->PostMotorVehicles failed. ret: %d\n", ret);
+		else
+			AppErr("gatClient->PostMotorVehicles succ.\n");
+		
+		last_notify_time = GetSystemUptime_s();
+	}
+
+	if (nonMotorVehicle.SubImageList.size() > 1)
+	{
+		std::list<GAT_1400_NonMotor> nonMotorList;
+		nonMotorList.push_back(nonMotorVehicle);
+		
+//		protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
+//		protocol::GAT1400ClientService *gatClient = pm.GetGatClientService();
+		AppErr("start post.\n");
+//		int ret = gatClient->PostNonMotorVehicles(nonMotorList);
+		int ret = protocol::ProtocolManager::Instance().NotifyGatNonMotorVehicles(nonMotorList);
+		if (ret)
+			AppErr("gatClient->PostNonMotorVehicles failed. ret: %d\n", ret);
+		else
+			AppErr("gatClient->PostNonMotorVehicles succ.\n");
+		
+		last_notify_time = GetSystemUptime_s();
+	}
+
+	if (face.SubImageList.size() > 1)
+	{
+		std::list<GAT_1400_Face> faceList;
+		faceList.push_back(face);
+		
+//		protocol::ProtocolManager& pm = protocol::ProtocolManager::Instance();
+//		protocol::GAT1400ClientService *gatClient = pm.GetGatClientService();
+		AppErr("start post.\n");
+//		int ret = gatClient->PostFaces(faceList);
+		int ret = protocol::ProtocolManager::Instance().NotifyGatFaces(faceList);
+		if (ret)
+			AppErr("gatClient->PostFaces failed. ret: %d\n", ret);
+		else
+			AppErr("gatClient->PostFaces succ.\n");
+		
+		last_notify_time = GetSystemUptime_s();
+	}
+
+    return 0;
+}
+
+void gat1400_alarm_notify(DET_PIC_S *snap, DET_THUM_S *thum, int thum_num)
+{
+	#if 0
+	static int loopCount = 0;
+	
+	char path[128];
+	snprintf(path, sizeof(path), "/mnt/sdcard/alarm-%d.jpg", loopCount);
+	FILE *fp = fopen(path, "w");
+	if (fp)
+	{
+		fwrite(snap.data, 1, snap.size, fp);
+		fclose(fp);
+	}
+
+	for (int i = 0; i < thum_num; i++)
+	{
+		const char *obj_type = "unknown";
+		if (DETECT_OBJECT_OBJECT_TYPE_PERSON == thum[i].type)
+			obj_type = "person";
+		else if (DETECT_OBJECT_OBJECT_TYPE_VEHICLE == thum[i].type)
+			obj_type = "vehicle";
+		else if (DETECT_OBJECT_OBJECT_TYPE_NON_VEHICLE == thum[i].type)
+			obj_type = "non_vehicle";
+		else if (DETECT_OBJECT_OBJECT_TYPE_FACE == thum[i].type)
+			obj_type = "face";
+		snprintf(path, sizeof(path), "/mnt/sdcard/alarm-%d-%s.jpg", loopCount, obj_type);
+		fp = fopen(path, "w");
+		if (fp)
+		{
+			fwrite(thum[i].pic.data, 1, thum[i].pic.size, fp);
+			fclose(fp);
+		}
+	}
+	loopCount++;
+	#else
+
+	gat1400_send_resource(snap, thum, thum_num);
+
+	#endif
 }
 
 static void *thread_gb_monitor_network_status(void *args)
@@ -702,28 +1095,29 @@ static void *thread_monitor_dev_status(void *args)
 	return NULL;
 }
 
+#if 0
 static void *thread_test_rtsp(void *args)
 {
-	// StartRtspPthread();
-	// while (1)
-	// {
-	// 	if (g_test_enc_type_change) 
-	// 	{
-	// 		StopRtspPthread();
-	// 		StartRtspPthread();
-	// 		g_test_enc_type_change = 0;
-	// 	}
-	// 	sleep(2);
-	// }
+	StartRtspPthread();
+	while (1)
+	{
+		if (g_test_enc_type_change) 
+		{
+			StopRtspPthread();
+			StartRtspPthread();
+			g_test_enc_type_change = 0;
+		}
+		sleep(2);
+	}
 	return NULL;
 }
+#endif
 
 //------------------CSofia---------------
 PATTERN_SINGLETON_IMPLEMENT(CSofia)
 
 CSofia::CSofia()
-{
-
+{
 }
 
 CSofia::~CSofia()
@@ -781,8 +1175,6 @@ bool CSofia::preStart()
 	return true;
 }
 
-//int g_test_enc_type_change; //for debug
-//int g_test_enc_type[2]; //for debug
 bool CSofia::start()
 {
 	if (PRODUCT_AGING_TEST == g_ProductCofHandle.GetProductMode()) // 老化测试
@@ -965,6 +1357,8 @@ bool CSofia::start()
 
         DeviceMode_g = 0; // 正常模式
 
+		init_gb_zero_config();
+
 		// 定时检查复位按钮
 		m_timerCheckButton.Start(CTimer::Proc(&CSofia::OnCheckButton, this), 0, 50);
 
@@ -1051,13 +1445,15 @@ bool CSofia::start()
 				break;
 			}
 		}
+//		gb_rkipc_video_det_init(NULL);
 		g_AVManager.RealTimeStreamStart(DMC_MEDIA_TYPE_H264 | DMC_MEDIA_TYPE_H265 | DMC_MEDIA_TYPE_AUDIO, onCapture_test);
 		CreateDetachedThread((char*)"test_rtsp",thread_test_rtsp, (void *)NULL, true);
 		int ret;
 		char buf[32];
 		int mirror;
 		int flip;
-		while (1)
+		int osd_date_type, osd_time_type, osd_x, osd_y, osd_show;
+		while (0)
 		{
 			if(access("/tmp/flip", F_OK) == 0)
 			{
@@ -1074,10 +1470,28 @@ bool CSofia::start()
 						}
 					}
 					fclose(fp);
-				}
-				
+				}				
 				remove("/tmp/flip");
-			}			
+			}	
+
+			if(access("/tmp/osd", F_OK) == 0)
+			{
+				FILE *fp = fopen("/tmp/osd", "r");
+				if (fp)
+				{
+					ret = fread(buf, 1 ,31, fp);
+					if (ret > 0)
+					{
+						buf[ret] = '\0';
+						if (sscanf(buf, "%d,%d,%d,%d,%d", &osd_date_type, &osd_time_type, &osd_x, &osd_y, &osd_show) > 0)
+						{
+							gb_rkipc_osd_time_set(osd_date_type, osd_time_type, osd_x, osd_y, osd_show);
+						}
+					}
+					fclose(fp);
+				}				
+				remove("/tmp/osd");
+			}
 			usleep(200*1000);
 		}
 		#endif

@@ -4,6 +4,7 @@
 
 extern unsigned char bStartPrivateMode; 		//是否开启隐私模式
 extern int gb_alarm_notify();
+extern void gat1400_alarm_notify(DET_PIC_S *snap, DET_THUM_S *thum, int thum_num);
 
 PATTERN_SINGLETON_IMPLEMENT(CAlarm);
 
@@ -536,6 +537,7 @@ Bool CAlarmMotion::Start()
 	g_configManager.attach(getConfigName(CFG_CAMERA_PARAM), IConfigManager::Proc(&CAlarmMotion::onConfigCamera, this));
 
 	CaptureDetectInit(NULL);
+	#if 0
 	if( m_CCfgMotion.vMotionDetectAll[0].bEnable )//移动侦测打开
 	{
 		if( m_CCfgMotion.vMotionDetectAll[0].bPersonFilterEnable || 
@@ -629,7 +631,56 @@ Bool CAlarmMotion::Start()
 	{
 		CaptureMotionTrackerStart(CAlarmMotion::TrackerCb);
 	}
+	#else
 
+	CaptureDetectObjectSetSnapCb(gat1400_alarm_notify);
+	
+	DETECT_INIT detInit;
+	detInit.Rotate = (RotateAttr_t)m_configAll.vCameraParamAll[0].rotateAttr;
+	detInit.Level = m_CCfgMotion.vMotionDetectAll[0].iLevel;
+	detInit.RegionEnable = m_CCfgMotion.vMotionDetectAll[0].bRegionEnable;
+	detInit.Region.Num = 0;
+	for (int i = 0; i < 4; i++)//移动侦测区域数量
+	{
+		detInit.Region.RegionAttr[i] = m_CCfgMotion.vMotionDetectAll[0].mRegion[i];
+		if (detInit.Region.RegionAttr[i] != 0)
+		{
+			detInit.Region.Num++;
+		}
+	}
+	CaptureDetectSet(&detInit);
+	//人型过滤
+	{
+		DETECT_ATTR attr;
+		attr.Callback = CAlarmMotion::PersonCb;
+		attr.Level = m_CCfgMotion.vMotionDetectAll[0].iLevel;
+		attr.ObjectType = DETECT_OBJECT_OBJECT_TYPE_PERSON;
+		CaptureDetectObjectStart(&attr);
+	}
+	
+	//车形检测
+	{
+		DETECT_ATTR attr;
+		attr.Callback = CAlarmMotion::VehicleCb;
+		attr.Level = m_CCfgMotion.vMotionDetectAll[0].iLevel;
+		attr.ObjectType = DETECT_OBJECT_OBJECT_TYPE_VEHICLE;
+		CaptureDetectObjectStart(&attr);
+	}
+	
+	//非机动车形检测
+	{
+		DETECT_ATTR attr;
+		attr.Callback = CAlarmMotion::NonvehicleCb;
+		attr.Level = m_CCfgMotion.vMotionDetectAll[0].iLevel;
+		attr.ObjectType = DETECT_OBJECT_OBJECT_TYPE_NON_VEHICLE;
+		CaptureDetectObjectStart(&attr);
+	}
+	if( m_CCfgMotion.vMotionDetectAll[0].bEnable )//移动侦测打开
+	{
+		CaptureDetectStart();
+	}
+
+	#endif
 	CreateThread();
 	
 	return TRUE;
@@ -936,6 +987,7 @@ void CAlarmMotion::onConfigMotion(const CConfigTable &table, int &ret)
 		MotionDetectConfig& cfgOld = m_CCfgMotion.vMotionDetectAll[0];
 		MotionDetectConfig& cfgNew = pCfgMotion->vMotionDetectAll[0];
 
+		#if 0
 		if( (cfgOld.bEnable != cfgNew.bEnable) ||
 			(cfgOld.iLevel != cfgNew.iLevel) || 
 			(cfgOld.bRegionEnable != cfgNew.bRegionEnable) || 
@@ -1033,6 +1085,29 @@ void CAlarmMotion::onConfigMotion(const CConfigTable &table, int &ret)
 				CaptureDetectStop();
 			}
 		}
+		#else
+		if (cfgOld.iLevel != cfgNew.iLevel)
+		{
+			DETECT_INIT detInit;
+			detInit.Rotate = (RotateAttr_t)m_configAll.vCameraParamAll[0].rotateAttr;
+			detInit.Level = cfgNew.iLevel;
+			detInit.RegionEnable = cfgNew.bRegionEnable;
+			detInit.Region.Num = 0;
+			for (int i = 0; i < 4; i++)
+			{
+				detInit.Region.RegionAttr[i] = cfgNew.mRegion[i];
+				if (detInit.Region.RegionAttr[i] != 0)
+				{
+					detInit.Region.Num++;
+				}
+			}
+			CaptureDetectSet(&detInit);
+		}
+		if (cfgNew.bEnable)
+			CaptureDetectStart();
+		else
+			CaptureDetectStop();
+		#endif
 	}
 	m_CCfgMotion=*pCfgMotion;
 }

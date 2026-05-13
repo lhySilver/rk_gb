@@ -1,5 +1,14 @@
 #include "Common.h"
 
+
+extern "C" {
+int gb_rkipc_osd_time_set(int date_type, int time_type, int x, int y, int show);
+int gb_rkipc_osd_text_set(int index, const char *text, int x, int y, int show);
+}
+
+std::string strToHexAscii(const string &input);
+std::string hexToStr(const string &hexStr);
+
 CAVManager* CAVManager::_instance;
 
 // CAVManager::CAVManager() : CThread("AVManager", TP_CAPTURE)
@@ -38,11 +47,43 @@ void CAVManager::onConfigVideo(const CConfigTable &table, int &ret)
 			CaptureChangeEncParam(i, VideoConfig.chan[i].enc_type, VideoConfig.chan[i].bit_rate, VideoConfig.chan[i].frmae_rate, VideoConfig.chan[i].gop);
 		}
 	}
-	m_VideoConfig = VideoConfig;
 //	g_test_enc_type[0] = m_VideoConfig.chan[0].enc_type;
 //	g_test_enc_type[1] = m_VideoConfig.chan[1].enc_type;
-//	g_test_enc_type_change = 1;
+//	if (VideoConfig.chan[0].enc_type != m_VideoConfig.chan[0].enc_type || 
+//		VideoConfig.chan[1].enc_type != m_VideoConfig.chan[1].enc_type)
+//		g_test_enc_type_change = 1;
+	m_VideoConfig = VideoConfig;
 }
+
+void CAVManager::onConfigOSDTime(const CConfigTable &table, int &ret)
+{
+	OSDTimeConf_S OSDTimeConfig;
+    TExchangeAL<OSDTimeConf_S>::getConfig(table, OSDTimeConfig);
+
+	gb_rkipc_osd_time_set(OSDTimeConfig.date_type, OSDTimeConfig.time_type, OSDTimeConfig.x, OSDTimeConfig.y, OSDTimeConfig.show);
+	m_OSDTimeConf = OSDTimeConfig;
+}
+
+void CAVManager::onConfigOSDText(const CConfigTable &table, int &ret)
+{
+	OSDTextAllConf_S OSDTextAllConfig;
+    TExchangeAL<OSDTextAllConf_S>::getConfig(table, OSDTextAllConfig);
+
+	for (int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		if (OSDTextAllConfig.osd_text[i].text != m_OSDTextAllConf.osd_text[i].text || 
+			OSDTextAllConfig.osd_text[i].x != m_OSDTextAllConf.osd_text[i].x || 
+			OSDTextAllConfig.osd_text[i].y != m_OSDTextAllConf.osd_text[i].y || 
+			OSDTextAllConfig.osd_text[i].show != m_OSDTextAllConf.osd_text[i].show)
+		{
+			printf("onConfigOSDText -> [%s]\n", OSDTextAllConfig.osd_text[i].text.c_str());
+			std::string src_str = hexToStr(OSDTextAllConfig.osd_text[i].text);
+			gb_rkipc_osd_text_set(i, src_str.c_str(), OSDTextAllConfig.osd_text[i].x, OSDTextAllConfig.osd_text[i].y, OSDTextAllConfig.osd_text[i].show);
+		}
+	}
+	m_OSDTextAllConf = OSDTextAllConfig;
+}
+
 bool CAVManager::VideoParamInit()
 {
 	CConfigTable table;
@@ -54,6 +95,25 @@ bool CAVManager::VideoParamInit()
 	{
 //		g_test_enc_type[i] = m_VideoConfig.chan[i].enc_type;
 		CaptureInitEncParam(i, m_VideoConfig.chan[i].enc_type, m_VideoConfig.chan[i].bit_rate, m_VideoConfig.chan[i].frmae_rate, m_VideoConfig.chan[i].gop);
+	}
+
+	table.clear();
+	g_configManager.getConfig(getConfigName(CFG_OSD_TIME), table);
+    TExchangeAL<OSDTimeConf_S>::getConfig(table, m_OSDTimeConf);
+	g_configManager.attach(getConfigName(CFG_OSD_TIME), IConfigManager::Proc(&CAVManager::onConfigOSDTime, this));
+	
+	gb_rkipc_osd_time_set(m_OSDTimeConf.date_type, m_OSDTimeConf.time_type, m_OSDTimeConf.x, m_OSDTimeConf.y, m_OSDTimeConf.show);
+	
+	table.clear();
+	g_configManager.getConfig(getConfigName(CFG_OSD_TEXT), table);
+    TExchangeAL<OSDTextAllConf_S>::getConfig(table, m_OSDTextAllConf);
+	g_configManager.attach(getConfigName(CFG_OSD_TEXT), IConfigManager::Proc(&CAVManager::onConfigOSDText, this));
+	
+	for (int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		printf("VideoParamInit -> [%s]\n", m_OSDTextAllConf.osd_text[i].text.c_str());
+		std::string src_str = hexToStr(m_OSDTextAllConf.osd_text[i].text);
+		gb_rkipc_osd_text_set(i, src_str.c_str(), m_OSDTextAllConf.osd_text[i].x, m_OSDTextAllConf.osd_text[i].y, m_OSDTextAllConf.osd_text[i].show);
 	}
 	return true;
 }

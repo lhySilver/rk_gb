@@ -135,3 +135,21 @@ int rkipc_video_motion_tracker_stop();
 //250121 add
 //osd
 int rkipc_osd_show(int bShow);
+
+
+// ----------------------------------
+int gb_rkipc_video_det_obj_start(int level,int type,CaptureDetectCallback cb);
+int gb_rkipc_video_det_obj_stop(int type);
+int gb_rkipc_video_det_set_snap_cb(CaptureDetectSnapCallback cb);
+int gb_rkipc_video_det_init(DETECT_INIT *pAttr);
+int gb_rkipc_video_det_deinit();
+int gb_rkipc_video_det_set(DETECT_INIT *pAttr);
+int gb_rkipc_video_det_start();
+int gb_rkipc_video_det_stop();
+
+int gb_rkipc_osd_init();
+int gb_rkipc_osd_time_set(int date_type, int time_type, int x, int y, int show);
+int gb_rkipc_osd_text_set(int index, const char *text, int x, int y, int show);
+int gb_rkipc_osd_attach(int des_chan);
+int gb_rkipc_osd_detach(int des_chan);
+

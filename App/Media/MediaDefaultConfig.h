@@ -24,6 +24,8 @@ public:
 	void setIpcVol();
 	void setVideo();
 	void setAudio();
+	void setOSDTime();
+	void setOSDText();
 private:
 	void SetEventHandler(CConfigTable &table);
 };

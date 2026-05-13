@@ -42,6 +42,9 @@ int rkipc_rockiva_write_rgb888_frame_by_fd(uint16_t width, uint16_t height, uint
                                            int32_t fd);
 int rkipc_rockiva_write_nv12_frame_by_fd(uint16_t width, uint16_t height, uint32_t frame_id,
                                          int32_t fd);
+//out_objNum , out_triggerObjects 不需要释放
+int rkipc_rockiva_write_nv12_frame_by_fd_for_gb(uint16_t width, uint16_t height, uint32_t frame_id,
+                                         int32_t fd, uint32_t **out_objNum, RockIvaBaObjectInfo **out_triggerObjects);
 int rkipc_rockiva_write_nv12_frame_by_phy_addr(uint16_t width, uint16_t height, uint32_t frame_id,
                                                uint8_t *phy_addr);
 int rkipc_rknn_object_get(RockIvaBaResult *ba_result);

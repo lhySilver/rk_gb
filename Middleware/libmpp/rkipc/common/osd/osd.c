@@ -129,6 +129,53 @@ int iconv_utf8_to_wchar(const char *in, wchar_t *out) {
 	return 0;
 }
 
+int iconv_gbk_to_wchar(const char *in, wchar_t *out) {
+	char entry[128] = {'\0'};
+	// LOG_DEBUG("in is %s\n", in);
+	// LOG_DEBUG("strlen(in) is %ld\n", strlen(in));
+#if 0
+	int ret = mbstowcs(out, in, strlen(in));
+	LOG_DEBUG("mbstowcs ret is %d\n", ret);
+	if (ret == -1)
+		return ret;
+	out[ret] = '\0';
+	return ret;
+#endif
+	int ret;
+	size_t src_len = strlen(in);
+	// the bytes that Chinese and English in UTF-8 are different,
+	// and cannot be based on src_len calculates out_len
+	size_t out_len = MAX_WCH_BYTE;
+	// To have this temporary variable,
+	// otherwise iconv will directly overwrite the original pointer
+	char *tmp_out_buffer = (char *)out;
+	iconv_t cd = iconv_open("WCHAR_T", "GB2312");
+	if (cd == (iconv_t)-1) {
+		perror("iconv_open error");
+		return -1;
+	}
+	memset(entry, 0, 128);
+	memcpy(entry, in, src_len); // iconv maybe change the char *
+	memset(entry + src_len, 0, 1);
+	char *tmp_in_buffer = (char *)entry;
+	ret = iconv(cd, &tmp_in_buffer, (size_t *)&src_len, &tmp_out_buffer,
+				(size_t *)&out_len);
+	if (ret == -1)
+		perror("iconv error");
+	iconv_close(cd);
+	out[abs(MAX_WCH_BYTE - out_len) / 4] = '\0';
+	// LOG_DEBUG("out_len is %d\n", out_len);
+	// LOG_DEBUG("wcslen(out) is %ld\n", wcslen(out));
+	// for (int i = 0; i < strlen(display_text); i++) {
+	// 	LOG_INFO("111 display_text [%02x]\n", display_text[i]);
+	// }
+	// for (int i = 0; i < wcslen(osd_data.text.wch); i++) {
+	// 	LOG_INFO("222 osd_data.text.wch [%04x]\n", osd_data.text.wch[i]);
+	// }
+
+	return 0;
+}
+
 int generate_date_time(const char *fmt, wchar_t *result) {
 	char year[8] = {0}, month[4] = {0}, day[4] = {0};
 	char week[16] = {0}, hms[12] = {0};
@@ -210,6 +257,53 @@ int generate_date_time(const char *fmt, wchar_t *result) {
 
 	snprintf(time_string, MAX_WCH_BYTE, "%s%s %s", ymd_string, week_string, hms);
 	// LOG_INFO("time_string is %s\n", time_string);
+	printf("time_string: %s\n", time_string);
+	printf("time_string len: %d\n", strlen(time_string));
+	printf("[");
+	for (int i = 0; time_string[i] != '\0'; i++)
+		printf("%02X ", time_string[i]);
+	printf("]\n");
+	iconv_utf8_to_wchar(time_string, result);
+
+	return 0;
+}
+
+int generate_date_time_2(const char *fmt, wchar_t *result) {
+	char year[8] = {0}, month[4] = {0}, day[4] = {0};
+	char week[16] = {0}, hms[12] = {0};
+	char ymd_string[32] = {0};
+	char time_string[MAX_WCH_BYTE] = {0};
+	int wchar_cnt = 0;
+
+	time_t curtime;
+	curtime = time(0);
+	strftime(year, sizeof(year), "%Y", localtime(&curtime));
+	strftime(month, sizeof(month), "%m", localtime(&curtime));
+	strftime(day, sizeof(day), "%d", localtime(&curtime));
+
+	if (strstr(fmt, OSD_FMT_TIME0)) {
+		strftime(hms, sizeof(hms), "%H:%M:%S", localtime(&curtime));
+	} else if (strstr(fmt, OSD_FMT_TIME1)) {
+		strftime(hms, sizeof(hms), "%I:%M:%S %p", localtime(&curtime));
+	}
+
+	wchar_cnt = sizeof(ymd_string) / sizeof(wchar_t);
+	if (strstr(fmt, OSD_FMT_CHR)) {
+		sprintf(ymd_string, "%s-%s-%s", year, month, day);
+	} else {
+		sprintf(ymd_string, "%s年%s月%s日", year, month, day);
+	}
+
+//	printf("ymd_string: %s\n", ymd_string);
+//	printf("hms: %s\n", hms);
+	snprintf(time_string, MAX_WCH_BYTE, "%s %s", ymd_string, hms);
+	// LOG_INFO("time_string is %s\n", time_string);
+//	printf("time_string: %s\n", time_string);
+//	printf("time_string len: %d\n", strlen(time_string));
+//	printf("[");
+//	for (int i = 0; time_string[i] != '\0'; i++)
+//		printf("%02X ", time_string[i]);
+//	printf("]\n");
 	iconv_utf8_to_wchar(time_string, result);
 
 	return 0;

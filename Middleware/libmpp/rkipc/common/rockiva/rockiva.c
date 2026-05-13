@@ -131,8 +131,47 @@ int rkipc_rknn_object_get(RockIvaBaResult *ba_result) {
 static unsigned char flicker_draw = 0;
 static unsigned char flicker_draw_flag = 0;
 static unsigned char opendoorflag = 0;
+static uint32_t s_bak_objNum;										  /* 目标个数 */
+static RockIvaBaObjectInfo s_bak_triggerObjects[ROCKIVA_MAX_OBJ_NUM];  /* 触发周界规则的目标 */
 void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus status,
                    void *userData) {
+#if 1
+//	printf("rkba_callback start frame[%u]\n", presult->frameId);
+
+	s_bak_objNum = 0;
+
+	for (int i = 0; i < presult->objNum; i++) {
+//		printf("topLeft:[%d,%d], bottomRight:[%d,%d],"
+//				"objId is %d, frameId is %d, score is %d, type is %d\n",
+//				presult->triggerObjects[i].objInfo.rect.topLeft.x,
+//				presult->triggerObjects[i].objInfo.rect.topLeft.y,
+//				presult->triggerObjects[i].objInfo.rect.bottomRight.x,
+//				presult->triggerObjects[i].objInfo.rect.bottomRight.y,
+//				presult->triggerObjects[i].objInfo.objId,
+//				presult->triggerObjects[i].objInfo.frameId,
+//				presult->triggerObjects[i].objInfo.score, presult->triggerObjects[i].objInfo.type);
+//
+//		printf("triggerRules is %d, ruleID is %d, triggerType is %d\n",
+//				presult->triggerObjects[i].triggerRules,
+//				presult->triggerObjects[i].firstTrigger.ruleID,
+//				presult->triggerObjects[i].firstTrigger.triggerType);
+		// score 低于 60 的 丢弃
+		if (presult->triggerObjects[i].objInfo.score < 60)
+			continue;
+		memcpy(&s_bak_triggerObjects[s_bak_objNum++], &presult->triggerObjects[i], sizeof(RockIvaBaObjectInfo));
+	}
+
+//	s_bak_objNum = presult->objNum;
+//	memcpy(s_bak_triggerObjects, presult->triggerObjects, sizeof(RockIvaBaObjectInfo)*ROCKIVA_MAX_OBJ_NUM);
+
+	rknn_list_push(rknn_list_, rkipc_get_curren_time_ms(), *presult);
+	int size = rknn_list_size(rknn_list_);
+	if (size >= MAX_RKNN_LIST_NUM)
+		rknn_list_drop(rknn_list_);
+	
+//	printf("rkba_callback end frame[%u]\n", presult->frameId);
+
+#else
 	int triggerd = 0;
 	int triggerd_none = 0;
 	RockIvaBaResult *result;
@@ -156,7 +195,7 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 		if (human_detect_cb)
 			human_detect_cb(0,rect);
 
-		return 0;
+		return ;
 	}
 
 	if (result->objNum == 0) {
@@ -286,10 +325,15 @@ void rkba_callback(const RockIvaBaResult *presult, const RockIvaExecuteStatus st
 		rknn_list_drop(rknn_list_);
 
 	// LOG_INFO("size is %d\n", size);
+#endif
 }
 
 void rockiva_frame_release_callback(const RockIvaReleaseFrames *releaseFrames, void *userdata) {
 	// LOG_INFO("%s: releaseFrames channelId is %d, count is %d\n", get_time_string());
+//	printf("iva release channelId: %u, count: %u, ", releaseFrames->channelId, releaseFrames->count);
+//	for (unsigned int i = 0; i < releaseFrames->count; i++)	
+//		printf("frame[%u].frameId: %u ", i, releaseFrames->frames[i].frameId);
+//	printf("\n");
 	rk_signal_give(rockiva_signal);//释放信号量 add on 2025.02.11 注释
 }
 
@@ -313,6 +357,7 @@ int rkipc_rockiva_init() {
 	//     }
 	// }
 
+#if 0
 	snprintf(globalParams.modelPath, ROCKIVA_PATH_LENGTH, "/oem/usr/lib/");
 	globalParams.coreMask = 0x04;
 	globalParams.logLevel = ROCKIVA_LOG_ERROR;
@@ -338,6 +383,17 @@ int rkipc_rockiva_init() {
 	}
 
 	// globalParams.imageInfo.transformMode = rkba_info.rotation;
+#else
+//	snprintf(globalParams.modelPath, ROCKIVA_PATH_LENGTH, "/mnt/sdcard/det_data/");
+	snprintf(globalParams.modelPath, ROCKIVA_PATH_LENGTH, "/oem/usr/lib/");
+	globalParams.coreMask = 0x04;
+	globalParams.logLevel = ROCKIVA_LOG_ERROR;
+	globalParams.detModel = ROCKIVA_DET_MODEL_CLS8;
+	globalParams.imageInfo.width = rk_param_get_int("video.2:width", 640);
+	globalParams.imageInfo.height = rk_param_get_int("video.2:height", 360);
+	globalParams.imageInfo.format = ROCKIVA_IMAGE_FORMAT_YUV420SP_NV12;
+	globalParams.imageInfo.transformMode = ROCKIVA_IMAGE_TRANSFORM_NONE;
+#endif
 
 	ROCKIVA_Init(&rkba_handle, ROCKIVA_MODE_VIDEO, &globalParams, NULL);
 	LOG_INFO("ROCKIVA_Init over\n");
@@ -360,8 +416,17 @@ int rkipc_rockiva_init() {
 	initParams.baRules.areaInBreakRule[0].objType = ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_PERSON);
 	// initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_FACE);
 	// initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_PET);
+	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_VEHICLE);
+	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_NON_VEHICLE);
+	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_FACE);
+//	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_HEAD);
+//	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_MOTORCYCLE);
+//	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_BICYCLE);
+//	initParams.baRules.areaInBreakRule[0].objType |= ROCKIVA_OBJECT_TYPE_BITMASK(ROCKIVA_OBJECT_TYPE_PLATE);
+	
 
 	initParams.baRules.areaInBreakRule[0].area.pointNum = 4;
+	#if 0
 	initParams.baRules.areaInBreakRule[0].area.points[0].x = ROCKIVA_PIXEL_RATION_CONVERT(web_width, ri_x);
 	initParams.baRules.areaInBreakRule[0].area.points[0].y = ROCKIVA_PIXEL_RATION_CONVERT(web_height, ri_y);
 	initParams.baRules.areaInBreakRule[0].area.points[1].x = ROCKIVA_PIXEL_RATION_CONVERT(web_width, ri_x + ri_w);
@@ -370,8 +435,19 @@ int rkipc_rockiva_init() {
 	initParams.baRules.areaInBreakRule[0].area.points[2].y = ROCKIVA_PIXEL_RATION_CONVERT(web_height, ri_y + ri_h);
 	initParams.baRules.areaInBreakRule[0].area.points[3].x = ROCKIVA_PIXEL_RATION_CONVERT(web_width, ri_x);
 	initParams.baRules.areaInBreakRule[0].area.points[3].y = ROCKIVA_PIXEL_RATION_CONVERT(web_height, ri_y + ri_h);
-
-	LOG_INFO("(%d,%d), (%d,%d), (%d,%d), (%d,%d)\n",
+	#else
+	//设置成全画面
+	initParams.baRules.areaInBreakRule[0].area.points[0].x = 0;
+	initParams.baRules.areaInBreakRule[0].area.points[0].y = 0;
+	initParams.baRules.areaInBreakRule[0].area.points[1].x = 9999;
+	initParams.baRules.areaInBreakRule[0].area.points[1].y = 0;
+	initParams.baRules.areaInBreakRule[0].area.points[2].x = 9999;
+	initParams.baRules.areaInBreakRule[0].area.points[2].y = 9999;
+	initParams.baRules.areaInBreakRule[0].area.points[3].x = 0;
+	initParams.baRules.areaInBreakRule[0].area.points[3].y = 9999;
+	#endif
+	//	LOG_INFO("(%d,%d), (%d,%d), (%d,%d), (%d,%d)\n",
+		printf("(%d,%d), (%d,%d), (%d,%d), (%d,%d)\n",
 		initParams.baRules.areaInBreakRule[0].area.points[0].x,
 		initParams.baRules.areaInBreakRule[0].area.points[0].y,
 		initParams.baRules.areaInBreakRule[0].area.points[1].x,
@@ -475,10 +551,10 @@ int rkipc_rockiva_write_rgb888_frame_by_fd(uint16_t width, uint16_t height, uint
 
 int rkipc_rockiva_write_nv12_frame_by_fd(uint16_t width, uint16_t height, uint32_t frame_id,
                                          int32_t fd) {
+	if (!rockit_run_flag)
+		return -1;
 	int ret;
 	RockIvaImage *image = (RockIvaImage *)malloc(sizeof(RockIvaImage));
-	if (!rockit_run_flag)
-		return 0;
 	int rotation = rk_param_get_int("video.source:rotation", 0);
 	if (rk_param_get_int("video.source:rotate_in_venc", 0))
 		rotation = 0;
@@ -503,6 +579,7 @@ int rkipc_rockiva_write_nv12_frame_by_fd(uint16_t width, uint16_t height, uint32
 	} else if (g_rotation == 270) {
 		image->info.transformMode = ROCKIVA_IMAGE_TRANSFORM_ROTATE_270;
 	}
+	image->info.transformMode = ROCKIVA_IMAGE_TRANSFORM_NONE;
 	#endif
 	image->info.width = width;
 	image->info.height = height;
@@ -521,12 +598,47 @@ int rkipc_rockiva_write_nv12_frame_by_fd(uint16_t width, uint16_t height, uint32
 	return ret;
 }
 
+//out_objNum , out_triggerObjects 不需要释放
+int rkipc_rockiva_write_nv12_frame_by_fd_for_gb(uint16_t width, uint16_t height, uint32_t frame_id,
+                                         int32_t fd, uint32_t **out_objNum, RockIvaBaObjectInfo **out_triggerObjects) {
+	if (!rockit_run_flag || !out_objNum || !out_triggerObjects)
+		return -1;
+	int ret;
+	RockIvaImage image;
+
+	memset(&image, 0, sizeof(RockIvaImage));
+	//在VI做的翻转，即视频源数据已经翻转，这里就不用设置翻转模式了
+	image.info.transformMode = ROCKIVA_IMAGE_TRANSFORM_NONE;
+	image.info.width = width;
+	image.info.height = height;
+	image.info.format = ROCKIVA_IMAGE_FORMAT_YUV420SP_NV12;
+	image.frameId = frame_id;
+	image.dataAddr = NULL;
+	image.dataPhyAddr = NULL;
+	image.dataFd = fd;
+//	printf("send to iva frame[%u]\n", frame_id);
+	ret = ROCKIVA_PushFrame(rkba_handle, &image, NULL);
+	if (ret)
+	{
+		LOG_ERROR("ROCKIVA_PushFrame fail, ret is %d\n", ret);
+		return -1;
+	}
+	rk_signal_wait(rockiva_signal, 10000);
+//	printf("iva proc frame[%u] completely.\n", frame_id);
+
+	*out_objNum = &s_bak_objNum;
+	*out_triggerObjects = s_bak_triggerObjects;
+
+	return 0;
+}
+
+
 int rkipc_rockiva_write_nv12_frame_by_phy_addr(uint16_t width, uint16_t height, uint32_t frame_id,
                                                uint8_t *phy_addr) {
-	int ret;
-	RockIvaImage *image = (RockIvaImage *)malloc(sizeof(RockIvaImage));
 	if (!rockit_run_flag)
 		return 0;
+	int ret;
+	RockIvaImage *image = (RockIvaImage *)malloc(sizeof(RockIvaImage));
 	int rotation = rk_param_get_int("video.source:rotation", 0);
 	if (rk_param_get_int("video.source:rotate_in_venc", 0))
 		rotation = 0;

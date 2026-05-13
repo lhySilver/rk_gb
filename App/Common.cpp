@@ -112,11 +112,11 @@ void SystemReset()
     g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_POWER_INDICATOR_LIGHT_FAST_FLICKER);
     //联网指示灯灭
     g_IndicatorLight.setLightStatus(CIndicatorLight::ENUM_LINK_INDICATOR_LIGHT_ALWAYS_OFF);
-	delete_file(CONFIG_DIR);
-	delete_file(IPC_APP_STORAGE_PATH);
+	delete_file(CONFIG_DIR"/Json/");
+//	delete_file(IPC_APP_STORAGE_PATH);
 
-	START_PROCESS("sh", "sh", "-c", "rm -rf " CONFIG_DIR, NULL);
-	START_PROCESS("sh", "sh", "-c", "rm -rf " IPC_APP_STORAGE_PATH, NULL);
+	START_PROCESS("sh", "sh", "-c", "rm -rf " CONFIG_DIR"/Json/", NULL);
+//	START_PROCESS("sh", "sh", "-c", "rm -rf " IPC_APP_STORAGE_PATH, NULL);
 	START_PROCESS("sh", "sh", "-c", "touch " VOICE_PROMPT_FLAG, NULL);
     g_StorageManager->StopRec();
 	

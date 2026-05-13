@@ -80,6 +80,8 @@ static ConfigPair s_configKeyMaps[] =
 	{"REBOOT",CFG_REBOOT},
 	{"Video",CFG_VIDEO},
 	{"Audio",CFG_AUDIO},
+	{"OSD_Time",CFG_OSD_TIME},
+	{"OSD_Text",CFG_OSD_TEXT},
 	{NULL,}
 };
 

@@ -46,12 +46,15 @@ static device_state_t current_state = {
     .audio_codec = AUDIO_CODEC_G711A,
     .night_mode = NIGHT_MODE_DEFAULT,
     .gb_enable = 0,
+    .gb_config_mode = 0,
     .gb_status = GB_STATUS_OFFLINE,
+    .gat1400_enable = 0,
     .gat1400_ip = "183.252.186.166",
     .gat1400_port = "33855",
     .gat1400_user = "admin",
     .gat1400_device_id = "30510200001190000010",
     .gat1400_password = "Dz8h6kM9",
+    .gat1400_status = GAT1400_STATUS_OFFLINE,
     // WiFi 配置默认值
     .wifi_need_config = 0,
     .wifi_ssid = "",
@@ -252,6 +255,7 @@ static char* get_config_page(const device_state_t *state) {
         ".radio-group label { font-weight:normal; display:inline-block; margin-right:12px; cursor:pointer; }"
         ".radio-group input[type=\"radio\"] { margin-right:5px; }"
         "input[type=\"radio\"]:checked { accent-color: #007bff; }"
+        "input[type=\"checkbox\"]:checked { accent-color: #007bff; }"
         ".static-fields { margin-top:10px; }"
         ".button-row { display:flex; justify-content:center; gap:20px; margin-top:20px; }"
         ".button-row button { width:120px; padding:10px; border:none; border-radius:4px; cursor:pointer; font-size:16px; }"
@@ -510,12 +514,19 @@ static char* get_config_page(const device_state_t *state) {
         "<div class='config-row'>"
         "<fieldset>"
         "<legend>国标配置</legend>"
+        "<div style='display:flex; align-items:center; margin-bottom:15px;'>"
         "<div class='radio-group'>"
-        "<label><input type='checkbox' name='gb_enable' value='1' %s> 启用国标配置</label>"
+        "<label><input type='checkbox' name='gb_enable' value='1' %s> 启用</label>"
         "</div>"
-        "<div id='gb_status' style='margin-bottom:15px; padding:10px; border-radius:4px; background:#f5f5f5;'>"
+        "<div id='gb_status' style='padding:10px; border-radius:4px; background:#f5f5f5; margin-left:36px;'>"
         "连接状态：<span id='gb_status_text'>检查中...</span>"
         "</div>"
+        "</div>"
+        "<label>配置方式：</label>"
+        "<select name='gb_config_mode' style='margin-bottom:15px;'>"
+        "<option value='0' %s>零配置</option>"
+        "<option value='1' %s>手动配置</option>"
+        "</select>"
         "<label>SIP服务器编码：<input type='text' name='gb_code' value='%s'></label>"
         "<label>SIP服务器域：<input type='text' name='gb_domain' value='%s'></label>"
         "<label>SIP服务器IP：<input type='text' name='gb_ip' value='%s'></label>"
@@ -527,6 +538,14 @@ static char* get_config_page(const device_state_t *state) {
         "</fieldset>"
         "<fieldset>"
         "<legend>1400配置</legend>"
+        "<div style='display:flex; align-items:center; margin-bottom:15px;'>"
+        "<div class='radio-group'>"
+        "<label><input type='checkbox' name='gat1400_enable' value='1' %s> 启用</label>"
+        "</div>"
+        "<div id='gat1400_status' style='padding:10px; border-radius:4px; background:#f5f5f5; margin-left:36px;'>"
+        "连接状态：<span id='gat1400_status_text'>检查中...</span>"
+        "</div>"
+        "</div>"
         "<label>接入IP：<input type='text' name='gat1400_ip' value='%s'></label>"
         "<label>接入端口：<input type='text' name='gat1400_port' value='%s'></label>"
         "<label>设备用户：<input type='text' name='gat1400_user' value='%s'></label>"
@@ -640,18 +659,47 @@ static char* get_config_page(const device_state_t *state) {
         "        statusDiv.style.background = '#d4edda';"
         "        statusDiv.style.color = '#155724';"
         "      } else {"
-        "        statusText.textContent = '不在线';"
+        "        statusText.textContent = '离线';"
         "        statusDiv.style.background = '#f8d7da';"
         "        statusDiv.style.color = '#721c24';"
         "      }"
         "    })"
         "    .catch(err => {"
+        "      var statusDiv = document.getElementById('gb_status');"
         "      var statusText = document.getElementById('gb_status_text');"
-        "      statusText.textContent = '状态获取失败';"
+        "      statusText.textContent = '获取失败';"
+        "      statusDiv.style.background = '#f8d7da';"
+        "      statusDiv.style.color = '#721c24';"
+        "    });"
+        "}"
+        "function updateGat1400Status() {"
+        "  fetch('/api/gat1400_status')"
+        "    .then(response => response.json())"
+        "    .then(data => {"
+        "      var statusDiv = document.getElementById('gat1400_status');"
+        "      var statusText = document.getElementById('gat1400_status_text');"
+        "      if (data.status === 'online') {"
+        "        statusText.textContent = '在线';"
+        "        statusDiv.style.background = '#d4edda';"
+        "        statusDiv.style.color = '#155724';"
+        "      } else {"
+        "        statusText.textContent = '离线';"
+        "        statusDiv.style.background = '#f8d7da';"
+        "        statusDiv.style.color = '#721c24';"
+        "      }"
+        "    })"
+        "    .catch(err => {"
+        "      var statusDiv = document.getElementById('gat1400_status');"
+        "      var statusText = document.getElementById('gat1400_status_text');"
+        "      statusText.textContent = '获取失败';"
+        "      statusDiv.style.background = '#f8d7da';"
+        "      statusDiv.style.color = '#721c24';"
         "    });"
         "}"
         "setInterval(updateGbStatus, 3000);"
+        "setInterval(updateGat1400Status, 3000);"
         "updateGbStatus();"
+        "updateGat1400Status();"
         "</script>"
         "</body></html>";
 
@@ -670,9 +718,12 @@ static char* get_config_page(const device_state_t *state) {
                  strlen(main_codec_str) + strlen(sub_codec_str) +
                  strlen(audio_codec_str) + strlen(night_mode_str) +
                  strlen(state->gat1400_ip) + strlen(state->gat1400_port) + strlen(state->gat1400_user) +
-                 strlen(state->gat1400_device_id) + strlen(state->gat1400_password) + 256;
+                 strlen(state->gat1400_device_id) + strlen(state->gat1400_password) + 512;
     char *html = malloc(len);
     if (!html) return NULL;
+    const char *gb_config_mode_0_selected = (state->gb_config_mode == 0) ? "selected" : "";
+    const char *gb_config_mode_1_selected = (state->gb_config_mode == 1) ? "selected" : "";
+    const char *gat1400_enable_checked = (state->gat1400_enable == 1) ? "checked" : "";
     snprintf(html, len, fmt,
              main_codec_str, main_bitrate, main_framerate, main_gop,
              sub_codec_str, sub_bitrate, sub_framerate, sub_gop,
@@ -682,8 +733,10 @@ static char* get_config_page(const device_state_t *state) {
              state->ip_addr, state->gateway, state->netmask, state->dns,
              wifi_checked, state->wifi_ssid, state->wifi_password,
              gb_enable_checked,
+             gb_config_mode_0_selected, gb_config_mode_1_selected,
              state->gb_code, state->gb_domain, state->gb_ip, state->gb_port,
              state->gb_device_id, state->gb_user_id, state->gb_password, state->gb_channel_code,
+             gat1400_enable_checked,
              state->gat1400_ip, state->gat1400_port, state->gat1400_user,
              state->gat1400_device_id, state->gat1400_password);
     return html;
@@ -970,10 +1023,23 @@ static void parse_form_data(struct mg_str body, device_state_t *state) {
         if (end) *end = '&';
     }
 
+    // 解析1400配置启用状态
+    state->gat1400_enable = 0;
+    if ((val = strstr(buf, "gat1400_enable="))) {
+        state->gat1400_enable = 1;
+    }
+
     // 解析国标配置
     state->gb_enable = 0;
     if ((val = strstr(buf, "gb_enable="))) {
         state->gb_enable = 1;
+    }
+    if ((val = strstr(buf, "gb_config_mode="))) {
+        val += strlen("gb_config_mode=");
+        char *end = strchr(val, '&');
+        if (end) *end = '\0';
+        state->gb_config_mode = atoi(val);
+        if (end) *end = '&';
     }
 
     // 解析 WiFi 配置
@@ -1042,6 +1108,7 @@ static void print_ip_config(const device_state_t *state) {
 static void print_gb_config(const device_state_t *state) {
     printf("GB Config:\n");
     printf("  Need Config: %s\n", state->gb_enable ? "YES" : "NO");
+    printf("  Config Mode: %s\n", state->gb_config_mode == 0 ? "Zero Config" : "Manual Config");
     if(state->gb_enable) {
         printf("  Code: %s\n", state->gb_code);
         printf("  Domain: %s\n", state->gb_domain);
@@ -1084,6 +1151,7 @@ static void print_night_mode_config(const device_state_t *state) {
 }
 static void print_1400_config(const device_state_t *state) {
     printf("1400 Config:\n");
+    printf("  Need Config: %s\n", state->gat1400_enable ? "YES" : "NO");
     printf("  IP: %s\n", state->gat1400_ip);
     printf("  Port: %s\n", state->gat1400_port);
     printf("  User: %s\n", state->gat1400_user);
@@ -1119,6 +1187,15 @@ void web_server_register_sd_format_callback(sd_format_callback_t callback) {
 void update_gb_status(gb_status_t status) {
     current_state.gb_status = status;
     printf("[Web] GB status updated to: %s", status == GB_STATUS_ONLINE ? "Online" : "Offline");
+}
+
+/**
+ * @brief 更新1400服务器连接状态
+ * @param status 新的连接状态（在线/离线）
+ */
+void update_gat1400_status(gat1400_status_t status) {
+    current_state.gat1400_status = status;
+    printf("[Web] 1400 status updated to: %s", status == GAT1400_STATUS_ONLINE ? "Online" : "Offline");
 }
 
 void update_sd_format_status(sd_format_status_t status) {
@@ -1260,6 +1337,17 @@ static void fn(struct mg_connection *c, int ev, void *ev_data) {
                 return;
             }
             const char *status_str = (current_state.gb_status == GB_STATUS_ONLINE) ? "online" : "offline";
+            mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"status\":\"%s\"}", status_str);
+        }
+        else if (mg_strcmp(hm->uri, mg_str("/api/gat1400_status")) == 0 && is_get) {
+            char *sid = get_session_from_cookie(hm);
+            int authed = (sid && check_session(sid));
+            free(sid);
+            if (!authed) {
+                mg_http_reply(c, 401, "Content-Type: application/json\r\n", "{\"status\":\"unauthorized\"}");
+                return;
+            }
+            const char *status_str = (current_state.gat1400_status == GAT1400_STATUS_ONLINE) ? "online" : "offline";
             mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"status\":\"%s\"}", status_str);
         }
         else if (mg_strcmp(hm->uri, mg_str("/api/sd_format_status")) == 0 && is_get) {

@@ -5,35 +5,12 @@
 
 #include "PAL/Capture.h"
 
-//extern "C"
-//{
-//int rk_osd_get_enabled(int id, int *value);
-//int rk_osd_set_enabled(int id, int value);
-//int rk_osd_restart();
-//int rk_osd_get_position_x(int id, int *value);
-//int rk_osd_set_position_x(int id, int value);
-//int rk_osd_get_position_y(int id, int *value);
-//int rk_osd_set_position_y(int id, int value);
-//int rk_osd_get_date_style(int id, const char **value);
-//int rk_osd_set_date_style(int id, const char *value);
-//int rk_osd_get_time_style(int id, const char **value);
-//int rk_osd_set_time_style(int id, const char *value);
-//int rk_osd_get_display_text(int id, const char **value);
-//int rk_osd_set_display_text(int id, const char *value);
-//}
-int rk_osd_get_enabled(int id, int *value){}
-int rk_osd_set_enabled(int id, int value){}
-int rk_osd_restart(){}
-int rk_osd_get_position_x(int id, int *value){}
-int rk_osd_set_position_x(int id, int value){}
-int rk_osd_get_position_y(int id, int *value){}
-int rk_osd_set_position_y(int id, int value){}
-int rk_osd_get_date_style(int id, const char **value){}
-int rk_osd_set_date_style(int id, const char *value){}
-int rk_osd_get_time_style(int id, const char **value){}
-int rk_osd_set_time_style(int id, const char *value){}
-int rk_osd_get_display_text(int id, const char **value){}
-int rk_osd_set_display_text(int id, const char *value){}
+
+#include "ExchangeAL/CameraExchange.h"
+#include "ExchangeAL/Exchange.h"
+#include "ExchangeAL/MediaExchange.h"
+#include "ExchangeAL/ExchangeKind.h"
+#include "Manager/ConfigManager.h"
 
 
 namespace
@@ -163,39 +140,6 @@ static bool QueryMainStreamResolution(int& width, int& height)
     return CaptureGetResolution(0, &width, &height) == 0 && width > 0 && height > 0;
 }
 
-static bool ReadVideoOsdEnabled(int id, int* value)
-{
-    if (value == NULL) {
-        return false;
-    }
-
-    return rk_osd_get_enabled(id, value) == 0;
-}
-
-static bool ReadVideoOsdStringValue(int (*getter)(int, const char**), int id, std::string& value)
-{
-    if (getter == NULL) {
-        return false;
-    }
-
-    const char* out = NULL;
-    if (getter(id, &out) != 0 || out == NULL || out[0] == '\0') {
-        return false;
-    }
-
-    value = out;
-    return true;
-}
-
-static bool ReadVideoOsdPosition(int id, int* x, int* y)
-{
-    if (x == NULL || y == NULL) {
-        return false;
-    }
-
-    return rk_osd_get_position_x(id, x) == 0 && rk_osd_get_position_y(id, y) == 0;
-}
-
 static int MergeError(int current, int candidate)
 {
     return (current != 0) ? current : candidate;
@@ -315,6 +259,36 @@ static void CacheVideoOsdProtocolState(const media::VideoOsdState& desired)
 
 } // namespace
 
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+std::string strToHexAscii(const std::string &input) {
+    std::stringstream ss;
+    
+    for (char c : input) {
+        // 转两位大写十六进制
+        ss << hex << uppercase << setw(2) << setfill('0') << (unsigned int)(unsigned char)c;
+    }
+    
+    return ss.str();
+}
+std::string hexToStr(const std::string &hexStr) {
+    std::string result;
+    for (int i = 0; i < hexStr.size(); i += 2) {
+        // 每两位截取
+        string byteHex = hexStr.substr(i, 2);
+        // 转成一个字节
+        char c = (char)strtol(byteHex.c_str(), NULL, 16);
+        result += c;
+    }
+    return result;
+}
+
+
 namespace media
 {
 
@@ -343,8 +317,8 @@ bool ResolveVideoOsdAnchor(const std::string& positionIn, int* x, int* y)
     int height = 720;
     (void)QueryMainStreamResolution(width, height);
 
-    const int marginX = 16;
-    const int marginY = 16;
+    const int marginX = 0;
+    const int marginY = 0;
     const int estimatedTextWidth = 176;
     const int estimatedTextHeight = 64;
 
@@ -386,164 +360,123 @@ int ApplyVideoOsdConfig(const VideoOsdState& desired)
     VideoOsdState normalizedDesired = desired;
     NormalizeVideoOsdTextItems(&normalizedDesired);
 
-    int finalRet = 0;
-    const std::string normalizedTextTemplate = GetPrimaryVideoOsdTextTemplate(normalizedDesired);
-    const int desiredTimeEnabled =
-        (normalizedDesired.has_time_enabled && normalizedDesired.time_enabled != 0) ? 1 : 0;
-    const int desiredEventEnabled =
-        (normalizedDesired.has_event_enabled && normalizedDesired.event_enabled != 0) ? 1 : 0;
-    const int desiredAlertEnabled =
-        (normalizedDesired.has_alert_enabled && normalizedDesired.alert_enabled != 0) ? 1 : 0;
-    const int desiredCustomTextEnabled = normalizedDesired.has_text_enabled ?
-        ((normalizedDesired.text_enabled != 0) ? 1 : 0) :
-        (normalizedTextTemplate.empty() ? 0 : 1);
-    const int desiredMasterSwitch = normalizedDesired.has_master_enabled ?
-        ((normalizedDesired.master_enabled != 0) ? 1 : 0) :
-        ((desiredTimeEnabled != 0 || desiredEventEnabled != 0 || desiredAlertEnabled != 0) ? 1 : 0);
-    const std::string desiredTimeFormat = normalizedDesired.has_time_format ?
-        TrimWhitespaceCopy(normalizedDesired.time_format) :
-        ((normalizedDesired.has_date_style || normalizedDesired.has_time_style) ?
-            BuildVideoOsdTimeFormatFromStyles(normalizedDesired.date_style, normalizedDesired.time_style) :
-            std::string());
-
-    // Capture only exposes a setter, so media side keeps the last applied master switch.
-    if (g_cached_master_switch < 0 || g_cached_master_switch != desiredMasterSwitch) {
-        const int ret = CaptureSetOSDSwitch(desiredMasterSwitch);
-        printf("[VideoOsdControl] apply master_switch ret=%d value=%d current=%d\n",
-               ret,
-               desiredMasterSwitch,
-               g_cached_master_switch);
-        if (ret == 0) {
-            g_cached_master_switch = desiredMasterSwitch;
-        }
-        finalRet = MergeError(finalRet, ret);
+	printf("has_time_enabled: %d, time_enabled: %d\n", normalizedDesired.has_time_enabled, normalizedDesired.time_enabled);
+	printf("has_text_enabled: %d, text_enabled: %d\n", normalizedDesired.has_text_enabled, normalizedDesired.text_enabled);
+	printf("has_time_format: %d, time_format: %s\n", normalizedDesired.has_time_format, normalizedDesired.time_format.c_str());
+	printf("has_date_style: %d, date_style: %s\n", normalizedDesired.has_date_style, normalizedDesired.date_style.c_str());
+	printf("has_time_style: %d, time_style: %s\n", normalizedDesired.has_time_style, normalizedDesired.time_style.c_str());
+	printf("has_time_position: %d\n", normalizedDesired.has_time_position);
+	printf("time_x: %d, time_y: %d\n", normalizedDesired.time_x, normalizedDesired.time_y);
+	printf("has_text_items: %d\n", normalizedDesired.has_text_items);
+    for (size_t index = 0; index < normalizedDesired.text_items.size(); ++index) {
+        media::VideoOsdTextItem item = normalizedDesired.text_items[index];
+		printf("text_items[%d].has_text: %d\n", index, item.has_text);
+		printf("text_items[%d].text: %s\n", index, item.text.c_str());
+		const char *p = item.text.c_str();
+		printf("[");
+		for (int i = 0; p[i] != '\0'; i++)
+			printf("%02X ", p[i]);
+		printf("]\n");
+		printf("text_items[%d].has_position: %d\n", index, item.has_position);
+		printf("text_items[%d].x: %d y: %d\n", index, item.x, item.y);
     }
 
-    int currentTimeEnabled = 0;
-    const bool timeKnown = ReadVideoOsdEnabled(kVideoOsdDateTimeId, &currentTimeEnabled);
-    if (!timeKnown || currentTimeEnabled != desiredTimeEnabled) {
-        const int ret = rk_osd_set_enabled(kVideoOsdDateTimeId, desiredTimeEnabled);
-        printf("[VideoOsdControl] apply datetime_enabled ret=%d value=%d current=%d\n",
-               ret,
-               desiredTimeEnabled,
-               timeKnown ? currentTimeEnabled : -1);
-        finalRet = MergeError(finalRet, ret);
-    }
+	CConfigTable table;
+	OSDTimeConf_S curOSDTimeConfig;
+	OSDTimeConf_S newOSDTimeConfig;
+	g_configManager.getConfig(getConfigName(CFG_OSD_TIME), table);
+    TExchangeAL<OSDTimeConf_S>::getConfig(table, curOSDTimeConfig);
+	newOSDTimeConfig = curOSDTimeConfig;
 
-    int currentCustomTextEnabled = 0;
-    const bool customKnown = ReadVideoOsdEnabled(kVideoOsdCustomTextId, &currentCustomTextEnabled);
-    if (!customKnown || currentCustomTextEnabled != desiredCustomTextEnabled) {
-        const int ret = rk_osd_set_enabled(kVideoOsdCustomTextId, desiredCustomTextEnabled);
-        printf("[VideoOsdControl] apply text_enabled ret=%d value=%d current=%d\n",
-               ret,
-               desiredCustomTextEnabled,
-               customKnown ? currentCustomTextEnabled : -1);
-        finalRet = MergeError(finalRet, ret);
-    }
+	if (normalizedDesired.has_time_enabled)
+	{
+		newOSDTimeConfig.show = normalizedDesired.time_enabled;
+	}
+	if (normalizedDesired.has_time_position)
+	{
+		newOSDTimeConfig.x = normalizedDesired.time_x;
+		newOSDTimeConfig.y = normalizedDesired.time_y;
+	}
+	if (normalizedDesired.has_time_format)
+	{
+		//yyyy-MM-dd HH:mm:ss
+		//yyyy年MM月dd日 HH:mm:ss
+		const std::string format = ToLowerCopy(normalizedDesired.time_format);
+		if (ContainsToken(format, "yyyy年mm月dd日") == false)
+			newOSDTimeConfig.date_type = 0;
+		else
+			newOSDTimeConfig.date_type = 1;
+		newOSDTimeConfig.time_type = 0;
+	}
+	if (newOSDTimeConfig.date_type != curOSDTimeConfig.date_type || 
+		newOSDTimeConfig.time_type != curOSDTimeConfig.time_type || 
+		newOSDTimeConfig.x != curOSDTimeConfig.x || 
+		newOSDTimeConfig.y != curOSDTimeConfig.y || 
+		newOSDTimeConfig.show != curOSDTimeConfig.show)
+	{
+		table.clear();
+		TExchangeAL<OSDTimeConf_S>::setConfig(newOSDTimeConfig, table);
+		g_configManager.setConfig(getConfigName(CFG_OSD_TIME), table, 0, IConfigManager::applyOK);
+	}
 
-    bool needRestart = false;
+	OSDTextAllConf_S curOSDTextAllConfig;
+	OSDTextAllConf_S newOSDTextAllConfig;
+	g_configManager.getConfig(getConfigName(CFG_OSD_TEXT), table);
+    TExchangeAL<OSDTextAllConf_S>::getConfig(table, curOSDTextAllConfig);
+	newOSDTextAllConfig = curOSDTextAllConfig;
 
-    if (!normalizedTextTemplate.empty()) {
-        std::string currentText;
-        const bool textKnown = ReadVideoOsdStringValue(rk_osd_get_display_text, kVideoOsdCustomTextId, currentText);
-        if (!textKnown || currentText != normalizedTextTemplate) {
-            const int ret = rk_osd_set_display_text(kVideoOsdCustomTextId, normalizedTextTemplate.c_str());
-            printf("[VideoOsdControl] apply text ret=%d value=%s current=%s\n",
-                   ret,
-                   normalizedTextTemplate.c_str(),
-                   textKnown ? currentText.c_str() : "unknown");
-            finalRet = MergeError(finalRet, ret);
-            needRestart = true;
-        }
-    }
+	if (normalizedDesired.has_text_items)
+	{
+		int i;
+		for (i = 0; i < OSD_TEXT_MAX && i < normalizedDesired.text_items.size(); i++)
+		{
+			media::VideoOsdTextItem &item = normalizedDesired.text_items[i];
+			if (item.has_text)
+			{
+				newOSDTextAllConfig.osd_text[i].text = strToHexAscii(item.text);
+				const char *p = newOSDTextAllConfig.osd_text[i].text.c_str();
+				printf("ApplyVideoOsdConfig -> [%s]\n", p);
+//				snprintf(newOSDTextAllConfig.osd_text[i].text, sizeof(newOSDTextAllConfig.osd_text[i].text), item.text.c_str());
+//				const char *p = newOSDTextAllConfig.osd_text[i].text.c_str();
+//				printf("ApplyVideoOsdConfig -> [");
+//				for (int i = 0; p[i] != '\0'; i++)
+//					printf("%02X ", p[i]);
+//				printf("]\n");
+			}
+			if (item.has_position)
+			{
+				newOSDTextAllConfig.osd_text[i].x = item.x;
+				newOSDTextAllConfig.osd_text[i].y = item.y;
+			}
+			newOSDTextAllConfig.osd_text[i].show = 1;
+		}
+		for (; i < OSD_TEXT_MAX; i++)
+		{
+			newOSDTextAllConfig.osd_text[i].show = 0;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < OSD_TEXT_MAX; i++)
+		{
+			newOSDTextAllConfig.osd_text[i].show = 0;
+		}
+	}
+	for (int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		if (newOSDTextAllConfig.osd_text[i].text != curOSDTextAllConfig.osd_text[i].text || 
+			newOSDTextAllConfig.osd_text[i].x != curOSDTextAllConfig.osd_text[i].x || 
+			newOSDTextAllConfig.osd_text[i].y != curOSDTextAllConfig.osd_text[i].y || 
+			newOSDTextAllConfig.osd_text[i].show != curOSDTextAllConfig.osd_text[i].show)
+		{
+			table.clear();
+			TExchangeAL<OSDTextAllConf_S>::setConfig(newOSDTextAllConfig, table);
+			g_configManager.setConfig(getConfigName(CFG_OSD_TEXT), table, 0, IConfigManager::applyOK);
+			break;
+		}
+	}
 
-    if (!desiredTimeFormat.empty()) {
-        const std::string desiredDateStyle = NormalizeVideoOsdDateStyle(desiredTimeFormat);
-        const std::string desiredTimeStyle = NormalizeVideoOsdTimeStyle(desiredTimeFormat);
-        std::string currentDateStyle;
-        std::string currentTimeStyle;
-        const bool dateKnown = ReadVideoOsdStringValue(rk_osd_get_date_style, kVideoOsdDateTimeId, currentDateStyle);
-        const bool timeStyleKnown = ReadVideoOsdStringValue(rk_osd_get_time_style, kVideoOsdDateTimeId, currentTimeStyle);
-        if (!dateKnown || currentDateStyle != desiredDateStyle) {
-            const int ret = rk_osd_set_date_style(kVideoOsdDateTimeId, desiredDateStyle.c_str());
-            printf("[VideoOsdControl] apply date_style ret=%d value=%s current=%s\n",
-                   ret,
-                   desiredDateStyle.c_str(),
-                   dateKnown ? currentDateStyle.c_str() : "unknown");
-            finalRet = MergeError(finalRet, ret);
-            needRestart = true;
-        }
-        if (!timeStyleKnown || currentTimeStyle != desiredTimeStyle) {
-            const int ret = rk_osd_set_time_style(kVideoOsdDateTimeId, desiredTimeStyle.c_str());
-            printf("[VideoOsdControl] apply time_style ret=%d value=%s current=%s\n",
-                   ret,
-                   desiredTimeStyle.c_str(),
-                   timeStyleKnown ? currentTimeStyle.c_str() : "unknown");
-            finalRet = MergeError(finalRet, ret);
-            needRestart = true;
-        }
-    }
-
-    int timeAnchorX = 0;
-    int timeAnchorY = 0;
-    const bool hasTimePosition = GetVideoOsdTimePosition(normalizedDesired, &timeAnchorX, &timeAnchorY);
-    if (hasTimePosition) {
-        int currentX = 0;
-        int currentY = 0;
-        const bool timePositionKnown = ReadVideoOsdPosition(kVideoOsdDateTimeId, &currentX, &currentY);
-        if (!timePositionKnown || currentX != timeAnchorX || currentY != timeAnchorY) {
-            const int retX = rk_osd_set_position_x(kVideoOsdDateTimeId, timeAnchorX);
-            const int retY = rk_osd_set_position_y(kVideoOsdDateTimeId, timeAnchorY);
-            printf("[VideoOsdControl] apply datetime_position ret=%d value=%d,%d current=%d,%d\n",
-                   (retX != 0) ? retX : retY,
-                   timeAnchorX,
-                   timeAnchorY,
-                   timePositionKnown ? currentX : -1,
-                   timePositionKnown ? currentY : -1);
-            finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
-            needRestart = true;
-        }
-    }
-
-    int textAnchorX = 0;
-    int textAnchorY = 0;
-    bool hasTextPosition = GetPrimaryVideoOsdTextPosition(normalizedDesired, &textAnchorX, &textAnchorY);
-    if (!hasTextPosition && hasTimePosition) {
-        textAnchorX = timeAnchorX;
-        textAnchorY = timeAnchorY;
-        hasTextPosition = true;
-    }
-    if (hasTextPosition) {
-        int currentX = 0;
-        int currentY = 0;
-        const bool textPositionKnown = ReadVideoOsdPosition(kVideoOsdCustomTextId, &currentX, &currentY);
-        if (!textPositionKnown || currentX != textAnchorX || currentY != textAnchorY) {
-            const int retX = rk_osd_set_position_x(kVideoOsdCustomTextId, textAnchorX);
-            const int retY = rk_osd_set_position_y(kVideoOsdCustomTextId, textAnchorY);
-            printf("[VideoOsdControl] apply text_position ret=%d value=%d,%d current=%d,%d\n",
-                   (retX != 0) ? retX : retY,
-                   textAnchorX,
-                   textAnchorY,
-                   textPositionKnown ? currentX : -1,
-                   textPositionKnown ? currentY : -1);
-            finalRet = MergeError(finalRet, (retX != 0) ? retX : retY);
-            needRestart = true;
-        }
-    }
-
-    if (needRestart) {
-        const int ret = rk_osd_restart();
-        printf("[VideoOsdControl] apply restart ret=%d\n", ret);
-        finalRet = MergeError(finalRet, ret);
-    }
-
-    if (finalRet == 0) {
-        g_cached_event_switch = desiredEventEnabled;
-        g_cached_alert_switch = desiredAlertEnabled;
-        CacheVideoOsdProtocolState(normalizedDesired);
-    }
-
-    return finalRet;
+    return 0;
 }
 
 bool QueryVideoOsdState(VideoOsdState* state)
@@ -553,80 +486,77 @@ bool QueryVideoOsdState(VideoOsdState* state)
     }
 
     *state = VideoOsdState();
-    if (g_has_cached_protocol_state) {
-        *state = g_cached_protocol_state;
-        NormalizeVideoOsdTextItems(state);
-    }
+//    if (g_has_cached_protocol_state) {
+//        *state = g_cached_protocol_state;
+//        NormalizeVideoOsdTextItems(state);
+//    }
+//
+//    if (g_cached_master_switch >= 0) {
+//        state->has_master_enabled = true;
+//        state->master_enabled = g_cached_master_switch;
+//    }
+//
+//    if (g_cached_event_switch >= 0) {
+//        state->has_event_enabled = true;
+//        state->event_enabled = g_cached_event_switch;
+//    }
+//
+//    if (g_cached_alert_switch >= 0) {
+//        state->has_alert_enabled = true;
+//        state->alert_enabled = g_cached_alert_switch;
+//    }
 
-    if (g_cached_master_switch >= 0) {
-        state->has_master_enabled = true;
-        state->master_enabled = g_cached_master_switch;
-    }
+	CConfigTable table;
+	OSDTimeConf_S curOSDTimeConfig;
+	g_configManager.getConfig(getConfigName(CFG_OSD_TIME), table);
+    TExchangeAL<OSDTimeConf_S>::getConfig(table, curOSDTimeConfig);
 
-    if (g_cached_event_switch >= 0) {
-        state->has_event_enabled = true;
-        state->event_enabled = g_cached_event_switch;
-    }
+	OSDTextAllConf_S curOSDTextAllConfig;
+	g_configManager.getConfig(getConfigName(CFG_OSD_TEXT), table);
+    TExchangeAL<OSDTextAllConf_S>::getConfig(table, curOSDTextAllConfig);
 
-    if (g_cached_alert_switch >= 0) {
-        state->has_alert_enabled = true;
-        state->alert_enabled = g_cached_alert_switch;
-    }
+	state->has_time_enabled = true;
+	state->time_enabled = curOSDTimeConfig.show;
 
-    int value = 0;
-    if (ReadVideoOsdEnabled(kVideoOsdDateTimeId, &value)) {
-        state->has_time_enabled = true;
-        state->time_enabled = value;
-    }
+	state->has_text_enabled = true;
+	state->text_enabled = 0;
+	for (int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		if (curOSDTextAllConfig.osd_text[i].show)
+		{
+			state->text_enabled = 1;
+			break;
+		}
+	}
 
-    if (ReadVideoOsdEnabled(kVideoOsdCustomTextId, &value)) {
-        state->has_text_enabled = true;
-        state->text_enabled = value;
-    }
+	state->has_time_format = true;
+	if (0 == curOSDTimeConfig.date_type)
+		state->time_format = "yyyy-MM-dd HH:mm:ss";
+	else
+		state->time_format = "yyyy年MM月dd日 HH:mm:ss";
+	printf("state->time_format: %s\n", state->time_format.c_str());
 
-    std::string text;
-    if (ReadVideoOsdStringValue(rk_osd_get_date_style, kVideoOsdDateTimeId, text)) {
-        state->has_date_style = true;
-        state->date_style = text;
-    }
+	state->has_time_position = true;
+	state->time_x = curOSDTimeConfig.x;
+	state->time_y = curOSDTimeConfig.y;
 
-    if (ReadVideoOsdStringValue(rk_osd_get_time_style, kVideoOsdDateTimeId, text)) {
-        state->has_time_style = true;
-        state->time_style = text;
-    }
+	state->has_text_items = true;
+	for (int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		if (curOSDTextAllConfig.osd_text[i].show)
+		{
+			media::VideoOsdTextItem item;
+			item.has_text = true;			
+			item.text = hexToStr(curOSDTextAllConfig.osd_text[i].text);
+			item.has_position = true;
+			item.x = curOSDTextAllConfig.osd_text[i].x;
+			item.y = curOSDTextAllConfig.osd_text[i].y;
+			state->text_items.push_back(item);
+		}
+	}
 
-    if (!state->has_time_format &&
-        (state->has_date_style || state->has_time_style)) {
-        state->has_time_format = true;
-        state->time_format = BuildVideoOsdTimeFormatFromStyles(state->date_style, state->time_style);
-    }
+	printf("state->text_items size: %d\n", state->text_items.size());
 
-    int posX = 0;
-    int posY = 0;
-    if (ReadVideoOsdPosition(kVideoOsdDateTimeId, &posX, &posY) && posX >= 0 && posY >= 0) {
-        state->has_time_position = true;
-        state->time_x = posX;
-        state->time_y = posY;
-    }
-
-    const bool textPositionKnown =
-        ReadVideoOsdPosition(kVideoOsdCustomTextId, &posX, &posY) && posX >= 0 && posY >= 0;
-    if (textPositionKnown) {
-        VideoOsdTextItem* item = EnsurePrimaryVideoOsdTextItem(state);
-        if (item != NULL) {
-            item->has_position = true;
-            item->x = posX;
-            item->y = posY;
-        }
-    }
-
-    if (ReadVideoOsdStringValue(rk_osd_get_display_text, kVideoOsdCustomTextId, text)) {
-        VideoOsdTextItem* item = EnsurePrimaryVideoOsdTextItem(state);
-        if (item != NULL) {
-            item->has_text = true;
-            item->text = NormalizeVideoOsdTextTemplate(text);
-        }
-    }
     NormalizeVideoOsdTextItems(state);
 
     if (!state->has_master_enabled &&

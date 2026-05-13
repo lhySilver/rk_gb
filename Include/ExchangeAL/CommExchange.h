@@ -402,4 +402,36 @@ struct AudioConf_S
 	int enc_type; 			//0-g711a 1-g711u 2-aac
 };
 
+//OSD 配置
+struct OSDTimeConf_S
+{
+	int date_type;			/*
+							 *0 "YYYY-MM-DD"
+							 *1 "MM-DD-YYYY"
+							 *2 "DD-MM-YYYY"
+							 *3 "YYYY/MM/DD"
+							 *4 "MM/DD/YYYY"
+							 *5 "DD/MM/YYYY"
+							 *0 yyyy-MM-dd
+							 *1 yyyy年MM月dd日
+							 */
+	int time_type; 			//0-24小时 1-12小时
+	int x;
+	int y;
+	int show;
+};
+
+#define OSD_TEXT_MAX (7)
+struct OSDTextConf_S
+{
+	std::string text;
+	int x;
+	int y;
+	int show;
+};
+struct OSDTextAllConf_S
+{
+	OSDTextConf_S osd_text[OSD_TEXT_MAX];
+};
+
 #endif

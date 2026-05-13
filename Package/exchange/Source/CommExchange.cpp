@@ -714,3 +714,38 @@ template<> void exchangeTable<AudioConf_S>(CConfigTable &table, AudioConf_S &con
 	exchanger.exchange(table, "enc_type", 		config.enc_type);
 }
 
+//OSD配置
+template<> void exchangeTable<OSDTimeConf_S>(CConfigTable &table, OSDTimeConf_S &config, int state)
+{
+	CKeyExchange exchanger;
+	
+	exchanger.setState(state);
+	exchanger.exchange(table, "date_type", 		config.date_type);
+	exchanger.exchange(table, "time_type", 		config.time_type);
+	exchanger.exchange(table, "x", 				config.x);
+	exchanger.exchange(table, "y", 				config.y);
+	exchanger.exchange(table, "show", 			config.show);
+}
+
+template<> void exchangeTable<OSDTextConf_S>(CConfigTable &table, OSDTextConf_S &config, int state)
+{
+	CKeyExchange exchanger;
+	
+	exchanger.setState(state);
+	exchanger.exchange(table, "text", 	config.text);
+	exchanger.exchange(table, "x",    	config.x);
+	exchanger.exchange(table, "y", 		config.y);
+	exchanger.exchange(table, "show", 	config.show);
+}
+template<> void exchangeTable<OSDTextAllConf_S>(CConfigTable &table, OSDTextAllConf_S &configAll, int state)
+{
+	for(int i = 0; i < OSD_TEXT_MAX; i++)
+	{
+		if(table[i] == Json::nullValue && state == CKeyExchange::ES_LOADING)
+		{
+			continue;
+		}
+		exchangeTable(table[i], configAll.osd_text[i], state);
+	}
+}
+

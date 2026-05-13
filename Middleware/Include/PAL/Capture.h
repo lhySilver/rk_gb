@@ -26,6 +26,7 @@ typedef enum {
     DETECT_OBJECT_OBJECT_TYPE_PERSON = 1,
     DETECT_OBJECT_OBJECT_TYPE_VEHICLE = 2,
     DETECT_OBJECT_OBJECT_TYPE_NON_VEHICLE = 3,
+    DETECT_OBJECT_OBJECT_TYPE_FACE = 4,
     DETECT_OBJECT_OBJECT_TYPE_MAX
 } DETECT_OBJECT_TYPE;
 
@@ -50,6 +51,24 @@ typedef struct tagDETECT_RESULT
 } DETECT_RESULT;
 
 typedef void (* CaptureDetectCallback)(int status, DETECT_RESULT result);
+typedef struct{
+	int width;
+	int height;
+	int size;
+	char *data;
+} DET_PIC_S;
+typedef struct {
+    int s32Xpos;   /* <Horizontal coordinate */
+    int s32Ypos;   /* <Vertical coordinate */
+    unsigned int u32Width;  /* <Width */
+    unsigned int u32Height; /* <Height */
+} DET_RECT_S;
+typedef struct{
+	DETECT_OBJECT_TYPE type;
+	DET_RECT_S rect;
+	DET_PIC_S pic;
+} DET_THUM_S;
+typedef void (* CaptureDetectSnapCallback)(DET_PIC_S *snap, DET_THUM_S *thum, int thum_num);
 
 typedef struct tagDETECT_ATTR
 {
@@ -133,6 +152,7 @@ int CaptureDetectSet(DETECT_INIT *pAttr);
 int CaptureDetectGet(DETECT_INIT *pAttr);
 int CaptureDetectObjectStart(DETECT_ATTR *pAttr);
 int CaptureDetectObjectStop(int ObjectType);
+int CaptureDetectObjectSetSnapCb(CaptureDetectSnapCallback cb);
 
 int CaptureGetMeanLuma(float *value);
 

@@ -896,7 +896,7 @@ CAMERA_MODE_E CCamera::CheckDayNight()
 	#endif
 
 	//手动开白光灯时 或 联动开白光灯 或 使用硬光敏时 或 测试模式下，不做频繁切换判断
-	if (m_bManualOpenWhiteLed || m_bAlarmTurnOnWihte || ProductCof_g.smartir_en == 0 || 1 == DeviceMode_g)
+	if (m_bManualOpenWhiteLed || m_bAlarmTurnOnWihte || /*ProductCof_g.smartir_en == 0 ||*/ 1 == DeviceMode_g)
 	{
 		m_bCheckDayNightStartTiming = false;
 		last_day_night_status = cur_day_night_status;

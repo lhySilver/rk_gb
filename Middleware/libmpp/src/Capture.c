@@ -461,19 +461,22 @@ int CaptureSetEptz(int scale)
 int CaptureDetectInit(DETECT_INIT *pAttr)
 {
 	MSG("Middleware CaptureDetectInit\n");
-	return rkipc_video_det_init(pAttr);
+//	return rkipc_video_det_init(pAttr);
+	return gb_rkipc_video_det_init(pAttr);
 }
 
 int CaptureDetectDeInit()
 {
 	MSG("Middleware CaptureDetectDeInit\n");
-	return  rkipc_video_det_deinit();
+//	return  rkipc_video_det_deinit();
+	return  gb_rkipc_video_det_deinit();
 }
 
 int CaptureDetectSet(DETECT_INIT *pAttr)
 {
 	MSG("Middleware CaptureDetectSet \n");
-	return rkipc_video_det_set(pAttr);
+//	return rkipc_video_det_set(pAttr);
+	return gb_rkipc_video_det_set(pAttr);
 }
 
 int CaptureDetectGet(DETECT_INIT *pAttr)
@@ -485,12 +488,14 @@ int CaptureDetectGet(DETECT_INIT *pAttr)
 int CaptureDetectStart()
 {
 	MSG("Middleware CaptureDetecStart \n");
-	return rkipc_video_det_start();
+//	return rkipc_video_det_start();
+	return gb_rkipc_video_det_start();
 }
 int CaptureDetectStop()
 {
 	MSG("Middleware CaptureDetecStop \n");
-	return rkipc_video_det_stop();
+//	return rkipc_video_det_stop();
+	return gb_rkipc_video_det_stop();
 }
 
 int CaptureDetectObjectStart(DETECT_ATTR *pAttr)
@@ -502,13 +507,21 @@ int CaptureDetectObjectStart(DETECT_ATTR *pAttr)
 		return -1;
 	}
 	MSG("Middleware CaptureDetectObjectStart type:%d\n",pAttr->ObjectType);
-	return rkipc_video_det_obj_start(pAttr->Level,pAttr->ObjectType,pAttr->Callback);
+//	return rkipc_video_det_obj_start(pAttr->Level,pAttr->ObjectType,pAttr->Callback);
+	return gb_rkipc_video_det_obj_start(pAttr->Level,pAttr->ObjectType,pAttr->Callback);
 }
 
 int CaptureDetectObjectStop(int ObjectType)
 {
 	MSG("Middleware CaptureDetectObjectStop type:%d\n",ObjectType);
-	return rkipc_video_det_obj_stop(ObjectType);
+//	return rkipc_video_det_obj_stop(ObjectType);
+	return gb_rkipc_video_det_obj_stop(ObjectType);
+}
+
+int CaptureDetectObjectSetSnapCb(CaptureDetectSnapCallback cb)
+{
+	MSG("Middleware CaptureDetectObjectSetSnapCb \n");
+	return gb_rkipc_video_det_set_snap_cb(cb);
 }
 
 int CaptureMotionTrackerStart(CaptureMotionTrackerCallback cb)

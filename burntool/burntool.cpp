@@ -47,9 +47,17 @@
 #define min(x, y)		(x <= y) ? x : y
 
 
+#if 0
+//nor
 #define MTD_START					0x00000000
 #define MTD_SIZE					0x2000000    //32M FLASH
 #define MTD_SMALL_SECT_SIZE 		0x10000 // 一个扇区大小
+#else
+//nand
+#define MTD_START					0x00000000
+#define MTD_SIZE					0x8000000    //128M FLASH
+#define MTD_SMALL_SECT_SIZE 		0x20000 // 一个扇区大小
+#endif
 
 #define MTD_PROC	"/proc/mtd"
 
