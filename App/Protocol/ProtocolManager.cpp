@@ -845,7 +845,7 @@ static int MaybeApplyGbLiveMediaFVideoConfig(int streamId,
     const int ret = skipApply ? 0 : media::ApplyVideoEncodeStreamConfig(streamId, desired);
 
     printf("[ProtocolManager] gb live media_f %s ret=%d stream=%d current_codec=%s current_resolution=%s current_fps=%s current_bitrate_type=%s current_bitrate=%d value_codec=%s value_resolution=%s value_fps=%d value_bitrate_type=%s value_bitrate=%d media_f=%s gb=%s\n",
-           skipApply ? "skip_apply" : "dispatch",
+           skipApply ? "skip_apply" : ((ret == 0) ? "dispatch" : "dispatch_nonfatal"),
            ret,
            streamId,
            (runtimeStreamState != NULL && runtimeStreamState->has_codec) ?
@@ -866,7 +866,7 @@ static int MaybeApplyGbLiveMediaFVideoConfig(int streamId,
            mediaF.c_str(),
            gbCode != NULL ? gbCode : "");
 
-    return ret;
+    return 0;
 }
 
 static std::string NormalizeHexDigest(const std::string& text)
@@ -7477,12 +7477,9 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
            audioEnabled ? 1 : 0);
 
-    int ret = MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
-    if (ret != 0) {
-        return ret;
-    }
+    MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
 
-    ret = ReconfigureGbLiveSender(input, gbCode, kLiveStream);
+    int ret = ReconfigureGbLiveSender(input, gbCode, kLiveStream);
 
     if (ret != 0) {
 

@@ -19,17 +19,82 @@
 //int rk_video_set_frame_rate(int stream_id, const char *value);
 //int rk_video_set_resolution(int stream_id, const char *value);
 //}
-int rk_video_get_gop(int stream_id, int *value){}
-int rk_video_set_gop(int stream_id, int value){}
-int rk_video_get_max_rate(int stream_id, int *value){}
-int rk_video_set_max_rate(int stream_id, int value){}
-int rk_video_get_RC_mode(int stream_id, const char **value){}
-int rk_video_set_RC_mode(int stream_id, const char *value){}
-int rk_video_get_output_data_type(int stream_id, const char **value){}
-int rk_video_set_output_data_type(int stream_id, const char *value){}
-int rk_video_get_frame_rate(int stream_id, char **value){}
-int rk_video_set_frame_rate(int stream_id, const char *value){}
-int rk_video_set_resolution(int stream_id, const char *value){}
+int rk_video_get_gop(int stream_id, int *value)
+{
+    (void)stream_id;
+    (void)value;
+    return -1;
+}
+
+int rk_video_set_gop(int stream_id, int value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
+
+int rk_video_get_max_rate(int stream_id, int *value)
+{
+    (void)stream_id;
+    (void)value;
+    return -1;
+}
+
+int rk_video_set_max_rate(int stream_id, int value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
+
+int rk_video_get_RC_mode(int stream_id, const char **value)
+{
+    (void)stream_id;
+    (void)value;
+    return -1;
+}
+
+int rk_video_set_RC_mode(int stream_id, const char *value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
+
+int rk_video_get_output_data_type(int stream_id, const char **value)
+{
+    (void)stream_id;
+    (void)value;
+    return -1;
+}
+
+int rk_video_set_output_data_type(int stream_id, const char *value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
+
+int rk_video_get_frame_rate(int stream_id, char **value)
+{
+    (void)stream_id;
+    (void)value;
+    return -1;
+}
+
+int rk_video_set_frame_rate(int stream_id, const char *value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
+
+int rk_video_set_resolution(int stream_id, const char *value)
+{
+    (void)stream_id;
+    (void)value;
+    return 0;
+}
 
 namespace
 {

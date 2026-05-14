@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 GB28181 实时预览 `INVITE` 携带 `f=` 后被直接回 `403 Forbidden` 的问题：现场 `258.pcap/debug.log` 显示 SDP 已解析到 `f=v/2/6/25/1/1024a/1/8/1`，拒流根因是编码应用返回值被透传到开流回调；live `f=` 下发现改为 best-effort 记录 `dispatch_nonfatal` 后继续 sender 建链，同时补齐 `VideoEncodeControl` 本地 `rk_video_*` 兼容函数的确定返回值，避免空 `int` 桩产生随机错误码。
 - 修复 GB28181 实时预览 `INVITE` 中 `f=` 视频编码参数未实际下发的问题：`HandleGbLiveStreamRequest()` 现恢复调用 `MaybeApplyGbLiveMediaFVideoConfig()`，在 sender 重建前按 `f=` 中的视频格式、分辨率、帧率、码率类型和码率增量下发到已选中的主/辅码流。
 - 修复启动阶段零配置导入仍读取旧 `/userdata/zero_config.ini` 与旧键名 `code/mac` 的问题，现统一读取 `/userdata/conf/Config/GB/zero_config.ini` 的 `string_code/mac_address` 并走 `ProtocolManager::SetGbZeroConfig()` 同步差异。
 - 收敛协议配置默认值维护入口：`ProtocolExternalConfig::version`、`GbRegisterParam::custom_protocol_version/manufacturer/model` 现统一由 `ProtocolExternalConfig.h` 中的默认常量驱动，`LocalConfigProvider` 不再重复写死版本、厂商和型号字面值。
