@@ -463,6 +463,78 @@ static int MergeError(int current, int candidate)
     return (current != 0) ? current : candidate;
 }
 
+static int ApplyCfgVideoEncodeStreamConfig(int streamId, const media::VideoEncodeStreamConfig& desired, const char* streamName)
+{
+    const std::string normalizedCodec = NormalizeVideoEncodeCodec(desired.codec);
+    int desiredEncType = -1;
+    const bool hasCodec = !normalizedCodec.empty();
+    if (hasCodec && !ParseVideoEncTypeValue(normalizedCodec.c_str(), &desiredEncType)) {
+        printf("[VideoEncodeControl] apply cfg_video ret=-1 stream=%s stream_id=%d invalid_codec=%s\n",
+               streamName,
+               streamId,
+               normalizedCodec.c_str());
+        return -1;
+    }
+
+    const bool hasFrameRate = desired.fps > 0;
+    const bool hasBitrate = desired.bitrate_kbps > 0;
+    if (!hasCodec && !hasFrameRate && !hasBitrate) {
+        return 0;
+    }
+
+    if (!IsValidStreamId(streamId)) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    VideoChannelConf_S& channel = videoConfig.chan[streamId];
+    const int currentEncType = channel.enc_type;
+    const int currentFrameRate = channel.frmae_rate;
+    const int currentBitrate = channel.bit_rate;
+    bool changed = false;
+
+    if (hasCodec && channel.enc_type != desiredEncType) {
+        channel.enc_type = desiredEncType;
+        changed = true;
+    }
+
+    if (hasFrameRate && channel.frmae_rate != desired.fps) {
+        channel.frmae_rate = desired.fps;
+        changed = true;
+    }
+
+    if (hasBitrate && channel.bit_rate != desired.bitrate_kbps) {
+        channel.bit_rate = desired.bitrate_kbps;
+        changed = true;
+    }
+
+    if (!changed) {
+        return 0;
+    }
+
+    TExchangeAL<VideoConf_S>::setConfig(videoConfig, table);
+    const int ret = g_configManager.setConfig(getConfigName(CFG_VIDEO), table, 0, IConfigManager::applyOK);
+    const int finalRet = (ret == IConfigManager::applyOK) ? 0 : ret;
+    printf("[VideoEncodeControl] apply cfg_video ret=%d stream=%s stream_id=%d codec=%s current_enc=%d fps=%d current_fps=%d bitrate=%d current_bitrate=%d\n",
+           finalRet,
+           streamName,
+           streamId,
+           hasCodec ? normalizedCodec.c_str() : "unchanged",
+           currentEncType,
+           hasFrameRate ? desired.fps : -1,
+           currentFrameRate,
+           hasBitrate ? desired.bitrate_kbps : -1,
+           currentBitrate);
+    return finalRet;
+}
+
 static void UpdateCachedStreamStateFromQuery(int streamId, const media::VideoEncodeStreamState& state)
 {
     if (!IsValidStreamId(streamId)) {
@@ -675,52 +747,7 @@ int ApplyVideoEncodeStreamConfig(int streamId, const VideoEncodeStreamConfig& de
     int finalRet = 0;
     const char* streamName = ResolveStreamName(streamId);
 
-    const std::string normalizedCodec = NormalizeVideoEncodeCodec(desired.codec);
-    if (!normalizedCodec.empty()) {
-        std::string currentCodec;
-        const bool codecKnown = ReadVideoEncodeCodecString(streamId, currentCodec);
-        if (!codecKnown || currentCodec != normalizedCodec) {
-            const int ret = rk_video_set_output_data_type(streamId, normalizedCodec.c_str());
-            printf("[VideoEncodeControl] apply codec ret=%d stream=%s stream_id=%d value=%s current=%s\n",
-                   ret,
-                   streamName,
-                   streamId,
-                   normalizedCodec.c_str(),
-                   codecKnown ? currentCodec.c_str() : "unknown");
-            finalRet = MergeError(finalRet, ret);
-        }
-    }
-
-    const std::string frameRateValue = BuildFrameRateValue(desired.fps);
-    if (!frameRateValue.empty()) {
-        std::string currentFrameRate;
-        const bool fpsKnown = ReadVideoEncodeFrameRateString(streamId, currentFrameRate);
-        if (!fpsKnown || currentFrameRate != frameRateValue) {
-            const int ret = rk_video_set_frame_rate(streamId, frameRateValue.c_str());
-            printf("[VideoEncodeControl] apply fps ret=%d stream=%s stream_id=%d value=%s current=%s\n",
-                   ret,
-                   streamName,
-                   streamId,
-                   frameRateValue.c_str(),
-                   fpsKnown ? currentFrameRate.c_str() : "unknown");
-            finalRet = MergeError(finalRet, ret);
-        }
-    }
-
-    if (desired.bitrate_kbps > 0) {
-        int currentBitrate = 0;
-        const bool bitrateKnown = (rk_video_get_max_rate(streamId, &currentBitrate) == 0);
-        if (!bitrateKnown || currentBitrate != desired.bitrate_kbps) {
-            const int ret = rk_video_set_max_rate(streamId, desired.bitrate_kbps);
-            printf("[VideoEncodeControl] apply bitrate ret=%d stream=%s stream_id=%d value=%d current=%d\n",
-                   ret,
-                   streamName,
-                   streamId,
-                   desired.bitrate_kbps,
-                   bitrateKnown ? currentBitrate : -1);
-            finalRet = MergeError(finalRet, ret);
-        }
-    }
+    finalRet = MergeError(finalRet, ApplyCfgVideoEncodeStreamConfig(streamId, desired, streamName));
 
     const std::string normalizedBitrateType = NormalizeVideoBitrateType(desired.bitrate_type);
     if (!normalizedBitrateType.empty()) {
