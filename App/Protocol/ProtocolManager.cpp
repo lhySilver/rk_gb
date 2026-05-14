@@ -7477,7 +7477,7 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
 
            audioEnabled ? 1 : 0);
 
-    int ret = 0;//MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
+    int ret = MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
     if (ret != 0) {
         return ret;
     }

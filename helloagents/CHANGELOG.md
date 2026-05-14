@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 GB28181 实时预览 `INVITE` 中 `f=` 视频编码参数未实际下发的问题：`HandleGbLiveStreamRequest()` 现恢复调用 `MaybeApplyGbLiveMediaFVideoConfig()`，在 sender 重建前按 `f=` 中的视频格式、分辨率、帧率、码率类型和码率增量下发到已选中的主/辅码流。
 - 修复启动阶段零配置导入仍读取旧 `/userdata/zero_config.ini` 与旧键名 `code/mac` 的问题，现统一读取 `/userdata/conf/Config/GB/zero_config.ini` 的 `string_code/mac_address` 并走 `ProtocolManager::SetGbZeroConfig()` 同步差异。
 - 收敛协议配置默认值维护入口：`ProtocolExternalConfig::version`、`GbRegisterParam::custom_protocol_version/manufacturer/model` 现统一由 `ProtocolExternalConfig.h` 中的默认常量驱动，`LocalConfigProvider` 不再重复写死版本、厂商和型号字面值。
 - 修复 GB28181 主动广播/对讲 `INVITE` 的 `Subject` 设备 ID 顺序反向问题：`StartBroadcastStreamRequest()` 现在把平台 Broadcast `SourceID` 对应的邀请目标作为 `Subject` 首段，本端媒体设备 ID 作为第二段，避免平台因 `Subject` 不符合预期拒绝对讲。
