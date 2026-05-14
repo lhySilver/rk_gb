@@ -23,6 +23,17 @@ RK_VIDEO_FUNCTIONS = [
     "rk_video_set_resolution",
 ]
 
+CFG_VIDEO_FUNCTIONS = {
+    "rk_video_get_gop": "gop",
+    "rk_video_set_gop": "gop",
+    "rk_video_get_max_rate": "bit_rate",
+    "rk_video_set_max_rate": "bit_rate",
+    "rk_video_get_output_data_type": "enc_type",
+    "rk_video_set_output_data_type": "enc_type",
+    "rk_video_get_frame_rate": "frmae_rate",
+    "rk_video_set_frame_rate": "frmae_rate",
+}
+
 
 def strip_comments(text: str) -> str:
     text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
@@ -54,6 +65,13 @@ def main() -> int:
             raise AssertionError(
                 f"{name} must return a deterministic status; empty int stubs create random apply results."
             )
+
+    for name, field in CFG_VIDEO_FUNCTIONS.items():
+        body = strip_comments(first_function_body(name))
+        if "CFG_VIDEO" not in body:
+            raise AssertionError(f"{name} should read/write CFG_VIDEO like Main.cpp.")
+        if f".{field}" not in body:
+            raise AssertionError(f"{name} should use VideoConf_S.chan[].{field}.")
 
     print("PASS: VideoEncodeControl rk_video compatibility functions return deterministic status")
     return 0

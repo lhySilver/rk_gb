@@ -1,9 +1,52 @@
 #include "VideoEncodeControl.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "PAL/Capture.h"
+
+#include "ExchangeAL/ExchangeKind.h"
+#include "ExchangeAL/MediaExchange.h"
+#include "Manager/ConfigManager.h"
+
+static bool ParseVideoEncTypeValue(const char* value, int* encType)
+{
+    if (value == NULL || encType == NULL) {
+        return false;
+    }
+
+    char normalized[16] = {0};
+    size_t out = 0;
+    for (size_t i = 0; value[i] != '\0' && out + 1 < sizeof(normalized); ++i) {
+        char ch = value[i];
+        if (ch == '.' || ch == '-' || ch == '_' || ch == ' ' || ch == '\t') {
+            continue;
+        }
+        if (ch >= 'A' && ch <= 'Z') {
+            ch = static_cast<char>(ch - 'A' + 'a');
+        }
+        normalized[out++] = ch;
+    }
+
+    if (strcmp(normalized, "0") == 0 ||
+        strcmp(normalized, "264") == 0 ||
+        strcmp(normalized, "h264") == 0 ||
+        strcmp(normalized, "avc") == 0) {
+        *encType = 0;
+        return true;
+    }
+
+    if (strcmp(normalized, "1") == 0 ||
+        strcmp(normalized, "265") == 0 ||
+        strcmp(normalized, "h265") == 0 ||
+        strcmp(normalized, "hevc") == 0) {
+        *encType = 1;
+        return true;
+    }
+
+    return false;
+}
 
 //extern "C"
 //{
@@ -21,30 +64,86 @@
 //}
 int rk_video_get_gop(int stream_id, int *value)
 {
-    (void)stream_id;
-    (void)value;
-    return -1;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value == NULL) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    *value = videoConfig.chan[stream_id].gop;
+    return 0;
 }
 
 int rk_video_set_gop(int stream_id, int value)
 {
-    (void)stream_id;
-    (void)value;
-    return 0;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value <= 0) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].gop == value) {
+        return 0;
+    }
+
+    videoConfig.chan[stream_id].gop = value;
+    TExchangeAL<VideoConf_S>::setConfig(videoConfig, table);
+    const int ret = g_configManager.setConfig(getConfigName(CFG_VIDEO), table, 0, IConfigManager::applyOK);
+    return (ret == IConfigManager::applyOK) ? 0 : ret;
 }
 
 int rk_video_get_max_rate(int stream_id, int *value)
 {
-    (void)stream_id;
-    (void)value;
-    return -1;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value == NULL) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    *value = videoConfig.chan[stream_id].bit_rate;
+    return 0;
 }
 
 int rk_video_set_max_rate(int stream_id, int value)
 {
-    (void)stream_id;
-    (void)value;
-    return 0;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value <= 0) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].bit_rate == value) {
+        return 0;
+    }
+
+    videoConfig.chan[stream_id].bit_rate = value;
+    TExchangeAL<VideoConf_S>::setConfig(videoConfig, table);
+    const int ret = g_configManager.setConfig(getConfigName(CFG_VIDEO), table, 0, IConfigManager::applyOK);
+    return (ret == IConfigManager::applyOK) ? 0 : ret;
 }
 
 int rk_video_get_RC_mode(int stream_id, const char **value)
@@ -63,30 +162,108 @@ int rk_video_set_RC_mode(int stream_id, const char *value)
 
 int rk_video_get_output_data_type(int stream_id, const char **value)
 {
-    (void)stream_id;
-    (void)value;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value == NULL) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].enc_type == 0) {
+        *value = "H.264";
+        return 0;
+    }
+    if (videoConfig.chan[stream_id].enc_type == 1) {
+        *value = "H.265";
+        return 0;
+    }
+
     return -1;
 }
 
 int rk_video_set_output_data_type(int stream_id, const char *value)
 {
-    (void)stream_id;
-    (void)value;
-    return 0;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX) {
+        return -1;
+    }
+
+    int encType = -1;
+    if (!ParseVideoEncTypeValue(value, &encType)) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].enc_type == encType) {
+        return 0;
+    }
+
+    videoConfig.chan[stream_id].enc_type = encType;
+    TExchangeAL<VideoConf_S>::setConfig(videoConfig, table);
+    const int ret = g_configManager.setConfig(getConfigName(CFG_VIDEO), table, 0, IConfigManager::applyOK);
+    return (ret == IConfigManager::applyOK) ? 0 : ret;
 }
 
 int rk_video_get_frame_rate(int stream_id, char **value)
 {
-    (void)stream_id;
-    (void)value;
-    return -1;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value == NULL || *value == NULL) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].frmae_rate <= 0) {
+        return -1;
+    }
+
+    snprintf(*value, 32, "%d", videoConfig.chan[stream_id].frmae_rate);
+    return 0;
 }
 
 int rk_video_set_frame_rate(int stream_id, const char *value)
 {
-    (void)stream_id;
-    (void)value;
-    return 0;
+    if (stream_id < 0 || stream_id >= VIDEO_CHANNEL_MAX || value == NULL) {
+        return -1;
+    }
+
+    const int frameRate = atoi(value);
+    if (frameRate <= 0) {
+        return -1;
+    }
+
+    CConfigTable table;
+    VideoConf_S videoConfig;
+    memset(&videoConfig, 0, sizeof(videoConfig));
+    if (!g_configManager.getConfig(getConfigName(CFG_VIDEO), table)) {
+        return -1;
+    }
+
+    TExchangeAL<VideoConf_S>::getConfig(table, videoConfig);
+    if (videoConfig.chan[stream_id].frmae_rate == frameRate) {
+        return 0;
+    }
+
+    videoConfig.chan[stream_id].frmae_rate = frameRate;
+    TExchangeAL<VideoConf_S>::setConfig(videoConfig, table);
+    const int ret = g_configManager.setConfig(getConfigName(CFG_VIDEO), table, 0, IConfigManager::applyOK);
+    return (ret == IConfigManager::applyOK) ? 0 : ret;
 }
 
 int rk_video_set_resolution(int stream_id, const char *value)
