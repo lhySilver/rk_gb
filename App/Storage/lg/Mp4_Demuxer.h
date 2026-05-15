@@ -34,7 +34,7 @@ typedef struct
 	int iStreamType; 					//流类型, 1-视频, 2-音频
 	int iFrameType; 					//帧类型, 1-I帧, 2-P/B帧
 	unsigned long long ullTimestamp; 	//时间戳
-	int iCodeType; 						//编码类型
+	int iCodeType; 						//编码类型 1-h264, 2-h265
 } Mp4DemuxerFrameInfo_s;  
 
 
@@ -47,6 +47,7 @@ public:
 	/*
 	 *@return 0 if OK, < 0 on error
 	 */
+	int Open(const char *pFile);
 	int Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType);
 	
 	/*
@@ -64,6 +65,7 @@ public:
 	 *@return 成功返回数据帧的实际长度, < 0 on error
 	 */
 	int Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameInfo_s *pFrameInfo);
+	int GetVideoCodecType() const;
 	int Close();
 
 private:
@@ -90,6 +92,8 @@ private:
 	int m_iAudioindex;
 
 	AAC_ADTS_Param_s m_stAAC_ADTS_Param;
+
+	int m_iVideoCodecType;
 };
 
 

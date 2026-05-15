@@ -29,6 +29,7 @@ CMp4Demuxer::CMp4Demuxer()
 
 	m_iVideoindex = -1;
 	m_iAudioindex = -1;
+	m_iVideoCodecType = 0;
 
 	memset(&m_stAAC_ADTS_Param, 0, sizeof(m_stAAC_ADTS_Param));
 }
@@ -110,6 +111,14 @@ int CMp4Demuxer::Create_AAC_ADTS_Context(AAC_ADTS_Param_s *pstAAC_ADTS_Param, in
 /*
  *@return 0 if OK, < 0 on error
  */
+int CMp4Demuxer::Open(const char *pFile)
+{
+	return Open(pFile, STORAGE_VIDEO_ENC_H265);
+}
+
+/*
+ *@return 0 if OK, < 0 on error
+ */
 int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 {
 	int ret;
@@ -121,6 +130,7 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		name = "h264_mp4toannexb";
 	else
 		name = "hevc_mp4toannexb";
+	m_iVideoCodecType = 0;
 
 	printf("demux open request file=%s video_enc=%d bsf=%s\n",
 	       pFile ? pFile : "(null)",
@@ -196,7 +206,8 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		
 		printf("video codec time base : %d / %d\n", videoCodecctx->time_base.num, videoCodecctx->time_base.den);
 
-		printf("video codec id : %d\n", videoCodecctx->codec_id);	
+		printf("video codec id : %d [AV_CODEC_ID_H264: %d, AV_CODEC_ID_H265: %d]\n", videoCodecctx->codec_id,
+			AV_CODEC_ID_H264, AV_CODEC_ID_H265);
 		printf("video extradata_size : %d\n", videoCodecctx->extradata_size);
 		/*
 		printf("video extradata : ");
@@ -206,6 +217,21 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		}
 		printf("\n");
 		*/
+
+		if (AV_CODEC_ID_H264 == videoCodecctx->codec_id)
+		{
+			name = "h264_mp4toannexb";
+			m_iVideoCodecType = 1;
+		}
+		else if (AV_CODEC_ID_H265 == videoCodecctx->codec_id)
+		{
+			name = "hevc_mp4toannexb";
+			m_iVideoCodecType = 2;
+		}
+		else
+		{
+			printf("video codec unsupported for gb replay codec probe: %d\n", videoCodecctx->codec_id);
+		}
 	}
 
 
@@ -604,6 +630,7 @@ int CMp4Demuxer::Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameIn
 			pFrameInfo->iStreamType = 1;
 			pFrameInfo->iFrameType = (m_pAVPacket->flags & AV_PKT_FLAG_KEY) ? 1 : 2;
 			pFrameInfo->ullTimestamp = av_rescale_q(m_pAVPacket->pts, m_pAVFmtCtx->streams[m_iVideoindex]->time_base, AV_TIME_BASE_Q) / 1000;
+			pFrameInfo->iCodeType = m_iVideoCodecType;
 
 			iDataLen = iTmpLen;
 
@@ -688,6 +715,11 @@ int CMp4Demuxer::Close()
 	if( m_pPcmBuffer )
 		av_free(m_pPcmBuffer);
 	m_pPcmBuffer = NULL;
-	
+
 	return 0;
+}
+
+int CMp4Demuxer::GetVideoCodecType() const
+{
+	return m_iVideoCodecType;
 }

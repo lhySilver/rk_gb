@@ -713,6 +713,11 @@ int CMp4Demuxer::Close()
 	if( m_pPcmBuffer )
 		av_free(m_pPcmBuffer);
 	m_pPcmBuffer = NULL;
-	
+
 	return 0;
+}
+
+int CMp4Demuxer::GetVideoCodecType() const
+{
+	return m_iVideoCodecType;
 }

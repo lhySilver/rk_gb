@@ -369,6 +369,8 @@ private:
 
         int current_port;
 
+        std::string current_video_codec;
+
 
 
         GbMediaSenderRuntime()
@@ -748,7 +750,6 @@ private:
 
 
 #endif
-
 
 
 

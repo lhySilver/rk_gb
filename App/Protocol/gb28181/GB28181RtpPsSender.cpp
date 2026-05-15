@@ -763,6 +763,23 @@ int GB28181RtpPsSender::SendVideoFrame(const uint8_t* data, size_t size, uint64_
     return SendEsFrameByCodec(ResolveVideoCodecId(), data, size, pts90k, keyFrame);
 }
 
+int GB28181RtpPsSender::SendVideoFrameByCodecType(const uint8_t* data,
+                                                  size_t size,
+                                                  uint64_t pts90k,
+                                                  bool keyFrame,
+                                                  int codecType)
+{
+    if (codecType == 2) {
+        return SendEsFrameByCodec(PSI_STREAM_H265, data, size, pts90k, keyFrame);
+    }
+
+    if (codecType == 1) {
+        return SendEsFrameByCodec(PSI_STREAM_H264, data, size, pts90k, keyFrame);
+    }
+
+    return SendVideoFrame(data, size, pts90k, keyFrame);
+}
+
 int GB28181RtpPsSender::SendAudioFrame(const uint8_t* data, size_t size, uint64_t pts90k)
 {
     return SendEsFrameByCodec(ResolveAudioCodecId(), data, size, pts90k, false);

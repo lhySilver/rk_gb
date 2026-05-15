@@ -577,6 +577,35 @@ static std::string BuildGb2022VideoFormatValue(const std::string& codecIn)
     return (code > 0) ? BuildUnsignedTextValue(code) : "";
 }
 
+static std::string BuildGbMediaFWithVideoCodec(const std::string& mediaFIn,
+                                               const std::string& codecIn)
+{
+    const std::string videoFormat = BuildGb2022VideoFormatValue(codecIn);
+    if (videoFormat.empty()) {
+        return mediaFIn;
+    }
+
+    const std::string mediaF = TrimWhitespaceCopy(mediaFIn);
+    if (mediaF.empty()) {
+        return std::string("v/") + videoFormat;
+    }
+
+    const std::string lower = ToLowerCopy(mediaF);
+    if (lower.compare(0, 2, "v/") != 0) {
+        return std::string("v/") + videoFormat;
+    }
+
+    const size_t fieldBegin = 2;
+    const size_t fieldEnd = mediaF.find('/', fieldBegin);
+    if (fieldEnd == std::string::npos) {
+        return std::string("v/") + videoFormat;
+    }
+
+    std::string rebuilt = mediaF;
+    rebuilt.replace(fieldBegin, fieldEnd - fieldBegin, videoFormat);
+    return rebuilt;
+}
+
 static std::string ResolveCodecByGb2022VideoFormat(const std::string& valueIn)
 {
     switch (ParseUnsignedTextValue(valueIn)) {
@@ -2336,6 +2365,17 @@ static bool TryLoadGbLiveVideoCodecFromVideoConfig(int requestedStreamNum, std::
     const int channelIndex = (requestedStreamNum > 0 && VIDEO_CHANNEL_MAX > 1) ? 1 : 0;
     codecOut = NormalizeGbLiveVideoCodec(BuildGbLiveVideoCodecFromVideoEncType(localVideoConfig.chan[channelIndex].enc_type));
     return !codecOut.empty();
+}
+
+static std::string GbReplayVideoCodecFromCodeType(int codeType)
+{
+    if (codeType == 1) {
+        return "h264";
+    }
+    if (codeType == 2) {
+        return "h265";
+    }
+    return "";
 }
 
 
@@ -4578,6 +4618,72 @@ static void CollectGbRecordEntries(time_t queryStart,
                   }
                   return lhs.iRecType < rhs.iRecType;
               });
+}
+
+static std::string ResolveGbReplayFileVideoCodec(const MediaInfo* input)
+{
+    if (input == NULL || input->StartTime == 0 || input->EndTime < input->StartTime) {
+        return "";
+    }
+
+    const int tzOffsetSec = 8 * 3600;
+    const time_t startSec = static_cast<time_t>(input->StartTime) + tzOffsetSec;
+    const time_t endSec = static_cast<time_t>(input->EndTime) + tzOffsetSec;
+
+    std::vector<record_file_info_s> entries;
+    CollectGbRecordEntries(startSec, endSec, "", &entries);
+    if (entries.empty()) {
+        printf("[ProtocolManager] gb replay codec probe no index match start=%lld end=%lld\n",
+               (long long)startSec,
+               (long long)endSec);
+        return "";
+    }
+
+    for (std::vector<record_file_info_s>::const_iterator it = entries.begin();
+         it != entries.end();
+         ++it) {
+        if (it->iEndTime <= startSec) {
+            continue;
+        }
+        if (it->iStartTime > endSec) {
+            break;
+        }
+
+        char filePath[ROUTE_LEN] = {0};
+        if (!BuildGbRecordFilePath(it->iStartTime, it->iEndTime, it->iRecType, filePath, sizeof(filePath))) {
+            continue;
+        }
+
+        CMp4Demuxer demuxer;
+        const int ret = demuxer.Open(filePath);
+        if (ret != 0) {
+            printf("[ProtocolManager] gb replay codec probe open failed ret=%d path=%s\n", ret, filePath);
+            demuxer.Close();
+            continue;
+        }
+
+        const int codecType = demuxer.GetVideoCodecType();
+        demuxer.Close();
+
+        const std::string codec = GbReplayVideoCodecFromCodeType(codecType);
+        if (!codec.empty()) {
+            printf("[ProtocolManager] gb replay codec probe codec=%s codec_type=%d path=%s range=[%d,%d] request=[%lld,%lld]\n",
+                   codec.c_str(),
+                   codecType,
+                   filePath,
+                   it->iStartTime,
+                   it->iEndTime,
+                   (long long)startSec,
+                   (long long)endSec);
+            return codec;
+        }
+
+        printf("[ProtocolManager] gb replay codec probe unsupported codec_type=%d path=%s\n",
+               codecType,
+               filePath);
+    }
+
+    return "";
 }
 
 static int ApplyGbRegisterTimeSyncLocally(time_t epochSec)
@@ -11096,8 +11202,33 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
     const char* codecSource = "gb_live_config";
     bool codecResolved = false;
+
+    if (IsGbReplayRequestType(requestType)) {
+        const std::string replayCodec = ResolveGbReplayFileVideoCodec(input);
+        if (!replayCodec.empty()) {
+            runtimeParam.video_codec = replayCodec;
+            codecSource = "record_file";
+            codecResolved = true;
+        }
+    }
+
+    if (!codecResolved && IsGbReplayRequestType(requestType)) {
+        media::VideoEncodeStreamConfig mediaFConfig;
+        if (ParseGbMediaFVideoConfig(SafeStr(input->MediaF, sizeof(input->MediaF)), &mediaFConfig) &&
+            !mediaFConfig.codec.empty()) {
+            const std::string normalizedMediaFCodec = NormalizeGbLiveVideoCodec(mediaFConfig.codec);
+            if (!normalizedMediaFCodec.empty()) {
+                runtimeParam.video_codec = normalizedMediaFCodec;
+                codecSource = "media_f";
+                codecResolved = true;
+            }
+        }
+    }
+
     media::VideoEncodeStreamState runtimeVideoState;
-    if (media::QueryVideoEncodeStreamState(requestedStreamNum, &runtimeVideoState) &&
+    if (!codecResolved &&
+        requestType == kLiveStream &&
+        media::QueryVideoEncodeStreamState(requestedStreamNum, &runtimeVideoState) &&
         runtimeVideoState.has_codec) {
         const std::string normalizedRuntimeCodec = NormalizeGbLiveVideoCodec(runtimeVideoState.codec);
         if (!normalizedRuntimeCodec.empty()) {
@@ -11136,6 +11267,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
     }
     runtime->current_ssrc = static_cast<uint32_t>(runtimeParam.ssrc);
     runtime->current_port = 0;
+    runtime->current_video_codec = runtimeParam.video_codec;
 
 
 
@@ -11157,6 +11289,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
 
         runtime->current_ssrc = 0;
         runtime->current_port = 0;
+        runtime->current_video_codec.clear();
         return -23;
 
     }
@@ -11176,6 +11309,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
             runtime->sender.Init(m_cfg.gb_live);
             runtime->current_ssrc = 0;
             runtime->current_port = 0;
+            runtime->current_video_codec.clear();
             return -24;
         }
 
@@ -11236,6 +11370,7 @@ int ProtocolManager::ReconfigureGbLiveSender(const MediaInfo* input, const char*
         runtime->sender.Init(m_cfg.gb_live);
         runtime->current_ssrc = 0;
         runtime->current_port = 0;
+        runtime->current_video_codec.clear();
 
         return -24;
 
@@ -11365,6 +11500,21 @@ int ProtocolManager::BuildGbResponseMediaInfo(const char* gbCode,
     CopyBounded(out.MediaF, sizeof(out.MediaF), input->MediaF);
 
     const GbMediaSenderRuntime* runtime = GetGbMediaSenderRuntime(requestType);
+    if ((requestType == kPlayback || requestType == kDownload) &&
+        runtime != NULL &&
+        !runtime->current_video_codec.empty()) {
+        const std::string requestMediaF = SafeStr(input->MediaF, sizeof(input->MediaF));
+        const std::string responseMediaF = BuildGbMediaFWithVideoCodec(requestMediaF, runtime->current_video_codec);
+        CopyBounded(out.MediaF, sizeof(out.MediaF), responseMediaF);
+        if (responseMediaF != requestMediaF) {
+            printf("[ProtocolManager] gb %s response media_f adjusted codec=%s from=%s to=%s gb=%s\n",
+                   StreamRequestTypeName(requestType),
+                   runtime->current_video_codec.c_str(),
+                   requestMediaF.c_str(),
+                   responseMediaF.c_str(),
+                   gbCode != NULL ? gbCode : "");
+        }
+    }
 
 
 
@@ -12234,7 +12384,11 @@ void ProtocolManager::HandleGbReplayStorageFrame(unsigned char* data,
 
         const bool keyFrame = (frameInfo->iFrameType == 1);
 
-        ret = m_gb_replay_media_runtime.sender.SendVideoFrame((const uint8_t*)data, (size_t)size, pts90k, keyFrame);
+        ret = m_gb_replay_media_runtime.sender.SendVideoFrameByCodecType((const uint8_t*)data,
+                                                                         (size_t)size,
+                                                                         pts90k,
+                                                                         keyFrame,
+                                                                         frameInfo->iCodeType);
 
 
 

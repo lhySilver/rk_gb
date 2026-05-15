@@ -20,6 +20,7 @@ public:
     void CloseSession();
 
     int SendVideoFrame(const uint8_t* data, size_t size, uint64_t pts90k, bool keyFrame);
+    int SendVideoFrameByCodecType(const uint8_t* data, size_t size, uint64_t pts90k, bool keyFrame, int codecType);
     int SendAudioFrame(const uint8_t* data, size_t size, uint64_t pts90k);
 
     bool IsOpened() const;

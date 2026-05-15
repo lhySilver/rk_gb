@@ -64,6 +64,7 @@ public:
 	 *@return 成功返回数据帧的实际长度, < 0 on error
 	 */
 	int Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameInfo_s *pFrameInfo);
+	int GetVideoCodecType() const;
 	int Close();
 
 private:

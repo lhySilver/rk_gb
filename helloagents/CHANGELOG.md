@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 GB28181 回放/下载混合 H264/H265 录像时编码协商与 PS 封装不一致的问题：回放建链先探测实际 MP4 录像 codec，200 OK SDP 的 `f=` 按录像 codec 改写，发送录像视频帧时按 `Mp4DemuxerFrameInfo_s::iCodeType` 选择 H264/H265 PS stream id，避免 H264 录像被当作 H265 或沿用平台请求编码导致播放失败。
 - 修正 GB28181 `f=` 编码参数应用流程：`ApplyVideoEncodeStreamConfig()` 现在会对 `CFG_VIDEO` 承载的 `enc_type/frmae_rate/bit_rate` 先统一读取当前主/辅码流配置，逐项比较后仅在有差异时一次性写回，避免一次 `INVITE f=` 触发 codec、fps、bitrate 多次连续重配。
 - 修正 `VideoEncodeControl` 中本地 `rk_video_*` 编码参数兼容实现：`get/set_output_data_type`、`get/set_frame_rate`、`get/set_gop`、`get/set_max_rate` 现在参考 `Main.cpp` 通过 `CFG_VIDEO -> VideoConf_S.chan[]` 读取/写入 `enc_type`、`frmae_rate`、`gop`、`bit_rate`，设置时走 `g_configManager.setConfig(..., IConfigManager::applyOK)` 触发现有 `AVManager::onConfigVideo()` 编码参数应用链路，不再只是返回固定成功/失败。
 - 修复 GB28181 实时预览 `INVITE` 携带 `f=` 后被直接回 `403 Forbidden` 的问题：现场 `258.pcap/debug.log` 显示 SDP 已解析到 `f=v/2/6/25/1/1024a/1/8/1`，拒流根因是编码应用返回值被透传到开流回调；live `f=` 下发现改为 best-effort 记录 `dispatch_nonfatal` 后继续 sender 建链，同时补齐 `VideoEncodeControl` 本地 `rk_video_*` 兼容函数的确定返回值，避免空 `int` 桩产生随机错误码。
