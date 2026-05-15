@@ -31,6 +31,7 @@ CMp4Demuxer::CMp4Demuxer()
 	m_iAudioindex = -1;
 
 	memset(&m_stAAC_ADTS_Param, 0, sizeof(m_stAAC_ADTS_Param));
+	m_iVideoCodecType = 0;
 }
 
 CMp4Demuxer::~CMp4Demuxer()
@@ -110,22 +111,24 @@ int CMp4Demuxer::Create_AAC_ADTS_Context(AAC_ADTS_Param_s *pstAAC_ADTS_Param, in
 /*
  *@return 0 if OK, < 0 on error
  */
-int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
+int CMp4Demuxer::Open(const char *pFile)
 {
 	int ret;
 	const char *name = NULL;
 	AVCodecContext *videoCodecctx = NULL;
 	AVCodecContext *audioCodecCtx = NULL;
 
-	if (STORAGE_VIDEO_ENC_H264 == eVideoEncType)
-		name = "h264_mp4toannexb";
-	else
-		name = "hevc_mp4toannexb";
-
-	printf("demux open request file=%s video_enc=%d bsf=%s\n",
-	       pFile ? pFile : "(null)",
-	       (int)eVideoEncType,
-	       name ? name : "(null)");
+//	if (STORAGE_VIDEO_ENC_H264 == eVideoEncType)
+//		name = "h264_mp4toannexb";
+//	else
+//		name = "hevc_mp4toannexb";
+//
+//	printf("demux open request file=%s video_enc=%d bsf=%s\n",
+//	       pFile ? pFile : "(null)",
+//	       (int)eVideoEncType,
+//	       name ? name : "(null)");
+	printf("demux open request file=%s\n",
+	       pFile ? pFile : "(null)");
 	
 	ret = avformat_open_input(&m_pAVFmtCtx, pFile, NULL, NULL);
 	if(ret < 0)
@@ -196,7 +199,8 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		
 		printf("video codec time base : %d / %d\n", videoCodecctx->time_base.num, videoCodecctx->time_base.den);
 
-		printf("video codec id : %d\n", videoCodecctx->codec_id);	
+		printf("video codec id : %d [AV_CODEC_ID_H264: %d, AV_CODEC_ID_H265: %d]\n", videoCodecctx->codec_id, 
+			AV_CODEC_ID_H264, AV_CODEC_ID_H265);	
 		printf("video extradata_size : %d\n", videoCodecctx->extradata_size);
 		/*
 		printf("video extradata : ");
@@ -206,6 +210,25 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		}
 		printf("\n");
 		*/
+		
+		if (AV_CODEC_ID_H264 == videoCodecctx->codec_id)
+		{
+			name = "h264_mp4toannexb";
+			m_iVideoCodecType = 1;
+		}
+		else
+		{
+			name = "hevc_mp4toannexb";
+			m_iVideoCodecType = 2;
+		}
+		printf("bsf: %s\n", name);
+	
+		m_pAVBSFC_h264 = av_bitstream_filter_init(name);
+		if( !m_pAVBSFC_h264 )
+		{
+			printf("av_bitstream_filter_init %s failed.\n", name);
+			goto fail;
+		}
 	}
 
 
@@ -350,16 +373,15 @@ int CMp4Demuxer::Open(const char *pFile, STORAGE_VIDEO_ENC_TYPE_E eVideoEncType)
 		}
 	}
 
-	
-	m_pAVBSFC_h264 = av_bitstream_filter_init(name);
-//	m_pAVBSFC_aac = av_bitstream_filter_init("aac_adtstoasc");
-//	if(!m_pAVBSFC_h264 || !m_pAVBSFC_aac)
-	if( !m_pAVBSFC_h264 )
-	{
-//		printf("av_bitstream_filter_init h264_mp4toannexb or aac_adtstoasc failed.\n");
-		printf("av_bitstream_filter_init %s failed.\n", name);
-		goto fail;
-	}
+//	m_pAVBSFC_h264 = av_bitstream_filter_init(name);
+////	m_pAVBSFC_aac = av_bitstream_filter_init("aac_adtstoasc");
+////	if(!m_pAVBSFC_h264 || !m_pAVBSFC_aac)
+//	if( !m_pAVBSFC_h264 )
+//	{
+////		printf("av_bitstream_filter_init h264_mp4toannexb or aac_adtstoasc failed.\n");
+//		printf("av_bitstream_filter_init %s failed.\n", name);
+//		goto fail;
+//	}
 
 	printf("demux open ok file=%s videoindex=%d audioindex=%d duration=%lld start=%lld\n",
 	       pFile ? pFile : "(null)",
@@ -490,7 +512,9 @@ int CMp4Demuxer::Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameIn
 			*/
 			
 			pFrameInfo->iStreamType = 2;
+			pFrameInfo->iFrameType = 0;
 			pFrameInfo->ullTimestamp = av_rescale_q(m_pAVPacket->pts, m_pAVFmtCtx->streams[m_iAudioindex]->time_base, AV_TIME_BASE_Q) / 1000;
+			pFrameInfo->iCodeType = 0;
 
 			if (AV_CODEC_ID_AAC == m_pAVFmtCtx->streams[m_iAudioindex]->codec->codec_id)
 			{
@@ -604,6 +628,7 @@ int CMp4Demuxer::Read(unsigned char *pBuffer, int iBufferSize, Mp4DemuxerFrameIn
 			pFrameInfo->iStreamType = 1;
 			pFrameInfo->iFrameType = (m_pAVPacket->flags & AV_PKT_FLAG_KEY) ? 1 : 2;
 			pFrameInfo->ullTimestamp = av_rescale_q(m_pAVPacket->pts, m_pAVFmtCtx->streams[m_iVideoindex]->time_base, AV_TIME_BASE_Q) / 1000;
+			pFrameInfo->iCodeType = m_iVideoCodecType;
 
 			iDataLen = iTmpLen;
 

@@ -13,7 +13,7 @@ typedef struct
 	int iStreamType; 					//流类型, 1-视频, 2-音频
 	int iFrameType; 					//帧类型, 1-I帧, 2-P/B帧
 	unsigned long long ullTimestamp; 	//时间戳
-	int iCodeType; 						//编码类型
+	int iCodeType; 						//编码类型 1-h264, 2-h265
 }stream_data_header_S;
 #pragma pack()
 

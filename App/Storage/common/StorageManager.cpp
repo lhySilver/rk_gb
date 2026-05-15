@@ -321,8 +321,8 @@ CStorageManager::CStorageManager() : CThread("CStorageManager", 50)
 
 	//视频参数
 
-	m_iWidth = 3840;
-	m_iHeight = 1080;
+	m_iWidth = 2560;
+	m_iHeight = 1440;
 
 	
     //CaptureGetResolution(0,&m_iWidth,&m_iHeight);
@@ -373,7 +373,7 @@ int CStorageManager::Init()
 	}
 
 	//读取spspps
-	do_read_sps_pps();
+//	do_read_sps_pps();
 	
 	//删除空的录像目录
 	//不再使用CleanEmptyRecordDir();
@@ -547,6 +547,9 @@ void CStorageManager::ThreadProc()
 	bool bFullTimeRcdWriteFirstIFrame = false;
 	int iRecvDataTime = 0; //取到音视频数据的系统运行时间
 
+	int video_codec_type = 0;
+	int cut_mp4_file = 0;
+
 #ifdef RECORD_DBG_PRNT_TIME
 	unsigned long long s_ms;
 	unsigned long long e_ms;
@@ -642,33 +645,34 @@ void CStorageManager::ThreadProc()
 							continue;
 						}
 
-						//H264需要sps pps
-						if( STORAGE_VIDEO_ENC_H264 == m_eVideoEncType && (m_iSpsPpsLen <= 0) )
-						{
-							for(int i = 0; i < iFrameSize && i < sizeof(m_arrSpsPps); i++)
-							{
-								if( (0x00 == pData[i]) && (0x00 == pData[i+1]) && (0x00 == pData[i+2]) && (0x01 == pData[i+3]) && (0x5 == (pData[i+4]&0x1F)) )
-								{
-									if (m_iSpsPpsLen != i || memcmp(m_arrSpsPps, pData, m_iSpsPpsLen))
-									{
-										memcpy(m_arrSpsPps, pData, i);
-										m_iSpsPpsLen = i;
-										do_save_sps_pps();
-									}
-									/* printf("sps pps : ");
-									for(i = 0; i < m_iSpsPpsLen; i++)
-										printf("%02x ", (unsigned char)m_arrSpsPps[i]);
-									printf("\n"); */
-									break;
-								}
-							}
-						}
-							
+//						//H264需要sps pps
+//						if( STORAGE_VIDEO_ENC_H264 == m_eVideoEncType && (m_iSpsPpsLen <= 0) )
+//						{
+//							for(int i = 0; i < iFrameSize && i < sizeof(m_arrSpsPps); i++)
+//							{
+//								if( (0x00 == pData[i]) && (0x00 == pData[i+1]) && (0x00 == pData[i+2]) && (0x01 == pData[i+3]) && (0x5 == (pData[i+4]&0x1F)) )
+//								{
+//									if (m_iSpsPpsLen != i || memcmp(m_arrSpsPps, pData, m_iSpsPpsLen))
+//									{
+//										memcpy(m_arrSpsPps, pData, i);
+//										m_iSpsPpsLen = i;
+//										do_save_sps_pps();
+//									}
+//									/* printf("sps pps : ");
+//									for(i = 0; i < m_iSpsPpsLen; i++)
+//										printf("%02x ", (unsigned char)m_arrSpsPps[i]);
+//									printf("\n"); */
+//									break;
+//								}
+//							}
+//						}
+
+						video_codec_type = stStreamDataHeader.iCodeType;
 						u64FileStartTime_ms = stStreamDataHeader.ullTimestamp;			//文件开始时间
 						
-						GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_ALARM);
+						GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_ALARM, video_codec_type);
 						
-						InitMp4Muxer(record_file_path);
+						InitMp4Muxer(record_file_path, video_codec_type);
 						snprintf(arrCurRecordFilePath, sizeof(arrCurRecordFilePath), record_file_path);
 					
 						//写入第一帧数据
@@ -701,23 +705,39 @@ void CStorageManager::ThreadProc()
 					}
 					else if( 1 == stStreamDataHeader.iStreamType )	//video
 					{
-
+						cut_mp4_file = 0;
+						
 						//录像断续问题，有2个原因。1是编码器出流是断续的；2是写卡速率太慢导致ringbuffer的覆盖。
 						//不能直接注释这里的帧超时切文件功能去规避这两个问题，只能调大 STORAGE_MAX_FRAME_TIME_DIFF 尽量减少影响。
 						//因为如果出现校时前后时间跨度大的话就会有问题，比如跨天，校时前后两帧之间是空白的，APP搜索回放就会有问题
 						#if 01
 						if( labs(stStreamDataHeader.ullTimestamp - u64LastFrameTimestamp_ms) > STORAGE_MAX_FRAME_TIME_DIFF )	//可能校时了
 						{
-							break;
+//							break;
+							cut_mp4_file = 1;
 						}
 						#endif
 
-						
+						if (video_codec_type != stStreamDataHeader.iCodeType)
+							cut_mp4_file = 1;
+
 						if( 1 == stStreamDataHeader.iFrameType ) 	//I帧, 需要判断是否满足切换文件的条件
 						{
 							//主要是判断跨天, 跨天则拆分成两个文件
 							ret = FilterFIle(&u64FileStartTime_ms, &u64LastFrameTimestamp_ms, &stStreamDataHeader.ullTimestamp);
 							if( ret > 0 )
+							{
+								cut_mp4_file = 1;
+							}
+						}
+
+						if (cut_mp4_file)
+						{
+							if (1 != stStreamDataHeader.iFrameType)
+							{
+								break; //退出，等待I 帧到来再开文件
+							}
+							else
 							{
 								bIsOpenMp4File = false;
 								
@@ -759,26 +779,21 @@ void CStorageManager::ThreadProc()
 								}
 
 								//打开新文件
+								video_codec_type = stStreamDataHeader.iCodeType;
 								u64FileStartTime_ms = stStreamDataHeader.ullTimestamp;			//文件开始时间
 								
-								GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_ALARM);
-								InitMp4Muxer(record_file_path);
+								GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_ALARM, video_codec_type);
+								InitMp4Muxer(record_file_path, video_codec_type);
 								snprintf(arrCurRecordFilePath, sizeof(arrCurRecordFilePath), record_file_path);
-								
-								//写入第一帧数据
-								WriteToMp4Muxer(&u64FileStartTime_ms, 1, 1, &stStreamDataHeader.ullTimestamp, (UInt8 *)pData, iFrameSize);
-								
-								u64Last_I_FrameTimestamp_ms = stStreamDataHeader.ullTimestamp;	//上一个I帧的时间戳
-								u64LastFrameTimestamp_ms = stStreamDataHeader.ullTimestamp;		//上一个帧的时间戳
-								
+																
 								bIsOpenMp4File = true;
 							}
-							else
-							{
-								WriteToMp4Muxer(&u64FileStartTime_ms, 1, 1, &stStreamDataHeader.ullTimestamp, (UInt8 *)pData, iFrameSize);
-								
-								u64Last_I_FrameTimestamp_ms = stStreamDataHeader.ullTimestamp;	//上一个I帧的时间戳
-							}
+						}
+						
+						if( 1 == stStreamDataHeader.iFrameType ) 	//I帧
+						{
+							WriteToMp4Muxer(&u64FileStartTime_ms, 1, 1, &stStreamDataHeader.ullTimestamp, (UInt8 *)pData, iFrameSize);
+							u64Last_I_FrameTimestamp_ms = stStreamDataHeader.ullTimestamp;	//上一个I帧的时间戳
 						}
 						else
 						{
@@ -873,33 +888,34 @@ void CStorageManager::ThreadProc()
 					continue;
 				}
 
-				//H264需要sps pps
-				if( STORAGE_VIDEO_ENC_H264 == m_eVideoEncType && (m_iSpsPpsLen <= 0) )
-				{
-					for(int i = 0; i < iFrameSize && i < sizeof(m_arrSpsPps); i++)
-					{
-						if( (0x00 == pData[i]) && (0x00 == pData[i+1]) && (0x00 == pData[i+2]) && (0x01 == pData[i+3]) && (0x5 == (pData[i+4]&0x1F)) )
-						{
-							if (m_iSpsPpsLen != i || memcmp(m_arrSpsPps, pData, m_iSpsPpsLen))
-							{
-								memcpy(m_arrSpsPps, pData, i);
-								m_iSpsPpsLen = i;
-								do_save_sps_pps();
-							}				
-							/* printf("sps pps : ");
-							for(i = 0; i < m_iSpsPpsLen; i++)
-								printf("%02x ", (unsigned char)m_arrSpsPps[i]);
-							printf("\n"); */
-							break;
-						}
-					}
-				}
+//				//H264需要sps pps
+//				if( STORAGE_VIDEO_ENC_H264 == m_eVideoEncType && (m_iSpsPpsLen <= 0) )
+//				{
+//					for(int i = 0; i < iFrameSize && i < sizeof(m_arrSpsPps); i++)
+//					{
+//						if( (0x00 == pData[i]) && (0x00 == pData[i+1]) && (0x00 == pData[i+2]) && (0x01 == pData[i+3]) && (0x5 == (pData[i+4]&0x1F)) )
+//						{
+//							if (m_iSpsPpsLen != i || memcmp(m_arrSpsPps, pData, m_iSpsPpsLen))
+//							{
+//								memcpy(m_arrSpsPps, pData, i);
+//								m_iSpsPpsLen = i;
+//								do_save_sps_pps();
+//							}				
+//							/* printf("sps pps : ");
+//							for(i = 0; i < m_iSpsPpsLen; i++)
+//								printf("%02x ", (unsigned char)m_arrSpsPps[i]);
+//							printf("\n"); */
+//							break;
+//						}
+//					}
+//				}
 
+				video_codec_type = stStreamDataHeader.iCodeType;
 				u64FileStartTime_ms = stStreamDataHeader.ullTimestamp; 			//文件开始时间
 				
-				GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_FULLTIME);
+				GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_FULLTIME, video_codec_type);
 				
-				InitMp4Muxer(record_file_path);
+				InitMp4Muxer(record_file_path, video_codec_type);
 				snprintf(arrCurRecordFilePath, sizeof(arrCurRecordFilePath), record_file_path);
 			
 				//写入第一帧数据
@@ -981,12 +997,38 @@ void CStorageManager::ThreadProc()
 				}
 				else if( 1 == stStreamDataHeader.iStreamType ) 	//video
 				{
+					cut_mp4_file = 0;
+					
 					//录像断续问题，有2个原因。1是编码器出流是断续的；2是写卡速率太慢导致ringbuffer的覆盖。
 					//不能直接注释这里的帧超时切文件功能去规避这两个问题，只能调大 STORAGE_MAX_FRAME_TIME_DIFF 尽量减少影响。
 					//因为如果出现校时前后时间跨度大的话就会有问题，比如跨天，校时前后两帧之间是空白的，APP搜索回放就会有问题
-					#if 01
-					if( (0 == stStreamDataHeader.ullTimestamp) || 
-						(labs(stStreamDataHeader.ullTimestamp - u64LastFrameTimestamp_ms) > STORAGE_MAX_FRAME_TIME_DIFF ))	//退出全时录像或者可能校时了
+
+					if (0 == stStreamDataHeader.ullTimestamp)
+					{
+						cut_mp4_file = 1;
+					}
+					else
+					{
+						//退出全时录像或者可能校时了
+						if (labs(stStreamDataHeader.ullTimestamp - u64LastFrameTimestamp_ms) > STORAGE_MAX_FRAME_TIME_DIFF)
+							cut_mp4_file = 1;
+						if (video_codec_type != stStreamDataHeader.iCodeType)
+							cut_mp4_file = 1;
+						
+						if (1 == stStreamDataHeader.iFrameType)	//I帧, 需要判断是否满足切换文件的条件
+						{
+							//主要是判断跨天, 跨天则拆分成两个文件
+							ret = FilterFIle(&u64FileStartTime_ms, &u64LastFrameTimestamp_ms, &stStreamDataHeader.ullTimestamp);
+							if( ret > 0 )
+							{
+								cut_mp4_file = 1;
+							}
+						}
+					}
+					if (DISK_RECORD_MODE_FULLTIME != m_iRecordMode)
+						cut_mp4_file = 1;
+
+					if (cut_mp4_file)
 					{
 						//关闭当前文件
 						UnInitMp4Muxer();
@@ -1024,71 +1066,27 @@ void CStorageManager::ThreadProc()
 								DeleteOrriginalRecordFile_2();
 							}
 						}
-
-						break; 		//重新等待I帧再开始录像
-					}
-					#endif
-					
-
-					
-					if( 1 == stStreamDataHeader.iFrameType ) 	//I帧, 需要判断是否满足切换文件的条件
-					{
-						ret = FilterFIle(&u64FileStartTime_ms, &u64LastFrameTimestamp_ms, &stStreamDataHeader.ullTimestamp);
-						if( (ret > 0) || (DISK_RECORD_MODE_FULLTIME != m_iRecordMode) ) 		//切换文件, 关闭当前文件, 打开新文件
+						
+						if (DISK_RECORD_MODE_FULLTIME == m_iRecordMode && 
+							0 != stStreamDataHeader.ullTimestamp &&
+							1 == stStreamDataHeader.iFrameType)
 						{
-							//关闭当前文件
-							UnInitMp4Muxer();
-
-							//获取当前录像文件的实际名字
-							GetFilePathBaseOnTimestamp(&u64FileStartTime_ms, &u64LastFrameTimestamp_ms, record_file_path, 128, DISK_RECORD_MODE_FULLTIME);
-
-							//改名
-							AppErr("rename %s to %s\n", arrCurRecordFilePath, record_file_path);
-							rename(arrCurRecordFilePath, record_file_path);
-
-							//把新文件添加到索引表
-							char strPath[128];
-							GetDateIndexFilePath(u64FileStartTime_ms/1000, strPath);
-							record_file_info_s stRecordFileInfo = {0};
-							stRecordFileInfo.iStartTime = u64FileStartTime_ms/1000;
-							stRecordFileInfo.iEndTime = u64LastFrameTimestamp_ms/1000;
-							stRecordFileInfo.iRecType = 0;
-							InsertlRecordFileIndex(strPath, &stRecordFileInfo);
-
-							//检查SD卡是否满
-							UInt64 u64DiskFreeSize;
-							ret = CDiskManager::defaultStorageManager()->GetDiskcapacity(NULL, NULL, &u64DiskFreeSize);
-							if( (0 == ret) && (u64DiskFreeSize < RECORD_RESERVE_MEMORY_SIZE_BYTES) )
-							{
-								m_bDiskFull = true;
-								if( false == m_bCycleRecordFlag )
-								{
-									//SD卡已满, 循环录像开关未打开
-									goto end;
-								}
-								else
-								{
-									//SD卡已满, 循环录像开关已开, 需要删除最早的一个录像文件
-									DeleteOrriginalRecordFile_2();
-								}
-							}
-
-
-							/***************************切换录像模式的时候, 在这里退出全天录像********************************/
-							if( DISK_RECORD_MODE_FULLTIME != m_iRecordMode )
-							{
-								break;
-							}
-							/***************************切换录像模式的时候, 在这里退出全天录像********************************/
-
-							
+							video_codec_type = stStreamDataHeader.iCodeType;
 							u64FileStartTime_ms = stStreamDataHeader.ullTimestamp;			//文件开始时间
 							
-							GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_FULLTIME);
-							InitMp4Muxer(record_file_path);
-							snprintf(arrCurRecordFilePath, sizeof(arrCurRecordFilePath), record_file_path);					
+							GetRecordFilePath(stStreamDataHeader.ullTimestamp, record_file_path, 128, DISK_RECORD_MODE_FULLTIME, video_codec_type);
+							InitMp4Muxer(record_file_path, video_codec_type);
+							snprintf(arrCurRecordFilePath, sizeof(arrCurRecordFilePath), record_file_path); 				
 						}
+						else
+						{
+							break;		//重新等待I帧再开始录像
+						}
+					}
 
+					
+					if( 1 == stStreamDataHeader.iFrameType ) 	//I帧
+					{						
 #ifdef RECORD_DBG_PRNT_TIME
 						s_ms = GetSystemUptime_ms();
 #endif
@@ -1349,11 +1347,10 @@ int CStorageManager::ParseRecordFile(const char *pStrFileName, int *piStatTime, 
 	return 0;
 }
 
-int CStorageManager::CheckIsTmpRecordFile(char *pStrFileName, unsigned long long *pullStartTimestamp, int *piRcdType)
+int CStorageManager::CheckIsTmpRecordFile(char *pStrFileName, unsigned long long *pullStartTimestamp, int *piRcdType, int *piCodecType)
 {
 	int iRcdType;
-	char *pTmp_1 = NULL, *pTmp_2 = NULL;
-	char strTmp[24] = "";
+	int iCodecType;
 
 	if( !pStrFileName || strlen(pStrFileName) < 9 || !pullStartTimestamp || !piRcdType )
 		return -1;
@@ -1361,30 +1358,32 @@ int CStorageManager::CheckIsTmpRecordFile(char *pStrFileName, unsigned long long
 	if( strncmp(pStrFileName, "tmp_", 4) != 0 || 
 		strncmp(pStrFileName+(strlen(pStrFileName)-4), ".mp4", 4) != 0)
 		return -2;
-	
-	pTmp_1 = pStrFileName + strlen("tmp_");
-	pTmp_2 = strchr(pTmp_1, '_');
-	if( NULL == pTmp_2 )
-	{
-		pTmp_2 = strchr(pTmp_1, '.');
-		if( NULL == pTmp_2 )
-			return -3;
-		iRcdType = DISK_RECORD_MODE_FULLTIME;
-	}
-	else
-		iRcdType = DISK_RECORD_MODE_ALARM;
 
-	strncpy(strTmp, pTmp_1, pTmp_2-pTmp_1);
-	sscanf(strTmp, "%llu", pullStartTimestamp);
+	if (strstr(pStrFileName, "_FULL"))
+		iRcdType = DISK_RECORD_MODE_FULLTIME;
+	else if (strstr(pStrFileName, "_ALARM"))
+		iRcdType = DISK_RECORD_MODE_ALARM;
+	else
+		return -3;
+
+	if (strstr(pStrFileName, "_H264_"))
+		iCodecType = 1;
+	else if (strstr(pStrFileName, "_H265_"))
+		iCodecType = 2;
+	else
+		return -4;
+
+	sscanf(pStrFileName, "tmp_%llu_", pullStartTimestamp);
 
 	*piRcdType = iRcdType;
+	*piCodecType = iCodecType;
 
 	return 0;
 }
 
 /////////////////////////////////////////////////////////////////// 修复录像临时用 ///////////////////////////////////////////////////////////////////
 int InitMp4Muxer_tmp(CMp4Muxer *pcMp4Muxer, const char *record_file_path, const char *spspps, int spspps_len, 
-						int width, int height, int frame_rate, int bit_rate, int gop, STORAGE_VIDEO_ENC_TYPE_E m_eVideoEncType)
+						int width, int height, int frame_rate, int bit_rate, int gop, int iCodecType)
 {
 	AppInfo("record_file_path : %s\n", record_file_path);
 	int ret;
@@ -1399,7 +1398,7 @@ int InitMp4Muxer_tmp(CMp4Muxer *pcMp4Muxer, const char *record_file_path, const 
 	}
 	
 	v_codec.codec_type = AVMEDIA_TYPE_VIDEO;
-	if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
+	if (1 == iCodecType)
 		v_codec.codec_id = AV_CODEC_ID_H264;
 	else
 		v_codec.codec_id = AV_CODEC_ID_H265;
@@ -1412,18 +1411,20 @@ int InitMp4Muxer_tmp(CMp4Muxer *pcMp4Muxer, const char *record_file_path, const 
 	v_codec.qmin =	20;
 	v_codec.qmax =	51;
 	v_codec.time_base = AV_TIME_BASE_Q;
-	if ((spspps_len > 0) && (NULL != spspps))
-	{
-		/* extradata != NULL，mp4文件中nula开始码会被替换为nula长度 */
-		v_codec.extradata = (uint8_t *)av_malloc(spspps_len);
-		memcpy(v_codec.extradata, spspps, spspps_len);
-		v_codec.extradata_size = spspps_len;
-	}
-	else
-	{
-		v_codec.extradata = NULL;
-		v_codec.extradata_size = 0;
-	}
+	v_codec.extradata = NULL;
+	v_codec.extradata_size = 0;
+//	if ((spspps_len > 0) && (NULL != spspps))
+//	{
+//		/* extradata != NULL，mp4文件中nula开始码会被替换为nula长度 */
+//		v_codec.extradata = (uint8_t *)av_malloc(spspps_len);
+//		memcpy(v_codec.extradata, spspps, spspps_len);
+//		v_codec.extradata_size = spspps_len;
+//	}
+//	else
+//	{
+//		v_codec.extradata = NULL;
+//		v_codec.extradata_size = 0;
+//	}
 	
 	
 	a_codec.codec_type	= AVMEDIA_TYPE_AUDIO;
@@ -1505,7 +1506,7 @@ int WriteToMp4Muxer_tmp(CMp4Muxer *pcMp4Muxer, UInt64 *pu64FileStartTime_ms, int
 	return 0;
 }
 /////////////////////////////////////////////////////////////////// 修复录像临时用 ///////////////////////////////////////////////////////////////////
-int CStorageManager::RecoverRecordFile(unsigned long long *pullFileStartTime_ms, char *strOldPath, char *strNewPath, unsigned long long *pullFileEndTime_ms)
+int CStorageManager::RecoverRecordFile(unsigned long long *pullFileStartTime_ms, char *strOldPath, char *strNewPath, unsigned long long *pullFileEndTime_ms, int iCodecType)
 {
 	int ret;
 	int result = -1;
@@ -1617,7 +1618,7 @@ int CStorageManager::RecoverRecordFile(unsigned long long *pullFileStartTime_ms,
 	}
 
 	ret = InitMp4Muxer_tmp(&cMp4Muxer, strNewPath, m_arrSpsPps, m_iSpsPpsLen, 
-							m_iWidth, m_iHeight, m_iFrameRate, m_iBitRate, m_iGop, m_eVideoEncType);
+							m_iWidth, m_iHeight, m_iFrameRate, m_iBitRate, m_iGop, iCodecType);
 	if( 0 != ret )
 	{
 		AppErr("InitMp4Muxer failed.\n");
@@ -1647,12 +1648,12 @@ int CStorageManager::RecoverRecordFile(unsigned long long *pullFileStartTime_ms,
 				break;
 
 //			printf("timestamp : %llu\n", pstRecoverParam->timestamp);
-			if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
-			{
-				//因为mp4文件中h264的开始码（00 00 00 01）被改成了nalu的长度了
-				memcpy(buff, m_arrSpsPps, m_iSpsPpsLen);
-				memcpy(buff+m_iSpsPpsLen, h264_start_code, 4);
-			}
+//			if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
+//			{
+//				//因为mp4文件中h264的开始码（00 00 00 01）被改成了nalu的长度了
+//				memcpy(buff, m_arrSpsPps, m_iSpsPpsLen);
+//				memcpy(buff+m_iSpsPpsLen, h264_start_code, 4);
+//			}
 			WriteToMp4Muxer_tmp(&cMp4Muxer, pullFileStartTime_ms, 1, 1, &pstRecoverParam->timestamp, (UInt8 *)buff, pstRecoverParam->size);
 			ullLastFrameTimestamp = pstRecoverParam->timestamp;
 			uiFrameNum++;
@@ -1665,11 +1666,11 @@ int CStorageManager::RecoverRecordFile(unsigned long long *pullFileStartTime_ms,
 				break;
 			
 //			printf("timestamp : %llu\n", pstRecoverParam->timestamp);
-			if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
-			{
-				//因为mp4文件中h264的开始码（00 00 00 01）被改成了nalu的长度了
-				memcpy(buff, h264_start_code, 4);
-			}
+//			if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
+//			{
+//				//因为mp4文件中h264的开始码（00 00 00 01）被改成了nalu的长度了
+//				memcpy(buff, h264_start_code, 4);
+//			}
 			WriteToMp4Muxer_tmp(&cMp4Muxer, pullFileStartTime_ms, 1, 2, &pstRecoverParam->timestamp, (UInt8 *)buff, pstRecoverParam->size);
 			ullLastFrameTimestamp = pstRecoverParam->timestamp;
 			uiFrameNum++;
@@ -1755,7 +1756,7 @@ void CStorageManager::DoRecoverRcdProc(RecoverThradParam_S *pstParam)
 	i64StartRecover_ms = ((unsigned long long)tv.tv_sec * 1000 + tv.tv_usec / 1000);
 	/* <--- debug */
 	
-	ret = RecoverRecordFile(&ullStartTimestamp, strOldPath, strNewPath, &ullEndTimestamp);
+	ret = RecoverRecordFile(&ullStartTimestamp, strOldPath, strNewPath, &ullEndTimestamp, pstParam->iCodecType);
 	
 	/* debug --->*/
 	gettimeofday(&tv, NULL);
@@ -2115,11 +2116,11 @@ int CStorageManager::RecoverTmpRecordFile()
     struct dirent **entry = NULL;
     int iEntryIndex = 0;
 
-	//如果是H264编码，并且没有sps pps的话，不执行修复操作
-	if ((STORAGE_VIDEO_ENC_H264 == m_eVideoEncType) && (m_iSpsPpsLen <= 0))
-	{
-		return -1;
-	}
+//	//如果是H264编码，并且没有sps pps的话，不执行修复操作
+//	if ((STORAGE_VIDEO_ENC_H264 == m_eVideoEncType) && (m_iSpsPpsLen <= 0))
+//	{
+//		return -1;
+//	}
 
 	snprintf(strPath, sizeof(strPath), __STORAGE_SD_MOUNT_PATH__"/DCIM/");
 	int nEntry = scandir(strPath, &entry, dir_filter_year, dir_compare_desc);
@@ -2169,8 +2170,9 @@ int CStorageManager::RecoverTmpRecordFile()
 							while(iDayIndex < nDay)
 							{
 								int iRcdType;
+								int iCodecType;
 								unsigned long long ullStartTimestamp, ullEndTimestamp;
-								ret = CheckIsTmpRecordFile(ppDayEntry[iDayIndex]->d_name, &ullStartTimestamp, &iRcdType);
+								ret = CheckIsTmpRecordFile(ppDayEntry[iDayIndex]->d_name, &ullStartTimestamp, &iRcdType, &iCodecType);
 								if( 0 == ret )
 								{
 									RecoverThradParam_S *pstParam = new RecoverThradParam_S;
@@ -2178,6 +2180,7 @@ int CStorageManager::RecoverTmpRecordFile()
 									{
 										pstParam->p = this;
 										pstParam->iRecordMode = iRcdType;
+										pstParam->iCodecType = iCodecType;
 										pstParam->date_index = iTmpDateIndex;
 										pstParam->ullStartTimestamp = ullStartTimestamp;
 										snprintf(pstParam->filePath, sizeof(pstParam->filePath), __STORAGE_SD_MOUNT_PATH__ "/DCIM/%s/%s/%s/", entry[iEntryIndex]->d_name, ppYearEntry[iYearIndex]->d_name, ppMonthEntry[iMonthIndex]->d_name);
@@ -3207,13 +3210,14 @@ Int32 CStorageManager::DeleteRecordTimeList(Int32 iStartTime, Int32 iEndTime)
 
 
 
-void CStorageManager::GetRecordFilePath(unsigned long long time_ms, char *buffer, int bufferSize, int iRecordMode)
+void CStorageManager::GetRecordFilePath(unsigned long long time_ms, char *buffer, int bufferSize, int iRecordMode, int video_codec_type)
 {
 	int time_sec = time_ms / 1000;
 	struct tm tm = {0};
 	DIR *pDir = NULL;
 	char tmpbuffer[64];
 	char path[128] = __STORAGE_SD_MOUNT_PATH__"/DCIM/";
+	const char *str_v_codec_type = NULL;
 
 	localtime_r((time_t*)&time_sec, &tm);
 
@@ -3270,10 +3274,15 @@ void CStorageManager::GetRecordFilePath(unsigned long long time_ms, char *buffer
 		closedir(pDir);
 	}
 
+	if (1 == video_codec_type)
+		str_v_codec_type = "H264";
+	else
+		str_v_codec_type = "H265";
+
 	if( DISK_RECORD_MODE_FULLTIME == iRecordMode )
-		snprintf(buffer, bufferSize, "%stmp_%llu.mp4", path, time_ms);
+		snprintf(buffer, bufferSize, "%stmp_%llu_%s_FULL.mp4", path, time_ms, str_v_codec_type);
 	else// if( DISK_RECORD_MODE_ALARM == iRecordMode )
-		snprintf(buffer, bufferSize, "%stmp_%llu_ALARM.mp4", path, time_ms);
+		snprintf(buffer, bufferSize, "%stmp_%llu_%s_ALARM.mp4", path, time_ms, str_v_codec_type);
 }
 
 
@@ -3438,7 +3447,8 @@ int CStorageManager::do_read_sps_pps()
 	return 0;
 }
 
-int CStorageManager::InitMp4Muxer(const char *record_file_path)
+//video_codec_type 编码类型 1-h264, 2-h265
+int CStorageManager::InitMp4Muxer(const char *record_file_path, int video_codec_type)
 {
 	AppInfo("record_file_path : %s\n", record_file_path);
 	int ret;
@@ -3453,7 +3463,7 @@ int CStorageManager::InitMp4Muxer(const char *record_file_path)
 	}
 	
 	v_codec.codec_type = AVMEDIA_TYPE_VIDEO;
-	if (STORAGE_VIDEO_ENC_H264 == m_eVideoEncType)
+	if (1 == video_codec_type)
 		v_codec.codec_id = AV_CODEC_ID_H264;
 	else
 		v_codec.codec_id = AV_CODEC_ID_H265;
@@ -3468,18 +3478,18 @@ int CStorageManager::InitMp4Muxer(const char *record_file_path)
 	v_codec.time_base = AV_TIME_BASE_Q;
 	v_codec.extradata = NULL;
 	v_codec.extradata_size = 0;
-	if ((m_iSpsPpsLen > 0) && (NULL != m_arrSpsPps))
-	{
-		/* extradata != NULL，mp4文件中nula开始码会被替换为nula长度 */
-		v_codec.extradata = (uint8_t *)av_malloc(m_iSpsPpsLen);
-		memcpy(v_codec.extradata, m_arrSpsPps, m_iSpsPpsLen);
-		v_codec.extradata_size = m_iSpsPpsLen;
-	}
-	else
-	{
-		v_codec.extradata = NULL;
-		v_codec.extradata_size = 0;
-	}
+//	if ((m_iSpsPpsLen > 0) && (NULL != m_arrSpsPps))
+//	{
+//		/* extradata != NULL，mp4文件中nula开始码会被替换为nula长度 */
+//		v_codec.extradata = (uint8_t *)av_malloc(m_iSpsPpsLen);
+//		memcpy(v_codec.extradata, m_arrSpsPps, m_iSpsPpsLen);
+//		v_codec.extradata_size = m_iSpsPpsLen;
+//	}
+//	else
+//	{
+//		v_codec.extradata = NULL;
+//		v_codec.extradata_size = 0;
+//	}
 	
 	
 	a_codec.codec_type	= AVMEDIA_TYPE_AUDIO;
@@ -4153,7 +4163,7 @@ void CStorageManager::PlaybackProc(int index)
 			}
 
 
-			ret = mp4_demuxer.Open(strRecordFilePath, m_eVideoEncType);
+			ret = mp4_demuxer.Open(strRecordFilePath/*, m_eVideoEncType*/);
 
 			{//for debug
 				gettimeofday(&tv, NULL);
@@ -4729,7 +4739,7 @@ void CStorageManager::DownloadProc(int index)
 		}
 
 
-		ret = mp4_demuxer.Open(strRecordFilePath, m_eVideoEncType);
+		ret = mp4_demuxer.Open(strRecordFilePath/*, m_eVideoEncType*/);
 
 		{//for debug
 			gettimeofday(&tv, NULL);

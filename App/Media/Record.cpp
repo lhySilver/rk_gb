@@ -31,6 +31,11 @@ static int onRecord_fn(int media_chn,
 			else
 				stStreamDataHeader.iFrameType = 2;
 			
+			if (media_type == DMC_MEDIA_TYPE_H264)
+				stStreamDataHeader.iCodeType = 1;
+			else if (media_type == DMC_MEDIA_TYPE_H265)
+				stStreamDataHeader.iCodeType = 2;
+			
 			stStreamDataHeader.ullTimestamp = ullTimeStamp;
 					
 			g_StorageManager->WriteFrameData((unsigned char*)pFrmBuff, uiFrmSize, (void*)&stStreamDataHeader);

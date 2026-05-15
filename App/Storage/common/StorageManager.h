@@ -63,6 +63,7 @@ typedef struct{
 typedef struct{
 	void *p;
 	int iRecordMode;
+	int iCodecType; //编码类型 1-h264, 2-h265
 	int date_index;
 	unsigned long long ullStartTimestamp;
 	char filePath[128];
@@ -130,9 +131,9 @@ private:
 	
 	int ParseRecordFile(const char *pStrFileName, int *piStatTime, int *piEndTime);
 	
-	int CheckIsTmpRecordFile(char *pStrFileName, unsigned long long *pullStartTimestamp, int *piRcdType);
+	int CheckIsTmpRecordFile(char *pStrFileName, unsigned long long *pullStartTimestamp, int *piRcdType, int *piCodecType);
 	
-	int RecoverRecordFile(unsigned long long *pullFileStartTime_ms, char *strOldPath, char *strNewPath, unsigned long long *pullFileEndTime_ms);
+	int RecoverRecordFile(unsigned long long *pullFileStartTime_ms, char *strOldPath, char *strNewPath, unsigned long long *pullFileEndTime_ms, int iCodecType);
 
 public:
 	void DoRecoverRcdProc(RecoverThradParam_S *pstParam);
@@ -162,7 +163,7 @@ private:
 	Int32 InsertRecordTimeList(Int32 iStartTime, Int32 iEndTime);
 	Int32 DeleteRecordTimeList(Int32 iStartTime, Int32 iEndTime);
 	
-	void GetRecordFilePath(unsigned long long time_ms, char *buffer, int bufferSize, int iRecordMode);
+	void GetRecordFilePath(unsigned long long time_ms, char *buffer, int bufferSize, int iRecordMode, int video_codec_type);
 	int FilterFIle(const UInt64 *pu64FileStartTime_ms, const UInt64 *pu64LastFrameTimestamp_ms, const UInt64 *pu64NewFrameTimestamp_ms);
 	int GetFilePathBaseOnTimestamp(UInt64 *pu64StartTimestamp_ms, UInt64 *pu64EndTimestamp_ms, char *buffer_file_path, int bufferSize, int iRecordMode);
 	int GetDateIndex(int iUnixTimestamp);
@@ -170,7 +171,7 @@ private:
 	int do_save_sps_pps();
 	int do_read_sps_pps();
 
-	int InitMp4Muxer(const char *record_file_path);
+	int InitMp4Muxer(const char *record_file_path, int video_codec_type);
 	int UnInitMp4Muxer();
 	/*
 	 *@param u64FrameTimestamp_ms 与文件首帧时间戳的差值
