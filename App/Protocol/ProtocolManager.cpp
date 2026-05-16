@@ -7617,8 +7617,9 @@ int ProtocolManager::HandleGbLiveStreamRequest(StreamHandle handle, const char* 
            forceAudio ? 1 : 0,
 
            audioEnabled ? 1 : 0);
-
-    MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
+	
+	// debug_by_lhy 福诺平台请求视频时invite中f参数不合理，目前将f解析屏蔽
+    //MaybeApplyGbLiveMediaFVideoConfig(requestedStreamNum, mediaF, gbCode);
 
     int ret = ReconfigureGbLiveSender(input, gbCode, kLiveStream);
 
