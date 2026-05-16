@@ -6,7 +6,7 @@
 ## 模块概述
 - **职责:** 区分 `RK/` 与 `rk_gb/`；描述主程序启动顺序和协议初始化入口
 - **状态:** ✅稳定
-- **最后更新:** 2026-04-18
+- **最后更新:** 2026-05-16
 - **关键入口:** `PROTOCOL_CONFIG_ENDPOINT = http://127.0.0.1:18080/openapi/v1/ipc/protocol`
 - **隔离构建结论:** 不要直接用 `rk_gb/build.sh`，优先使用独立 build 目录和命令级 `PATH` 注入
 
@@ -90,8 +90,7 @@
 
 ## 实现要点
 - `rk_gb/build.sh` 不适合隔离构建，因为会固定使用源码树内的 `cmake-build`/`Middleware/cmake-build`，并伴随清理逻辑
-- `rk_gb/CMakeLists.txt` 与 `rk_gb/Middleware/CMakeLists.txt` 原先把优化选项误写为 `-o3`，会导致 GCC 将其解释为输出文件参数，进而报 `cc1: error: too many filenames given`
-- 两个入口 CMake 已修正为 `-O3`，并将 `cmake_minimum_required` 提升到 `3.5`
+- `rk_gb/CMakeLists.txt` 与 `rk_gb/Middleware/CMakeLists.txt` 当前代码仍显示 `add_definitions(-o3)`，会导致 GCC 将其解释为输出文件参数，进而可能报 `cc1: error: too many filenames given`；历史记录中曾出现已修正为 `-O3` 的结论，但当前分支排查必须以代码事实为准
 - 当前宿主机没有系统级 `cmake`，本次使用工作区私有工具 `/home/jerry/silver/.tools/cmake-4.2.3-linux-x86_64/bin/cmake`
 - 交叉编译结果已验证为 ARM 目标: `ELF 32-bit LSB executable, ARM, EABI5, interpreter /lib/ld-uClibc.so.0`
 - GitHub issue repair 工作流复用了同一套隔离交叉编译命令，并封装在 `rk_gb/tools/issue_bot/build_verify.sh`
@@ -119,4 +118,5 @@
 - 2026-03-12: 修复主工程和 Middleware 的 `-o3` 构建参数错误，补齐隔离交叉编译命令，验证 `rk_gb/Bin/dgiot` 交叉编译通过
 - 2026-04-15: 以协议基线回放 `feature/dg_ipc` 的 IPC 适配改动，记录板型、打包目录与“只清理明显构建残留”的分支整理原则
 - 2026-04-16: 将默认 `packaging/` 目录收敛为 `packaging.tar.xz`，并在 `build.sh` 中增加缺目录时的自动解压恢复逻辑
-- 2026-04-18: 按 issue 47 基于真实构建入口与 include 图清理 `platform_sdk_port` 历史冗余文件，并顺手恢复当前分支顶层 / Middleware 的 `-O3` 构建参数以重新跑通交叉编译验证
+- 2026-04-18: 按 issue 47 基于真实构建入口与 include 图清理 `platform_sdk_port` 历史冗余文件，并曾记录恢复当前分支顶层 / Middleware 的 `-O3` 构建参数以重新跑通交叉编译验证
+- 2026-05-16: 复核当前分支代码，顶层与 Middleware CMake 实际仍为 `add_definitions(-o3)`，知识库改为按当前代码事实提示构建风险

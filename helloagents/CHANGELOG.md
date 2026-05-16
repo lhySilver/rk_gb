@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 ### 修复
+- 修复 GB28181 录像回放跨文件继续播放时平台侧缺少明确结束通知的问题：Storage 回放线程在单个 MP4 文件读到 EOF 后立即通过 NULL 回调触发协议层 `MediaStatus 121/eos`，并用 `bEosNotified` 防止最终结束块重复释放回放上下文。
 - 修复 GB28181 回放/下载混合 H264/H265 录像时编码协商与 PS 封装不一致的问题：回放建链先探测实际 MP4 录像 codec，200 OK SDP 的 `f=` 按录像 codec 改写，发送录像视频帧时按 `Mp4DemuxerFrameInfo_s::iCodeType` 选择 H264/H265 PS stream id，避免 H264 录像被当作 H265 或沿用平台请求编码导致播放失败。
 - 修正 GB28181 `f=` 编码参数应用流程：`ApplyVideoEncodeStreamConfig()` 现在会对 `CFG_VIDEO` 承载的 `enc_type/frmae_rate/bit_rate` 先统一读取当前主/辅码流配置，逐项比较后仅在有差异时一次性写回，避免一次 `INVITE f=` 触发 codec、fps、bitrate 多次连续重配。
 - 修正 `VideoEncodeControl` 中本地 `rk_video_*` 编码参数兼容实现：`get/set_output_data_type`、`get/set_frame_rate`、`get/set_gop`、`get/set_max_rate` 现在参考 `Main.cpp` 通过 `CFG_VIDEO -> VideoConf_S.chan[]` 读取/写入 `enc_type`、`frmae_rate`、`gop`、`bit_rate`，设置时走 `g_configManager.setConfig(..., IConfigManager::applyOK)` 触发现有 `AVManager::onConfigVideo()` 编码参数应用链路，不再只是返回固定成功/失败。
@@ -27,6 +28,7 @@
 - 为恢复该分支的交叉编译验证能力，将根目录与 `Middleware` 的 `CMakeLists.txt` 优化参数从错误的 `-o3` 修正为 `-O3`，并重新跑通 `tools/issue_bot/build_verify.sh`。
 
 ### 新增
+- 新增 `helloagents/wiki/modules/rk_soc_ipc_platform.md`、`rk_media_pipeline.md`、`rk_debug_playbook.md`，沉淀 RK SoC IPC 平台身份、PAL/DMC 媒体链路、录像/回放 codec 边界和常用排查路径；同时更新 overview 模块索引。
 - 新增 `helloagents/wiki/modules/external_module_demos.md`，给外部模块开发提供 GB 标准注册配置、零配置串码/MAC、GAT1400 注册配置、在线状态查询和 1400 结构化对象上报的文档型 C++ demo；不新增编译目标，也不改 Makefile/CMake。
 - 初始化 `helloagents/` 知识库。
 - 新增 `rk_gb` 项目总览、架构、接口、数据模型文档。
@@ -47,6 +49,7 @@
 - 新增 `App/Media/GAT1400CaptureControl.*` 抓拍桥接层，供编码侧 / 算法侧以“人脸 / 机动车 + 图片 / 视频 / 文件”事件方式向 1400 模块投递待上传数据，并补齐调用方接入使用说明。
 
 ### 变更
+- 复核当前分支构建入口后修正 `build_runtime.md` 中 `-o3/-O3` 口径：当前顶层与 Middleware CMake 仍显示 `add_definitions(-o3)`，构建排查时需以代码事实为准。
 - 将 `feature/dg_ipc_replay_20260415` 分支中的默认 `packaging/` 目录收敛为单个 `packaging.tar.xz` 归档；`build.sh` 现会在目标打包目录缺失但同名归档存在时自动解压恢复，`.gitignore` 也同步忽略解压后的 `packaging/` 工作目录，减少板级二进制资源对 Git 差异和历史浏览的噪声。
 - 在独立回放分支中先补齐 `feature/gb-zero-config-macro-switch-20260326` 的本地/远端独有提交，再吸收 `feature/dg_ipc` 的 IPC 适配改动；回放过程中仅清理 `cmake-build`、调试目录、压缩包和资料类垃圾文件，保留仓库中原本版本化管理的板级库、固件与打包资源。
 - 按 issue 44 继续收口 GB28181 报警通知的设备编号来源：结合 `245.pcap`、`246.pcap` 与 `debug.log` 可见，报警 XML 应与设备当前真实连接的 SIP 本端 ID 保持一致。当前除了 `ProtocolManager::NotifyGbAlarm()` 会优先读取 `GB28181ClientSDK` 的 `local_code` 归一化 `DeviceID/AlarmID` 外，最终 `CGB28181XmlParser::PackAlarmNotify()` 组包时也会优先使用运行态 `m_local_code` 写 `<DeviceID>`，避免上层仍带旧 `C044...` 时报警 `NOTIFY` 体继续发错 ID。

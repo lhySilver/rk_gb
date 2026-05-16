@@ -2378,6 +2378,29 @@ static std::string GbReplayVideoCodecFromCodeType(int codeType)
     return "";
 }
 
+static std::string ResolveGbReplayFileVideoCodecFromPath(const char* path)
+{
+    if (path == NULL || path[0] == '\0') {
+        return "";
+    }
+
+    const char* filename = strrchr(path, '/');
+    filename = (filename != NULL) ? filename + 1 : path;
+    const std::string lower = ToLowerCopy(filename);
+    const bool hasH264 = lower.find("h264") != std::string::npos ||
+                         lower.find("avc") != std::string::npos;
+    const bool hasH265 = lower.find("h265") != std::string::npos ||
+                         lower.find("hevc") != std::string::npos;
+
+    if (hasH265 && !hasH264) {
+        return "h265";
+    }
+    if (hasH264 && !hasH265) {
+        return "h264";
+    }
+    return "";
+}
+
 
 
 static bool IsLiveAudioRequested(const MediaInfo* input)
@@ -4654,6 +4677,18 @@ static std::string ResolveGbReplayFileVideoCodec(const MediaInfo* input)
             continue;
         }
 
+        const std::string codecFromPath = ResolveGbReplayFileVideoCodecFromPath(filePath);
+        if (!codecFromPath.empty()) {
+            printf("[ProtocolManager] gb replay codec probe codec=%s source=filename path=%s range=[%d,%d] request=[%lld,%lld]\n",
+                   codecFromPath.c_str(),
+                   filePath,
+                   it->iStartTime,
+                   it->iEndTime,
+                   (long long)startSec,
+                   (long long)endSec);
+            return codecFromPath;
+        }
+
         CMp4Demuxer demuxer;
         const int ret = demuxer.Open(filePath);
         if (ret != 0) {
@@ -4667,7 +4702,7 @@ static std::string ResolveGbReplayFileVideoCodec(const MediaInfo* input)
 
         const std::string codec = GbReplayVideoCodecFromCodeType(codecType);
         if (!codec.empty()) {
-            printf("[ProtocolManager] gb replay codec probe codec=%s codec_type=%d path=%s range=[%d,%d] request=[%lld,%lld]\n",
+            printf("[ProtocolManager] gb replay codec probe codec=%s source=moov codec_type=%d path=%s range=[%d,%d] request=[%lld,%lld]\n",
                    codec.c_str(),
                    codecType,
                    filePath,

@@ -4037,6 +4037,7 @@ void CStorageManager::PlaybackProc(int index)
 		
 		bool bPlaybackFirtFile = true;
 		bool bSeekToAnotherFile = false;
+		bool bEosNotified = false;
 		for( int i = 0; /*i < rec_file_num && */pPlayManager->bThreadRunningFlag && pPlayManager->bEnablePlay; /*i++*/)
 		{
 			//第一个文件
@@ -4044,7 +4045,7 @@ void CStorageManager::PlaybackProc(int index)
 			{
 				while (i < rec_file_num)
 				{
-					const bool overlap = !(pastPbRcdInfo[i].iEndTime < pPlayManager->iStartTime ||
+					const bool overlap = !(pastPbRcdInfo[i].iEndTime <= pPlayManager->iStartTime ||
 					                       pastPbRcdInfo[i].iStartTime > pPlayManager->iEndTime);
 					if (i < 8 || overlap || pastPbRcdInfo[i].iStartTime > pPlayManager->iStartTime || pastPbRcdInfo[i].iStartTime > pPlayManager->iEndTime)
 					{
@@ -4105,7 +4106,7 @@ void CStorageManager::PlaybackProc(int index)
 						pthread_mutex_unlock(&m_mutexPlaybackManager);
 						break;
 					}
-					else if( (pPlayManager->iSeekTime >= pastPbRcdInfo[i].iStartTime) && (pPlayManager->iSeekTime <= pastPbRcdInfo[i].iEndTime) )
+					else if( (pPlayManager->iSeekTime >= pastPbRcdInfo[i].iStartTime) && (pPlayManager->iSeekTime < pastPbRcdInfo[i].iEndTime) )
 					{
 						bSeekToAnotherFile = true;
 						pthread_mutex_lock(&m_mutexPlaybackManager);
@@ -4233,6 +4234,7 @@ void CStorageManager::PlaybackProc(int index)
 				i64CurSysTime_ms = ((unsigned long long)tv.tv_sec * 1000 + tv.tv_usec / 1000);
 			}
 
+			bool bFileStreamEnded = false;
 
 			ret = mp4_demuxer.Open(strRecordFilePath, m_eVideoEncType);
 
@@ -4292,7 +4294,7 @@ void CStorageManager::PlaybackProc(int index)
 				{
 					if( true == pPlayManager->bSeekFlag )
 					{
-						if( (pPlayManager->iSeekTime >= stRecordFileInfo.iStartTime) && (pPlayManager->iSeekTime <= stRecordFileInfo.iEndTime) ) 	//文件内seek
+						if( (pPlayManager->iSeekTime >= stRecordFileInfo.iStartTime) && (pPlayManager->iSeekTime < stRecordFileInfo.iEndTime) ) 	//文件内seek
 						{
 							pthread_mutex_lock(&m_mutexPlaybackManager);
 							pPlayManager->bSeekFlag = false;
@@ -4328,6 +4330,7 @@ void CStorageManager::PlaybackProc(int index)
 						       pPlayManager->bPause ? 1 : 0,
 						       pPlayManager->iStartTime,
 						       pPlayManager->iEndTime);
+						bFileStreamEnded = true;
 						break;
 					}
 
@@ -4391,7 +4394,23 @@ void CStorageManager::PlaybackProc(int index)
 			       pPlayManager->bEnablePlay ? 1 : 0,
 			       pPlayManager->bThreadRunningFlag ? 1 : 0,
 			       i + 1);
-			
+			if( true == bFileStreamEnded )
+			{
+				pthread_mutex_lock(&m_mutexPlaybackManager);
+				pPlayManager->bEnablePlay = false;
+				pthread_mutex_unlock(&m_mutexPlaybackManager);
+
+				pPlayManager->PlaybackProc(NULL, 0, NULL, pPlayManager->pParam);
+				bEosNotified = true;
+				printf("playback file eos path=%s index=%d/%d start=%d end=%d\n",
+				       strRecordFilePath,
+				       i,
+				       rec_file_num,
+				       pPlayManager->iStartTime,
+				       pPlayManager->iEndTime);
+				break;
+			}
+
 			i++;
 		}
 		
@@ -4400,14 +4419,18 @@ void CStorageManager::PlaybackProc(int index)
 			pthread_mutex_lock(&m_mutexPlaybackManager);
 			pPlayManager->bEnablePlay = false;
 			pthread_mutex_unlock(&m_mutexPlaybackManager);
-		
-			pPlayManager->PlaybackProc(NULL, 0, NULL, pPlayManager->pParam);			
-			printf("playback session finished start=%d end=%d seek_flag=%d seek_time=%d\n",
+
+			if( false == bEosNotified )
+			{
+				pPlayManager->PlaybackProc(NULL, 0, NULL, pPlayManager->pParam);
+			}
+			printf("playback session finished start=%d end=%d seek_flag=%d seek_time=%d eos_notified=%d\n",
 			       pPlayManager->iStartTime,
 			       pPlayManager->iEndTime,
 			       pPlayManager->bSeekFlag ? 1 : 0,
-			       pPlayManager->iSeekTime);
-		}				
+			       pPlayManager->iSeekTime,
+			       bEosNotified ? 1 : 0);
+		}
 		
 	}
 

@@ -27,6 +27,9 @@
 | 模块名称 | 职责 | 状态 | 文档 |
 |---------|------|------|------|
 | BuildRuntime | 说明工具链、构建入口、运行启动链 | ✅稳定 | [modules/build_runtime.md](modules/build_runtime.md) |
+| RKSoCIpcPlatform | 说明 RK SoC IPC 平台身份、板型宏、SDK 库边界与启动主链 | ✅稳定 | [modules/rk_soc_ipc_platform.md](modules/rk_soc_ipc_platform.md) |
+| RKMediaPipeline | 说明 PAL/DMC、编码配置、实时流、录像、回放/下载和 OSD/翻转链路 | ✅稳定 | [modules/rk_media_pipeline.md](modules/rk_media_pipeline.md) |
+| RKDebugPlaybook | 说明构建、日志、抓包、实时流、录像回放和编码配置排查路径 | ✅稳定 | [modules/rk_debug_playbook.md](modules/rk_debug_playbook.md) |
 | Protocol | 说明协议编排、配置加载、会话生命周期与近期实现约束 | ✅稳定 | [modules/protocol.md](modules/protocol.md) |
 | GB28181 | 负责 SIP 注册、实时流、回放、下载、广播、监听、控制 | ✅稳定 | [modules/gb28181.md](modules/gb28181.md) |
 | GB28181-2022 Baseline | 负责 `GB/T 28181-2022` 调试基线、抓包检查项与工程落点 | ✅稳定 | [modules/gb28181-2022-baseline.md](modules/gb28181-2022-baseline.md) |
@@ -43,6 +46,9 @@
 - [架构设计](arch.md)
 - [API 手册](api.md)
 - [数据模型](data.md)
+- [RK SoC IPC 平台基线](modules/rk_soc_ipc_platform.md)
+- [RK 媒体链路](modules/rk_media_pipeline.md)
+- [RK IPC 排查手册](modules/rk_debug_playbook.md)
 - [Protocol 模块](modules/protocol.md)
 - [外部模块接入 Demo](modules/external_module_demos.md)
 - [GB/T 28181-2022 调试基线](modules/gb28181-2022-baseline.md)
@@ -54,6 +60,7 @@
 
 - `RK/` 基本是交叉编译工具链目录，不是 IPC 业务代码主体。
 - `rk_gb/` 是主项目目录，构建入口为 `rk_gb/CMakeLists.txt`，可执行程序主体在 `rk_gb/App/`。
+- 当前 RK 平台知识库已补齐板型、工具链、PAL/DMC、编码配置、录像存储、回放 codec 和排查路径；媒体问题应优先沿“协议解析 -> 编码配置 -> DMC 回调 -> 存储/发送”切分。
 - 协议统一由 `CSofia` 在正常启动路径中调用 `ProtocolManager::Instance().Init()/Start()` 拉起；外部模块也统一直接访问 `ProtocolManager::Instance()`。
 - GB28181 已形成注册、实时流、回放、下载、广播、升级重启等主要闭环；对讲、远程抓拍和订阅链路另有专项审查文档持续跟踪。
 - GAT1400 已具备客户端、订阅、本地 HTTP 服务、失败补传和 lower SDK 导出能力，但设备时间同步已统一收口到 GB28181。

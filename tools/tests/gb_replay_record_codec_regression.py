@@ -29,6 +29,12 @@ LG_DEMUXER_H = (ROOT / "App/Storage/lg/Mp4_Demuxer.h").read_text(
 LG_DEMUXER_CPP = (ROOT / "App/Storage/lg/Mp4_Demuxer.cpp").read_text(
     encoding="utf-8", errors="ignore"
 )
+COMMON_STORAGE_CPP = (ROOT / "App/Storage/common/StorageManager.cpp").read_text(
+    encoding="utf-8", errors="ignore"
+)
+LG_STORAGE_CPP = (ROOT / "App/Storage/lg/StorageManager.cpp").read_text(
+    encoding="utf-8", errors="ignore"
+)
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -78,6 +84,13 @@ def main() -> int:
     require(
         "ResolveGbReplayFileVideoCodec" in PROTOCOL_CPP,
         "ProtocolManager should probe the first playable replay record file codec before answering playback.",
+        errors,
+    )
+    require(
+        "ResolveGbReplayFileVideoCodecFromPath" in PROTOCOL_CPP
+        and 'lower.find("h264")' in PROTOCOL_CPP
+        and 'lower.find("h265")' in PROTOCOL_CPP,
+        "Replay codec probing should prefer h264/h265 markers in the record file name.",
         errors,
     )
     require(
@@ -136,6 +149,74 @@ def main() -> int:
         "GB28181RtpPsSender should expose a per-frame video codec send path.",
         errors,
     )
+    codec_probe_body = function_body(
+        PROTOCOL_CPP,
+        r"static\s+std::string\s+ResolveGbReplayFileVideoCodec\s*\(",
+    )
+    require(
+        codec_probe_body.find("ResolveGbReplayFileVideoCodecFromPath(filePath)") >= 0
+        and codec_probe_body.find("CMp4Demuxer demuxer") >= 0
+        and codec_probe_body.find("ResolveGbReplayFileVideoCodecFromPath(filePath)")
+        < codec_probe_body.find("CMp4Demuxer demuxer"),
+        "Replay codec probing should check the file name before opening MP4/moov data.",
+        errors,
+    )
+    require(
+        "it->iEndTime <= startSec" in PROTOCOL_CPP,
+        "Replay codec probing should skip records whose end time equals the requested start time.",
+        errors,
+    )
+
+    for label, storage_cpp in (
+        ("common", COMMON_STORAGE_CPP),
+        ("lg", LG_STORAGE_CPP),
+    ):
+        playback_body = function_body(
+            storage_cpp,
+            r"void\s+CStorageManager::PlaybackProc\s*\(",
+        )
+        file_done_pos = playback_body.find('printf("playback file done')
+        next_index_pos = playback_body.find("i++;", file_done_pos)
+        file_done_section = (
+            playback_body[file_done_pos:next_index_pos]
+            if file_done_pos >= 0 and next_index_pos >= 0
+            else ""
+        )
+
+        require(
+            "pastPbRcdInfo[i].iEndTime <= pPlayManager->iStartTime" in storage_cpp,
+            f"{label} playback should skip boundary records whose end time equals request start.",
+            errors,
+        )
+        require(
+            "pPlayManager->iSeekTime < pastPbRcdInfo[i].iEndTime" in storage_cpp
+            and "pPlayManager->iSeekTime < stRecordFileInfo.iEndTime" in storage_cpp,
+            f"{label} playback seek should treat record end time as an exclusive boundary.",
+            errors,
+        )
+        require(
+            "bool bEosNotified = false" in playback_body,
+            f"{label} playback should track whether EOS has already been notified.",
+            errors,
+        )
+        require(
+            "bFileStreamEnded" in playback_body,
+            f"{label} playback should distinguish natural file EOF from seek/stop breaks.",
+            errors,
+        )
+        require(
+            "pPlayManager->PlaybackProc(NULL, 0, NULL, pPlayManager->pParam)" in file_done_section
+            and "bEosNotified = true" in file_done_section
+            and "pPlayManager->bEnablePlay = false" in file_done_section
+            and "break;" in file_done_section,
+            f"{label} playback should notify EOS and stop the replay session as soon as one file reaches EOF.",
+            errors,
+        )
+        require(
+            "if( false == bEosNotified )" in playback_body,
+            f"{label} playback final EOS callback should be guarded to avoid deleting replay context twice.",
+            errors,
+        )
 
     if errors:
         for error in errors:
